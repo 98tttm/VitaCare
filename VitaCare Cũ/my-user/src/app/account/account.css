@@ -1,0 +1,161 @@
+/* Account Component Styles */
+/* VitaCare Brand Colors */
+/* Primary: #00589F | Light: #43A2E6 | Soft: #AACEF2 | Purple: #BAA7DE */
+
+.account-wrapper {
+  display: flex;
+  gap: 30px;
+  padding: 20px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Sidebar Styles */
+.account-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: linear-gradient(180deg, #00589F 0%, #2B3E66 100%);
+  border-radius: 16px;
+  padding: 30px 20px;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 88, 159, 0.3);
+}
+
+/* User Profile Header */
+.user-profile-header {
+  text-align: center;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 auto 15px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+.user-phone {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-family: 'Arimo', sans-serif;
+}
+
+/* Navigation Menu */
+.account-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #fff;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  position: relative;
+  font-family: 'Arimo', sans-serif;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: #7B63C6;
+  color: #fff;
+  font-weight: 500;
+}
+
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.notification-badge {
+  position: absolute;
+  right: 15px;
+  background: #C42326;
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Logout Section */
+.logout-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Arimo', sans-serif;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Content Area */
+.account-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .account-wrapper {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .account-sidebar {
+    width: 100%;
+    min-width: auto;
+  }
+}

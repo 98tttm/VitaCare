@@ -1,0 +1,331 @@
+<div class="container pt-3 pb-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-1">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a routerLink="/" class="text-decoration-none text-muted">Trang chủ</a></li>
+
+            <!-- Breadcrumb for Article Mode -->
+            <li class="breadcrumb-item active" aria-current="page" *ngIf="searchMode === 'article' && !currentCategory">
+                Bài viết sức khỏe
+            </li>
+
+            <!-- Breadcrumb for Product Mode with Category -->
+            <ng-container *ngIf="searchMode === 'product' && currentCategory">
+                <li class="breadcrumb-item" *ngFor="let crumb of breadcrumbs; let last = last" [class.active]="last">
+                    <a *ngIf="!last" [routerLink]="['/category', crumb.slug]" class="text-decoration-none text-muted">{{
+                        crumb.name }}</a>
+                    <span *ngIf="last" class="text-primary fw-bold">{{ crumb.name }}</span>
+                </li>
+            </ng-container>
+
+            <!-- Breadcrumb for Product Mode without Category (All Products) -->
+            <li class="breadcrumb-item active" aria-current="page" *ngIf="searchMode === 'product' && !currentCategory">
+                Sản phẩm
+            </li>
+        </ol>
+    </nav>
+    <!-- Search Mode Selector (As per mockup) -->
+    <div class="vc_search_type_selector bg-white rounded-4 shadow-sm p-3 mb-2 d-flex align-items-center gap-4"
+        *ngIf="filters.keyword">
+        <span class="fw-bold text-vc-primary">Tìm kiếm theo:</span>
+        <div class="d-flex gap-4">
+            <div class="d-flex align-items-center gap-2 cursor-pointer" (click)="setSearchMode('product')">
+                <div class="mode-radio-circle" [class.active]="searchMode === 'product'">
+                    <div class="mode-radio-dot"></div>
+                </div>
+                <span class="fw-medium">Sản phẩm</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 cursor-pointer" (click)="setSearchMode('article')">
+                <div class="mode-radio-circle" [class.active]="searchMode === 'article'">
+                    <div class="mode-radio-dot"></div>
+                </div>
+                <span class="fw-medium">Bài viết sức khoẻ</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category/Search Title -->
+    <h1 class="category-title mb-0 text-primary fw-bold" [style.font-size.rem]="isLevel2 ? 1.4 : null"
+        *ngIf="currentCategory">
+        {{ currentCategory.name }}
+    </h1>
+    <h1 class="category-title mb-0 text-primary fw-bold" *ngIf="!currentCategory && filters.keyword">
+        Kết quả tìm kiếm cho: "{{ filters.keyword }}"
+    </h1>
+    <h1 class="category-title mb-0 text-primary fw-bold" *ngIf="!currentCategory && !filters.keyword">
+        Tất cả sản phẩm
+    </h1>
+
+    <!-- Feature Categories (Level 2 Quick Links Slider, Level 3 Grid) -->
+    <app-feature-categories *ngIf="subCategories && subCategories.length > 0" class="d-block mb-1"
+        [subCategories]="subCategories" [layoutMode]="featureLayoutMode"
+        (categorySelected)="onCategorySelected($event)">
+    </app-feature-categories>
+
+    <!-- Recently Viewed Section (Top - optional but mockup shows it bottom, let's follow mockup bottom) -->
+
+    <div class="row g-4 mt-0">
+        <!-- Sticky Filter Column (Only show for products) -->
+        <div class="col-lg-3 d-none d-lg-block pb-4" *ngIf="searchMode === 'product'">
+            <app-filter [hierarchy]="sidebarHierarchy" [activeCategorySlug]="filters.categorySlug" [brands]="brands"
+                [priceRanges]="priceRanges" [activeFilters]="filters" (filterChanged)="onFilterChanged($event)"
+                (categorySelected)="onCategorySelected($event)">
+            </app-filter>
+        </div>
+
+        <!-- Main Content Column -->
+        <div [class]="searchMode === 'article' ? 'col-12 pb-1' : 'col-lg-9 col-12 pb-1'">
+            <!-- Product List -->
+            <app-product-list *ngIf="searchMode === 'product'" [products]="products" [total]="totalProducts"
+                [isLoading]="isLoading" [activeSort]="filters.sort" [activeFilters]="filters"
+                (sortChange)="onSortToggle($event)" (loadMoreEvent)="loadMore()"
+                (itemClick)="trackRecentlyViewed($event)" (removeFilter)="onRemoveFilter($event)"
+                (clearAllFilters)="onClearAllFilters()">
+            </app-product-list>
+
+            <!-- Blog Article List with Sidebar -->
+            <div *ngIf="searchMode === 'article'" class="blog-layout-wrapper">
+                <div class="row g-4">
+                    <!-- Blog Articles Column (2/3) -->
+                    <div class="col-lg-8">
+                        <!-- Loading State -->
+                        <div *ngIf="isLoading" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Đang tải...</span>
+                            </div>
+                        </div>
+
+                        <!-- Blog Articles -->
+                        <div *ngIf="!isLoading && blogs.length > 0" class="blog-articles">
+                            <div class="blog-item d-flex gap-3 mb-3 pb-3 border-bottom"
+                                *ngFor="let blog of displayedBlogs">
+                                <!-- Blog Image -->
+                                <div class="blog-image-wrapper flex-shrink-0">
+                                    <a [href]="blog.url" target="_blank" (click)="trackRecentlyViewedBlog(blog)">
+                                        <img [src]="blog.primaryImage?.url || 'assets/images/blog-placeholder.png'"
+                                            [alt]="blog.title" class="blog-thumbnail rounded-3">
+                                    </a>
+                                </div>
+
+                                <!-- Blog Content -->
+                                <div class="blog-content flex-grow-1">
+                                    <a [href]="blog.url" target="_blank" class="text-decoration-none"
+                                        (click)="trackRecentlyViewedBlog(blog)">
+                                        <h3 class="blog-title text-primary fw-bold mb-2">{{ blog.title }}</h3>
+                                    </a>
+
+                                    <p class="blog-description text-muted mb-1">{{ blog.shortDescription }}</p>
+
+                                    <div class="blog-meta d-flex align-items-center gap-3 text-muted small">
+                                        <span *ngIf="blog.publishedAt">
+                                            <i class="bi bi-clock"></i> {{ blog.publishedAt | date: 'dd/MM/yyyy' }}
+                                        </span>
+                                        <span *ngIf="blog.author?.fullName">
+                                            <i class="bi bi-person"></i> {{ blog.author.fullName }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Load More / Collapse Buttons -->
+                            <div class="text-center mt-4 mb-4" *ngIf="blogs.length > initialBlogLimit">
+                                <button *ngIf="blogDisplayLimit < blogs.length"
+                                    class="btn btn-link text-primary text-decoration-none fw-normal d-inline-flex align-items-center gap-2 px-0"
+                                    style="font-size: 15px;" (click)="loadMoreBlogs()">
+                                    <i class="bi bi-chevron-down" style="font-size: 16px;"></i>
+                                    <span>Xem thêm {{ blogs.length - blogDisplayLimit }} bài viết</span>
+                                </button>
+                                <button *ngIf="blogDisplayLimit > initialBlogLimit"
+                                    class="btn btn-link text-primary text-decoration-none fw-normal d-inline-flex align-items-center gap-2 px-0"
+                                    style="font-size: 15px;" (click)="collapseBlogs()">
+                                    <i class="bi bi-chevron-up" style="font-size: 16px;"></i>
+                                    <span>Thu gọn</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- No Results -->
+                        <div *ngIf="!isLoading && blogs.length === 0" class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <p class="text-muted mt-3">Không tìm thấy bài viết nào</p>
+                        </div>
+                    </div>
+
+                    <!-- Search History Sidebar (1/3) -->
+                    <div class="col-lg-4">
+                        <div class="search-history-sidebar bg-white rounded-3 p-3">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-1">
+                                    <i class="bi bi-clock-history text-primary fs-5"></i>
+                                    <h5 class="mb-0 fw-bold text-primary">Lịch sử tìm kiếm</h5>
+                                </div>
+                                <button *ngIf="searchHistory.length > 0"
+                                    class="btn btn-link text-muted text-decoration-none p-0 d-flex align-items-center gap-1"
+                                    style="font-size: 12px;" (click)="clearSearchHistory()">
+                                    <i class="bi bi-trash3"></i>
+                                    <span>Xóa tất cả</span>
+                                </button>
+                            </div>
+
+                            <div *ngIf="searchHistory.length > 0" class="history-list">
+                                <div class="history-item d-flex align-items-start gap-2 mb-2 pb-2 border-bottom position-relative"
+                                    *ngFor="let item of searchHistory.slice(0, 7)">
+                                    <i class="bi bi-clock-fill text-primary mt-1" style="font-size: 0.9rem;"></i>
+                                    <div class="flex-grow-1">
+                                        <a [routerLink]="['/products']"
+                                            [queryParams]="{keyword: item.keyword, mode: 'article'}"
+                                            class="text-decoration-none text-dark history-link">
+                                            <strong class="d-block">{{ item.keyword }}</strong>
+                                        </a>
+                                        <small class="text-muted">{{ item.timestamp | date: 'dd/MM/yyyy HH:mm'
+                                            }}</small>
+                                    </div>
+                                    <button class="btn btn-link text-muted p-0 ms-1"
+                                        style="font-size: 14px; line-height: 1;"
+                                        (click)="removeSearchHistoryItem($event, item.keyword)" title="Xóa">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div *ngIf="searchHistory.length === 0" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p class="mb-0 mt-2 small">Chưa có lịch sử tìm kiếm</p>
+                            </div>
+
+                            <!-- Suggested Keywords -->
+                            <div class="mt-3 pt-2 border-top">
+                                <h6 class="fw-bold mb-2">Từ khóa phổ biến</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a [routerLink]="['/products']"
+                                        [queryParams]="{keyword: 'vitamin', mode: 'article'}"
+                                        class="badge bg-light text-primary border border-primary px-3 py-2 text-decoration-none">
+                                        Vitamin
+                                    </a>
+                                    <a [routerLink]="['/products']" [queryParams]="{keyword: 'canxi', mode: 'article'}"
+                                        class="badge bg-light text-primary border border-primary px-3 py-2 text-decoration-none">
+                                        Canxi
+                                    </a>
+                                    <a [routerLink]="['/products']"
+                                        [queryParams]="{keyword: 'tăng chiều cao', mode: 'article'}"
+                                        class="badge bg-light text-primary border border-primary px-3 py-2 text-decoration-none">
+                                        Tăng chiều cao
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End main row -->
+
+    <!-- Recently Viewed Section (Bottom Full Width) -->
+    <!-- Products Recently Viewed -->
+    <div class="recently-viewed-section pt-2 pb-4"
+        *ngIf="searchMode === 'product' && recentlyViewedProducts.length > 0">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="recently-viewed-title">Sản phẩm vừa xem</h5>
+            <a href="javascript:void(0)" class="btn-clear-all d-flex align-items-center gap-1"
+                (click)="clearRecentlyViewed($event)">
+                <i class="bi bi-trash3"></i> Xóa tất cả
+            </a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
+            <div class="col" *ngFor="let product of recentlyViewedProducts">
+                <a class="product-card border-0 text-decoration-none"
+                    [routerLink]="['/product', getProductSlug(product)]" (click)="trackRecentlyViewed(product)">
+                    <!-- Discount -->
+                    <div class="discount-badge" *ngIf="product.discount > 0">
+                        -{{ getDiscountPercentage(product.price, product.discount) }}%
+                    </div>
+
+                    <div class="product-image">
+                        <img [src]="product.image" [alt]="product.name" (error)="handleImageError($event)">
+                    </div>
+
+                    <div class="product-content">
+                        <p class="product-name" [title]="product.name" style="
+                            display: -webkit-box; 
+                            -webkit-line-clamp: 2; 
+                            line-clamp: 2;
+                            -webkit-box-orient: vertical; 
+                            overflow: hidden; 
+                            text-overflow: ellipsis; 
+                            height: 36px; 
+                            line-height: 18px; 
+                            font-size: 12px;">
+                            {{ product.name }}
+                        </p>
+
+                        <div class="price-section">
+                            <div class="current-price">
+                                {{ getDiscountedPrice(product.price, product.discount) | number }}đ
+                            </div>
+                            <div class="old-price" *ngIf="product.discount > 0">
+                                {{ product.price | number }}đ
+                            </div>
+                        </div>
+
+                        <!-- Buttons Section -->
+                        <div class="button-group mt-2">
+                            <button class="btn-cart">
+                                <i class="bi bi-cart-plus-fill"></i>
+                            </button>
+                            <button class="btn-buy">Mua ngay</button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blogs Recently Viewed -->
+    <div class="recently-viewed-section pt-2 pb-4" *ngIf="searchMode === 'article' && recentlyViewedBlogs.length > 0">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="recently-viewed-title">Bài viết sức khỏe vừa xem</h5>
+            <a href="javascript:void(0)" class="btn-clear-all d-flex align-items-center gap-1"
+                (click)="clearRecentlyViewedBlogs($event)">
+                <i class="bi bi-trash3"></i> Xóa tất cả
+            </a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
+            <div class="col" *ngFor="let blog of recentlyViewedBlogs">
+                <a [href]="blog.url" target="_blank"
+                    class="blog-card border rounded-3 overflow-hidden text-decoration-none d-block h-100 shadow-sm"
+                    (click)="trackRecentlyViewedBlog(blog)" style="transition: transform 0.2s, box-shadow 0.2s;"
+                    onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.12)';">
+
+                    <!-- Blog Image -->
+                    <div class="blog-card-image" style="height: 140px; overflow: hidden; background: #f8f9fa;">
+                        <img [src]="blog.primaryImage?.url || 'assets/images/blog-placeholder.png'" [alt]="blog.title"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+
+                    <!-- Blog Content -->
+                    <div class="blog-card-content p-2">
+                        <h6 class="blog-card-title text-dark fw-semibold mb-1" [title]="blog.title" style="
+                                display: -webkit-box; 
+                                -webkit-line-clamp: 2; 
+                                line-clamp: 2;
+                                -webkit-box-orient: vertical; 
+                                overflow: hidden; 
+                                text-overflow: ellipsis;
+                                font-size: 13px;
+                                line-height: 1.4;
+                                height: 36px;">
+                            {{ blog.title }}
+                        </h6>
+
+                        <div class="blog-card-meta d-flex align-items-center gap-2 text-muted" style="font-size: 11px;">
+                            <span *ngIf="blog.publishedAt">
+                                <i class="bi bi-clock"></i> {{ blog.publishedAt | date: 'dd/MM/yyyy' }}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

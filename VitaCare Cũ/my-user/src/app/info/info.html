@@ -1,0 +1,99 @@
+<!-- Info Component - Personal Information Form -->
+<div class="info-wrapper">
+    <h2 class="info-title">THÔNG TIN CÁ NHÂN</h2>
+
+    <div class="info-card">
+        <!-- User Header with Avatar -->
+        <div class="user-header">
+            <div class="user-avatar-section">
+                <div class="avatar-wrapper">
+                    <img [src]="userAvatar" alt="User Avatar" class="avatar-image">
+                </div>
+                <div class="user-basic-info">
+                    <h4 class="name">{{ fullName }}</h4>
+                    <p class="phone">{{ phone }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Information Form -->
+        <form class="info-form" (ngSubmit)="onSubmit()">
+            <!-- Họ tên -->
+            <div class="form-group">
+                <label for="fullName" class="form-label">Họ tên</label>
+                <input type="text" class="form-control" id="fullName" [(ngModel)]="fullName" name="fullName"
+                    placeholder="Nhập họ tên">
+            </div>
+
+            <!-- Ngày sinh & Giới tính -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="birthDate" class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-control" id="birthDate" [(ngModel)]="birthDate" name="birthDate"
+                            placeholder="mm / dd / yyyy">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Giới tính</label>
+                        <div class="gender-options">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="male" value="male"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="male">Nam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="female" value="female"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="female">Nữ</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="other" value="other"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="other">Khác</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Số điện thoại & Email -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Số điện thoại <span class="required">*</span></label>
+                        <input type="tel" class="form-control" id="phone" [(ngModel)]="phone" name="phone"
+                            placeholder="Nhập số điện thoại" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email"
+                            placeholder="Nhập email">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mật khẩu -->
+            <div class="form-group">
+                <label for="password" class="form-label">Mật khẩu:</label>
+                <div class="password-input-wrapper">
+                    <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password"
+                        [(ngModel)]="password" name="password" placeholder="••••••••••••">
+                    <button type="button" class="password-toggle" (click)="togglePassword()">
+                        <img [src]="showPassword ? 'assets/icon/info.png' : 'assets/icon/info.png'"
+                            alt="Toggle Password" class="toggle-icon">
+                    </button>
+                </div>
+                <a href="#" class="change-password-link" (click)="changePassword($event)">Thay đổi mật khẩu</a>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn-update">Cập nhật thông tin</button>
+            </div>
+        </form>
+    </div>
+</div>

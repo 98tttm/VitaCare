@@ -1,0 +1,121 @@
+<div class="card border-0 shadow-sm rounded-4 p-3" *ngIf="product">
+    <div class="row g-0">
+        <!-- Left Nav Menu -->
+        <div class="col-md-3">
+            <div class="vc_pd_sticky_nav sticky-top" style="top: 20px; z-index: 9; padding-right: 10px;">
+                <nav class="nav flex-column">
+                    <a class="nav-link fw-bold text-dark" [class.active]="activeSection === 'mo-ta'"
+                        (click)="scrollToSection('mo-ta'); $event.preventDefault()" href="#">Mô tả sản phẩm</a>
+                    <a class="nav-link fw-bold text-dark" [class.active]="activeSection === 'thanh-phan'"
+                        (click)="scrollToSection('thanh-phan'); $event.preventDefault()" href="#">Thành phần</a>
+                    <a class="nav-link fw-bold text-dark" [class.active]="activeSection === 'cong-dung'"
+                        (click)="scrollToSection('cong-dung'); $event.preventDefault()" href="#">Công dụng</a>
+                    <a class="nav-link fw-bold text-dark" [class.active]="activeSection === 'cach-dung'"
+                        (click)="scrollToSection('cach-dung'); $event.preventDefault()" href="#">Cách dùng</a>
+                    <a class="nav-link fw-bold text-dark" [class.active]="activeSection === 'tac-dung-phu'"
+                        (click)="scrollToSection('tac-dung-phu'); $event.preventDefault()" href="#">Tác dụng phụ</a>
+                    <a class="nav-link fw-bold text-dark" [class.active]="activeSection === 'luu-y'"
+                        (click)="scrollToSection('luu-y'); $event.preventDefault()" href="#">Lưu ý</a>
+                    <a class="nav-link fw-bold text-dark" [class.active]="activeSection === 'bao-quan'"
+                        (click)="scrollToSection('bao-quan'); $event.preventDefault()" href="#">Bảo quản</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Right Content Body -->
+        <div class="col-md-9">
+            <div class="vc_pd_content_card position-relative ps-3">
+
+                <div class="vc_content_body" [class.expanded]="isExpanded">
+                    <div class="d-flex justify-content-between align-items-center mb-4 sticky-top bg-white border-bottom pb-3 pt-0"
+                        style="z-index: 10;">
+                        <h2 class="h4 fw-bold m-0">{{ product.name }} là gì?</h2>
+                        <!-- Font size controls placeholder -->
+                    </div>
+
+                    <section id="mo-ta" class="mb-4">
+                        <h3 class="h5 fw-bold mb-3">Mô tả sản phẩm</h3>
+                        <div class="vc_html_content">
+                            <div class="mb-3" [innerHTML]="product.description || 'Đang cập nhật mô tả...'"></div>
+                            <div [innerHTML]="product.description_long"></div>
+                        </div>
+                    </section>
+
+                    <section id="thanh-phan" class="mb-4">
+                        <h3 class="h5 fw-bold mb-3">Thành phần của {{ product.name }}</h3>
+                        <div class="ingredients-wrapper">
+                            <table class="table ingredients-table" *ngIf="getIngredientsList().length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>Thông tin thành phần</th>
+                                        <th>Hàm lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let ing of getIngredientsList()">
+                                        <td>{{ ing.name }}</td>
+                                        <td>{{ ing.dosage }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p *ngIf="getIngredientsList().length === 0" class="text-muted">Đang cập nhật...</p>
+                        </div>
+                    </section>
+
+                    <section id="cong-dung" class="mb-4">
+                        <h3 class="h5 fw-bold mb-3">Công dụng của {{ product.name }}</h3>
+                        <div class="vc_html_content" [innerHTML]="product.usage"></div>
+                    </section>
+
+                    <section id="cach-dung" class="mb-4">
+                        <h3 class="h5 fw-bold mb-3">Cách dùng {{ product.name }}</h3>
+                        <div class="vc_html_content">
+                            <p>Sử dụng theo hướng dẫn của bác sĩ hoặc bao bì sản phẩm.</p>
+                            <!-- Fallback content if usage is short -->
+                        </div>
+                    </section>
+
+                    <section id="tac-dung-phu" class="mb-4">
+                        <h3 class="h5 fw-bold mb-3">Tác dụng phụ</h3>
+                        <p>Chưa có thông tin về tác dụng phụ của sản phẩm.</p>
+                    </section>
+
+                    <section id="luu-y" class="mb-4">
+                        <div class="warning-box">
+                            <h3 class="h5 fw-bold mb-3">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Lưu ý
+                            </h3>
+                            <div class="vc_html_content" [innerHTML]="product.warnings"></div>
+                        </div>
+                    </section>
+
+                    <section id="bao-quan" class="mb-3">
+                        <h3 class="h5 fw-bold mb-3">Bảo quản</h3>
+                        <p>Nơi khô ráo, thoáng mát, tránh ánh nắng trực tiếp.</p>
+                    </section>
+                </div>
+
+                <!-- View More Button -->
+                <div class="vc_view_more_trigger text-center pt-3 pb-2" *ngIf="!isExpanded">
+                    <div class="vc_gradient_overlay"></div>
+                    <button class="btn border-0 bg-transparent fw-bold" (click)="toggleExpand()">
+                        <i class="bi bi-chevron-double-down me-1"></i> Xem thêm
+                    </button>
+                </div>
+
+                <div class="text-center pt-3 pb-2" *ngIf="isExpanded">
+                    <button class="btn border-0 bg-transparent text-dark fw-600" (click)="toggleExpand()">
+                        <i class="bi bi-chevron-double-up me-1"></i> Thu gọn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Full Width -->
+    <div class="alert alert-info border-0 rounded-4 d-flex align-items-center gap-3 mt-3 mb-0">
+        <div class="bg-primary rounded-pill p-1" style="width: 8px; height: 30px;"></div>
+        <div class="fw-500 small">Thực phẩm bảo vệ sức khoẻ, không phải là thuốc, không có tác dụng thay thế thuốc
+            chữa bệnh.</div>
+    </div>
+</div>

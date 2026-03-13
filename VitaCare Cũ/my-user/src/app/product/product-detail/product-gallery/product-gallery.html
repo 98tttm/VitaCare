@@ -1,0 +1,84 @@
+<div class="vc_pd_gallery_container" *ngIf="product">
+    <!-- Ảnh chính với nút mở rộng -->
+    <!-- Ảnh chính với nút mở rộng và điều hướng -->
+    <div class="vc_pd_image_view" (click)="openModal()">
+        <img src="assets/icon/chinhhang.png" class="official-badge" alt="Chính hãng"
+            *ngIf="allImages.length > 0 && selectedImage === allImages[0]">
+        <img [src]="selectedImage" [alt]="product.name" class="main-img">
+
+        <!-- Navigation Buttons (Hover Only) -->
+        <button class="gallery-nav-btn prev" (click)="prevImage($event)">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="gallery-nav-btn next" (click)="nextImage($event)">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+
+        <div class="vc_pd_zoom_btn">
+            <i class="bi bi-arrows-angle-expand"></i>
+        </div>
+    </div>
+
+    <!-- Danh sách ảnh nhỏ -->
+    <div class="vc_pd_thumbnails">
+        <div class="vc_pd_thumb_item" *ngFor="let img of visibleThumbnails; let i = index"
+            (click)="i === 4 && allImages.length > 5 ? openModal() : selectImage(img)"
+            [class.active]="selectedImage === img">
+            <img [src]="img" class="img-fluid rounded-2">
+            <!-- Overlay cho ảnh cuối cùng nếu nhiều hơn 5 -->
+            <div class="vc_pd_thumb_overlay" *ngIf="i === 4 && allImages.length > 5">
+                <span>Xem thêm <br> {{ allImages.length - 5 }} ảnh</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-secondary small mt-1 fst-italic" style="font-size: 13px;">
+        Mẫu mã sản phẩm có thể thay đổi theo lô hàng
+    </div>
+</div>
+
+<!-- Modal Xem Ảnh To (Long Châu Style) -->
+<div class="vc_pd_gallery_modal" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="vc_pd_modal_content" (click)="$event.stopPropagation()">
+        <!-- Header: Title & Close -->
+        <div class="vc_pd_modal_header">
+            <h5 class="vc_pd_modal_title">{{ product.name }}</h5>
+            <button class="vc_pd_modal_close" (click)="closeModal()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Body: Main Image & Navigation -->
+        <div class="vc_pd_modal_body">
+            <button class="nav-btn prev" (click)="prevImage($event)">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <div class="vc_pd_modal_img_wrapper">
+                <img [src]="allImages[modalActiveIndex]" class="modal-main-img">
+                <div class="img-zoom-hint">
+                    <i class="bi bi-search"></i>
+                </div>
+            </div>
+
+            <button class="nav-btn next" (click)="nextImage($event)">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
+            <!-- Image Count/Index -->
+            <div class="vc_pd_modal_counter">
+                {{ modalActiveIndex + 1 }} / {{ allImages.length }}
+            </div>
+        </div>
+
+        <!-- Footer: Thumbnails Slider -->
+        <div class="vc_pd_modal_footer">
+            <div class="vc_pd_modal_thumbs">
+                <div class="modal-thumb-item" *ngFor="let img of allImages; let i = index"
+                    [class.active]="i === modalActiveIndex" (click)="selectModalImage(i)">
+                    <img [src]="img">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

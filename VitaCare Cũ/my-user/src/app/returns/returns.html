@@ -1,0 +1,82 @@
+<!-- Returns Component - Quản lý đổi trả -->
+<div class="returns-wrapper">
+    <div class="returns-header">
+        <h2 class="returns-title">QUẢN LÝ ĐỔI TRẢ</h2>
+        <div class="search-box">
+            <img src="assets/icon/search.png" alt="Search" class="search-icon">
+            <input type="text" placeholder="Tìm kiếm đơn hàng của bạn" class="search-input">
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="returns-tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'processing'" (click)="setActiveTab('processing')">
+            Đang chờ xử lý
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'returning'" (click)="setActiveTab('returning')">
+            Đang trả hàng
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'completed'" (click)="setActiveTab('completed')">
+            Đã trả hàng/hoàn tiền
+        </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <span class="filter-label">Đã giao hàng</span>
+        <span class="filter-label">Ngày đặt</span>
+        <span class="filter-label">n sản phẩm (số lượng)</span>
+        <span class="filter-label">Mã đơn đặt hàng</span>
+    </div>
+
+    <!-- Returns List -->
+    <div class="returns-list">
+        <div class="return-card" *ngFor="let returnItem of filteredReturns">
+            <div class="return-header">
+                <span class="return-status">{{ returnItem.statusText }}</span>
+                <div class="return-meta">
+                    <span class="return-date">{{ returnItem.date }}</span>
+                    <span class="return-id">#{{ returnItem.orderId }}</span>
+                </div>
+            </div>
+
+            <div class="return-items">
+                <div class="return-item" *ngFor="let item of returnItem.items">
+                    <div class="item-image">
+                        <img [src]="item.image" [alt]="item.name" onerror="this.src='assets/icon/no-order.png'">
+                    </div>
+                    <div class="item-details">
+                        <h4 class="item-name">{{ item.name }}</h4>
+                        <p class="item-desc">{{ item.description }}</p>
+                        <p class="item-price">{{ item.price | number:'1.0-0' }} ₫/viên</p>
+                    </div>
+                    <div class="item-summary">
+                        <p class="item-quantity">Số lượng: {{ item.quantity }}</p>
+                        <p class="item-total">Giá tổng</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="return-footer">
+                <button class="btn-expand" (click)="toggleReturnDetails(returnItem.id)">
+                    Thu gọn
+                    <img src="assets/icon/arrowup_circle.png" alt="collapse" class="icon-sm">
+                </button>
+                <div class="return-total">
+                    <span class="total-label">Tổng số tiền:</span>
+                    <span class="total-amount">{{ returnItem.total | number:'1.0-0' }} ₫</span>
+                </div>
+                <button class="btn-cancel-return" *ngIf="activeTab === 'processing'"
+                    (click)="cancelReturn(returnItem.id)">
+                    Hủy yêu cầu
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="filteredReturns.length === 0">
+            <img src="assets/icon/no-order.png" alt="No returns" class="empty-icon">
+            <p class="empty-text">Không có yêu cầu đổi trả nào</p>
+        </div>
+    </div>
+</div>

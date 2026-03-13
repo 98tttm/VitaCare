@@ -1,0 +1,342 @@
+<header class="vc_header">
+  <!-- TOP STRIP -->
+  <div class="vc_top_strip">
+    <div class="vc_container vc_top_strip_inner">
+      <div class="vc_top_left">
+        <span class="vc_top_text">Tìm hiểu về VitaCare</span>
+        <a class="vc_top_link font-inter" href="#" (click)="onLearnMore($event)">Tìm hiểu ngay</a>
+      </div>
+
+      <div class="vc_top_right">
+        <span class="vc_top_text">Tư vấn ngay:</span>
+        <a class="vc_hotline font-inter" href="tel:18006928">1800 6928</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAIN BAR -->
+  <div class="vc_main_bar">
+    <div class="vc_container vc_main_inner">
+      <!-- Logo -->
+      <a class="vc_logo" href="#" (click)="goHome($event)">
+        <div class="vc_logo_top">
+          <div class="vc_logo_mark" aria-hidden="true">
+            <img class="vc_logo_img" src="/assets/images/logo/header_logo.png" alt="VitaCare logo">
+          </div>
+          <div class="vc_logo_name">VitaCare</div>
+        </div>
+        <div class="vc_logo_tagline">Chuẩn y khoa - Cho sức khỏe toàn diện</div>
+      </a>
+
+
+      <!-- Search Section (Centered keywords under input) -->
+      <div class="vc_search_section" (mouseleave)="onSearchMouseLeave()">
+        <div class="vc_search_wrap">
+          <!-- mascot (tuỳ chọn) -->
+          <img class="vc_mascot" src="/assets/images/mascot/1.png" alt="" (error)="hideMascot($event)" />
+
+          <div class="vc_search" style="width: 100%;">
+            <input type="text" class="vc_search_input" placeholder="Đổi trả trong 30 ngày" [(ngModel)]="search_value"
+              (keydown.enter)="onSearch()" (focus)="onSearchFocus()" (click)="onSearchFocus()" (input)="onSearchFocus()"
+              (blur)="onSearchBlur()" autocomplete="off" />
+
+            <!-- Long Chau Style Search Dropdown -->
+            <div class="vc_search_dropdown shadow-lg" *ngIf="isSearchFocused">
+
+              <!-- 1. Search Banner -->
+              <div class="vc_search_banner_wrap" *ngIf="searchBanner">
+                <img [src]="searchBanner" alt="Siêu deal hot" class="vc_search_banner">
+              </div>
+
+              <!-- 2. Recent Searches -->
+              <div class="vc_history_section" *ngIf="recentSearches.length > 0">
+                <div class="vc_history_header">
+                  <span class="vc_history_title">Lịch sử tìm kiếm</span>
+                  <span class="vc_clear_history" (mousedown)="clearRecentSearches()">Xóa tất cả</span>
+                </div>
+                <div class="vc_history_list">
+                  <div class="vc_history_item" *ngFor="let term of recentSearches"
+                    (mousedown)="selectRecentSearch(term)">
+                    <i class="bi bi-clock-history vc_history_icon"></i>
+                    <span class="vc_history_text">{{ term }}</span>
+                    <i class="bi bi-x vc_remove_history" (mousedown)="removeRecentSearch($event, term)"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Top Searches (Trending Keywords) -->
+              <div class="vc_trending_section">
+                <div class="vc_trending_header">Tra cứu hàng đầu</div>
+                <div class="vc_trending_list">
+                  <span class="vc_trending_pill" *ngFor="let kw of trendingKeywords"
+                    (mousedown)="selectRecentSearch(kw)">
+                    {{ kw }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- 4. Hot Deals Today -->
+              <div class="vc_hot_deals_section" *ngIf="hotDeals.length > 0">
+                <div class="vc_hot_deals_inner">
+                  <div class="vc_hot_deals_header">
+                    <span class="vc_fire_icon_wrap">
+                      <i class="bi bi-fire text-danger"></i>
+                    </span>
+                    Ưu đãi hot hôm nay
+                  </div>
+                  <div class="vc_hot_product_list">
+                    <a class="vc_hot_product_card" *ngFor="let p of hotDeals"
+                      [routerLink]="['/product', p.slug || p.id]" (click)="hoveredCategory = null">
+                      <div class="vc_hot_p_img">
+                        <img [src]="p.image" [alt]="p.name" (error)="p.image='assets/images/placeholder.png'">
+                        <span class="vc_hot_discount_badge" *ngIf="p.discountPercent > 0">
+                          -{{ p.discountPercent }}%
+                        </span>
+                      </div>
+                      <div class="vc_hot_p_info">
+                        <div class="vc_hot_p_name">{{ p.name }}</div>
+                        <div class="vc_hot_price_wrap">
+                          <div class="vc_hot_p_price">
+                            <strong>{{ p.price | number:'1.0-0' }}đ</strong>
+                            <small> / {{ p.unit }}</small>
+                          </div>
+                          <div class="vc_hot_p_old_price" *ngIf="p.oldPrice > p.price">
+                            {{ p.oldPrice | number:'1.0-0' }}đ
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- SEARCH KEYWORDS (Moved here to align with search bar) -->
+        <div class="vc_nav_keywords">
+          <a class="vc_nav_item" href="#" *ngFor="let item of main_nav" (click)="onMainNavClick($event, item)">
+            {{ item }}
+          </a>
+        </div>
+      </div>
+
+      <!-- Right actions -->
+      <div class="vc_actions">
+        <a class="vc_action" href="#" (click)="onLogin($event)">
+          <span class="vc_action_icon" aria-hidden="true">
+            <i class="bi bi-person-fill"></i>
+          </span>
+          <span class="vc_action_text">Đăng nhập</span>
+        </a>
+
+        <a class="vc_action vc_action_cart" href="#" (click)="onCart($event)">
+          <span class="vc_action_icon" aria-hidden="true">
+            <i class="bi bi-basket2-fill"></i>
+          </span>
+          <span class="vc_action_text">Giỏ thuốc</span>
+          <span class="vc_badge" *ngIf="cart_count > 0">{{ cart_count }}</span>
+        </a>
+
+        <a class="vc_action" href="#" (click)="onNotify($event)" aria-label="Thông báo">
+          <span class="vc_action_icon" aria-hidden="true">
+            <i class="bi bi-bell-fill"></i>
+          </span>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CATEGORY PILLS (nền trắng) -->
+  <div class="vc_categories">
+    <div class="vc_container vc_categories_inner">
+      <div class="vc_cat_item" *ngFor="let c of category_pills" (mouseenter)="onMouseEnter(c)"
+        (mouseleave)="onMouseLeave()">
+        <button class="vc_pill" type="button" [class.active]="hoveredCategory === c" (click)="onCategoryClick(c)">
+          {{ c }} <i class="bi bi-chevron-down ms-1" style="font-size: 10px;" *ngIf="getMenuType(c) !== 'none'"></i>
+        </button>
+
+        <!-- STANDALONE SIMPLE DROPDOWN (Local to Pill) -->
+        <div class="vc_simple_dropdown shadow-lg" *ngIf="hoveredCategory === c && getMenuType(c) === 'simple'"
+          (mouseenter)="onMenuMouseEnter()" (mouseleave)="onMouseLeave()">
+          <a class="vc_simple_item" *ngFor="let item of getSubCategoriesData(c)" (click)="onSubCategoryClick(item)">
+            <div class="vc_simple_icon">
+              <!-- Handle both image icons and font icons -->
+              <img *ngIf="item.icon && item.icon.includes('/')" [src]="item.icon" [alt]="item.name"
+                style="width: 24px; height: 24px; object-fit: contain;"
+                (error)="item.icon = 'assets/icon/medical_16660084.png'">
+              <i *ngIf="!item.icon || !item.icon.includes('/')" [class]="item.icon || 'bi bi-capsule'"></i>
+            </div>
+            <div class="vc_simple_text">{{ item.name }}</div>
+            <i class="bi bi-chevron-right ms-auto opacity-50"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="vc_megamenu_overlay" *ngIf="hoveredCategory && getMenuType(hoveredCategory) === 'mega'"
+      (mouseenter)="onMenuMouseEnter()" (mouseleave)="onOverlayMouseLeave()">
+      <div class="vc_megamenu vc_container">
+        <div class="vc_megamenu_inner shadow-lg" (mouseleave)="onMouseLeave()">
+          <div class="vc_megamenu_left">
+            <a class="vc_megamenu_sub_item" *ngFor="let sub of getSubCategoriesData(hoveredCategory)"
+              [class.active]="activeSubCategory === sub.name" (mouseenter)="onSubMouseEnter(sub.name)"
+              [routerLink]="getCategoryRoute(sub.slug)" (mousedown)="onSubCategoryClick(sub)"
+              (click)="hoveredCategory = null"
+              style="text-decoration: none; cursor: pointer; display: flex; align-items: center;">
+              <span class="vc_sub_icon_box">
+                <img [src]="sub.icon" [alt]="sub.name" (error)="sub.icon = 'assets/icon/medical_16660084.png'">
+              </span>
+              <span class="vc_sub_text">{{ sub.name }}</span>
+              <i class="bi bi-chevron-right ms-auto"></i>
+            </a>
+          </div>
+
+          <!-- Right: Content Panel (NOW INSIDE vc_megamenu_inner) -->
+          <div class="vc_megamenu_right">
+            <!-- 1. Default Grid + Best Sellers (STACKED LAYOUT) -->
+            <ng-container *ngIf="activeSubCategory && getSubType(hoveredCategory, activeSubCategory) === 'default'">
+              <div class="vc_stacked_content">
+
+                <!-- 1. GROUPS GRID (TOP - FULL WIDTH) -->
+                <div class="vc_leaf_grid" *ngIf="getLeafItems(hoveredCategory, activeSubCategory).length > 0">
+                  <ng-container *ngFor="let item of getLeafItems(hoveredCategory, activeSubCategory); let i = index">
+                    <a class="vc_leaf_card"
+                      *ngIf="i < (getLeafItems(hoveredCategory, activeSubCategory).length > 6 ? 5 : 6)"
+                      [routerLink]="getCategoryRoute(item.slug)" (click)="hoveredCategory = null"
+                      style="text-decoration: none; cursor: pointer;">
+                      <div class="vc_leaf_img_box">
+                        <img [src]="item.image" [alt]="item.name"
+                          (error)="item.image = '/assets/images/placeholder.png'">
+                      </div>
+                      <div class="vc_leaf_name">{{ item.name }}</div>
+                    </a>
+                  </ng-container>
+
+                  <a class="vc_leaf_card vc_leaf_card_more"
+                    *ngIf="getLeafItems(hoveredCategory, activeSubCategory).length > 6"
+                    [routerLink]="getCategoryRoute(getSubCategorySlug(hoveredCategory, activeSubCategory!))"
+                    (click)="hoveredCategory = null" style="text-decoration: none; cursor: pointer;">
+                    <div class="vc_leaf_name">Xem thêm</div>
+                  </a>
+                </div>
+
+                <!-- 2. BEST SELLERS SECTION -->
+                <div class="vc_best_sellers_section">
+                  <div class="vc_section_header">
+                    <span class="vc_section_title">Bán chạy nhất</span>
+                    <a *ngIf="getBestSellers(hoveredCategory, activeSubCategory).length > 0"
+                      [routerLink]="getCategoryRoute(getSubCategorySlug(hoveredCategory, activeSubCategory!))"
+                      (click)="hoveredCategory = null" class="vc_view_all_link">
+                      Xem tất cả <i class="bi bi-chevron-right"></i>
+                    </a>
+                  </div>
+
+                  <!-- Loading State -->
+                  <div *ngIf="isSubCategoryLoading(hoveredCategory, activeSubCategory)" class="vc_bs_loading">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <span class="ms-2">Đang tải sản phẩm...</span>
+                  </div>
+
+                  <!-- Empty State -->
+                  <div
+                    *ngIf="!isSubCategoryLoading(hoveredCategory, activeSubCategory) && getBestSellers(hoveredCategory, activeSubCategory).length === 0"
+                    class="vc_bs_empty">
+                    Chưa có sản phẩm bán chạy cho mục này.
+                  </div>
+
+                  <!-- Product List -->
+                  <div class="vc_product_horizontal_list"
+                    *ngIf="getBestSellers(hoveredCategory, activeSubCategory).length > 0">
+                    <a class="vc_product_card_mini text-decoration-none"
+                      *ngFor="let p of getBestSellers(hoveredCategory, activeSubCategory) | slice:0:5"
+                      [routerLink]="['/product', getProductSlug(p)]" (click)="onProductClick(p)">
+                      <!-- 1. Discount Badge -->
+                      <div class="vc_p_badge" *ngIf="p.discountPercent > 0">-{{p.discountPercent}}%</div>
+
+                      <!-- 2. Product Image -->
+                      <div class="vc_p_img_mini">
+                        <img [src]="p.image" [alt]="p.name" (error)="p.image='assets/images/placeholder.png'">
+                      </div>
+
+                      <!-- 3. Product Info -->
+                      <div class="vc_p_info_mini">
+                        <div class="vc_p_name_mini" [title]="p.name">{{ p.name }}</div>
+                        <div class="vc_p_price_row">
+                          <span class="vc_p_price">{{ p.price | number:'1.0-0' }}đ / Hộp</span>
+                        </div>
+                        <div class="vc_p_old_price" *ngIf="p.discountAmount > 0">
+                          {{ p.oldPrice | number:'1.0-0' }}đ
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                </div> <!-- Close vc_best_sellers_section -->
+              </div> <!-- Close vc_stacked_content -->
+            </ng-container>
+
+            <!-- 2. Medicine Lookup Layout -->
+            <ng-container
+              *ngIf="activeSubCategory && getSubType(hoveredCategory, activeSubCategory) === 'medicine-lookup'">
+              <div class="vc_leaf_grid" *ngIf="getLeafItems(hoveredCategory, activeSubCategory).length > 0">
+                <div class="vc_leaf_card" *ngFor="let item of getLeafItems(hoveredCategory, activeSubCategory)"
+                  (click)="onSubCategoryClick(item)">
+                  <div class="vc_leaf_img_box">
+                    <img [src]="item.image" [alt]="item.name" (error)="item.image = '/assets/images/placeholder.png'">
+                  </div>
+                  <div class="vc_leaf_name">{{ item.name }}</div>
+                </div>
+              </div>
+              <div class="vc_popular_list mt-3">
+                <div class="vc_popular_item" *ngFor="let item of getPopularItems(hoveredCategory, activeSubCategory)">
+                  <a href="#" (click)="$event.preventDefault()">{{ item }}</a>
+                </div>
+              </div>
+              <div class="vc_alphabet_section mt-3">
+                <div class="vc_alphabet_title">Xem theo chữ cái</div>
+                <div class="vc_alphabet_list">
+                  <a href="#" class="vc_alpha_letter" *ngFor="let letter of alphabet"
+                    (click)="$event.preventDefault()">{{
+                    letter }}</a>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- 3. Substance/Sub-type Lookup -->
+            <ng-container
+              *ngIf="activeSubCategory && getSubType(hoveredCategory, activeSubCategory) === 'substance-lookup'">
+              <div class="vc_substance_header">
+                <span class="vc_substance_title">{{ getSectionTitle(hoveredCategory, activeSubCategory) }}</span>
+                <a href="#" class="vc_view_all">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="vc_popular_list">
+                <div class="vc_popular_item" *ngFor="let item of getPopularItems(hoveredCategory, activeSubCategory)">
+                  <a href="#" (click)="$event.preventDefault()">{{ item }}</a>
+                </div>
+              </div>
+              <div class="vc_alphabet_section mt-3">
+                <div class="vc_alphabet_title">Xem theo chữ cái</div>
+                <div class="vc_alphabet_list">
+                  <a href="#" class="vc_alpha_letter" *ngFor="let letter of alphabet"
+                    (click)="$event.preventDefault()">{{
+                    letter }}</a>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Empty state -->
+            <div class="vc_empty_right" *ngIf="!activeSubCategory">
+              <div class="text-muted">Đang cập nhật dữ liệu cho mục này...</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</header>

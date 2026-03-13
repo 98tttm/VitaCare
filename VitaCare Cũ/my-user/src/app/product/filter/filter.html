@@ -1,0 +1,204 @@
+<div class="filter-card shadow-sm">
+    <div class="filter-header d-flex align-items-center gap-2">
+        <i class="bi bi-filter text-primary fs-5"></i>
+        <h6 class="fw-bold mb-0 text-primary">Bộ lọc nâng cao</h6>
+    </div>
+
+    <div class="filter-body p-3">
+        <!-- 1. Audience (Đối tượng sử dụng) -->
+        <div class="filter-section mb-2 pb-2 border-bottom">
+            <div class="filter-group-header" (click)="toggleCollapse('audience')">
+                Đối tượng sử dụng <i class="bi" [class.bi-chevron-up]="!sectionCollapsed.audience"
+                    [class.bi-chevron-down]="sectionCollapsed.audience"></i>
+            </div>
+
+            <div class="collapse-content" [class.expanded]="!sectionCollapsed.audience">
+                <div class="search-box-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="filter-search-input" placeholder="Tìm theo tên"
+                        [(ngModel)]="searchQueries.audience">
+                </div>
+
+                <div class="filter-options">
+                    <ng-container *ngFor="let item of getFilteredList('audience', audienceList); let i = index">
+                        <div class="form-check mb-1" *ngIf="searchQueries.audience || i < limitAudience">
+                            <input class="form-check-input" type="checkbox" [id]="'aud-'+i"
+                                [checked]="activeFilters.audience?.includes(item) || (item === 'Tất cả' && (!activeFilters.audience || activeFilters.audience.length === 0))"
+                                (change)="onFilterChange('audience', item, $event)">
+                            <label class="form-check-label" [for]="'aud-'+i">{{ item }}</label>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div class="view-more-link" (click)="toggleLimit('audience')">
+                    <i class="bi" [class.bi-chevron-double-down]="limitAudience < audienceList.length"
+                        [class.bi-chevron-double-up]="limitAudience >= audienceList.length"></i>
+                    {{ limitAudience < audienceList.length ? 'Xem thêm' : 'Thu gọn' }} </div>
+                </div>
+            </div>
+
+            <!-- 2. Price Range (Giá bán) - Buttons Style -->
+            <div class="filter-section mb-2 pb-2 border-bottom">
+                <div class="filter-group-header" (click)="toggleCollapse('price')">
+                    Giá bán <i class="bi" [class.bi-chevron-up]="!sectionCollapsed.price"
+                        [class.bi-chevron-down]="sectionCollapsed.price"></i>
+                </div>
+                <div class="collapse-content" [class.expanded]="!sectionCollapsed.price">
+                    <button class="price-btn" *ngFor="let range of priceRanges"
+                        [class.active]="activeFilters.minPrice == range.min && activeFilters.maxPrice == range.max"
+                        (click)="onPriceChangeBtn(range)">
+                        {{ range.label }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Flavor/Scent (Mùi vị/ Mùi hương) -->
+            <div class="filter-section mb-2 pb-2 border-bottom">
+                <div class="filter-group-header" (click)="toggleCollapse('flavor')">
+                    Mùi vị/ Mùi hương <i class="bi" [class.bi-chevron-up]="!sectionCollapsed.flavor"
+                        [class.bi-chevron-down]="sectionCollapsed.flavor"></i>
+                </div>
+                <div class="collapse-content" [class.expanded]="!sectionCollapsed.flavor">
+                    <div class="search-box-wrapper">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="filter-search-input" placeholder="Tìm theo tên"
+                            [(ngModel)]="searchQueries.flavor">
+                    </div>
+                    <div class="filter-options">
+                        <ng-container *ngFor="let item of getFilteredList('flavor', flavorList); let i = index">
+                            <div class="form-check mb-1" *ngIf="searchQueries.flavor || i < limitFlavor">
+                                <input class="form-check-input" type="checkbox" [id]="'flavor-'+i"
+                                    [checked]="activeFilters.flavor?.includes(item) || (item === 'Tất cả' && (!activeFilters.flavor || activeFilters.flavor.length === 0))"
+                                    (change)="onFilterChange('flavor', item, $event)">
+                                <label class="form-check-label" [for]="'flavor-'+i">{{ item }}</label>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="view-more-link" (click)="toggleLimit('flavor')" *ngIf="!searchQueries.flavor">
+                        <i class="bi" [class.bi-chevron-double-down]="limitFlavor < flavorList.length"
+                            [class.bi-chevron-double-up]="limitFlavor >= flavorList.length"></i>
+                        {{ limitFlavor < flavorList.length ? 'Xem thêm' : 'Thu gọn' }} </div>
+                    </div>
+                </div>
+
+                <!-- 4. Collapsed Placeholders -->
+                <!-- 4. Country (Nước sản xuất) -->
+                <div class="filter-section mb-2 pb-2 border-bottom">
+                    <div class="filter-group-header" (click)="toggleCollapse('country')">
+                        Nước sản xuất <i class="bi" [class.bi-chevron-up]="!sectionCollapsed.country"
+                            [class.bi-chevron-down]="sectionCollapsed.country"></i>
+                    </div>
+                    <div class="collapse-content" [class.expanded]="!sectionCollapsed.country">
+                        <div class="search-box-wrapper">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" class="filter-search-input" placeholder="Tìm theo tên"
+                                [(ngModel)]="searchQueries.country">
+                        </div>
+                        <div class="filter-options">
+                            <ng-container *ngFor="let item of getFilteredList('country', countryList); let i = index">
+                                <div class="form-check mb-1" *ngIf="searchQueries.country || i < limitCountry">
+                                    <input class="form-check-input" type="checkbox" [id]="'country-'+i"
+                                        [checked]="activeFilters.origin?.includes(item) || (item === 'Tất cả' && (!activeFilters.origin || activeFilters.origin.length === 0))"
+                                        (change)="onFilterChange('origin', item, $event)">
+                                    <label class="form-check-label" [for]="'country-'+i">{{ item }}</label>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div class="view-more-link" (click)="toggleLimit('country')" *ngIf="!searchQueries.country">
+                            <i class="bi" [class.bi-chevron-double-down]="limitCountry < countryList.length"
+                                [class.bi-chevron-double-up]="limitCountry >= countryList.length"></i>
+                            {{ limitCountry < countryList.length ? 'Xem thêm' : 'Thu gọn' }} </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Indication (Chỉ định) -->
+                    <div class="filter-section mb-2 pb-2 border-bottom">
+                        <div class="filter-group-header" (click)="toggleCollapse('indication')">
+                            Chỉ định <i class="bi" [class.bi-chevron-up]="!sectionCollapsed.indication"
+                                [class.bi-chevron-down]="sectionCollapsed.indication"></i>
+                        </div>
+                        <div class="collapse-content" [class.expanded]="!sectionCollapsed.indication">
+                            <div class="search-box-wrapper">
+                                <i class="bi bi-search search-icon"></i>
+                                <input type="text" class="filter-search-input" placeholder="Tìm theo tên"
+                                    [(ngModel)]="searchQueries.indication">
+                            </div>
+                            <div class="filter-options">
+                                <ng-container
+                                    *ngFor="let item of getFilteredList('indication', indicationList); let i = index">
+                                    <div class="form-check mb-2"
+                                        *ngIf="searchQueries.indication || i < limitIndication">
+                                        <input class="form-check-input" type="checkbox" [id]="'ind-'+i"
+                                            [checked]="activeFilters.indication?.includes(item) || (item === 'Tất cả' && (!activeFilters.indication || activeFilters.indication.length === 0))"
+                                            (change)="onFilterChange('indication', item, $event)">
+                                        <label class="form-check-label" [for]="'ind-'+i">{{ item }}</label>
+                                    </div>
+                                </ng-container>
+                            </div>
+                            <div class="view-more-link" (click)="toggleLimit('indication')"
+                                *ngIf="!searchQueries.indication">
+                                <i class="bi" [class.bi-chevron-double-down]="limitIndication < indicationList.length"
+                                    [class.bi-chevron-double-up]="limitIndication >= indicationList.length"></i>
+                                {{ limitIndication < indicationList.length ? 'Xem thêm' : 'Thu gọn' }} </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Brands (Thương hiệu) -->
+                        <!-- 6. Brands (Thương hiệu) -->
+                        <div class="filter-section mb-2 pb-2 border-bottom">
+                            <div class="filter-group-header" (click)="toggleCollapse('brand')">
+                                Thương hiệu <i class="bi" [class.bi-chevron-up]="!sectionCollapsed.brand"
+                                    [class.bi-chevron-down]="sectionCollapsed.brand"></i>
+                            </div>
+                            <div class="collapse-content" [class.expanded]="!sectionCollapsed.brand">
+                                <div class="search-box-wrapper">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" class="filter-search-input" placeholder="Tìm theo tên"
+                                        [(ngModel)]="searchQueries.brand">
+                                </div>
+                                <div class="filter-options">
+                                    <ng-container
+                                        *ngFor="let item of getFilteredList('brand', brandList); let i = index">
+                                        <div class="form-check mb-1" *ngIf="searchQueries.brand || i < limitBrand">
+                                            <input class="form-check-input" type="checkbox" [id]="'brand-'+i"
+                                                [checked]="activeFilters.brand === item || (item === 'Tất cả' && !activeFilters.brand)"
+                                                (change)="onBrandChange(item, $event)">
+                                            <label class="form-check-label" [for]="'brand-'+i">{{ item
+                                                }}</label>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div class="view-more-link" (click)="toggleLimit('brand')" *ngIf="!searchQueries.brand">
+                                    <i class="bi" [class.bi-chevron-double-down]="limitBrand < brandList.length"
+                                        [class.bi-chevron-double-up]="limitBrand >= brandList.length"></i>
+                                    {{ limitBrand < brandList.length ? 'Xem thêm' : 'Thu gọn' }} </div>
+                                </div>
+                            </div>
+
+                            <!-- 7. Brand Origin (Xuất xứ thương hiệu - Same as Country) -->
+                            <div class="filter-section mb-2">
+                                <div class="filter-group-header" (click)="toggleCollapse('origin')">
+                                    Xuất xứ thương hiệu <i class="bi" [class.bi-chevron-up]="!sectionCollapsed.origin"
+                                        [class.bi-chevron-down]="sectionCollapsed.origin"></i>
+                                </div>
+                                <div class="collapse-content" [class.expanded]="!sectionCollapsed.origin">
+                                    <div class="filter-options">
+                                        <ng-container *ngFor="let item of countryList; let i = index">
+                                            <div class="form-check mb-1" *ngIf="i < limitCountry">
+                                                <input class="form-check-input" type="checkbox" [id]="'origin-'+i"
+                                                    [checked]="activeFilters.brandOrigin?.includes(item) || (item === 'Tất cả' && (!activeFilters.brandOrigin || activeFilters.brandOrigin.length === 0))"
+                                                    (change)="onFilterChange('brandOrigin', item, $event)">
+                                                <label class="form-check-label" [for]="'origin-'+i">{{ item
+                                                    }}</label>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="view-more-link" (click)="toggleLimit('country')">
+                                        <i class="bi" [class.bi-chevron-double-down]="limitCountry < countryList.length"
+                                            [class.bi-chevron-double-up]="limitCountry >= countryList.length"></i>
+                                        {{ limitCountry < countryList.length ? 'Xem thêm' : 'Thu gọn' }} </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>

@@ -1,0 +1,94 @@
+<!-- Orders Component - Đơn hàng của tôi -->
+<div class="orders-wrapper">
+    <div class="orders-header">
+        <h2 class="orders-title">ĐƠN HÀNG CỦA TÔI</h2>
+        <div class="search-box">
+            <img src="assets/icon/search.png" alt="Search" class="search-icon">
+            <input type="text" placeholder="Tìm kiếm đơn hàng của bạn" [(ngModel)]="searchKeyword" class="search-input">
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="orders-tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'all'" (click)="setActiveTab('all')">
+            Tất cả
+            <span class="tab-badge" *ngIf="getOrderCount('all') > 0">{{ getOrderCount('all') }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="setActiveTab('pending')">
+            Chờ xác nhận
+            <span class="tab-badge" *ngIf="getOrderCount('pending') > 0">{{ getOrderCount('pending') }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'shipping'" (click)="setActiveTab('shipping')">
+            Chờ giao hàng
+            <span class="tab-badge" *ngIf="getOrderCount('shipping') > 0">{{ getOrderCount('shipping') }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'delivered'" (click)="setActiveTab('delivered')">
+            Đã giao hàng
+            <span class="tab-badge" *ngIf="getOrderCount('delivered') > 0">{{ getOrderCount('delivered') }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'cancelled'" (click)="setActiveTab('cancelled')">
+            Đã hủy
+            <span class="tab-badge" *ngIf="getOrderCount('cancelled') > 0">{{ getOrderCount('cancelled') }}</span>
+        </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <span class="filter-label">Trạng thái đơn hàng</span>
+        <span class="filter-label">Ngày đặt</span>
+        <span class="filter-label">n sản phẩm (số lượng)</span>
+        <span class="filter-label">Mã đơn đặt hàng</span>
+    </div>
+
+    <!-- Orders List -->
+    <div class="orders-list">
+        <div class="order-card" *ngFor="let order of filteredOrders">
+            <div class="order-header">
+                <div class="order-info">
+                    <span class="order-status">{{ order.statusText }}</span>
+                </div>
+                <div class="order-meta">
+                    <span class="order-date">{{ order.date }}</span>
+                    <span class="order-id">#{{ order.id }}</span>
+                </div>
+            </div>
+
+            <div class="order-items">
+                <div class="order-item" *ngFor="let item of order.items">
+                    <div class="item-image">
+                        <img [src]="item.image" [alt]="item.name" onerror="this.src='assets/icon/no-order.png'">
+                    </div>
+                    <div class="item-details">
+                        <h4 class="item-name">{{ item.name }}</h4>
+                        <p class="item-desc">{{ item.description }}</p>
+                        <p class="item-price">{{ item.price | number:'1.0-0' }} ₫/viên</p>
+                    </div>
+                    <div class="item-summary">
+                        <p class="item-quantity">Số lượng: {{ item.quantity }}</p>
+                        <p class="item-total">Giá tổng</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-footer">
+                <button class="btn-expand" (click)="toggleOrderDetails(order.id)">
+                    Thu gọn
+                    <img src="assets/icon/arrowup_circle.png" alt="collapse" class="icon-sm">
+                </button>
+                <div class="order-total">
+                    <span class="total-label">Tổng số tiền:</span>
+                    <span class="total-amount">{{ order.total | number:'1.0-0' }} ₫</span>
+                </div>
+                <button class="btn-cancel" *ngIf="order.status === 'pending'" (click)="cancelOrder(order.id)">
+                    Hủy đơn
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="filteredOrders.length === 0">
+            <img src="assets/icon/no-order.png" alt="No orders" class="empty-icon">
+            <p class="empty-text">Không có đơn hàng nào</p>
+        </div>
+    </div>
+</div>

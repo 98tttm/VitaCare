@@ -1,0 +1,149 @@
+<!-- ===== PRODUCT LIST HEADER ===== -->
+<div class="product-header">
+    <div class="header-row">
+        <h5 class="title">Danh sách sản phẩm</h5>
+
+        <div class="sort-area">
+            <span class="sort-label d-none d-sm-inline">Sắp xếp theo:</span>
+
+            <button class="sort-btn" [class.active]="activeSort === 'best_seller'" (click)="onSort('best_seller')">
+                Bán chạy
+            </button>
+
+            <div class="price-wrapper" (mouseenter)="showPriceSortDropdown = true"
+                (mouseleave)="showPriceSortDropdown = false">
+                <button class="sort-btn" [class.active]="activeSort === 'price_asc' || activeSort === 'price_desc'">
+                    <ng-container [ngSwitch]="activeSort">
+                        <span *ngSwitchCase="'price_asc'">Giá thấp đến cao</span>
+                        <span *ngSwitchCase="'price_desc'">Giá cao đến thấp</span>
+                        <span *ngSwitchDefault>Giá bán</span>
+                    </ng-container>
+                    <i class="bi bi-chevron-down ms-1"></i>
+                </button>
+
+                <div class="dropdown-box" *ngIf="showPriceSortDropdown">
+                    <button (click)="onSort('price_asc')" [class.active]="activeSort === 'price_asc'">Giá thấp đến
+                        cao</button>
+                    <button (click)="onSort('price_desc')" [class.active]="activeSort === 'price_desc'">Giá cao đến
+                        thấp</button>
+                </div>
+            </div>
+
+            <!-- View Switcher -->
+            <div class="layout-switch">
+                <button class="switch-btn" [class.active]="viewMode === 'grid'" (click)="setViewMode('grid')">
+                    <img src="assets/icon/category.png" alt="Grid" width="18">
+                </button>
+                <button class="switch-btn" [class.active]="viewMode === 'list'" (click)="setViewMode('list')">
+                    <img src="assets/icon/options-lines.png" alt="List" width="18">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="note">
+        Lưu ý: Thuốc kê đơn và một số sản phẩm sẽ cần tư vấn từ dược sĩ
+    </div>
+
+    <!-- Active Filters Chips -->
+    <div class="active-filters" *ngIf="activeFilterTags.length > 0">
+        <span class="filter-count">Lọc theo ({{ activeFilterTags.length }})</span>
+
+        <div class="filter-chip" *ngFor="let tag of activeFilterTags">
+            {{ tag.label }}
+            <span class="close-icon" (click)="onRemoveFilter(tag)">&times;</span>
+        </div>
+
+        <button class="clear-all-btn" (click)="onClearAll()">Xóa tất cả</button>
+    </div>
+</div>
+
+
+<!-- ===== PRODUCT GRID/LIST ===== -->
+<div class="product-container" [class.list-mode]="viewMode === 'list'">
+
+    <div class="product-card" *ngFor="let product of products; trackBy: trackByProduct"
+        [class.list-item]="viewMode === 'list'">
+
+        <!-- Discount - Only show if > 0 and < 100 -->
+        <div class="discount-badge"
+            *ngIf="product.discount > 0 && product.price > 0 && getDiscountPercentage(product.price, product.discount) > 0 && getDiscountPercentage(product.price, product.discount) < 100">
+            -{{ getDiscountPercentage(product.price, product.discount) }}%
+        </div>
+
+        <!-- IMAGE -->
+        <a class="product-image" [routerLink]="['/product', getProductSlug(product)]" (click)="handleItemClick(product)"
+            [class.list-img]="viewMode === 'list'">
+            <img [src]="product.image" [alt]="product.name" (error)="handleImageError($event)">
+        </a>
+
+        <!-- CONTENT -->
+        <div class="product-content">
+
+            <a class="product-name" [title]="product.name" [routerLink]="['/product', getProductSlug(product)]"
+                (click)="handleItemClick(product)"
+                style="text-decoration: none; color: inherit; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; height: 42px; line-height: 21px;">
+                {{ product.name }}
+            </a>
+
+            <div class="price-section">
+                <div class="current-price">
+                    {{ getDiscountedPrice(product.price, product.discount) | number }}đ
+                    <span *ngIf="product.unit && !isNumber(product.unit)">/ {{ product.unit }}</span>
+                    <span *ngIf="!product.unit || isNumber(product.unit)">/ Hộp</span>
+                </div>
+
+                <div class="old-price" *ngIf="product.discount > 0 && product.price > product.discount">
+                    {{ product.price | number }}đ
+                </div>
+
+                <div class="unit-badge" *ngIf="product.unit && !isNumber(product.unit)">
+                    {{ product.unit }}
+                </div>
+                <div class="unit-badge" *ngIf="!product.unit || isNumber(product.unit)">
+                    Hộp
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-cart">Thêm vào giỏ</button>
+                <button class="btn-buy" [routerLink]="['/product', getProductSlug(product)]"
+                    (click)="handleItemClick(product)">Mua
+                    ngay</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- Initial Loader (When loading and no products yet) -->
+<div class="text-center py-5" *ngIf="isLoading && products.length === 0">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted">Đang tìm kiếm sản phẩm...</p>
+</div>
+
+<!-- Empty State (No loading, no products) -->
+<div class="no-products" *ngIf="products.length === 0 && !isLoading">
+    <p>Không tìm thấy sản phẩm nào phù hợp với bộ lọc.</p>
+    <button class="btn btn-outline-primary btn-sm" (click)="onClearAll()">Xóa bộ lọc</button>
+</div>
+
+
+<!-- ===== LOAD MORE ===== -->
+<div class="load-more" *ngIf="products.length < total" (click)="!isLoading && onLoadMore()">
+
+    <span *ngIf="!isLoading">
+        <i class="bi bi-chevron-double-down"></i>
+        Xem thêm {{ total - products.length }} sản phẩm
+    </span>
+
+    <span *ngIf="isLoading">
+        <span class="spinner-border spinner-border-sm"></span>
+        Đang tải...
+    </span>
+</div>

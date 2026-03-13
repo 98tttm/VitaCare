@@ -1,0 +1,41 @@
+<ng-container *ngIf="subCategories && subCategories.length > 0">
+
+    <!-- SLIDER LAYOUT (Level 1) -->
+    <div class="slider-wrapper mb-1" *ngIf="layoutMode === 'slider'">
+        <!-- Left Arrow Button -->
+        <button class="nav-btn prev-btn shadow-sm" (click)='scrollLeft()' *ngIf="showPrev">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div class="slider-container d-flex gap-2" #sliderContainer (scroll)="checkScroll()">
+            <div class="cat-pill" *ngFor="let sub of subCategories" (click)="onSelect(sub)">
+                <div class="pill-icon">
+                    <img [src]="sub.icon || 'assets/icon/default.png'" alt="{{ sub.name }}"
+                        onerror="this.src='assets/icon/medical_16660084.png'">
+                </div>
+                <div class="pill-name">{{ sub.name }}</div>
+            </div>
+        </div>
+
+        <!-- Right Arrow Button -->
+        <button class="nav-btn next-btn shadow-sm" (click)='scrollRight()' *ngIf="showNext">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- GRID LAYOUT (Level 2) -->
+    <div class="grid-wrapper" *ngIf="layoutMode === 'grid'">
+        <div class="grid-card" *ngFor="let sub of subCategories" (click)="onSelect(sub)">
+            <div class="card-icon">
+                <img [src]="sub.icon || 'assets/icon/default.png'" alt="{{ sub.name }}"
+                    onerror="this.src='assets/icon/medical_16660084.png'">
+            </div>
+            <div class="card-info">
+                <div class="card-title">{{ sub.name }}</div>
+                <div class="card-count" *ngIf="sub.productCount !== undefined">{{ sub.productCount }} sản phẩm</div>
+                <div class="card-count" *ngIf="sub.productCount === undefined">Xem sản phẩm</div>
+            </div>
+        </div>
+    </div>
+
+</ng-container>

@@ -1,0 +1,472 @@
+/* =========================================
+   DISEASE LOOKUP PAGE - LONG CHAU STYLE
+   ========================================= */
+
+.vc_disease_lookup_page {
+    background-color: #E5EEF8;
+    /*Nền xanh nhạt*/
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Breadcrumb Style */
+.breadcrumb .breadcrumb-item.active {
+    color: #00589f !important;
+    font-weight: 700;
+}
+
+.vc_page_title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a202c;
+    margin-bottom: 24px;
+}
+
+.vc_body_section_header {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #00589f;
+    /* Màu xanh Vitacare */
+    margin-top: 20px;
+    /* Nhích xuống để không dính breadcrumb */
+}
+
+.vc_body_section_header i {
+    color: #00589f !important;
+}
+
+.vc_body_title {
+    font-size: 18px;
+    color: #00589f;
+    /* Đồng bộ màu xanh */
+}
+
+/* ---------------- BODY MAP CARD ---------------- */
+.vc_lookup_inner {
+    display: flex;
+    gap: 0;
+    min-height: auto;
+    border-radius: 16px;
+    padding: 20px 0 0 0 !important;
+    /* Nén gọn lại theo yêu cầu */
+    overflow: hidden;
+}
+
+/* Visualization */
+.vc_lookup_visual {
+    flex: 0 0 30%;
+    border-right: 1px solid #edf2f7;
+    padding: 0 0 20px 20px;
+    /* Bỏ padding phải để dính sát sidebar */
+    margin-top: 0;
+    /* Hiện đầy đủ đầu ảnh */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vc_body_image_container {
+    height: 460px;
+    /* Phóng to ảnh lên thêm 1 xíu nữa theo yêu cầu */
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    /* Đẩy ảnh sang phải để dính sát sidebar */
+    width: 100%;
+}
+
+.vc_body_full_img {
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* Selectors (Sidebar style) */
+.vc_lookup_selectors {
+    flex: 0 0 15%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border-right: 1px solid #edf2f7;
+    background-color: #fff;
+    /* Sidebar trắng tinh */
+}
+
+.vc_part_btn_lc {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    height: 60px;
+    /* Giãn thêm 1 xíu để thoáng và sang hơn */
+    border: none;
+    background: transparent;
+    transition: all 0.2s ease;
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #f8fafc;
+    cursor: pointer;
+}
+
+.vc_part_btn_lc:hover {
+    background-color: #f1f5f9;
+    /* Chỉ đổi nền xám khi hover */
+}
+
+.vc_part_btn_lc.active {
+    background-color: #f1f5f9;
+    color: #00589f;
+    /* Màu xanh Vitacare */
+    font-weight: 700;
+}
+
+/* Thanh dọc màu xanh (Vertical Tag) - CHỈ HIỆN KHI ACTIVE */
+.vc_part_btn_lc::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: #00589f;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.vc_part_btn_lc.active::after {
+    opacity: 1;
+}
+
+.vc_part_icon_wrap_lc {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    /* Loại bỏ vòng tròn xanh */
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.vc_part_btn_lc.active .vc_part_icon_wrap_lc {
+    background: transparent;
+}
+
+.vc_part_icon_wrap_lc img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    opacity: 0.7;
+}
+
+.vc_part_btn_lc.active .vc_part_icon_wrap_lc img {
+    filter: none;
+    /* Không cần invert màu trắng nữa */
+    opacity: 1;
+}
+
+.vc_part_name_lc {
+    font-size: 15px;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.vc_part_btn_lc.active .vc_part_name_lc {
+    color: #1a202c;
+    font-weight: 700;
+}
+
+.vc_visual_disclaimer_lc {
+    margin-top: 5px;
+    /* Giảm gap để nhường chỗ cho ảnh to hơn */
+    font-size: 10px !important;
+    color: #4a5568;
+    font-style: italic !important;
+    font-weight: 700 !important;
+    opacity: 0.9;
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+
+.arrow-icon {
+    font-size: 12px;
+}
+
+/* Results Content */
+.vc_lookup_results_lc {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 24px 24.5px 24px;
+    /* Căn chỉnh để 2 bên dài bằng nhau đúng 420px */
+    background: #f8fafc;
+    /* Màu xám nhạt để phân tách với sidebar trắng */
+}
+
+.vc_disease_grid_lc {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 40px;
+}
+
+.vc_disease_row_lc {
+    padding: 10px 0;
+    /* Nén lại để khớp tuyệt đối với sidebar cao 420px */
+    border-bottom: 0.5px solid #edf2f7;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: #111827;
+    transition: all 0.2s;
+    line-height: 1.3;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+}
+
+.vc_disease_row_lc:hover {
+    color: #00589f !important;
+    /* Luôn là màu xanh brand khi hover */
+    padding-left: 2px;
+}
+
+.vc_list_loader_lc,
+.vc_empty_state_lc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+}
+
+/* ---------------- PAGINATION ---------------- */
+.vc_pagination_lc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Căn giữa phân trang */
+    gap: 8px;
+    padding: 20px 0;
+}
+
+.page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.page-num-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #4a5568;
+    transition: all 0.2s;
+}
+
+.page-num-btn:hover {
+    border-color: #00589f;
+    color: #00589f;
+}
+
+.page-num-btn.active {
+    background-color: #00589f;
+    color: #fff;
+    border-color: #00589f;
+    box-shadow: 0 4px 6px -1px rgba(0, 88, 159, 0.3);
+}
+
+.page-arrow {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e0;
+}
+
+.page-arrow:not(:disabled) {
+    color: #718096;
+    cursor: pointer;
+}
+
+.page-arrow:not(:disabled):hover {
+    border-color: #00589f;
+    color: #00589f;
+}
+
+.page-dots {
+    color: #a0aec0;
+    margin: 0 4px;
+}
+
+/* ---------------- GROUP CARDS (NEW) ---------------- */
+.vc_group_grid_lc {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.vc_group_card_lc {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 1.5px solid transparent;
+    /* Chuẩn bị stroke cho hover */
+}
+
+.vc_group_card_lc:hover {
+    transform: translateY(-8px);
+    /* Nhảy khung lên cao hơn chút */
+    box-shadow: 0 15px 30px rgba(0, 88, 159, 0.1);
+    border-color: #00589f;
+    /* Stroke xanh Vitacare */
+}
+
+.vc_group_card_lc:hover .vc_group_name_lc {
+    color: #00589f;
+    /* Chữ sang màu xanh */
+}
+
+.vc_group_card_lc.active {
+    background: #f0f7ff;
+    border-color: #00589f;
+}
+
+.vc_group_icon_circle {
+    width: 90px;
+    /* Tăng size khung icon một xíu */
+    height: 90px;
+    border-radius: 50%;
+    background: #f0f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.vc_group_icon_circle img {
+    width: 100%;
+    /* Fix fill hết khung tròn */
+    height: 100%;
+    object-fit: cover;
+    /* Đảm bảo hình ảnh đầy đặn */
+}
+
+.vc_group_name_lc {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 4px;
+}
+
+.vc_group_count_lc {
+    font-size: 14px;
+    color: #718096;
+}
+
+/* Show More Btn */
+.vc_show_more_btn_lc {
+    background: transparent;
+    border: none;
+    color: #00589f;
+    /* Màu xanh Vitacare */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+    padding: 8px 24px;
+    transition: all 0.2s;
+}
+
+.vc_show_more_btn_lc:hover {
+    color: #3182ce;
+}
+
+
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .vc_lookup_inner {
+        flex-direction: column;
+    }
+
+    .vc_lookup_visual,
+    .vc_lookup_selectors {
+        flex: 0 0 100%;
+        border-right: none;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .vc_group_grid_lc {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .vc_disease_grid_cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .vc_disease_grid_lc {
+        grid-template-columns: 1fr;
+    }
+
+    .vc_group_grid_lc {
+        grid-template-columns: 1fr;
+    }
+
+    .vc_disease_grid_cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------------- BREADCRUMB ---------------- */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 35px;
+    /* Tăng thêm khoảng cách */
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+    content: "/";
+    color: #a0aec0;
+}
+
+.breadcrumb-item a {
+    color: #a0aec0;
+    /* Màu xám nhạt cho mục không active */
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.breadcrumb-item a:hover {
+    color: #4a5568;
+}
+
+.breadcrumb-item.active {
+    color: #4a5568 !important;
+    /* Màu xám đậm Vitacare */
+    font-weight: 700;
+    /* In đậm */
+    font-size: 14px;
+}

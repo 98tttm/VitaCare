@@ -1,0 +1,42 @@
+<!-- Addresses Component - Quản lý số địa chỉ -->
+<div class="addresses-wrapper">
+    <h2 class="addresses-title">QUẢN LÝ SỐ ĐỊA CHỈ</h2>
+
+    <!-- Addresses List -->
+    <div class="addresses-list">
+        <div class="address-card" *ngFor="let address of addresses" [class.is-default]="address.isDefault">
+            <div class="address-header">
+                <h3 class="address-name">{{ address.name }}</h3>
+                <span class="badge-default" *ngIf="address.isDefault">Địa chỉ mặc định</span>
+            </div>
+
+            <div class="address-body">
+                <p class="address-full">{{ address.fullAddress }}</p>
+                <div class="address-contacts">
+                    <span class="contact-item">Số điện thoại: {{ address.phone }}</span>
+                    <span class="contact-item" *ngIf="address.email">Email: {{ address.email }}</span>
+                </div>
+            </div>
+
+            <div class="address-actions">
+                <button class="btn-action btn-edit" (click)="editAddress(address.id)">
+                    <img src="assets/icon/edit.png" alt="Edit" class="icon-sm">
+                    Chỉnh sửa
+                </button>
+                <button class="btn-action btn-delete" (click)="deleteAddress(address.id)">
+                    <img src="assets/icon/delete.png" alt="Delete" class="icon-sm">
+                </button>
+                <button class="btn-action btn-set-default" *ngIf="!address.isDefault"
+                    (click)="setDefaultAddress(address.id)">
+                    Đặt làm mặc định
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Button -->
+    <button class="btn-add-new" (click)="addNewAddress()">
+        <img src="assets/icon/add_circle.png" alt="Add" class="icon-add">
+        THÊM ĐỊA CHỈ MỚI
+    </button>
+</div>

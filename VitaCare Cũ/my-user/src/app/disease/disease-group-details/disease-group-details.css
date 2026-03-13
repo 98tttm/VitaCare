@@ -1,0 +1,316 @@
+/* Page Wrapper */
+.vc_disease_group_details_page {
+    background: #E5EEF8;
+    /* Light blue background as requested */
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Breadcrumb Styling */
+.breadcrumb {
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 100;
+}
+
+.breadcrumb .breadcrumb-item.active {
+    color: #00589f !important;
+    font-weight: 700;
+}
+
+/* === MODER LONG CHAU BANNER === */
+.vc_banner_wrapper_lc {
+    position: relative;
+    height: 280px;
+    /* Reduced from 350px to crop bottom area as requested */
+    margin-bottom: 40px !important;
+    /* Increased spacing to avoid "cramped" look */
+    overflow: visible;
+    /* Allow card to bleed out while background crops the image */
+}
+
+/* Background Area */
+.vc_banner_bg_area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, #f0f7ff 0%, #eef6ff 100%);
+    /* Removed border-radius for full-width look */
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Centered Illustration for balanced background */
+.vc_banner_illustration_wrap {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    /* Perfectly centered for zoom stability */
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    /* Allow it to fill the banner width */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 1;
+    /* Background layer */
+    opacity: 1;
+}
+
+.vc_banner_illustration_wrap img {
+    height: 130%;
+    /* Enlarge the actual image as requested */
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(0, 88, 159, 0.05));
+}
+
+/* Container for the floating card to align with site content width */
+.vc_card_container {
+    position: relative;
+    height: 100%;
+    z-index: 10;
+}
+
+/* Floating Card for Text (Matches Figure 2) */
+.vc_banner_content_card_lc {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -15px;
+    /* Moved up as requested */
+    background: #ffffff;
+    /* Pure solid white */
+    border-radius: 20px;
+    padding: 20px 50px;
+    /* More generous padding for a premium look */
+    z-index: 99 !important;
+    /* FORCE TO TOP - NO MORE OVERLAP ISSUES */
+    width: calc(100% - 48px);
+    max-width: 800px;
+    text-align: center;
+    box-shadow: 0 15px 40px -10px rgba(0, 88, 159, 0.2);
+    border: 1px solid rgba(0, 88, 159, 0.05);
+}
+
+.vc_group_title_text {
+    font-size: 24px;
+    /* Reduced from 28px as requested */
+    font-weight: 800;
+    color: #00589f;
+    margin-bottom: 2px;
+    letter-spacing: -1px;
+}
+
+.vc_group_subtitle_text {
+    font-size: 14px;
+    /* Reduced from 15px as requested */
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 0px;
+    /* Remove bottom margin for compactness */
+}
+
+/* Back button integrated more subtly */
+.vc_back_link_btn {
+    background: #f1f5f9;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 16px;
+    color: #475569;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.vc_back_link_btn:hover {
+    background: #00589f;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* === DISEASE GRID CONTENT === */
+.vc_focused_content {
+    background: #ffffff;
+    /* White frame (khung) */
+    border-radius: 20px;
+    padding: 24px 24px 0px 24px;
+    /* Eliminated bottom padding */
+    margin-top: 20px;
+    /* Added breathing room as requested */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.vc_section_title_row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 10px;
+}
+
+.vc_section_title_row i {
+    color: #00589f !important;
+    font-size: 1.5rem !important;
+    /* Slightly larger book icon */
+}
+
+.section_title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #00589f;
+    /* Basic brand blue color */
+}
+
+/* Disease Cards (Premium Look) */
+.vc_disease_grid_cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* Denser 5-column layout as requested */
+    gap: 16px;
+    /* Tighter gap */
+}
+
+.vc_disease_card {
+    background: #f1f7fe;
+    /* Soft light blue as requested */
+    border-radius: 4px;
+    /* Sharper corners as requested */
+    padding: 12px;
+    /* Added internal padding for neat look */
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 88, 159, 0.05);
+    /* Even subtler border */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.vc_disease_card:hover {
+    transform: translateY(-5px);
+    /* Subtle lift as requested */
+    box-shadow: 0 15px 30px -10px rgba(0, 88, 159, 0.1);
+    border-color: #00589f;
+}
+
+.card_img_wrap {
+    width: 100%;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    background: #f8fafc;
+    border-radius: 4px;
+    /* Sharper corners to match card */
+}
+
+.card_img_wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.vc_disease_card:hover .card_img_wrap img {
+    transform: scale(1.08);
+}
+
+.card_name {
+    padding: 12px 4px 4px 4px;
+    /* Tighter padding */
+    text-align: left;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 15px;
+    line-height: 1.4;
+    flex-grow: 1;
+}
+
+.vc_disease_card:hover .card_name {
+    color: #00589f;
+}
+
+/* Load More Button Styling (Minimalist Text Link) */
+.vc_load_more_container {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+    /* Rebalanced spacing for better breathing room */
+}
+
+.vc_btn_load_more {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: #00589f;
+    font-weight: 600;
+    transition: all 0.3s;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.vc_btn_load_more:hover {
+    color: #004a87;
+    /* Slightly darker blue on hover */
+    text-decoration: none !important;
+    /* No underline as requested */
+    transform: translateY(-5px);
+    /* Jump effect as requested */
+    box-shadow: none;
+}
+
+.vc_btn_load_more i {
+    font-size: 1.1rem;
+}
+
+/* Responsive Fixes */
+@media (max-width: 991px) {
+    .vc_banner_wrapper_lc {
+        height: 300px;
+    }
+
+    .vc_group_title_text {
+        font-size: 40px;
+    }
+
+    .vc_banner_content_card_lc {
+        padding: 30px;
+        left: 20px;
+        right: 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    .vc_banner_wrapper_lc {
+        height: 250px;
+    }
+
+    .vc_banner_illustration_wrap {
+        display: none;
+    }
+
+    .vc_group_title_text {
+        font-size: 32px;
+    }
+
+    .vc_banner_content_card_lc {
+        position: relative;
+        bottom: 0;
+        margin-top: -40px;
+        left: 0;
+        right: 0;
+        border-radius: 24px;
+    }
+}

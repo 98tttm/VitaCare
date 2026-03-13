@@ -1,0 +1,129 @@
+<div class="vc_disease_lookup_page">
+    <div class="container pt-3 pb-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" (click)="goHome($event)">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Tra cứu bệnh</li>
+            </ol>
+        </nav>
+
+        <!-- ========== CHẾ ĐỘ 1: TRANG CHÍNH (BODY MAP) ========== -->
+        <div class="vc_body_section_header mb-3">
+            <i class="bi bi-book-half text-primary me-2"></i>
+            <span class="vc_body_title fw-bold">Cơ thể người</span>
+        </div>
+
+        <div class="vc_body_lookup_card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="vc_lookup_inner bg-white">
+                <!-- Left: Body Image -->
+                <div class="vc_lookup_visual">
+                    <div class="vc_body_image_container">
+                        <img [src]="bodyImage" alt="Human Body Map" class="vc_body_full_img">
+                    </div>
+                    <p class="vc_visual_disclaimer_lc mt-3">*Hình ảnh chỉ mang tính chất tham khảo.</p>
+                </div>
+
+                <!-- Middle: Body Part Selectors (Long Chau Style) -->
+                <div class="vc_lookup_selectors">
+                    <button *ngFor="let part of bodyParts" class="vc_part_btn_lc"
+                        [class.active]="selectedBodyPart === part.name" (click)="onBodyPartSelect(part.name)">
+                        <div class="vc_part_icon_wrap_lc">
+                            <img [src]="part.icon" [alt]="part.name"
+                                onerror="this.src='assets/icon/vincat-notfound.png'">
+                        </div>
+                        <span class="vc_part_name_lc">{{ part.name }}</span>
+                    </button>
+                </div>
+
+                <!-- Right: Results for Body Parts (Long Chau Style) -->
+                <div class="vc_lookup_results_lc">
+                    <div class="vc_disease_list_container_lc">
+                        <div class="vc_disease_grid_lc" *ngIf="!bodyLoading && bodyDiseases.length > 0">
+                            <div class="vc_disease_col_lc">
+                                <div *ngFor="let disease of bodyDiseases.slice(0, 10)" class="vc_disease_row_lc"
+                                    (click)="viewDetail(disease)">
+                                    <span class="disease-name">{{ disease.name }}</span>
+                                </div>
+                            </div>
+                            <div class="vc_disease_col_lc">
+                                <div *ngFor="let disease of bodyDiseases.slice(10, 20)" class="vc_disease_row_lc"
+                                    (click)="viewDetail(disease)">
+                                    <span class="disease-name">{{ disease.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="vc_list_loader_lc" *ngIf="bodyLoading">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Đang tìm bệnh...</p>
+                        </div>
+
+                        <div class="vc_empty_state_lc" *ngIf="!bodyLoading && bodyDiseases.length === 0">
+                            <img src="assets/icon/vincat-notfound.png" alt="Not found"
+                                style="width: 80px; opacity: 0.5;">
+                            <p class="text-muted mt-2">Không tìm thấy bệnh nào phù hợp.</p>
+                        </div>
+                    </div>
+
+                    <!-- Pagination Body (Long Chau Style) -->
+                    <div class="vc_pagination_lc mt-3" *ngIf="!bodyLoading && bodyTotalPages > 1">
+                        <button class="page-arrow" [disabled]="bodyCurrentPage === 1"
+                            (click)="onBodyPageChange(bodyCurrentPage - 1)">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <div class="page-numbers">
+                            <ng-container *ngFor="let p of buildPages(bodyCurrentPage, bodyTotalPages)">
+                                <span *ngIf="p === 'dots'" class="page-dots">...</span>
+                                <button *ngIf="p !== 'dots'" class="page-num-btn" [class.active]="p === bodyCurrentPage"
+                                    (click)="onBodyPageChange(+p)">
+                                    {{ p }}
+                                </button>
+                            </ng-container>
+                        </div>
+                        <button class="page-arrow" [disabled]="bodyCurrentPage === bodyTotalPages"
+                            (click)="onBodyPageChange(bodyCurrentPage + 1)">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ========== GRID NHÓM BỆNH (LONG CHAU STYLE) ========== -->
+        <div class="vc_group_section" *ngIf="diseaseGroups.length > 0">
+            <div class="vc_body_section_header mt-4 mb-3">
+                <i class="bi bi-award-fill text-primary me-2"></i>
+                <span class="vc_body_title fw-bold">Nhóm bệnh chuyên khoa</span>
+            </div>
+
+            <div class="vc_group_grid_lc">
+                <div *ngFor="let group of visibleGroups" class="vc_group_card_lc shadow-sm"
+                    (click)="onGroupSelect(group)">
+                    <div class="vc_group_icon_circle">
+                        <img [src]="getGroupIcon(group)" [alt]="group.name"
+                            (error)="$any($event.target).src='assets/icon/nhombenh/default.png'">
+                    </div>
+                    <div class="vc_group_info_lc">
+                        <div class="vc_group_name_lc">{{ group.name }}</div>
+                        <div class="vc_group_count_lc">{{ group.count }} bài viết</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vc_group_show_more_lc mt-4 text-center" *ngIf="remainingGroupsCount > 0">
+                <button class="vc_show_more_btn_lc" (click)="onLoadMoreGroups()">
+                    <i class="bi bi-chevron-double-down"></i>
+                    <span>Xem thêm {{ remainingGroupsCount }} nhóm bệnh</span>
+                </button>
+            </div>
+            <div class="vc_group_show_more_lc mt-4 text-center"
+                *ngIf="remainingGroupsCount === 0 && diseaseGroups.length > 8">
+                <button class="vc_show_more_btn_lc" (click)="visibleGroupLimit = 8">
+                    <i class="bi bi-chevron-double-up"></i>
+                    <span>Thu gọn</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

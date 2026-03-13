@@ -3,7 +3,7 @@
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background-color: #fff;
-    max-height: calc(100vh - 180px);
+    max-height: calc(100vh - 159px);
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #c1c1c1 #f1f1f1;

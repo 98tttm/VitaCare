@@ -1,0 +1,347 @@
+/* Orders Component Styles */
+/* VitaCare Brand Colors */
+
+.orders-wrapper {
+    padding: 20px 0;
+}
+
+/* Header */
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.orders-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #00589F;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    opacity: 0.5;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #C2C2C2;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Arimo', sans-serif;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #43A2E6;
+}
+
+/* Tabs */
+.orders-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #EDEDED;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    position: relative;
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: #424242;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Arimo', sans-serif;
+    margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+    color: #00589F;
+}
+
+.tab-btn.active {
+    color: #00589F;
+    border-bottom-color: #00589F;
+    font-weight: 600;
+}
+
+.tab-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #C42326;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Filter Bar */
+.filter-bar {
+    display: grid;
+    grid-template-columns: 200px 150px 200px 1fr;
+    gap: 15px;
+    padding: 12px 20px;
+    background: #F5F5F5;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #757575;
+    font-family: 'Arimo', sans-serif;
+}
+
+/* Orders List */
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    background: #fff;
+    border: 1px solid #EDEDED;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #F5F5F5;
+    border-bottom: 1px solid #EDEDED;
+}
+
+.order-status {
+    font-size: 14px;
+    font-weight: 600;
+    color: #00589F;
+    font-family: 'Inter', sans-serif;
+}
+
+.order-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+    color: #757575;
+    font-family: 'Arimo', sans-serif;
+}
+
+/* Order Items */
+.order-items {
+    padding: 20px;
+}
+
+.order-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 150px;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #F5F5F5;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.item-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #424242;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.item-desc {
+    font-size: 13px;
+    color: #757575;
+    margin: 0;
+    font-family: 'Arimo', sans-serif;
+}
+
+.item-price {
+    font-size: 13px;
+    color: #757575;
+    margin: 0;
+    font-family: 'Arimo', sans-serif;
+}
+
+.item-summary {
+    text-align: right;
+}
+
+.item-quantity,
+.item-total {
+    font-size: 13px;
+    color: #757575;
+    margin: 5px 0;
+    font-family: 'Arimo', sans-serif;
+}
+
+.item-total {
+    font-weight: 600;
+    color: #424242;
+}
+
+/* Order Footer */
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #F5F5F5;
+    border-top: 1px solid #EDEDED;
+}
+
+.btn-expand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: none;
+    border: 1px solid #C2C2C2;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #424242;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Arimo', sans-serif;
+}
+
+.btn-expand:hover {
+    border-color: #00589F;
+    color: #00589F;
+}
+
+.icon-sm {
+    width: 16px;
+    height: 16px;
+}
+
+.order-total {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.total-label {
+    font-size: 14px;
+    color: #757575;
+    font-family: 'Arimo', sans-serif;
+}
+
+.total-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #C42326;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    background: #fff;
+    border: 1px solid #C42326;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #C42326;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Arimo', sans-serif;
+}
+
+.btn-cancel:hover {
+    background: #C42326;
+    color: #fff;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.empty-text {
+    font-size: 16px;
+    color: #9E9E9E;
+    font-family: 'Arimo', sans-serif;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .orders-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .filter-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .order-item {
+        grid-template-columns: 60px 1fr;
+        gap: 10px;
+    }
+
+    .item-summary {
+        grid-column: 1 / -1;
+        text-align: left;
+        padding-top: 10px;
+    }
+}

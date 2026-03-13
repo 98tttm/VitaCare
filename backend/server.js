@@ -172,6 +172,83 @@ app.get('/api/products', async (req, res) => {
     if (keyword) {
       filter.name = { $regex: keyword, $options: 'i' };
     }
+
+    // New filters from Advanced Sidebar
+    const flavor = String(req.query.flavor || '').trim();
+    const audience = String(req.query.audience || '').trim();
+    const indication = String(req.query.indication || '').trim();
+    const origin = String(req.query.origin || '').trim();
+    const brandOrigin = String(req.query.brandOrigin || '').trim();
+
+    const advancedConditions = [];
+
+    if (flavor) {
+      const flavors = flavor.split(',').map(f => f.trim()).filter(f => f && f !== 'Tất cả');
+      if (flavors.length > 0) {
+        const flavorOr = flavors.map(f => {
+          const kw = f.replace(/^(Vị|Hương|Vị\s+|Hương\s+)/i, '').trim();
+          return { name: { $regex: kw, $options: 'i' } };
+        });
+        advancedConditions.push({ $or: flavorOr });
+      }
+    }
+
+    if (audience) {
+      const audiences = audience.split(',').map(a => a.trim()).filter(a => a && a !== 'Tất cả');
+      if (audiences.length > 0) {
+        const audienceOr = audiences.map(a => ({
+          $or: [
+            { name: { $regex: a, $options: 'i' } },
+            { description: { $regex: a, $options: 'i' } }
+          ]
+        }));
+        advancedConditions.push({ $or: audienceOr });
+      }
+    }
+
+    if (indication) {
+      const indications = indication.split(',').map(i => i.trim()).filter(i => i && i !== 'Tất cả');
+      if (indications.length > 0) {
+        const indicationOr = indications.map(ind => ({
+          $or: [
+            { name: { $regex: ind, $options: 'i' } },
+            { description: { $regex: ind, $options: 'i' } },
+            { usage: { $regex: ind, $options: 'i' } }
+          ]
+        }));
+        advancedConditions.push({ $or: indicationOr });
+      }
+    }
+
+    if (origin) {
+      const origins = origin.split(',').map(o => o.trim()).filter(o => o && o !== 'Tất cả');
+      if (origins.length > 0) {
+        filter.country = { $in: origins };
+      }
+    }
+
+    if (brandOrigin) {
+      const bOrigins = brandOrigin.split(',').map(o => o.trim()).filter(o => o && o !== 'Tất cả');
+      if (bOrigins.length > 0) {
+        const bOriginOr = bOrigins.map(o => ({
+          $or: [
+            { country: { $regex: o, $options: 'i' } },
+            { description: { $regex: o, $options: 'i' } }
+          ]
+        }));
+        advancedConditions.push({ $or: bOriginOr });
+      }
+    }
+
+    if (advancedConditions.length > 0) {
+      // Nếu có dùng keyword search thì nhét nó vào $and luôn để không bị ghi đè field name
+      if (filter.name) {
+        advancedConditions.unshift({ name: filter.name });
+        delete filter.name;
+      }
+      filter.$and = advancedConditions;
+    }
+
     if (categorySlug) {
       const cat = await categoriesCollection().findOne({ slug: categorySlug });
       if (cat) {
@@ -496,15 +573,15 @@ app.post('/api/orders', async (req, res) => {
         const ncol = noticesCollection();
         await ncol.insertOne({
           user_id: uid,
-        type: 'order_created',
-        title: 'Đặt hàng thành công',
-        message: `Đơn hàng ${orderId} đã được tạo và đang chờ xác nhận.`,
-        createdAt: now,
-        read: false,
-        link: '/account',
-        linkLabel: 'Xem đơn hàng',
-        meta: orderId,
-      });
+          type: 'order_created',
+          title: 'Đặt hàng thành công',
+          message: `Đơn hàng ${orderId} đã được tạo và đang chờ xác nhận.`,
+          createdAt: now,
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem đơn hàng',
+          meta: orderId,
+        });
       } catch (e) {
         console.warn('[POST /api/orders] Cannot create notice:', e.message);
       }
@@ -868,15 +945,15 @@ app.post('/api/prescriptions', async (req, res) => {
         const ncol = noticesCollection();
         await ncol.insertOne({
           user_id: uid,
-        type: 'prescription_created',
-        title: 'Đơn thuốc cần tư vấn',
-        message: 'Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.',
-        createdAt: now,
-        read: false,
-        link: '/account',
-        linkLabel: 'Xem đơn thuốc',
-        meta: prescriptionId,
-      });
+          type: 'prescription_created',
+          title: 'Đơn thuốc cần tư vấn',
+          message: 'Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.',
+          createdAt: now,
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem đơn thuốc',
+          meta: prescriptionId,
+        });
       } catch (e) {
         console.warn('[POST /api/prescriptions] Cannot create notice:', e.message);
       }

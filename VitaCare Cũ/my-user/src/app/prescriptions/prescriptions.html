@@ -1,0 +1,99 @@
+<!-- Prescriptions Component - Đơn thuốc của tôi -->
+<div class="prescriptions-wrapper">
+    <div class="prescriptions-header">
+        <h2 class="prescriptions-title">ĐƠN THUỐC CỦA TÔI</h2>
+        <button class="btn-upload" (click)="uploadPrescription()">
+            GỬI YÊU CẦU MỚI
+        </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="prescriptions-tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'all'" (click)="setActiveTab('all')">
+            Tất cả
+            <span class="tab-badge" *ngIf="getPrescriptionCount('all') > 0">{{ getPrescriptionCount('all') }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="setActiveTab('pending')">
+            Chờ tư vấn
+            <span class="tab-badge" *ngIf="getPrescriptionCount('pending') > 0">{{ getPrescriptionCount('pending')
+                }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'completed'" (click)="setActiveTab('completed')">
+            Đã tư vấn
+            <span class="tab-badge" *ngIf="getPrescriptionCount('completed') > 0">{{ getPrescriptionCount('completed')
+                }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'unreachable'" (click)="setActiveTab('unreachable')">
+            Chưa thể liên hệ
+            <span class="tab-badge" *ngIf="getPrescriptionCount('unreachable') > 0">{{
+                getPrescriptionCount('unreachable') }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'cancelled'" (click)="setActiveTab('cancelled')">
+            Đã hủy
+            <span class="tab-badge" *ngIf="getPrescriptionCount('cancelled') > 0">{{ getPrescriptionCount('cancelled')
+                }}</span>
+        </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <span class="filter-label">Trạng thái đơn thuốc</span>
+        <span class="filter-label">Ngày đặt</span>
+        <span class="filter-label">n sản phẩm (số lượng)</span>
+        <span class="filter-label">Mã đơn đặt thuốc</span>
+        <img src="assets/icon/edit.png" alt="Edit" class="filter-icon">
+    </div>
+
+    <!-- Prescriptions List -->
+    <div class="prescriptions-list">
+        <div class="prescription-card" *ngFor="let prescription of filteredPrescriptions">
+            <div class="prescription-header">
+                <div class="prescription-info">
+                    <span class="prescription-status">{{ prescription.statusText }}</span>
+                </div>
+                <div class="prescription-meta">
+                    <span class="prescription-date">{{ prescription.date }}</span>
+                    <span class="prescription-id">#{{ prescription.id }}</span>
+                </div>
+            </div>
+
+            <div class="prescription-items">
+                <div class="prescription-item" *ngFor="let item of prescription.items">
+                    <div class="item-image">
+                        <img [src]="item.image" [alt]="item.name" onerror="this.src='assets/icon/medical_16660084.png'">
+                    </div>
+                    <div class="item-details">
+                        <h4 class="item-name">{{ item.name }}</h4>
+                        <p class="item-desc">{{ item.description }}</p>
+                        <p class="item-price">{{ item.price | number:'1.0-0' }} ₫/viên</p>
+                    </div>
+                    <div class="item-summary">
+                        <p class="item-quantity">Số lượng: {{ item.quantity }}</p>
+                        <p class="item-total">Giá tổng</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prescription-footer">
+                <button class="btn-expand" (click)="togglePrescriptionDetails(prescription.id)">
+                    Thu gọn
+                    <img src="assets/icon/arrowup_circle.png" alt="collapse" class="icon-sm">
+                </button>
+                <div class="prescription-total">
+                    <span class="total-label">Tổng số tiền:</span>
+                    <span class="total-amount">{{ prescription.total | number:'1.0-0' }} ₫</span>
+                </div>
+                <button class="btn-consult" *ngIf="prescription.status === 'completed'"
+                    (click)="requestConsultation(prescription.id)">
+                    Huy yêu cầu
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="filteredPrescriptions.length === 0">
+            <img src="assets/icon/medical_16660084.png" alt="No prescriptions" class="empty-icon">
+            <p class="empty-text">Không có đơn thuốc nào</p>
+        </div>
+    </div>
+</div>
