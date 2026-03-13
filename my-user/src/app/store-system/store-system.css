@@ -51,22 +51,26 @@
 
 /* PAGE HEADER */
 .page-header-vc {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
-  color: var(--vc-neutral-60);
-  margin-bottom: 10px;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
 }
 
 .breadcrumb a {
-  color: var(--vc-primary);
+  color: #6b7280;
   text-decoration: none;
   font-weight: 500;
+}
+
+.breadcrumb a:hover {
+  color: #00589F;
 }
 
 .sep {

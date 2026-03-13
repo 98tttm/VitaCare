@@ -10,5 +10,6 @@ backend/.env
 # Large data files (imported to MongoDB, too large for GitHub)
 data/benh.json
 data/blogs.json
+data/blog.json
 data/products.json
 *.json.backup

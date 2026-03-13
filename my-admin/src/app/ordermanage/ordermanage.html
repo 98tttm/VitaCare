@@ -9,7 +9,10 @@
     <!-- Header -->
     <div class="page-header py-4"
         style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
-        <h1 class="content-title" style="margin: 0; font-size: 28px; text-transform: uppercase;">Danh sách đơn hàng</h1>
+        <h1 class="content-title"
+            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
+            Danh sách đơn hàng
+        </h1>
         <button class="btn-add-action" (click)="openAddOrderModal()">
             <i class="bi bi-plus-lg"></i>
             Thêm đơn hàng
@@ -42,10 +45,10 @@
             <div class="stat-label">Đã hủy</div>
             <div class="stat-value">{{ stats.cancelled }}</div>
         </div>
-        <div class="stat-card stat-refunded" (click)="filterByStatus('refunded')"
-            [class.active]="currentStatusFilter === 'refunded'">
-            <div class="stat-label">Hoàn tiền</div>
-            <div class="stat-value">{{ stats.refunded }}</div>
+        <div class="stat-card stat-refunded" (click)="filterByStatus('processing_return')"
+            [class.active]="currentStatusFilter === 'processing_return'">
+            <div class="stat-label">Yêu cầu trả hàng/hoàn tiền</div>
+            <div class="stat-value">{{ stats.processing_return }}</div>
         </div>
     </div>
 

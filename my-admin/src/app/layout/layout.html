@@ -83,6 +83,23 @@
                             </a>
                         </li>
                     </ul>
+                    <!-- Floating submenu when sidebar collapsed (shown on hover) -->
+                    <div class="consultation-float-menu" *ngIf="isSidebarCollapsed">
+                        <ul>
+                            <li>
+                                <a routerLink="/admin/consultation-prescription" routerLinkActive="active"
+                                    class="submenu-link">
+                                    Tư vấn đơn thuốc
+                                </a>
+                            </li>
+                            <li>
+                                <a routerLink="/admin/consultation-product" routerLinkActive="active"
+                                    class="submenu-link">
+                                    Tư vấn sản phẩm
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
             </ul>
         </nav>
@@ -103,19 +120,7 @@
             </div>
 
 
-            <!-- Center: Search -->
-            <div class="search-bar">
-                <div class="search-input-wrapper">
-                    <!-- Magnifying Glass Icon (SVG) -->
-                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input type="text" placeholder="Tìm kiếm...">
-                </div>
-            </div>
+            <!-- Center: (search bar removed theo yêu cầu) -->
 
             <!-- Right Side: Notifications & Toggle & Profile -->
             <div class="header-right">
@@ -125,10 +130,7 @@
                         <span class="slider round"></span>
                     </label>
                 </div>
-                <div class="notification-badge">
-                    <img src="assets/icon/notification-bell.png" alt="Notification">
-                    <span class="badge">11</span>
-                </div>
+                <app-notice></app-notice>
 
                 <!-- User Profile Dropdown -->
                 <div class="header-profile-container">

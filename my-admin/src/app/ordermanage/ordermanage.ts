@@ -16,6 +16,8 @@ interface Order {
   deliveryStatus: string;
   deliveryStatusText: string;
   total: number;
+  // Giữ lại trạng thái gốc từ backend để lọc chính xác
+  rawStatus?: string;
   selected?: boolean; // Checkbox selection
 }
 
@@ -87,7 +89,8 @@ export class Ordermanage implements OnInit {
     delivered: 0,
     unpaid: 0,
     cancelled: 0,
-    refunded: 0
+    refunded: 0,
+    processing_return: 0
   };
 
   // Location Data
@@ -511,7 +514,10 @@ export class Ordermanage implements OnInit {
         else if (this.currentStatusFilter === 'delivered') matchesStatus = (order.deliveryStatus === 'delivered' || order.status === 'delivered');
         else if (this.currentStatusFilter === 'unpaid') matchesStatus = order.paymentStatus === 'unpaid';
         else if (this.currentStatusFilter === 'cancelled') matchesStatus = order.status === 'cancelled';
-        else if (this.currentStatusFilter === 'refunded') matchesStatus = order.status === 'refunded';
+        else if (this.currentStatusFilter === 'processing_return') {
+          // Lọc đúng các đơn đang ở bước yêu cầu trả hàng/hoàn tiền
+          matchesStatus = order.rawStatus === 'processing_return' || order.rawStatus === 'return_processing';
+        }
       }
 
       // 3. Advanced Filter Logic
@@ -578,36 +584,44 @@ export class Ordermanage implements OnInit {
   }
 
   mapOrder(item: any): Order {
+    const rawStatus = item.status;
     let status = 'pending';
     let statusText = 'Chờ xác nhận';
     let deliveryStatus = 'pending';
     let deliveryStatusText = 'Chưa giao';
 
+    // 1. Trạng thái đơn hàng (Cột 1) - Chỉ hiển thị 4 loại nhãn rút gọn
     if (item.status === 'pending') {
       status = 'pending'; statusText = 'Chờ xác nhận';
-    } else if (item.status === 'confirmed') {
-      status = 'confirmed'; statusText = 'Đã xác nhận';
-    } else if (item.status === 'shipping') {
-      status = 'shipping'; statusText = 'Đang giao';
-    } else if (item.status === 'delivered') {
-      status = 'delivered'; statusText = 'Đã giao';
+    } else if (['confirmed', 'shipping', 'delivered', 'unreview', 'reviewed'].includes(item.status)) {
+      status = 'confirmed'; // Sử dụng confirmed làm gốc cho nhóm đã xác nhận
+      statusText = 'Đã xác nhận';
     } else if (item.status === 'cancelled') {
       status = 'cancelled'; statusText = 'Đã hủy';
-    } else if (item.status === 'refunded') {
-      status = 'refunded'; statusText = 'Đã hoàn tiền';
+    } else if (['returned', 'refunded', 'returning', 'processing_return', 'return_processing', 'rejected'].includes(item.status)) {
+      status = 'returned'; // Sử dụng returned làm gốc cho nhóm hoàn trả
+      statusText = 'Hoàn trả';
     } else {
-      status = item.status || 'pending';
-      statusText = item.status === 'pending' ? 'Chờ xác nhận' : (item.status || 'Chờ xác nhận');
+      status = 'pending';
+      statusText = 'Chờ xác nhận';
     }
 
-    if (item.status === 'delivered') {
-      deliveryStatus = 'delivered'; deliveryStatusText = 'Đã giao';
-    } else if (item.status === 'shipping') {
+    // 2. Trạng thái Giao hàng (Cột 3) - Phân loại theo 5 nhóm yêu cầu: Đang giao, Đã giao, Đang hoàn, Đã hoàn, Đã hủy
+    if (item.status === 'shipping') {
       deliveryStatus = 'shipping'; deliveryStatusText = 'Đang giao';
-    } else if (item.status === 'cancelled') {
+    } else if (['delivered', 'unreview', 'reviewed'].includes(item.status)) {
+      deliveryStatus = 'delivered'; deliveryStatusText = 'Đã giao';
+    } else if (item.status === 'returning') {
+      deliveryStatus = 'returning'; deliveryStatusText = 'Đang hoàn';
+    } else if (item.status === 'returned' || item.status === 'refunded') {
+      deliveryStatus = 'returned'; deliveryStatusText = 'Đã hoàn';
+    } else if (item.status === 'cancelled' || item.status === 'rejected') {
       deliveryStatus = 'cancelled'; deliveryStatusText = 'Đã hủy';
+    } else {
+      deliveryStatus = 'pending'; deliveryStatusText = 'Chưa giao';
     }
 
+    // 3. Trạng thái Thanh toán (Cột 2)
     const paymentStatus = item.statusPayment === 'paid' ? 'paid' : 'unpaid';
     const paymentStatusText = item.statusPayment === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán';
 
@@ -628,6 +642,7 @@ export class Ordermanage implements OnInit {
       deliveryStatus: deliveryStatus,
       deliveryStatusText: deliveryStatusText,
       total: item.totalAmount || 0,
+      rawStatus: rawStatus,
       selected: false
     };
   }
@@ -640,6 +655,10 @@ export class Ordermanage implements OnInit {
     this.stats.delivered = this.orders.filter(o => o.deliveryStatus === 'delivered').length;
     this.stats.unpaid = this.orders.filter(o => o.paymentStatus === 'unpaid').length;
     this.stats.cancelled = this.orders.filter(o => o.status === 'cancelled').length;
+    // Đếm đúng các đơn đang ở bước yêu cầu trả hàng/hoàn tiền
+    this.stats.processing_return = this.orders.filter(
+      o => o.rawStatus === 'processing_return' || o.rawStatus === 'return_processing'
+    ).length;
   }
 
   goToDetail(id: string) {
@@ -648,23 +667,44 @@ export class Ordermanage implements OnInit {
 
   getStatusClass(status: string) {
     switch (status) {
-      case 'confirmed': return 'status-confirmed';
-      case 'shipping': return 'status-shipping';
-      case 'delivered': return 'status-delivered';
-      case 'pending': return 'status-pending';
-      case 'cancelled': return 'status-cancelled';
-      case 'refunded': return 'status-refunded';
-      default: return '';
+      case 'confirmed':
+      case 'delivered':
+      case 'unreview':
+      case 'reviewed':
+      case 'shipping':
+        return 'status-green'; // Nhóm Đã xác nhận / Đang giao / Đã giao
+      case 'returned':
+      case 'returning':
+      case 'processing_return':
+      case 'return_processing':
+      case 'pending':
+        return 'status-yellow'; // Nhóm Chờ xác nhận / Hoàn trả
+      case 'cancelled':
+      case 'rejected':
+      case 'failed':
+        return 'status-red';
+      default:
+        return 'status-yellow';
     }
   }
 
   getPaymentClass(status: string) {
-    return status === 'paid' ? 'payment-paid' : 'payment-unpaid';
+    return status === 'paid' ? 'status-green' : 'status-red';
   }
 
   getDeliveryClass(status: string) {
-    if (status === 'delivered') return 'status-delivered';
-    if (status === 'shipping') return 'status-shipping';
-    return 'payment-unpaid';
+    switch (status) {
+      case 'delivered':
+      case 'returned':
+        return 'status-green';
+      case 'shipping':
+      case 'returning':
+        return 'status-blue';
+      case 'cancelled':
+      case 'rejected':
+        return 'status-red';
+      default:
+        return 'status-red'; // 'Chưa giao' or similar defaults to red
+    }
   }
 }

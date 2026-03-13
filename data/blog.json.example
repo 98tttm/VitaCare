@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "example",
+    "title": "Ví dụ bài viết",
+    "slug": "vi-du",
+    "excerpt": "Copy thành blog.json nếu cần; file blog.json thật quá lớn nên không đưa lên GitHub.",
+    "content": "<p>Nội dung HTML...</p>",
+    "category": "Sức khỏe",
+    "publishedAt": "2025-01-01T00:00:00.000Z",
+    "image": ""
+  }
+]

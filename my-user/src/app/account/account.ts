@@ -31,6 +31,7 @@ export class Account implements OnInit {
   activeMenu = 'info';
   notificationCount = 0;
   avatarError = false;
+  reviewsReloadTrigger = 0;
 
   /** Avatar lấy từ currentUser để sidebar cập nhật ngay khi đổi ảnh ở info */
   get userAvatar(): string {
@@ -75,7 +76,12 @@ export class Account implements OnInit {
 
     this.route.queryParams.subscribe((qp) => {
       const menu = qp['menu'];
-      if (menu) this.activeMenu = menu;
+      if (menu) {
+        this.activeMenu = menu;
+        if (menu === 'reviews') {
+          this.reviewsReloadTrigger++;
+        }
+      }
     });
   }
 
@@ -99,6 +105,9 @@ export class Account implements OnInit {
   setActiveMenu(menu: string, event: Event): void {
     event.preventDefault();
     this.activeMenu = menu;
+    if (menu === 'reviews') {
+      this.reviewsReloadTrigger++;
+    }
     // Cập nhật URL theo menu đang chọn (vd: ?menu=addresses) để refresh/share đúng trang
     this.router.navigate([], {
       relativeTo: this.route,

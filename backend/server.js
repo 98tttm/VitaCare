@@ -4,7 +4,20 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const { connectDB, mongoose } = require('./db');
+const { Schema } = mongoose;
 const multer = require('multer');
+const nodemailer = require('nodemailer');
+
+// Email Transporter (Gmail)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'vitacarehotro@gmail.com',
+    pass: 'accu ivix xsbg opyi' // Gmail App Password
+  }
+});
+
+let resetCodes = {}; // Temporary store for forgot password codes
 
 // Mongoose models (được định nghĩa trong my-user/src/app/models)
 const Product = require('../my-user/src/app/models/Product');
@@ -22,11 +35,34 @@ const Prescription = require('../my-user/src/app/models/Prescription');
 // const Quiz = require('../my-user/src/app/models/quiz');
 // const Result = require('../my-user/src/app/models/result');
 
+// --- Admin Models ---
+const genericSchema = new Schema({
+  _id: { type: Schema.Types.Mixed, default: () => new mongoose.Types.ObjectId() }
+}, { strict: false, timestamps: true });
+const AdminModel = mongoose.model('admins', genericSchema, 'admins');
+const ProductModel = mongoose.model('admin_products', genericSchema, 'products');
+const CategoryModel = mongoose.model('admin_categories', genericSchema, 'categories');
+const UserModel = mongoose.model('admin_users', genericSchema, 'users');
+const OrderModel = mongoose.model('admin_orders', genericSchema, 'orders');
+const BlogModel = mongoose.model('admin_blogs', genericSchema, 'blog'); // Sửa 'blogs' thành 'blog'
+const PromotionModel = mongoose.model('promotions', genericSchema, 'promotion_promotions'); // Sửa 'promotions' thành 'promotion_promotions'
+const PromotionUsage = mongoose.model('promotion_usage', genericSchema, 'promotion_usage');
+const PromotionTarget = mongoose.model('promotion_target', genericSchema, 'promotion_target');
+const CustomerGroup = mongoose.model('customer_groups', genericSchema, 'customer_groups');
+const ProductGroup = mongoose.model('product_groups', genericSchema, 'product_groups');
+const Pharmacist = mongoose.model('pharmacists', genericSchema, 'pharmacists');
+const ConsultationProductModel = mongoose.model('admin_consultations_product', genericSchema, 'consultations_product');
+const ConsultationPrescriptionModel = mongoose.model('admin_consultations_prescription', genericSchema, 'consultations_prescription');
+const ReviewModel = mongoose.model('admin_reviews', genericSchema, 'reviews');
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: ['http://localhost:4200', 'http://localhost:54083'] }));
-app.use(express.json());
+app.use(cors()); // Allow all origins for local development
+// Tăng giới hạn kích thước body để hỗ trợ ảnh đánh giá (base64, nhiều file)
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // Static files cho upload (hình ảnh lời nhắc)
 const uploadsRoot = path.join(__dirname, 'uploads');
@@ -85,6 +121,90 @@ function getId(doc) {
   if (typeof doc.toString === 'function' && doc.toString() !== '[object Object]') return doc.toString();
   return null;
 }
+
+// GET /api/admin/notifications - tổng hợp thông báo cho admin (đơn hàng, tư vấn, hỏi đáp sản phẩm)
+app.get('/api/admin/notifications', async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(1, parseInt(req.query.limit, 10) || 20), 50);
+
+    const [pendingOrders, returnOrders, consultPres, consultProd] = await Promise.all([
+      ordersCollection()
+        .find({ status: 'pending' })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .toArray(),
+      ordersCollection()
+        .find({ status: { $in: ['processing_return', 'returning'] } })
+        .sort({ updatedAt: -1, createdAt: -1 })
+        .limit(limit)
+        .toArray(),
+      ConsultationPrescriptionModel.find({})
+        .sort({ createdAt: -1 })
+        .limit(limit),
+      ConsultationProductModel.find({})
+        .sort({ createdAt: -1 })
+        .limit(limit),
+    ]);
+
+    const notifications = [];
+
+    pendingOrders.forEach((o) => {
+      notifications.push({
+        _id: getId(o),
+        type: 'order_pending',
+        title: 'Đơn hàng mới chờ xác nhận',
+        message: `Đơn ${o.order_id || o.code || getId(o)} từ ${o.shippingInfo?.fullName || 'Khách lẻ'} đang chờ xác nhận.`,
+        createdAt: o.createdAt || o.route?.pending || o.date || new Date(),
+        link: `/admin/orders/detail/${getId(o)}`
+      });
+    });
+
+    returnOrders.forEach((o) => {
+      notifications.push({
+        _id: `${getId(o)}_return`,
+        type: 'order_return',
+        title: 'Yêu cầu trả/hoàn hàng mới',
+        message: `Đơn ${o.order_id || o.code || getId(o)} có yêu cầu trả/hoàn.`,
+        createdAt: o.updatedAt || o.createdAt || new Date(),
+        link: `/admin/orders/detail/${getId(o)}`
+      });
+    });
+
+    consultPres.forEach((c) => {
+      notifications.push({
+        _id: getId(c),
+        type: 'consultation_prescription',
+        title: 'Đơn tư vấn thuốc mới',
+        message: `${c.fullName || c.name || 'Khách hàng'} vừa gửi đơn tư vấn thuốc.`,
+        createdAt: c.createdAt || new Date(),
+        link: '/admin/consultation-prescription'
+      });
+    });
+
+    consultProd.forEach((c) => {
+      notifications.push({
+        _id: getId(c),
+        type: 'consultation_product',
+        title: 'Câu hỏi tư vấn sản phẩm mới',
+        message: `${c.fullName || c.name || 'Khách hàng'} vừa hỏi về sản phẩm ${c.productName || ''}`.trim(),
+        createdAt: c.createdAt || new Date(),
+        link: '/admin/consultation-product'
+      });
+    });
+
+    notifications.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    res.json({
+      success: true,
+      data: notifications.slice(0, limit)
+    });
+  } catch (err) {
+    console.error('[GET /api/admin/notifications] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
+  }
+});
 
 // GET /api/categories - danh sách danh mục (từ MongoDB)
 // Query: level=1 chỉ lấy category cấp 1 (không có parentId)
@@ -246,6 +366,12 @@ app.get('/api/products', async (req, res) => {
       filter.price.$lte = maxPrice;
     }
 
+    // Chỉ lấy sản phẩm đang hoạt động (isActive !== false) trừ khi client yêu cầu khác
+    const includeInactive = String(req.query.includeInactive || '').toLowerCase() === 'true';
+    if (!includeInactive) {
+      filter.isActive = { $ne: false };
+    }
+
     const col = productsCollection();
     const skip = (page - 1) * limit;
     let sortOption = { _id: -1 };
@@ -262,6 +388,17 @@ app.get('/api/products', async (req, res) => {
     const products = items.map((p) => {
       const id = getId(p);
       const categoryId = p.categoryId ? getId(p.categoryId) : null;
+
+      // Ưu tiên lấy ảnh đúng từ MongoDB:
+      // 1. p.image (field chuẩn trong collection products)
+      // 2. Ảnh đầu tiên trong p.gallery (nếu có)
+      // 3. p.imageUrl (một số seed cũ dùng field này)
+      const primaryImage =
+        p.image ||
+        (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery[0] : '') ||
+        p.imageUrl ||
+        '';
+
       return {
         _id: id,
         name: p.name,
@@ -269,7 +406,7 @@ app.get('/api/products', async (req, res) => {
         price: p.price,
         discount: p.discount,
         unit: p.unit || 'Hộp',
-        image: p.image,
+        image: primaryImage,
         categoryId,
         slug: p.slug || id,
       };
@@ -290,15 +427,27 @@ app.get('/api/product/:slug', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Thiếu slug sản phẩm.' });
     }
 
-    // Ưu tiên tìm theo slug
-    let product = await productsCollection().findOne({ slug });
+    const col = productsCollection();
 
-    // Nếu không có, thử tìm theo _id (string hoặc ObjectId)
+    // 1. Ưu tiên tìm theo slug
+    let product = await col.findOne({ slug });
+
+    // 2. Nếu không có, thử tìm theo _id (string hoặc ObjectId)
     if (!product) {
-      product = await productsCollection().findOne({ _id: slug });
+      product = await col.findOne({ _id: slug });
     }
     if (!product && mongoose.Types.ObjectId.isValid(slug)) {
-      product = await productsCollection().findOne({ _id: new mongoose.Types.ObjectId(slug) });
+      product = await col.findOne({ _id: new mongoose.Types.ObjectId(slug) });
+    }
+
+    // 3. Backup: nếu chỉ có SKU (từ cart / đơn hàng cũ), dùng sku (string hoặc number) để tìm sản phẩm
+    if (!product) {
+      const skuStr = slug;
+      const skuNum = !Number.isNaN(Number(slug)) ? Number(slug) : null;
+      const skuFilter = skuNum !== null
+        ? { $or: [{ sku: skuStr }, { sku: skuNum }] }
+        : { sku: skuStr };
+      product = await col.findOne(skuFilter);
     }
 
     if (!product) {
@@ -386,6 +535,29 @@ app.get('/api/products/related/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy sản phẩm liên quan.' });
   }
 });
+// GET /api/promotions - danh sách chương trình khuyến mãi
+app.get('/api/promotions', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const list = await db.collection('promotion_promotions').find({}).toArray();
+    res.json({ success: true, data: list });
+  } catch (err) {
+    console.error('[GET /api/promotions] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server' });
+  }
+});
+
+// GET /api/promotion-targets - danh sách đối tượng áp dụng khuyến mãi
+app.get('/api/promotion-targets', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const list = await db.collection('promotion_target').find({}).toArray();
+    res.json({ success: true, data: list });
+  } catch (err) {
+    console.error('[GET /api/promotion-targets] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server' });
+  }
+});
 
 // GET /api/orders?user_id=...
 app.get('/api/orders', async (req, res) => {
@@ -457,7 +629,7 @@ app.post('/api/orders', async (req, res) => {
       order_id: orderId,
       user_id: uid || null,
       paymentMethod: paymentMethod || 'cod',
-      statusPayment: statusPayment || 'unpaid',
+      statusPayment: (paymentMethod && paymentMethod !== 'cod') ? 'paid' : (statusPayment || 'unpaid'),
       atPharmacy: Boolean(atPharmacy),
       pharmacyAddress: pharmacyAddress || '',
       subtotal: Number(subtotal) || 0,
@@ -472,6 +644,8 @@ app.post('/api/orders', async (req, res) => {
       requestInvoice: Boolean(requestInvoice),
       hideProductInfo: Boolean(hideProductInfo),
       item: item.map(i => ({
+        productId: i._id || i.productId || null,
+        slug: i.slug || '',
         sku: i.sku || '',
         productName: i.productName || '',
         quantity: Number(i.quantity) || 1,
@@ -496,15 +670,15 @@ app.post('/api/orders', async (req, res) => {
         const ncol = noticesCollection();
         await ncol.insertOne({
           user_id: uid,
-        type: 'order_created',
-        title: 'Đặt hàng thành công',
-        message: `Đơn hàng ${orderId} đã được tạo và đang chờ xác nhận.`,
-        createdAt: now,
-        read: false,
-        link: '/account',
-        linkLabel: 'Xem đơn hàng',
-        meta: orderId,
-      });
+          type: 'order_created',
+          title: 'Đặt hàng thành công',
+          message: `Đơn hàng ${orderId} đã được tạo và đang chờ xác nhận.`,
+          createdAt: now,
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem đơn hàng',
+          meta: orderId,
+        });
       } catch (e) {
         console.warn('[POST /api/orders] Cannot create notice:', e.message);
       }
@@ -519,6 +693,83 @@ app.post('/api/orders', async (req, res) => {
 });
 
 // ========= NOTICES (Thông báo) - collection "notice" =========
+/** Chuẩn hoá HH:mm cho so khớp completion_log */
+function normalizeReminderTimeStr(t) {
+  const s = String(t || '').trim();
+  const m = s.match(/^(\d{1,2}):(\d{2})/);
+  if (!m) return '00:00';
+  return `${String(parseInt(m[1], 10)).padStart(2, '0')}:${m[2]}`;
+}
+/** Ngày theo múi Việt Nam (YYYY-MM-DD) — trùng ngày dùng thuốc với user */
+function vnTodayKey(now) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now);
+  const y = parts.find((p) => p.type === 'year')?.value;
+  const m = parts.find((p) => p.type === 'month')?.value;
+  const d = parts.find((p) => p.type === 'day')?.value;
+  return `${y}-${m}-${d}`;
+}
+/** Số phút từ 0h đến hiện tại (VN) */
+function vnMinutesSinceMidnight(now) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+  const h = parseInt(parts.find((p) => p.type === 'hour')?.value || '0', 10);
+  const min = parseInt(parts.find((p) => p.type === 'minute')?.value || '0', 10);
+  return h * 60 + min;
+}
+/** Lịch nhắc: trong ngày VN, đã qua giờ nhắc, chưa tick → thông báo */
+async function buildDueReminderNoticeItems(user_id, now) {
+  const todayKey = vnTodayKey(now);
+  const curMin = vnMinutesSinceMidnight(now);
+  const uid = String(user_id);
+  const list = await remindersCollection()
+    .find({ $or: [{ user_id: uid }, { user_id: user_id }] })
+    .toArray();
+  const out = [];
+  for (const r of list) {
+    if (r.schedule_status === 'Inactive' || r.config_status === 'Inactive') continue;
+    const startStr = (r.start_date && String(r.start_date).slice(0, 10)) || todayKey;
+    const endStr = (r.end_date && String(r.end_date).slice(0, 10)) || todayKey;
+    if (todayKey < startStr) continue;
+    /* Hết end_date: chỉ bỏ qua nếu đã tắt lịch; còn Active thì vẫn nhắc (DB Compass hay quên gia hạn) */
+    if (todayKey > endStr) {
+      if (r.schedule_status === 'Inactive' || r.config_status === 'Inactive') continue;
+    }
+    const times = Array.isArray(r.reminder_times) && r.reminder_times.length ? r.reminder_times : ['08:00'];
+    const log = r.completion_log || [];
+    for (const tRaw of times) {
+      const timeNorm = normalizeReminderTimeStr(tRaw);
+      const done = log.some((c) => c && c.date === todayKey && normalizeReminderTimeStr(c.time) === timeNorm);
+      if (done) continue;
+      const [hh, mm] = timeNorm.split(':').map((x) => parseInt(x, 10) || 0);
+      const slotMin = hh * 60 + mm;
+      if (curMin < slotMin) continue;
+      const rid = getId(r) || String(r._id);
+      out.push({
+        id: `reminder-due-${rid}-${todayKey}-${timeNorm.replace(':', '')}`,
+        type: 'medication_reminder',
+        title: 'Nhắc uống thuốc',
+        message: `${r.med_name || 'Thuốc'} — ${r.dosage || ''}${r.unit ? ' ' + r.unit : ''} (lịch ${timeNorm})`,
+        time: now.toISOString(),
+        read: false,
+        link: '/account',
+        linkLabel: 'Mở lịch nhắc',
+        meta: `${timeNorm} · ${r.med_name || ''}`.trim(),
+      });
+    }
+  }
+  out.sort((a, b) => (b.meta || '').localeCompare(a.meta || ''));
+  return out;
+}
+
 // GET /api/notices?user_id=...
 app.get('/api/notices', async (req, res) => {
   try {
@@ -542,7 +793,15 @@ app.get('/api/notices', async (req, res) => {
       linkLabel: d.linkLabel,
       meta: d.meta,
     }));
-    res.json({ success: true, items });
+    const now = new Date();
+    let dueReminders = [];
+    try {
+      dueReminders = await buildDueReminderNoticeItems(user_id, now);
+    } catch (e) {
+      console.warn('[GET /api/notices] due reminders:', e.message);
+    }
+    const merged = [...dueReminders, ...items];
+    res.json({ success: true, items: merged });
   } catch (err) {
     console.error('[GET /api/notices] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy thông báo.' });
@@ -601,9 +860,6 @@ app.put('/api/orders/:id/cancel', async (req, res) => {
       : { order_id: id };
     const doc = await col.findOne(filter);
     if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng.' });
-    if (!['pending', 'confirmed'].includes(doc.status)) {
-      return res.status(400).json({ success: false, message: 'Chỉ có thể huỷ đơn đang chờ xác nhận.' });
-    }
     const now = new Date().toISOString();
     await col.updateOne(filter, {
       $set: {
@@ -666,6 +922,27 @@ app.put('/api/orders/:id/request-return', async (req, res) => {
         updatedAt: now,
       },
     });
+
+    // Lưu notice cho user khi gửi yêu cầu trả hàng
+    try {
+      const userId = doc.user_id || doc.userId;
+      if (userId) {
+        await noticesCollection().insertOne({
+          user_id: String(userId),
+          type: 'order_updated',
+          title: 'Yêu cầu trả hàng đã được gửi',
+          message: `Yêu cầu trả hàng/hoàn tiền cho đơn hàng ${doc.order_id || id} đã được gửi. Chúng tôi sẽ xử lý trong thời gian sớm nhất.`,
+          createdAt: now,
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem trạng thái',
+          meta: doc.order_id || id,
+        });
+      }
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/request-return] Cannot create notice:', e.message);
+    }
+
     res.json({ success: true, message: 'Đã gửi yêu cầu trả hàng/hoàn tiền.' });
   } catch (err) {
     console.error('Request return error:', err);
@@ -690,6 +967,7 @@ app.put('/api/orders/:id/confirm-received', async (req, res) => {
     await col.updateOne(filter, {
       $set: {
         status: 'unreview',
+        statusPayment: 'paid', // Cập nhật sang Đã thanh toán khi nhận hàng (thường cho COD)
         'route.received': doc.route?.received || now,
         updatedAt: now,
       },
@@ -715,10 +993,107 @@ app.put('/api/orders/:id/confirm-received', async (req, res) => {
       console.warn('[PUT /api/orders/:id/confirm-received] Cannot create notice:', e.message);
     }
 
-    res.json({ success: true, message: 'Đã xác nhận nhận hàng.' });
+    res.json({ success: true, message: 'Đã xác nhận nhận hàng, chuyển sang chờ đánh giá' });
   } catch (err) {
-    console.error('Confirm received error:', err);
-    res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
+    console.error('[PUT /api/orders/:id/confirm-received] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server', error: err.message });
+  }
+});
+
+// PUT /api/orders/:id/confirm-returned - User xác nhận đã nhận hàng hoàn trả (từ returning -> returned)
+app.put('/api/orders/:id/confirm-returned', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const orderId = req.params.id;
+
+    const result = await db.collection('orders').findOneAndUpdate(
+      { $or: [{ _id: orderId }, { order_id: orderId }] },
+      {
+        $set: {
+          status: 'returned',
+          'route.returned': new Date().toISOString()
+        }
+      },
+      { returnDocument: 'after' }
+    );
+
+    if (!result) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+    }
+
+    // Ghi log notice (tuỳ chọn)
+    try {
+      const orderData = result.value || result;
+      const user_id = orderData.user_id || 'guest';
+      await db.collection('notices').insertOne({
+        user_id,
+        title: 'Xác nhận nhận hàng hoàn trả',
+        body: `Bạn đã xác nhận nhận hàng hoàn trả cho đơn ${orderId} thành công.`,
+        type: 'order',
+        isRead: false,
+        createdAt: new Date()
+      });
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/confirm-returned] Cannot create notice:', e.message);
+    }
+
+    res.json({ success: true, message: 'Đã xác nhận nhận hàng hoàn trả' });
+  } catch (err) {
+    console.error('[PUT /api/orders/:id/confirm-returned] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server', error: err.message });
+  }
+});
+
+// PUT /api/orders/:id/cancel-return - User hủy yêu cầu trả hàng (từ processing_return -> unreview)
+app.put('/api/orders/:id/cancel-return', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const col = mongoose.connection.db.collection('orders');
+
+    // Log for debugging
+    console.log('[DEBUG] Cancel return request for ID:', id);
+
+    // Logic tìm kiếm giống với request-return
+    const filter = mongoose.Types.ObjectId.isValid(id)
+      ? { $or: [{ _id: new mongoose.Types.ObjectId(id) }, { order_id: id }] }
+      : { order_id: id };
+
+    const doc = await col.findOne(filter);
+    if (!doc) {
+      console.error('[DEBUG] Order not found for filter:', JSON.stringify(filter));
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+    }
+
+    const now = new Date().toISOString();
+    await col.updateOne(filter, {
+      $set: {
+        status: 'unreview',
+        returnReason: '', // Xóa lý do trả hàng
+        updatedAt: now,
+        'route.cancel_return': now
+      }
+    });
+
+    // Ghi log notice
+    try {
+      const user_id = doc.user_id || doc.userId || 'guest';
+      await mongoose.connection.db.collection('notices').insertOne({
+        user_id,
+        title: 'Hủy yêu cầu trả hàng',
+        body: `Bạn đã hủy yêu cầu trả hàng cho đơn ${doc.order_id || id} thành công. Đơn hàng đã chuyển về trạng thái chờ đánh giá.`,
+        type: 'order',
+        isRead: false,
+        createdAt: new Date()
+      });
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/cancel-return] Cannot create notice:', e.message);
+    }
+
+    console.log('[DEBUG] Cancel return success for order:', doc.order_id || id);
+    res.json({ success: true, message: 'Đã hủy yêu cầu trả hàng thành công' });
+  } catch (err) {
+    console.error('[PUT /api/orders/:id/cancel-return] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server', error: err.message });
   }
 });
 
@@ -868,15 +1243,15 @@ app.post('/api/prescriptions', async (req, res) => {
         const ncol = noticesCollection();
         await ncol.insertOne({
           user_id: uid,
-        type: 'prescription_created',
-        title: 'Đơn thuốc cần tư vấn',
-        message: 'Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.',
-        createdAt: now,
-        read: false,
-        link: '/account',
-        linkLabel: 'Xem đơn thuốc',
-        meta: prescriptionId,
-      });
+          type: 'prescription_created',
+          title: 'Đơn thuốc cần tư vấn',
+          message: 'Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.',
+          createdAt: now,
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem đơn thuốc',
+          meta: prescriptionId,
+        });
       } catch (e) {
         console.warn('[POST /api/prescriptions] Cannot create notice:', e.message);
       }
@@ -1094,6 +1469,16 @@ async function loadTreeDocs() {
     return [];
   }
 }
+
+// GET /api/tree_complete
+app.get('/api/tree_complete', async (req, res) => {
+  try {
+    const docs = await loadTreeDocs();
+    res.json(docs);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // GET /api/locations/provinces
 // Trả về danh sách Tỉnh/Thành phố
@@ -1748,12 +2133,14 @@ app.post('/api/reminders/:id/complete', async (req, res) => {
     if (!date || !time) {
       return res.status(400).json({ success: false, message: 'Thiếu date hoặc time.' });
     }
+    const dateNorm = String(date).slice(0, 10);
+    const timeNorm = normalizeReminderTimeStr(time);
     const oid = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
     const result = await remindersCollection().findOneAndUpdate(
       { _id: oid },
       {
         $set: { last_completed_date: new Date().toISOString() },
-        $addToSet: { completion_log: { date: String(date), time: String(time) } },
+        $addToSet: { completion_log: { date: dateNorm, time: timeNorm } },
       },
       { returnDocument: 'after' }
     );
@@ -1794,12 +2181,24 @@ app.get('/api/blogs', async (req, res) => {
     const skip = Math.max(0, skipParam);
 
     const orConds = [];
-    if (keyword) {
+    const keywordsParam = String(req.query.keywords || '').trim();
+    const keywordTerms = [
+      ...new Set(
+        [
+          keyword,
+          ...keywordsParam.split(/[,;|]/).map((s) => s.trim()).filter(Boolean),
+        ].filter(Boolean)
+      ),
+    ];
+    keywordTerms.forEach((term) => {
+      if (!term) return;
+      const esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       orConds.push(
-        { title: { $regex: keyword, $options: 'i' } },
-        { shortDescription: { $regex: keyword, $options: 'i' } }
+        { title: { $regex: esc, $options: 'i' } },
+        { shortDescription: { $regex: esc, $options: 'i' } },
+        { description: { $regex: esc, $options: 'i' } }
       );
-    }
+    });
     if (healthIndicator && HEALTH_INDICATOR_KEYWORDS[healthIndicator]) {
       const terms = HEALTH_INDICATOR_KEYWORDS[healthIndicator];
       terms.forEach((term) => {
@@ -1841,9 +2240,33 @@ app.get('/api/blogs', async (req, res) => {
     const colls = await db.listCollections({ name: { $in: ['blog', 'blogs'] } }).toArray();
     const collName = colls.some((c) => c.name === 'blog') ? 'blog' : 'blogs';
     const blogsCol = db.collection(collName);
+    const projection = {
+      title: 1,
+      shortDescription: 1,
+      excerpt: 1,
+      description: 1,
+      descriptionHtml: 1,
+      content: 1,
+      body: 1,
+      slug: 1,
+      image: 1,
+      imageUrl: 1,
+      primaryImage: 1,
+      categories: 1,
+      category: 1,
+      categoryName: 1,
+      author: 1,
+      authorName: 1,
+      publishedAt: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      viewCount: 1,
+      views: 1,
+    };
+
     const [items, total] = await Promise.all([
       blogsCol
-        .find(filter)
+        .find(filter, { projection })
         .sort({ publishedAt: -1, _id: -1 })
         .skip(skip)
         .limit(limit)
@@ -2283,7 +2706,7 @@ app.get('/api/consultations/:sku', async (req, res) => {
 // POST /api/consultations - thêm câu hỏi mới
 app.post('/api/consultations', async (req, res) => {
   try {
-    const { sku, question, full_name } = req.body || {};
+    const { sku, question, full_name, user_id } = req.body || {};
     const skuStr = String(sku || '').trim();
     if (!skuStr) {
       return res.status(400).json({ success: false, message: 'Thiếu sku.' });
@@ -2292,12 +2715,13 @@ app.post('/api/consultations', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Thiếu nội dung câu hỏi.' });
     }
 
+    const uid = user_id ? String(user_id).trim() : null;
     const qId = new mongoose.Types.ObjectId().toString();
     const entry = {
       _id: qId,
       id: qId,
       question: String(question).trim(),
-      user_id: null,
+      user_id: uid,
       full_name: (full_name && String(full_name).trim()) || 'Khách hàng vãng lai',
       answer: null,
       answeredBy: null,
@@ -2309,11 +2733,40 @@ app.post('/api/consultations', async (req, res) => {
     };
 
     const col = consultationsProductCollection();
+
+    // Lấy tên sản phẩm để ghi vào notice
+    let productName = skuStr;
+    try {
+      const productDoc = await productsCollection().findOne({ sku: skuStr }, { projection: { name: 1, product_name: 1, productName: 1 } });
+      if (productDoc) {
+        productName = productDoc.name || productDoc.product_name || productDoc.productName || skuStr;
+      }
+    } catch (_) { }
+
     const existing = await col.findOne({ sku: skuStr });
     if (!existing) {
-      await col.insertOne({ sku: skuStr, questions: [entry], createdAt: new Date(), updatedAt: new Date() });
+      await col.insertOne({ sku: skuStr, productName, questions: [entry], createdAt: new Date(), updatedAt: new Date() });
     } else {
       await col.updateOne({ sku: skuStr }, { $push: { questions: entry }, $set: { updatedAt: new Date() } });
+    }
+
+    // Lưu notice cho user (xác nhận câu hỏi đã được gửi)
+    if (uid) {
+      try {
+        await noticesCollection().insertOne({
+          user_id: uid,
+          type: 'order_updated',
+          title: 'Câu hỏi đã được gửi',
+          message: `Câu hỏi của bạn về sản phẩm "${productName}" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.`,
+          createdAt: new Date().toISOString(),
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem thông báo',
+          meta: skuStr,
+        });
+      } catch (e) {
+        console.warn('[POST /api/consultations] Cannot create notice:', e.message);
+      }
     }
 
     const updated = await col.findOne({ sku: skuStr });
@@ -3648,24 +4101,953 @@ async function ensureBlogSlugIndex() {
 }
 
 const start = async () => {
-  await connectDB();
-  await ensureBlogSlugIndex();
-  await seedUsersIfEmpty();
-  await seedOrdersIfEmpty();
-  await seedCartsIfEmpty();
-  await seedCategoriesIfEmpty();
-  await seedProductsIfEmpty();
-  await seedHealthProfilesIfEmpty();
-  await seedPrescriptionsIfEmpty();
-  await seedNoticesIfEmpty();
-  await seedRemindersIfEmpty();
-  await seedBenhIfEmpty();
-  app.listen(PORT, () => {
-    console.log(`🚀 VitaCare API: http://localhost:${PORT}`);
-  });
+  try {
+    await connectDB();
+
+    // Start listening immediately to avoid ERR_CONNECTION_REFUSED
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 VitaCare API: http://localhost:${PORT}`);
+    });
+
+    // Run seeding/indexing in background
+    (async () => {
+      try {
+        await ensureBlogSlugIndex();
+        await seedUsersIfEmpty();
+        await seedOrdersIfEmpty();
+        await seedCartsIfEmpty();
+        await seedCategoriesIfEmpty();
+        await seedProductsIfEmpty();
+        await seedHealthProfilesIfEmpty();
+        await seedPrescriptionsIfEmpty();
+        await seedNoticesIfEmpty();
+        await seedRemindersIfEmpty();
+        await seedBenhIfEmpty();
+        await seedDataAdmin().catch(err => console.error('❌ Background Admin Seed Error:', err.message));
+        console.log('✅ All background seeding completed');
+      } catch (e) {
+        console.error('❌ Background seeding failed:', e.message);
+      }
+    })();
+  } catch (err) {
+    console.error('Start failed:', err);
+    process.exit(1);
+  }
 };
 
 start().catch((err) => {
   console.error('Start failed:', err);
   process.exit(1);
 });
+
+// --- Seeding Logic Admin ---
+async function seedDataAdmin() {
+  const dataDir = path.join(__dirname, '..', 'data');
+  const seedMap = [
+    { model: PromotionModel, file: 'promotions.json' },
+    { model: ConsultationProductModel, file: 'consultations_product.json' },
+    { model: ConsultationPrescriptionModel, file: 'consultations_prescription.json' },
+    { model: Pharmacist, file: 'pharmacists.json' },
+    { model: PromotionTarget, file: 'promotion_target.json' },
+    { model: PromotionUsage, file: 'promotion_usage.json' },
+    { model: CustomerGroup, file: 'customer_groups.json' },
+    { model: ProductGroup, file: 'product_groups.json' }
+  ];
+
+  function convertMongoJson(obj) {
+    if (!obj || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(convertMongoJson);
+    const newObj = {};
+    for (const [key, val] of Object.entries(obj)) {
+      if (key === '$oid' && typeof val === 'string') return new mongoose.Types.ObjectId(val);
+      if (key === '$date' && typeof val === 'string') return new Date(val);
+      newObj[key] = convertMongoJson(val);
+    }
+    return newObj;
+  }
+
+  for (const item of seedMap) {
+    try {
+      const count = await item.model.countDocuments();
+      if (count === 0) {
+        const filePath = path.join(dataDir, item.file);
+        if (fs.existsSync(filePath)) {
+          const rawData = fs.readFileSync(filePath, 'utf8');
+          let jsonData = convertMongoJson(JSON.parse(rawData));
+
+          if (item.file === 'promotions.json') {
+            jsonData = jsonData.map(p => ({
+              ...p,
+              type: p.type ? p.type.toLowerCase() : 'order',
+              scope: p.scope ? p.scope.toLowerCase() : 'order'
+            }));
+          }
+          await item.model.insertMany(jsonData);
+          console.log(`🌱 Seeded ${jsonData.length} items for ${item.file}`);
+        }
+      }
+    } catch (err) {
+      console.error(`❌ Error seeding ${item.file}:`, err.message);
+    }
+  }
+}
+
+// --- Admin Routes ---
+
+// Dashboard Stats
+app.get('/api/admin/stats', async (req, res) => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [products, users, orders, promos, blogs, pharmacists, consults_p, consults_pr, revenue30dAgg, totalRevenueAgg] = await Promise.all([
+      ProductModel.countDocuments(),
+      UserModel.countDocuments(),
+      OrderModel.countDocuments(),
+      PromotionModel.countDocuments(),
+      BlogModel.countDocuments(),
+      Pharmacist.countDocuments(),
+      ConsultationProductModel.countDocuments(),
+      ConsultationPrescriptionModel.countDocuments(),
+      OrderModel.aggregate([
+        { $addFields: { rawDate: { $ifNull: ["$createdAt", "$route.pending"] } } },
+        { $addFields: { parsedDate: { $toDate: "$rawDate" } } },
+        {
+          $match: {
+            parsedDate: { $gte: thirtyDaysAgo },
+            $or: [{ statusPayment: 'paid' }, { status: 'delivered' }]
+          }
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$parsedDate" } },
+            revenue: { $sum: "$totalAmount" }
+          }
+        },
+        { $sort: { _id: 1 } }
+      ]),
+      OrderModel.aggregate([
+        { $match: { $or: [{ statusPayment: 'paid' }, { status: 'delivered' }] } },
+        { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      ])
+    ]);
+
+    // Fill gaps in revenue30d
+    const revenueMap = {};
+    if (revenue30dAgg) revenue30dAgg.forEach(r => { revenueMap[r._id] = r.revenue; });
+
+    const finalRevenue = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const ds = d.toISOString().substring(0, 10);
+      finalRevenue.push({ date: ds, revenue: revenueMap[ds] || 0 });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        products,
+        users,
+        orders,
+        promotions: promos,
+        blogs,
+        pharmacists,
+        consultations_product: consults_p,
+        consultations_prescription: consults_pr,
+        revenue30d: finalRevenue,
+        totalRevenue: totalRevenueAgg[0]?.total || 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Admins
+app.get('/api/admin/admins', async (req, res) => {
+  try {
+    const data = await AdminModel.find();
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+// Products with Advanced Filtering
+app.get('/api/admin/products', async (req, res) => {
+  try {
+    const { page = 1, limit = 20, search, categoryId, minPrice, maxPrice, units, stockStatus } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const query = {};
+    const andFilters = [];
+
+    if (search) {
+      andFilters.push({
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { sku: { $regex: search, $options: 'i' } }
+        ]
+      });
+    }
+
+    if (categoryId) {
+      const cats = await CategoryModel.find().lean();
+      const getIdStr = (id) => id ? String(id._id || id) : '';
+      const getChildIds = (pid) => {
+        const pIdStr = getIdStr(pid);
+        const children = cats.filter(c => getIdStr(c.parentId) === pIdStr);
+        let ids = [pIdStr];
+        children.forEach(c => { ids = [...ids, ...getChildIds(c._id)]; });
+        return ids;
+      };
+      const allCatIdsStrings = [...new Set(getChildIds(categoryId))];
+      const allCatIdsMixed = [];
+      allCatIdsStrings.forEach(id => {
+        if (!id) return;
+        const oidStr = String(id);
+        allCatIdsMixed.push(oidStr);
+        try { allCatIdsMixed.push(new mongoose.Types.ObjectId(oidStr)); } catch (e) { }
+      });
+      andFilters.push({
+        $or: [
+          { categoryId: { $in: allCatIdsMixed } },
+          { "categoryId.$oid": { $in: allCatIdsStrings } }
+        ]
+      });
+    }
+
+    if (minPrice || maxPrice) {
+      const priceQuery = { price: {} };
+      if (minPrice) priceQuery.price.$gte = Number(minPrice);
+      if (maxPrice) priceQuery.price.$lte = Number(maxPrice);
+      andFilters.push(priceQuery);
+    }
+
+    if (units) {
+      const unitArray = Array.isArray(units) ? units : units.split(',');
+      andFilters.push({ unit: { $in: unitArray } });
+    }
+
+    if (stockStatus) {
+      const statusArray = Array.isArray(stockStatus) ? stockStatus : stockStatus.split(',');
+      const stockQueries = [];
+      if (statusArray.includes('out_of_stock')) stockQueries.push({ stock: 0 });
+      if (statusArray.includes('low_stock')) stockQueries.push({ stock: { $gt: 0, $lt: 10 } });
+      if (statusArray.includes('in_stock')) stockQueries.push({ stock: { $gte: 10 } });
+      if (stockQueries.length > 0) andFilters.push({ $or: stockQueries });
+    }
+
+    if (andFilters.length > 0) {
+      query.$and = andFilters;
+    }
+
+    const totalItems = await ProductModel.countDocuments(query);
+
+    const sortObj = {};
+    if (req.query.sortColumn) {
+      const col = req.query.sortColumn;
+      sortObj[col] = req.query.sortDirection === 'desc' ? -1 : 1;
+    } else {
+      sortObj.created_at = -1;
+    }
+
+    const data = await ProductModel.find(query)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limitNum)
+      .lean();
+
+    res.json({
+      success: true,
+      data,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limitNum),
+      currentPage: pageNum
+    });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/products/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = [{ _id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+    const data = await ProductModel.findOne({ $or: query }).lean();
+    if (!data) return res.status(404).json({ success: false, message: 'Not found' });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/products', async (req, res) => {
+  try {
+    const item = new ProductModel(req.body);
+    const data = await item.save();
+    res.status(201).json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.put('/api/admin/products/:id', async (req, res) => {
+  try {
+    const data = await ProductModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!data) return res.status(404).json({ success: false, message: 'Not found' });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/products/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = [{ _id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+    await ProductModel.findOneAndDelete({ $or: query });
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/categories', async (req, res) => {
+  try {
+    const item = new CategoryModel(req.body);
+    const data = await item.save();
+    res.status(201).json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.put('/api/admin/categories/:id', async (req, res) => {
+  try {
+    const data = await CategoryModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/categories/:id', async (req, res) => {
+  try {
+    await CategoryModel.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/orders', async (req, res) => {
+  try {
+    const data = await OrderModel.find().sort({ createdAt: -1 }).lean();
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/orders/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(`[GET /api/admin/orders/${id}] Fetching order...`);
+    const data = await OrderModel.findOne({
+      $or: [
+        { _id: mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : null },
+        { _id: id },
+        { order_id: id },
+        { code: id }
+      ].filter(q => q._id !== null)
+    }).lean();
+
+    if (!data) {
+      console.warn(`[GET /api/admin/orders/${id}] Order not found`);
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    console.log(`[GET /api/admin/orders/${id}] Found order:`, data.code || data.order_id || data._id);
+    res.json({ success: true, data: data });
+  } catch (error) {
+    console.error(`[GET /api/admin/orders/${id}] Error:`, error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.put('/api/admin/orders/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = [{ _id: id }, { order_id: id }, { code: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+
+    // Lấy doc cũ trước để so sánh trạng thái
+    const oldDoc = await OrderModel.findOne({ $or: query }).lean();
+    const data = await OrderModel.findOneAndUpdate({ $or: query }, req.body, { new: true });
+    if (!data) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    // Lưu notice cho user khi admin thay đổi trạng thái đơn hàng
+    const newStatus = req.body.status;
+    if (newStatus && oldDoc && newStatus !== oldDoc.status) {
+      const userId = data.user_id || oldDoc.user_id;
+      if (userId) {
+        const orderCode = data.order_id || oldDoc.order_id || id;
+        const statusNoticeMap = {
+          confirmed:       { title: 'Đơn hàng đã được xác nhận',         message: `Đơn hàng ${orderCode} đã được xác nhận và đang được chuẩn bị.` },
+          shipping:        { title: 'Đơn hàng đang được giao',            message: `Đơn hàng ${orderCode} đang trên đường giao đến bạn.` },
+          delivered:       { title: 'Đơn hàng đã được giao',              message: `Đơn hàng ${orderCode} đã được giao thành công. Vui lòng xác nhận nhận hàng.` },
+          cancelled:       { title: 'Đơn hàng đã bị huỷ',                 message: `Đơn hàng ${orderCode} đã bị huỷ bởi hệ thống.` },
+          returning:       { title: 'Yêu cầu trả hàng được chấp nhận',    message: `Yêu cầu trả hàng đơn ${orderCode} đã được chấp nhận, đang xử lý hoàn trả.` },
+          returned:        { title: 'Đơn hàng đã hoàn trả',               message: `Đơn hàng ${orderCode} đã được hoàn trả thành công.` },
+          refund_rejected: { title: 'Yêu cầu hoàn tiền bị từ chối',       message: `Yêu cầu hoàn tiền cho đơn hàng ${orderCode} đã bị từ chối.` },
+        };
+        const noticeInfo = statusNoticeMap[newStatus];
+        if (noticeInfo) {
+          try {
+            await noticesCollection().insertOne({
+              user_id: String(userId),
+              type: 'order_updated',
+              title: noticeInfo.title,
+              message: noticeInfo.message,
+              createdAt: new Date().toISOString(),
+              read: false,
+              link: '/account',
+              linkLabel: 'Xem đơn hàng',
+              meta: orderCode,
+            });
+          } catch (e) {
+            console.warn('[PUT /api/admin/orders/:id] Cannot create notice:', e.message);
+          }
+        }
+      }
+    }
+
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/orders/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    await OrderModel.findOneAndDelete({ $or: [{ _id: id }, { order_id: id }, { code: id }] });
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/promotions', async (req, res) => {
+  try {
+    const promotions = await PromotionModel.find().lean();
+    const usages = await PromotionUsage.find().lean();
+    const targets = await PromotionTarget.find().lean();
+
+    const data = promotions.map(p => {
+      const pid = p._id ? p._id.toString() : null;
+      const code = p.code;
+      const usageData = usages.filter(u => (pid && u.promotion_id === pid) || (code && u.code === code));
+      const targetData = targets.filter(t => (pid && t.promotion_id === pid) || (code && t.code === code));
+      return { ...p, usages: usageData, targets: targetData };
+    });
+    const sortedData = data.sort((a, b) => new Date(b.start_date || 0) - new Date(a.start_date || 0));
+    res.json({ success: true, data: sortedData });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/promotions', async (req, res) => {
+  try {
+    const item = new PromotionModel(req.body);
+    const data = await item.save();
+    res.status(201).json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.put('/api/admin/promotions/:id', async (req, res) => {
+  try {
+    const data = await PromotionModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/promotions/:id', async (req, res) => {
+  try {
+    await PromotionModel.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/reviews', async (req, res) => {
+  try {
+    const data = await ReviewModel.find().sort({ createdAt: -1 });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/pharmacists', async (req, res) => {
+  try {
+    const data = await Pharmacist.find();
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/consultations_prescription', async (req, res) => {
+  try {
+    const data = await ConsultationPrescriptionModel.find().sort({ createdAt: -1 });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
+  try {
+    const { status, pharmacist_id, pharmacistName, pharmacistPhone, current_status, status_history } = req.body;
+    const id = String(req.params.id);
+
+    // Hỗ trợ cả ObjectId lẫn chuỗi/id đơn thuốc
+    const query = [{ _id: id }, { prescriptionId: id }, { id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+
+    const updated = await ConsultationPrescriptionModel.findOneAndUpdate(
+      { $or: query },
+      {
+        status,
+        pharmacist_id,
+        pharmacistName,
+        pharmacistPhone,
+        current_status,
+        status_history,
+        updatedAt: new Date()
+      },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ success: false, message: 'Prescription not found' });
+
+    // Lưu notice cho user khi admin thay đổi trạng thái đơn thuốc
+    if (status) {
+      const userId = updated.user_id;
+      if (userId) {
+        const prescriptionCode = updated.prescriptionId || id;
+        const pharmacistInfo = pharmacistName ? ` bởi dược sĩ ${pharmacistName}` : '';
+        const prescriptionStatusNoticeMap = {
+          waiting:     { title: 'Đơn thuốc đang được tư vấn',          message: `Đơn thuốc ${prescriptionCode} đang được tư vấn${pharmacistInfo}. Dược sĩ sẽ liên hệ sớm nhất.` },
+          advised:     { title: 'Đơn thuốc đã được tư vấn',            message: `Đơn thuốc ${prescriptionCode} đã được tư vấn xong${pharmacistInfo}.` },
+          unreachable: { title: 'Dược sĩ chưa thể liên hệ',            message: `Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc ${prescriptionCode}. Vui lòng kiểm tra lại số điện thoại.` },
+          cancelled:   { title: 'Đơn thuốc tư vấn đã bị huỷ',          message: `Đơn thuốc tư vấn ${prescriptionCode} đã bị huỷ.` },
+        };
+        const noticeInfo = prescriptionStatusNoticeMap[status];
+        if (noticeInfo) {
+          try {
+            await noticesCollection().insertOne({
+              user_id: String(userId),
+              type: 'prescription_updated',
+              title: noticeInfo.title,
+              message: noticeInfo.message,
+              createdAt: new Date().toISOString(),
+              read: false,
+              link: '/account',
+              linkLabel: 'Xem đơn thuốc',
+              meta: prescriptionCode,
+            });
+          } catch (e) {
+            console.warn('[PATCH /api/admin/consultations_prescription/:id] Cannot create notice:', e.message);
+          }
+        }
+      }
+    }
+
+    // Gửi email cho dược sĩ được phân công nhưng không chặn response
+    if (pharmacist_id) {
+      (async () => {
+        try {
+          const pharmacist = await Pharmacist.findOne({ _id: String(pharmacist_id) });
+          if (pharmacist && pharmacist.pharmacistEmail) {
+            const prescriptionCode = updated.prescriptionId || updated.id || 'Đơn thuốc';
+            const createdAt = updated.createdAt
+              ? new Date(updated.createdAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+              : '';
+            const customerName = updated.full_name || 'Khách vãng lai';
+            const customerPhone = updated.phone || '';
+            const note = updated.note || '';
+            const assigner = (current_status && current_status.changedBy) || 'Admin VitaCare';
+
+            const html = `
+              <div style="font-family: system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f4f6fb; padding:24px;">
+                <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:16px; padding:24px 28px; box-shadow:0 12px 30px rgba(15,23,42,0.18);">
+                  <div style="text-align:center; margin-bottom:18px;">
+                    <div style="font-size:20px; font-weight:700; color:#1d4ed8; text-transform:uppercase; letter-spacing:1px;">
+                      VitaCare
+                    </div>
+                    <div style="font-size:13px; color:#64748b; margin-top:4px;">
+                      Thông báo phân công tư vấn đơn thuốc
+                    </div>
+                  </div>
+
+                  <h2 style="font-size:18px; margin:16px 0 8px; color:#0f172a;">
+                    Bạn vừa được phân công tư vấn đơn thuốc <span style="color:#1d4ed8;">${prescriptionCode}</span>
+                  </h2>
+
+                  <p style="font-size:14px; color:#334155; line-height:1.6; margin:0 0 16px;">
+                    Xin chào <strong>${pharmacist.pharmacistName || 'Dược sĩ'}</strong>,<br/>
+                    Hệ thống VitaCare vừa phân công cho bạn phụ trách một yêu cầu tư vấn đơn thuốc mới.
+                  </p>
+
+                  <div style="border-radius:12px; border:1px solid #e2e8f0; padding:14px 16px; background:#f8fafc; margin-bottom:16px;">
+                    <div style="font-size:13px; font-weight:600; color:#64748b; text-transform:uppercase; margin-bottom:8px;">
+                      Thông tin đơn thuốc
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; font-size:14px; color:#0f172a;">
+                      <tr>
+                        <td style="padding:4px 0; width:140px; color:#64748b;">Mã đơn thuốc</td>
+                        <td style="padding:4px 0;"><strong>${prescriptionCode}</strong></td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#64748b;">Thời gian gửi</td>
+                        <td style="padding:4px 0;">${createdAt || '-'}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#64748b;">Khách hàng</td>
+                        <td style="padding:4px 0;">${customerName}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#64748b;">Số điện thoại</td>
+                        <td style="padding:4px 0;">${customerPhone || '-'}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#64748b; vertical-align:top;">Ghi chú</td>
+                        <td style="padding:4px 0; white-space:pre-line;">${note || 'Không có ghi chú từ khách hàng.'}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0 0; color:#64748b;">Người phân công</td>
+                        <td style="padding:8px 0 0;">${assigner}</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <div style="margin-top:18px; font-size:13px; color:#64748b;">
+                    Vui lòng đăng nhập trang quản trị VitaCare để xem chi tiết và phản hồi cho khách hàng trong thời gian sớm nhất.
+                  </div>
+
+                  <div style="margin-top:20px; font-size:12px; color:#9ca3af; border-top:1px solid #e5e7eb; padding-top:10px;">
+                    Email này được gửi tự động từ hệ thống VitaCare. Vui lòng không trả lời trực tiếp email này.
+                  </div>
+                </div>
+              </div>
+            `;
+
+            const mailOptions = {
+              from: 'vitacarehotro@gmail.com',
+              to: pharmacist.pharmacistEmail,
+              subject: `[VitaCare] Phân công tư vấn MỚI: ${prescriptionCode}`,
+              html
+            };
+
+            transporter.sendMail(mailOptions).catch(() => { });
+          }
+        } catch (mailErr) {
+          console.warn('[consultations_prescription] sendMail error:', mailErr?.message || mailErr);
+        }
+      })();
+    }
+
+    res.json({ success: true, data: updated });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/consultations_product', async (req, res) => {
+  try {
+    const data = await ConsultationProductModel.find().sort({ updatedAt: -1 });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/consultations_product/stats', async (req, res) => {
+  try {
+    const products = await ConsultationProductModel.find().lean();
+    const stats = products.map(p => {
+      const unanswered = (p.questions || []).filter(q => q.status === 'pending' || !q.answer).length;
+      return {
+        sku: p.sku,
+        productName: p.productName,
+        unansweredCount: unanswered,
+        totalQuestions: (p.questions || []).length,
+        _id: p._id
+      };
+    });
+    res.json({ success: true, data: stats });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.patch('/api/admin/consultations_product/reply', async (req, res) => {
+  try {
+    const { sku, questionId, answer, answeredBy } = req.body;
+    const product = await ConsultationProductModel.findOne({ sku });
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    const question = product.questions?.id ? product.questions.id(questionId) : product.questions.find(q => q.id === questionId || q._id === questionId);
+    if (!question) return res.status(404).json({ success: false, message: 'Question not found' });
+
+    const userId = question.user_id || null;
+    const productName = product.productName || sku;
+
+    question.answer = answer;
+    question.answeredBy = answeredBy;
+    question.status = 'answered';
+    question.answeredAt = new Date();
+    product.updatedAt = new Date();
+
+    await product.save();
+
+    // Lưu notice cho user khi admin trả lời câu hỏi sản phẩm
+    if (userId) {
+      try {
+        await noticesCollection().insertOne({
+          user_id: String(userId),
+          type: 'order_updated',
+          title: 'Câu hỏi sản phẩm đã có phản hồi',
+          message: `Câu hỏi của bạn về sản phẩm "${productName}" đã được ${answeredBy || 'dược sĩ'} giải đáp.`,
+          createdAt: new Date().toISOString(),
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem phản hồi',
+          meta: sku,
+        });
+      } catch (e) {
+        console.warn('[PATCH /api/admin/consultations_product/reply] Cannot create notice:', e.message);
+      }
+    }
+
+    res.json({ success: true, data: product });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    const data = await UserModel.find().sort({ registerdate: -1 }).lean();
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/users/:id', async (req, res) => {
+  try {
+    const data = await UserModel.findOne({ _id: String(req.params.id) });
+    if (!data) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/users/:id/orders', async (req, res) => {
+  try {
+    const data = await OrderModel.find({ user_id: req.params.id });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/users', async (req, res) => {
+  try {
+    const item = new UserModel(req.body);
+    const data = await item.save();
+    res.status(201).json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.put('/api/admin/users/:id', async (req, res) => {
+  try {
+    const data = await UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/users/:id', async (req, res) => {
+  try {
+    await UserModel.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/blogs', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    const totalItems = await BlogModel.countDocuments();
+    const data = await BlogModel.find().sort({ publishedAt: -1 }).skip(skip).limit(limit).lean();
+    res.json({
+      success: true,
+      data,
+      pagination: {
+        total: totalItems,
+        page,
+        limit,
+        totalPages: Math.ceil(totalItems / limit) || 1
+      }
+    });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/blogs', async (req, res) => {
+  try {
+    const item = new BlogModel(req.body);
+    const data = await item.save();
+    res.status(201).json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.put('/api/admin/blogs/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = [{ _id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+    const data = await BlogModel.findOneAndUpdate({ $or: query }, req.body, { new: true });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/blogs/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = [{ _id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+    await BlogModel.findOneAndDelete({ $or: query });
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/customer_groups', async (req, res) => {
+  try {
+    const data = await CustomerGroup.find().sort({ createdAt: -1 });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/customer_groups', async (req, res) => {
+  try {
+    const data = await new CustomerGroup(req.body).save();
+    res.status(201).json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/customer_groups/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = [{ _id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+    await CustomerGroup.findOneAndDelete({ $or: query });
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/product_groups', async (req, res) => {
+  try {
+    const data = await ProductGroup.find().sort({ createdAt: -1 });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/product_groups', async (req, res) => {
+  try {
+    const data = await new ProductGroup(req.body).save();
+    res.status(201).json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/product_groups/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = [{ _id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+    await ProductGroup.findOneAndDelete({ $or: query });
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const admin = await AdminModel.findOne({ adminemail: email });
+    if (admin && admin.password === password) {
+      res.json({ success: true, message: 'Login success', admin });
+    } else {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const admin = await AdminModel.findOne({ adminemail: email });
+    if (!admin) return res.status(404).json({ success: false, message: 'Email không tồn tại trong hệ thống' });
+  } catch (err) { return res.status(500).json({ success: false, message: 'Lỗi kiểm tra email' }); }
+
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  resetCodes[email] = code;
+
+  const mailOptions = {
+    from: 'vitacarehotro@gmail.com',
+    to: email,
+    subject: 'Yêu cầu đặt lại mật khẩu - VitaCare Admin',
+    html: `
+        <div style="background-color: #e8f0fe; padding: 50px 20px; font-family: Arial, sans-serif;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+                <div style="background: linear-gradient(to right, #0056b3, #a594f9); padding: 40px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 38px; font-weight: bold; letter-spacing: 1px;">VitaCare</h1>
+                </div>
+                <div style="padding: 50px 40px; text-align: center;">
+                    <h2 style="color: #004695; margin: 0 0 25px 0; font-size: 26px; font-weight: bold;">Yêu cầu đặt lại mật khẩu</h2>
+                    <p style="color: #777; font-size: 18px; margin: 0;">Xin chào,</p>
+                    <p style="color: #777; font-size: 17px; line-height: 1.6; margin: 10px 0 40px 0;">Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản VitaCare của bạn. Sử dụng mã OTP bên dưới để xác thực:</p>
+                    <div style="background-color: #e3f2fd; padding: 25px 50px; border-radius: 12px; display: inline-block; margin-bottom: 40px;">
+                        <span style="font-size: 52px; font-weight: 800; color: #1e5ba0; letter-spacing: 10px;">${code}</span>
+                    </div>
+                    <p style="color: #888; font-size: 15px; margin: 0 0 10px 0;">Mã xác thực này sẽ hết hạn trong <strong>10 phút</strong>.</p>
+                    <p style="color: #999; font-size: 14px; line-height: 1.5;">Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email hoặc liên hệ với bộ phận hỗ trợ.</p>
+                </div>
+            </div>
+        </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: `Mã xác thực đã được gửi tới ${email}` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Lỗi khi gửi email' });
+  }
+});
+
+app.post('/api/admin/verify-code', (req, res) => {
+  const { email, code } = req.body;
+  if (resetCodes[email] && resetCodes[email] === code) {
+    res.json({ success: true });
+  } else {
+    res.status(400).json({ success: false, message: 'Mã xác thực không chính xác' });
+  }
+});
+
+app.post('/api/admin/reset-password', async (req, res) => {
+  try {
+    const updated = await AdminModel.findOneAndUpdate(
+      { adminemail: req.body.email },
+      { password: req.body.newPassword },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản admin' });
+    delete resetCodes[req.body.email];
+    res.json({ success: true, message: 'Đổi mật khẩu thành công' });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.post('/api/admin/change-password', async (req, res) => {
+  try {
+    const { email, oldPassword, newPassword } = req.body;
+    const admin = await AdminModel.findOne({ adminemail: email });
+    if (!admin) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản' });
+    if (admin.password !== oldPassword) return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không chính xác' });
+    const updated = await AdminModel.findOneAndUpdate(
+      { adminemail: email },
+      { password: newPassword },
+      { new: true }
+    );
+    res.json({ success: true, message: 'Đổi mật khẩu thành công', admin: updated });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+

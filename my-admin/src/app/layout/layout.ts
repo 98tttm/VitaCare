@@ -4,10 +4,12 @@ import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
+import { Notice } from '../notice/notice';
 
 @Component({
   selector: 'app-layout',
-  imports: [CommonModule, RouterOutlet, RouterModule, FormsModule],
+  imports: [CommonModule, RouterOutlet, RouterModule, FormsModule, Notice],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
 })
@@ -44,9 +46,15 @@ export class Layout implements OnInit, OnDestroy {
   toastMessage: string | null = null;
   toastType: 'success' | 'error' | 'warning' = 'success';
 
-  constructor(private router: Router, private http: HttpClient, private authService: AuthService) { }
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private authService: AuthService,
+    private themeService: ThemeService
+  ) { }
 
   ngOnInit() {
+    this.isDarkMode = this.themeService.isDarkMode;
     this.loadProfile();
     this.loadAreas();
   }
@@ -161,11 +169,7 @@ export class Layout implements OnInit, OnDestroy {
   isDarkMode = false;
   toggleTheme() {
     this.isDarkMode = !this.isDarkMode;
-    if (this.isDarkMode) {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
+    this.themeService.toggleTheme(this.isDarkMode);
   }
 
   toggleAdminDropdown() {

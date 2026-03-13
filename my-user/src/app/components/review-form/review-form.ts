@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -296,15 +296,25 @@ export class ReviewFormComponent implements OnChanges {
   stars = [1, 2, 3, 4, 5];
   imageSlots = [0, 1, 2, 3, 4];
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['products']) {
       this.localProducts =
-        (this.products || []).map((p) => ({
-          ...p,
-          rating: p.rating ?? 5,
-          reviewText: p.reviewText ?? '',
-          images: p.images ? [...p.images] : [],
-        })) ?? [];
+        (this.products || []).map((p) => {
+          const images = (p.images ? [...p.images] : []) as (string | null)[];
+          // Đảm bảo mảng images có đủ slot để binding không bị chậm
+          while (images.length < this.imageSlots.length) {
+            images.push(null);
+          }
+          return {
+            ...p,
+            rating: p.rating ?? 5,
+            reviewText: p.reviewText ?? '',
+            images,
+          };
+        }) ?? [];
+      this.cdr.detectChanges();
     }
   }
 
@@ -343,9 +353,15 @@ export class ReviewFormComponent implements OnChanges {
     if (!this.localProducts[productIndex].images) {
       this.localProducts[productIndex].images = [];
     }
+    // Đảm bảo mảng đủ độ dài để gán theo index
+    while (this.localProducts[productIndex].images!.length <= slotIndex) {
+      this.localProducts[productIndex].images!.push(null);
+    }
     this.localProducts[productIndex].images![slotIndex] = base64;
 
     input.value = '';
+    // Force detect để ảnh hiển thị ngay
+    this.cdr.detectChanges();
   }
 
   private fileToBase64(file: File): Promise<string> {

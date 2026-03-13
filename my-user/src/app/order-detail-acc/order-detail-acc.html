@@ -271,7 +271,11 @@
 <div class="modal-overlay cancel-modal-overlay" *ngIf="showCancelOrderModal" (click)="closeCancelOrderModal()">
     <div class="cancel-modal-content" (click)="$event.stopPropagation()">
         <div class="warning-icon">
-            <img src="/asset/icons/warning.png" alt="Warning" style="width: 48px; height: 48px" />
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" fill="#FFA726" stroke="#FF9800" stroke-width="1.5" />
+                <path d="M12 7v6" stroke="white" stroke-width="2" stroke-linecap="round" />
+                <circle cx="12" cy="16.5" r="1" fill="white" />
+            </svg>
         </div>
         <div class="cancel-message">
             <h3 class="cancel-title">Xác nhận hủy đơn hàng</h3>

@@ -9,11 +9,7 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Breadcrumb Style */
-.breadcrumb .breadcrumb-item.active {
-    color: #00589f !important;
-    font-weight: 700;
-}
+/* Breadcrumb dùng chung theme với product list (màu xám / xanh) */
 
 .vc_page_title {
     font-size: 28px;
@@ -442,31 +438,5 @@
 .breadcrumb {
     background: transparent;
     padding: 0;
-    margin-bottom: 35px;
-    /* Tăng thêm khoảng cách */
-}
-
-.breadcrumb-item+.breadcrumb-item::before {
-    content: "/";
-    color: #a0aec0;
-}
-
-.breadcrumb-item a {
-    color: #a0aec0;
-    /* Màu xám nhạt cho mục không active */
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.2s;
-}
-
-.breadcrumb-item a:hover {
-    color: #4a5568;
-}
-
-.breadcrumb-item.active {
-    color: #4a5568 !important;
-    /* Màu xám đậm Vitacare */
-    font-weight: 700;
-    /* In đậm */
-    font-size: 14px;
+    margin-bottom: 12px;
 }

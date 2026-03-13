@@ -2,7 +2,7 @@
 .order-manage-container {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-6);
+    gap: 0;
     font-family: var(--font-family-base);
 }
 
@@ -47,9 +47,7 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.btn:active {
-    transform: translateY(0);
-}
+.btn:active {}
 
 /* Premium Add Action Button - Unified Across All Pages */
 .btn-add-action {
@@ -234,19 +232,19 @@
 }
 
 .stat-card.stat-cancelled {
-    border-top: 4px solid #94a3b8;
+    border-top: 4px solid #ef4444;
 }
 
 .stat-card.stat-cancelled .stat-value {
-    color: #94a3b8;
+    color: #ef4444;
 }
 
 .stat-card.stat-refunded {
-    border-top: 4px solid #ec4899;
+    border-top: 4px solid #f59e0b;
 }
 
 .stat-card.stat-refunded .stat-value {
-    color: #ec4899;
+    color: #f59e0b;
 }
 
 /* End of Stats Cards */
@@ -650,12 +648,12 @@ input[type="checkbox"] {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px;
+    padding: 6px 0;
     border-radius: 20px;
     font-size: 13px;
     font-weight: 600;
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid transparent;
+    background: transparent;
+    border: none;
     min-width: 120px;
 }
 
@@ -670,98 +668,61 @@ input[type="checkbox"] {
     white-space: nowrap;
 }
 
-/* Status colors for badges - Premium Pastel Version */
-.status-pending {
-    background-color: #fffbeb !important;
-    border-color: #fef3c7 !important;
+/* Status color utilities */
+.status-yellow {
+    background-color: transparent !important;
+    border-color: transparent !important;
 }
 
-.status-pending .status-text {
+.status-yellow .status-text {
     color: #d97706;
 }
 
-.status-pending .status-dot {
+.status-yellow .status-dot {
     background-color: #f59e0b;
 }
 
-.status-shipping,
-.status-ongoing {
-    background-color: #eff6ff !important;
-    border-color: #dbeafe !important;
+.status-green {
+    background-color: transparent !important;
+    border-color: transparent !important;
 }
 
-.status-shipping .status-text,
-.status-ongoing .status-text {
-    color: #2563eb;
-}
-
-.status-shipping .status-dot,
-.status-ongoing .status-dot {
-    background-color: #3b82f6;
-}
-
-.status-confirmed,
-.status-paid,
-.status-delivered,
-.status-active {
-    background-color: #ecfdf5 !important;
-    border-color: #d1fae5 !important;
-}
-
-.status-confirmed .status-text,
-.status-paid .status-text,
-.status-delivered .status-text,
-.status-active .status-text {
+.status-green .status-text {
     color: #059669;
 }
 
-.status-confirmed .status-dot,
-.status-paid .status-dot,
-.status-delivered .status-dot,
-.status-active .status-dot {
+.status-green .status-dot {
     background-color: #10b981;
 }
 
-.status-cancelled,
-.status-failed,
-.status-ended {
-    background-color: #f8fafc !important;
-    border-color: #f1f5f9 !important;
+.status-blue {
+    background-color: transparent !important;
+    border-color: transparent !important;
 }
 
-.status-cancelled .status-text,
-.status-failed .status-text,
-.status-ended .status-text {
-    color: #64748b;
+.status-blue .status-text {
+    color: #2563eb;
 }
 
-.status-cancelled .status-dot,
-.status-failed .status-dot,
-.status-ended .status-dot {
-    background-color: #94a3b8;
+.status-blue .status-dot {
+    background-color: #3b82f6;
 }
 
-.status-unpaid,
-.status-unreachable,
-.status-error,
-.status-refunded {
-    background-color: #fef2f2 !important;
-    border-color: #fee2e2 !important;
+.status-red {
+    background-color: transparent !important;
+    border-color: transparent !important;
 }
 
-.status-unpaid .status-text,
-.status-unreachable .status-text,
-.status-error .status-text,
-.status-refunded .status-text {
+.status-red .status-text {
     color: #dc2626;
 }
 
-.status-unpaid .status-dot,
-.status-unreachable .status-dot,
-.status-error .status-dot,
-.status-refunded .status-dot {
+.status-red .status-dot {
     background-color: #ef4444;
 }
+
+
+/* END OF STATUS BADGE STYLES */
 
 
 /* MODAL STYLES */

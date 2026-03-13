@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrderService, Order as BackendOrder } from '../services/order.service';
 import { AuthService } from '../services/auth.service';
+import { CartService, CartItem } from '../services/cart.service';
+import { CartSidebarService } from '../services/cart-sidebar.service';
 
 /** Trạng thái đơn liên quan đổi trả (MongoDB orders.status). Chấp nhận cả tên trong DB và chuẩn hóa về id tab. */
 const RETURN_STATUSES = [
@@ -54,6 +56,8 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
     private authService = inject(AuthService);
     private router = inject(Router);
     private cdr = inject(ChangeDetectorRef);
+    private cartService = inject(CartService);
+    private cartSidebar = inject(CartSidebarService);
 
     searchQuery = '';
     activeTab: string = 'processing_return';
@@ -67,6 +71,10 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
 
     showCancelModal = false;
     cancelOrder: Order | null = null;
+
+    /** Modal xác nhận đã nhận hàng (hoàn tất đổi trả) */
+    showConfirmReceivedModal = false;
+    confirmOrder: Order | null = null;
 
     /** Modal chi tiết đơn đổi trả (2 cột giống Đơn hàng của tôi) */
     showDetailModal = false;
@@ -110,7 +118,7 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
         }
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void { }
 
     ngAfterViewInit(): void {
         this.checkScrollButtons();
@@ -154,17 +162,31 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
         const route = backend.route || {};
         const orderDate = route.pending || new Date().toISOString();
         const rawItems = Array.isArray(backend.item) ? backend.item : Array.isArray(backend.items) ? backend.items : [];
-        const products: OrderProduct[] = rawItems.map((item: any, index: number) => ({
-            id: `${backend.order_id || backend._id}_${index}`,
-            name: item.productName || item.name || '',
-            image: item.image || '',
-            price: item.price ?? 0,
-            quantity: item.quantity ?? 0,
-            unit: item.unit || '',
-            totalPrice: (item.price ?? 0) * (item.quantity ?? 0),
-            category: '',
-            gifted: false,
-        }));
+        const products: OrderProduct[] = rawItems.map((item: any, index: number) => {
+            const rawPid = item?.productId || item?._id;
+            let productId = '';
+            if (rawPid) {
+                if (typeof rawPid === 'string') productId = rawPid;
+                else if (rawPid.$oid) productId = rawPid.$oid;
+                else if (typeof rawPid.toString === 'function') productId = rawPid.toString();
+            }
+            // Backup: fallback sang sku nếu thiếu _id
+            if (!productId && item?.sku) {
+                productId = item.sku;
+            }
+
+            return {
+                id: productId,
+                name: item.productName || item.name || '',
+                image: item.image || '',
+                price: item.price ?? 0,
+                quantity: item.quantity ?? 0,
+                unit: item.unit || '',
+                totalPrice: (item.price ?? 0) * (item.quantity ?? 0),
+                category: '',
+                gifted: false,
+            };
+        });
         const rawStatus = (backend.status != null ? backend.status : backend.orderStatus || '').toString().trim().toLowerCase();
         let status = rawStatus === 'refund_rejected' ? 'rejected' : rawStatus;
         if (status === 'return_processing') status = 'processing_return';
@@ -188,10 +210,13 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     checkScrollButtons(): void {
-        if (!this.tabList?.nativeElement) return;
-        const el = this.tabList.nativeElement;
-        this.canScrollLeft = el.scrollLeft > 0;
-        this.canScrollRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1;
+        setTimeout(() => {
+            if (!this.tabList?.nativeElement) return;
+            const el = this.tabList.nativeElement;
+            this.canScrollLeft = el.scrollLeft > 0;
+            this.canScrollRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1;
+            this.cdr.detectChanges();
+        }, 0);
     }
 
     updateTabCounts(): void {
@@ -209,7 +234,7 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
         setTimeout(() => this.searchInput?.nativeElement?.focus(), 0);
     }
 
-    performSearch(): void {}
+    performSearch(): void { }
 
     getFilteredReturns(): Order[] {
         let filtered = this.orders.filter((o) => o.status === this.activeTab);
@@ -225,14 +250,24 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     getStatusLabel(status: string): string {
+        const s = (status || '').toLowerCase().trim();
         const map: Record<string, string> = {
-            processing_return: 'Đang xử lý trả hàng/hoàn tiền',
-            returning: 'Đang hoàn',
-            returned: 'Đã hoàn/trả',
-            refund_rejected: 'Từ chối hoàn/trả',
-            rejected: 'Từ chối hoàn/trả',
+            'pending': 'Chờ xác nhận',
+            'confirmed': 'Đã xác nhận',
+            'shipping': 'Đang giao hàng',
+            'delivered': 'Đã giao hàng',
+            'received': 'Đã nhận hàng',
+            'unreview': 'Chưa đánh giá',
+            'reviewed': 'Đã đánh giá',
+            'completed': 'Hoàn thành',
+            'cancelled': 'Đã hủy',
+            'processing_return': 'Đang xử lý trả hàng/hoàn tiền',
+            'returning': 'Đang hoàn',
+            'returned': 'Đã hoàn/trả',
+            'refund_rejected': 'Từ chối hoàn tiền',
+            'rejected': 'Từ chối hoàn/trả',
         };
-        return map[status] || status;
+        return map[s] || status;
     }
 
     formatCurrency(amount: number): string {
@@ -353,20 +388,98 @@ export class ReturnManagementComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     confirmCancelRequest(): void {
-        if (this.cancelOrder) {
-            // Backend có thể có API hủy yêu cầu trả hàng (PUT /orders/:id/cancel-return). Tạm thời chỉ bỏ khỏi list local.
-            this.orders = this.orders.filter((o) => o.id !== this.cancelOrder!.id);
-            this.updateTabCounts();
+        const orderToCancel = this.cancelOrder;
+        if (orderToCancel) {
+            this.orderService.cancelReturnRequest(orderToCancel.orderNumber).subscribe({
+                next: (res) => {
+                    if (res.success) {
+                        // Cập nhật trạng thái local trước khi lọc ra
+                        orderToCancel.status = 'unreview';
+                        this.orders = this.orders.filter((o) => o.id !== orderToCancel.id);
+                        this.updateTabCounts();
+                        this.cdr.detectChanges();
+                        // Chuyển sang danh sách đơn hàng chưa đánh giá
+                        this.router.navigate(['/account'], { queryParams: { menu: 'reviews' } });
+                    }
+                },
+                error: (err) => {
+                    console.error('Cancel return request error:', err);
+                    // Fallback local update
+                    if (orderToCancel) {
+                        this.orders = this.orders.filter((o) => o && o.id !== orderToCancel.id);
+                        this.updateTabCounts();
+                        this.cdr.detectChanges();
+                    }
+                }
+            });
         }
         this.closeCancelModal();
+    }
+
+    openConfirmReceivedModal(order: Order): void {
+        this.confirmOrder = order;
+        this.showConfirmReceivedModal = true;
         this.cdr.detectChanges();
     }
 
-    confirmReceivedReturn(_order: Order): void {
-        // Có thể gọi API xác nhận đã trả hàng nếu backend hỗ trợ
+    closeConfirmReceivedModal(): void {
+        this.showConfirmReceivedModal = false;
+        this.confirmOrder = null;
+        this.cdr.detectChanges();
     }
 
-    onRepurchase(_order: Order): void {
-        this.router.navigate(['/product-list']);
+    /** Gửi xác nhận đã nhận hàng (hoàn tất đổi trả) sau khi user đồng ý trong popup */
+    confirmReceivedReturn(order: Order): void {
+        this.orderService.confirmReturned(order.orderNumber).subscribe({
+            next: (res) => {
+                if (res.success) {
+                    order.status = 'returned';
+                    this.updateTabCounts();
+                    this.cdr.detectChanges();
+                }
+            },
+            error: (err) => {
+                console.error('Confirm returned error:', err);
+                // Fallback local update
+                order.status = 'returned';
+                this.updateTabCounts();
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    executeConfirmReceived(): void {
+        if (this.confirmOrder) {
+            this.confirmReceivedReturn(this.confirmOrder);
+        }
+        this.closeConfirmReceivedModal();
+    }
+
+    onRepurchase(order: Order): void {
+        if (!order.products?.length) return;
+
+        const ids = new Set<string>();
+        order.products.forEach((p) => {
+            const payload: Partial<CartItem> = {
+                _id: p.id || '',
+                sku: '', // đơn đổi trả hiện không có sku, backend sẽ map theo _id
+                productName: p.name,
+                price: p.price ?? 0,
+                discount: 0,
+                image: p.image || '',
+                unit: p.unit || 'Hộp',
+                category: p.category || '',
+                hasPromotion: false,
+            };
+            if (payload._id) ids.add(String(payload._id));
+            this.cartService.addItem(payload, p.quantity || 1);
+        });
+
+        localStorage.setItem('repurchase_selection', JSON.stringify({
+            skus: [],
+            ids: Array.from(ids),
+        }));
+
+        this.cartSidebar.openSidebar();
     }
 }

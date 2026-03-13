@@ -102,16 +102,26 @@ export class Orderdetail implements OnInit {
   }
 
   fetchOrderDetail(id: string) {
+    console.log(`[Orderdetail] Fetching details for ${id}...`);
     this.orderService.getOrderById(id).subscribe({
       next: (res) => {
+        console.log(`[Orderdetail] Response received:`, res);
         if (res.success) {
           this.order = res.data;
-          this.cdr.markForCheck(); // Force immediate view update
+          // Normalize status alias
+          if (this.order && this.order.status === 'return_processing') {
+            this.order.status = 'processing_return';
+          }
+          console.log(`[Orderdetail] Order data assigned:`, this.order);
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+        } else {
+          console.error(`[Orderdetail] API returned success=false:`, res.message);
         }
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error fetching order:', err);
+        console.error('[Orderdetail] Error fetching order:', err);
         this.isLoading = false;
       }
     });
@@ -123,6 +133,10 @@ export class Orderdetail implements OnInit {
         if (res.success) {
           const data = res.data;
           this.order = data;
+          // Normalize status alias
+          if (this.order && this.order.status === 'return_processing') {
+            this.order.status = 'processing_return';
+          }
           this.newOrder = {
             ...data,
             shippingInfo: data.shippingInfo || { fullName: '', phone: '' },
@@ -179,6 +193,8 @@ export class Orderdetail implements OnInit {
   shipOrder() { this.updateStatus('shipping'); }
   deliverOrder() { this.updateStatus('delivered'); }
   cancelOrder() { this.updateStatus('cancelled'); }
+  acceptReturn() { this.updateStatus('returning'); }
+  rejectReturn() { this.updateStatus('rejected'); }
 
   get nextStepLabel(): string {
     if (!this.order) return 'Xác nhận';
@@ -186,7 +202,8 @@ export class Orderdetail implements OnInit {
       return 'Xác nhận thanh toán';
     }
     if (this.order.status === 'pending') {
-      return 'Xác nhận đơn hàng';
+      // Một lần bấm sẽ xác nhận và chuyển sang đang giao
+      return 'Xác nhận & bắt đầu giao hàng';
     }
     if (this.order.status === 'confirmed') {
       return 'Bắt đầu giao hàng';
@@ -199,8 +216,14 @@ export class Orderdetail implements OnInit {
 
   get showNextStepButton(): boolean {
     if (!this.order) return false;
-    if (this.order.status === 'cancelled' || this.order.status === 'refunded' || this.order.status === 'delivered') return false;
-    return true;
+    const finalStatuses = ['delivered', 'cancelled', 'refunded', 'rejected', 'returned', 'processing_return', 'return_processing'];
+    if (finalStatuses.includes(this.order.status)) return false;
+
+    // Banking but unpaid always shows 'Xác nhận thanh toán'
+    if (this.order.paymentMethod === 'banking' && this.order.statusPayment === 'unpaid') return true;
+
+    // Main flow
+    return ['pending', 'confirmed', 'shipping'].includes(this.order.status);
   }
 
   processNextStep() {
@@ -210,7 +233,8 @@ export class Orderdetail implements OnInit {
       return;
     }
     if (this.order.status === 'pending') {
-      this.updateStatus('confirmed'); // CHỜ XÁC NHẬN → ĐÃ XÁC NHẬN
+      // Yêu cầu: đơn pending bấm một lần chuyển thẳng sang đang giao
+      this.updateStatus('shipping'); // CHỜ XÁC NHẬN → ĐANG GIAO
     } else if (this.order.status === 'confirmed') {
       this.updateStatus('shipping'); // ĐÃ XÁC NHẬN → ĐANG GIAO
     } else if (this.order.status === 'shipping') {

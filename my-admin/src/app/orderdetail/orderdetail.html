@@ -72,7 +72,7 @@
                                 [style.background]="isConfirmed() || isDelivered() ? 'var(--color-primary)' : '#e9ecef'"
                                 [style.color]="isConfirmed() || isDelivered() ? 'white' : 'var(--color-text-primary)'">
                                 <i class="bi bi-check-lg" *ngIf="isConfirmed() || isDelivered()"></i>
-                                <span *ngIf="!isConfirmed() && !isDelivered()">1</span>
+                                <i class="bi bi-receipt" *ngIf="!isConfirmed() && !isDelivered()"></i>
                             </div>
                             <div class="step-label" style="font-weight: bold;">Xác nhận đơn hàng</div>
                             <small class="text-secondary" *ngIf="isConfirmed() || isDelivered()">Đã hoàn tất</small>
@@ -84,9 +84,8 @@
                                 style="width: 40px; height: 40px; border-radius: 50%; background: #e9ecef; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;"
                                 [style.background]="isDelivered() ? 'var(--color-primary)' : (order.status === 'shipping' ? '#ffc107' : '#e9ecef')"
                                 [style.color]="isDelivered() || order.status === 'shipping' ? 'white' : 'var(--color-text-primary)'">
-                                <i class="bi bi-truck" *ngIf="order.status === 'shipping'"></i>
+                                <i class="bi bi-truck" *ngIf="!isDelivered()"></i>
                                 <i class="bi bi-check-lg" *ngIf="isDelivered()"></i>
-                                <span *ngIf="order.status !== 'shipping' && !isDelivered()">2</span>
                             </div>
                             <div class="step-label" style="font-weight: bold;">Vận chuyển</div>
                             <small class="text-secondary">{{ isDelivered() ? 'Đã giao hàng' : (order.status ===
@@ -128,9 +127,10 @@
                             <div class="product-info" style="display: flex; gap: 10px; align-items: center;">
                                 <div class="product-image"
                                     style="width: 50px; height: 50px; background-color: var(--color-bg-light); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                    <img *ngIf="item.image" [src]="item.image" alt="Product"
+                                    <img *ngIf="item?.image || item?.productImage"
+                                        [src]="item?.image || item?.productImage" alt="Product"
                                         style="width: 100%; height: 100%; object-fit: contain;">
-                                    <i *ngIf="!item.image" class="bi bi-image"
+                                    <i *ngIf="!item?.image && !item?.productImage" class="bi bi-image"
                                         style="font-size: 24px; color: #ccc;"></i>
                                 </div>
                                 <div class="product-details">
@@ -172,8 +172,14 @@
                     <h3 class="card-title"
                         style="font-size: 16px; font-weight: bold; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--color-neutral-30);">
                         Thông tin người mua</h3>
-                    <div class="info-row">
+                    <div class="info-row" style="margin-bottom: 6px;">
                         <span class="info-label">{{ order.shippingInfo?.fullName || 'Khách hàng' }}</span>
+                    </div>
+                    <div class="info-row" *ngIf="order.user_id || order.userId || order.customerId">
+                        <span style="font-size: 12px; color: var(--color-text-secondary);">
+                            ID khách hàng:
+                            <strong>{{ order.user_id || order.userId || order.customerId }}</strong>
+                        </span>
                     </div>
                 </div>
 
@@ -203,11 +209,12 @@
                     <div style="font-size: 14px; line-height: 1.5; color: #444;">
                         <i class="bi bi-geo-alt text-secondary"></i>
                         <span style="margin-left: 8px;">
-                            {{ order.shippingInfo?.address?.detail ? order.shippingInfo?.address?.detail + ',' : '' }}
+                            {{ order.shippingInfo?.address?.detail || order.shippingInfo?.address || '' }}{{
+                            (order.shippingInfo?.address?.detail || order.shippingInfo?.address) ? ',' : '' }}
                             {{ order.shippingInfo?.address?.ward ? order.shippingInfo?.address?.ward + ',' : '' }}
                             {{ order.shippingInfo?.address?.district ? order.shippingInfo?.address?.district + ',' : ''
                             }}
-                            {{ order.shippingInfo?.address?.city }}
+                            {{ order.shippingInfo?.address?.city || order.shippingInfo?.city || '' }}
                         </span>
                     </div>
                 </div>
@@ -262,21 +269,58 @@
                 <!-- Note and Actions -->
                 <div class="info-card"
                     style="background-color: var(--color-bg-secondary); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 15px;">
-                    <div style="display: flex; flex-direction: column; gap: 5px;">
-                        <span style="font-weight: bold; font-size: 14px; color: var(--color-text-secondary);">Ghi chú
-                            của khách hàng</span>
-                        <div
-                            style="background-color: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 14px; color: #475569; min-height: 60px;">
-                            {{ order.note || 'Không có ghi chú' }}
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <span
+                                style="font-weight: bold; font-size: 14px; color: var(--color-text-secondary);">Ghi chú
+                                của khách hàng</span>
+                            <div
+                                style="background-color: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 14px; color: #475569; min-height: 60px;">
+                                {{ order.note || 'Không có ghi chú' }}
+                            </div>
+                        </div>
+
+                        <!-- Cancel Reason -->
+                        <div *ngIf="order.cancelReason"
+                            style="display: flex; flex-direction: column; gap: 5px; margin-top: 4px;">
+                            <span
+                                style="font-weight: bold; font-size: 14px; color: var(--color-danger);">Lý do huỷ đơn
+                                hàng</span>
+                            <div
+                                style="background-color: #fff5f5; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; font-size: 14px; color: #b91c1c; white-space: pre-line;">
+                                {{ order.cancelReason }}
+                            </div>
+                        </div>
+
+                        <!-- Return / Refund Reason -->
+                        <div *ngIf="order.returnReason"
+                            style="display: flex; flex-direction: column; gap: 5px; margin-top: 4px;">
+                            <span
+                                style="font-weight: bold; font-size: 14px; color: var(--color-text-secondary);">Lý do
+                                hoàn / trả hàng</span>
+                            <div
+                                style="background-color: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #cbd5f5; font-size: 14px; color: #0f172a; white-space: pre-line;">
+                                {{ order.returnReason }}
+                            </div>
                         </div>
                     </div>
 
                     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px;">
                         <button
-                            *ngIf="order.status !== 'cancelled' && order.status !== 'refunded' && order.status !== 'delivered'"
+                            *ngIf="!['cancelled', 'refunded', 'delivered', 'processing_return', 'returning', 'returned', 'rejected'].includes(order.status)"
                             class="btn btn-danger" (click)="cancelOrder()"
                             style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
                             Hủy đơn
+                        </button>
+                        <button *ngIf="order.status === 'processing_return'" class="btn btn-danger"
+                            (click)="rejectReturn()"
+                            style="background-color: #fff; color: #dc3545; border: 1px solid #dc3545; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                            Từ chối hoàn
+                        </button>
+                        <button *ngIf="order.status === 'processing_return'" class="btn btn-primary"
+                            (click)="acceptReturn()"
+                            style="background-color: var(--color-primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                            Xác nhận hoàn
                         </button>
                         <button *ngIf="showNextStepButton" class="btn btn-primary" (click)="processNextStep()"
                             style="background-color: var(--color-primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">

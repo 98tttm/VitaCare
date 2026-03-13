@@ -45,6 +45,18 @@ function toDateKey(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+/** Cùng logic backend: trong [start,end] hoặc quá end nhưng lịch vẫn Active */
+function reminderAppliesOnDate(r: Reminder, dateObj: Date): boolean {
+  const start = new Date(r.start_date);
+  const end = new Date(r.end_date);
+  const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+  const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  if (d < s) return false;
+  if (d <= e) return true;
+  return r.schedule_status !== 'Inactive' && r.config_status !== 'Inactive';
+}
+
 @Component({
   selector: 'app-remind',
   standalone: true,
@@ -194,9 +206,7 @@ export class Remind implements OnInit {
       toi: [],
     };
     for (const r of list) {
-      const start = new Date(r.start_date);
-      const end = new Date(r.end_date);
-      if (dateObj < start || dateObj > end) continue;
+      if (!reminderAppliesOnDate(r, dateObj)) continue;
       for (const t of r.reminder_times || []) {
         const section = getTimeSection(t);
         const completed =
@@ -401,9 +411,7 @@ export class Remind implements OnInit {
     const dateObj = new Date(y, m - 1, day);
     const result: { reminder: Reminder; time: string; completed: boolean }[] = [];
     for (const r of list) {
-      const start = new Date(r.start_date);
-      const end = new Date(r.end_date);
-      if (dateObj < start || dateObj > end) continue;
+      if (!reminderAppliesOnDate(r, dateObj)) continue;
       for (const t of r.reminder_times || []) {
         const completed =
           (r.completion_log || []).some((c) => c.date === dk && c.time === t) ?? false;

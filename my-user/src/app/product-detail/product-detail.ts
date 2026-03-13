@@ -213,7 +213,13 @@ export class ProductDetail implements OnInit {
   }
 
   fetchProduct(slug: string): void {
-    if (!slug || slug === 'undefined') return;
+    if (!slug || slug === 'undefined' || slug === 'null') {
+      // Slug không hợp lệ → dừng loading và để UI hiển thị trạng thái "không tìm thấy"
+      this.loading = false;
+      this.product = null;
+      this.cdr.detectChanges();
+      return;
+    }
 
     this.loading = true;
     this.cdr.detectChanges();
@@ -761,15 +767,18 @@ export class ProductDetail implements OnInit {
       return;
     }
 
-    const payload = {
+    const payload: any = {
       sku: this.product.sku,
       question: this.userReviewContent,
-      full_name: fullName
+      full_name: fullName,
     };
+    if (user?.user_id) {
+      payload['user_id'] = user.user_id;
+    }
 
     this.productService.submitConsultation(payload).subscribe({
       next: (res: any) => {
-        alert('Câu hỏi của bạn đã được gửi thành công! VitaCare sẽ phản hồi sớm nhất có thể.');
+        this.authService.showHeaderSuccess('Câu hỏi của bạn đã được gửi thành công! VitaCare sẽ phản hồi sớm nhất có thể.');
         this.closeReviewModal();
         this.fetchConsultations(this.product.sku); // Refresh list
       },

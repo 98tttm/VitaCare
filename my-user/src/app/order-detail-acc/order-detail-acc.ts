@@ -12,6 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrderService } from '../services/order.service';
 import { ToastService } from '../services/toast.service';
+import { CartService, CartItem } from '../services/cart.service';
+import { CartSidebarService } from '../services/cart-sidebar.service';
 
 interface OrderProduct {
   id: string;
@@ -25,6 +27,7 @@ interface OrderProduct {
   category?: string;
   gifted?: boolean;
   parentId?: string;
+  sku?: string;
 }
 
 interface ShippingAddress {
@@ -48,19 +51,19 @@ interface Order {
   deliveryDate?: string;
   // Đồng bộ với Order trong orders.ts
   status:
-    | 'pending'
-    | 'confirmed'
-    | 'shipping'
-    | 'delivered'
-    | 'received'
-    | 'completed'
-    | 'cancelled'
-    | 'refund_rejected'
-    | 'unreview'
-    | 'reviewed'
-    | 'processing_return'
-    | 'returning'
-    | 'returned';
+  | 'pending'
+  | 'confirmed'
+  | 'shipping'
+  | 'delivered'
+  | 'received'
+  | 'completed'
+  | 'cancelled'
+  | 'refund_rejected'
+  | 'unreview'
+  | 'reviewed'
+  | 'processing_return'
+  | 'returning'
+  | 'returned';
   totalAmount: number;
   products: OrderProduct[];
   shippingInfo?: ShippingInfo;
@@ -82,6 +85,8 @@ export class OrderDetailAcc {
   private router = inject(Router);
   private orderService = inject(OrderService);
   private toast = inject(ToastService);
+  private cartService = inject(CartService);
+  private cartSidebar = inject(CartSidebarService);
 
   @ViewChild('searchInput') searchInput?: ElementRef;
   @Output() close = new EventEmitter<void>();
@@ -167,7 +172,8 @@ export class OrderDetailAcc {
       'shipping': 'status-shipping',
       'delivered': 'status-delivered',
       'received': 'status-received',
-      'unreview': 'status-received',
+      'unreview': 'status-delivered', // Hoặc status-received tùy thiết kế
+      'reviewed': 'status-completed',
       'completed': 'status-completed',
       'cancelled': 'status-cancelled',
       'returning': 'status-returning',
@@ -178,20 +184,23 @@ export class OrderDetailAcc {
   }
 
   getStatusLabel(status: string): string {
+    const s = (status || '').toLowerCase().trim();
     const labelMap: Record<string, string> = {
       'pending': 'Chờ xác nhận',
       'confirmed': 'Đã xác nhận',
       'shipping': 'Đang giao hàng',
       'delivered': 'Đã giao hàng',
       'received': 'Đã nhận hàng',
-      'unreview': 'Giao hàng thành công',
+      'unreview': 'Chưa đánh giá',
       'completed': 'Hoàn thành',
       'cancelled': 'Đã hủy',
+      'reviewed': 'Đã đánh giá',
+      'processing_return': 'Yêu cầu trả hàng',
       'returning': 'Đang hoàn trả',
       'returned': 'Đã hoàn trả',
       'refund_rejected': 'Từ chối hoàn tiền',
     };
-    return labelMap[status] || status;
+    return labelMap[s] || status;
   }
 
   getPaymentMethodLabel(method: string): string {
@@ -243,7 +252,13 @@ export class OrderDetailAcc {
 
   goToProductDetail(product: OrderProduct, event: Event): void {
     event.stopPropagation();
-    this.router.navigate(['/product', product.id]);
+    // Ưu tiên _id; nếu chưa có (đơn cũ) thì fallback sang sku để backend map ngược lại
+    const targetId = product.id || product.sku;
+    if (!targetId) {
+      console.warn('[OrderDetailAcc] Missing product.id & sku, skip navigation');
+      return;
+    }
+    this.router.navigate(['/product', targetId]);
   }
 
   // Address formatting
@@ -306,6 +321,8 @@ export class OrderDetailAcc {
       }
 
       this.closeCancelOrderModal();
+      // Reload lại trang để đồng bộ danh sách đơn hàng ngoài màn Account
+      window.location.reload();
     } catch (error) {
       console.error('Error canceling order:', error);
       this.toast.showError('Có lỗi xảy ra khi hủy đơn hàng');
@@ -336,6 +353,9 @@ export class OrderDetailAcc {
       }
 
       this.closeConfirmReceivedModal();
+      // Reload lại trang để cập nhật trạng thái đơn hàng, sau đó user có thể tự vào mục đánh giá nếu muốn
+      this.closeDetailModal();
+      window.location.reload();
     } catch (error) {
       console.error('Error confirming received:', error);
       this.toast.showError('Có lỗi xảy ra khi xác nhận nhận hàng');
@@ -361,10 +381,35 @@ export class OrderDetailAcc {
   onRepurchaseOrder(): void {
     if (!this.selectedOrder) return;
 
-    // Add products back to cart
     const purchasedProducts = this.getPurchasedProducts(this.selectedOrder.products);
-    // This would integrate with cart service
-    this.toast.showSuccess('Đã thêm sản phẩm vào giỏ hàng');
-    this.router.navigate(['/cart']);
+    if (!purchasedProducts.length) return;
+
+    const skus = new Set<string>();
+    const ids = new Set<string>();
+
+    const repurchaseItems: Array<Partial<CartItem> & { quantity: number }> = purchasedProducts.map((p) => {
+      const payload: Partial<CartItem> & { quantity: number } = {
+        _id: p.id || p.sku || '',
+        sku: p.sku || '',
+        productName: p.name,
+        price: p.price || 0,
+        discount: 0,
+        image: p.image || '',
+        unit: p.unit || 'Hộp',
+        category: p.category || '',
+        hasPromotion: false,
+        quantity: p.quantity || 1,
+      };
+      if (payload.sku) skus.add(payload.sku);
+      if (payload._id) ids.add(String(payload._id));
+      return payload;
+    });
+
+    this.cartService.setItemsForRepurchase(repurchaseItems);
+    localStorage.setItem('repurchase_selection', JSON.stringify({
+      skus: Array.from(skus),
+      ids: Array.from(ids),
+    }));
+    this.cartSidebar.openSidebar();
   }
 }

@@ -92,7 +92,8 @@
         <app-addresses *ngIf="activeMenu === 'addresses'"></app-addresses>
         <app-health *ngIf="activeMenu === 'health'"></app-health>
         <app-remind *ngIf="activeMenu === 'remind'"></app-remind>
-        <app-reviews *ngIf="activeMenu === 'reviews'" [userId]="authService.currentUser()?.user_id"></app-reviews>
+        <app-reviews *ngIf="activeMenu === 'reviews'" [userId]="authService.currentUser()?.user_id"
+          [forceReload]="reviewsReloadTrigger"></app-reviews>
         <app-return-management *ngIf="activeMenu === 'returns'"
           [userId]="authService.currentUser()?.user_id"></app-return-management>
         <app-notice *ngIf="activeMenu === 'notifications'"></app-notice>

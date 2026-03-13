@@ -1,117 +1,598 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  color: #333;
+}
+
 .bd-page {
+  background: #f8f9fa;
+  padding: 20px 0 48px;
   min-height: 60vh;
-  padding-bottom: 3rem;
 }
 
+/* Cùng khung với header: max-width 1200px, padding ngang đồng bộ */
 .bd-container {
-  max-width: 900px;
+  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.bd-article {
   background: #fff;
-  border-radius: 12px;
+  padding: 24px clamp(24px, 4vw, 40px) 32px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* Breadcrumb - căn theo mẫu danh sách sản phẩm */
+.bd-breadcrumb {
+  margin-bottom: 8px;
+  padding: 8px 0 6px;
+  border-bottom: none;
+}
+
+.bd-breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.bd-breadcrumb-item a {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.bd-breadcrumb-item a:hover {
+  color: #00589F;
+}
+
+.bd-breadcrumb-item.current {
+  color: #00589F;
+  font-weight: 600;
+  max-width: 320px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.bd-hero-img-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: #f5f5f5;
+.bd-breadcrumb-sep {
+  color: #999;
+  user-select: none;
+  font-size: 12px;
 }
 
-.bd-hero-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* Loading / Not found */
+.bd-loading,
+.bd-notfound {
+  text-align: center;
+  padding: 48px 24px;
+  color: #5f6368;
 }
 
-.bd-badge {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: rgba(0, 88, 159, 0.9);
-  color: #fff;
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
+.bd-notfound h2 {
+  font-size: 20px;
+  color: #202124;
+  margin-bottom: 16px;
+}
+
+.bd-btn-link {
+  color: #1a73e8;
+  text-decoration: none;
   font-weight: 500;
 }
 
-.bd-header {
-  padding: 1.5rem 1.5rem 0;
+.bd-btn-link:hover {
+  text-decoration: underline;
+}
+
+/* Article - bố cục như Long Châu; nội dung dưới breadcrumb thụt đều 2 bên */
+.bd-article {
+  margin-top: 0;
+  padding-left: 150px;
+  padding-right: 150px;
 }
 
 .bd-title {
-  font-size: 1.75rem;
+  font-size: 26px;
   font-weight: 700;
   color: #1a1a1a;
-  line-height: 1.35;
-  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
 }
 
 .bd-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  color: #6b7280;
-  font-size: 0.9rem;
+  align-items: center;
+  gap: 10px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
 }
 
-.bd-meta-author::after {
-  content: '|';
-  margin-left: 1rem;
-  color: #d1d5db;
+.bd-meta-sep {
+  color: #ddd;
+  user-select: none;
 }
 
-.bd-summary {
-  padding: 0 1.5rem 1rem;
-  color: #4b5563;
-  font-size: 1rem;
-  line-height: 1.6;
+.bd-font-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bd-font-size-label {
+  font-size: 13px;
+  color: #666;
+}
+.bd-font-btn {
+  padding: 5px 14px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.bd-font-btn:hover {
+  border-color: #0066cc;
+  color: #0066cc;
+}
+.bd-font-btn.active {
+  border-color: #0066cc;
+  background: #e8f2fc;
+  color: #0066cc;
 }
 
-.bd-content {
-  padding: 0 1.5rem 2rem;
-  font-size: 1rem;
-  line-height: 1.75;
-  color: #374151;
+.bd-share {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }
 
-.bd-content :deep(img) {
+.bd-share-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.bd-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f4f8;
+  color: #0066cc;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.bd-share-btn:hover {
+  background: #0066cc;
+  color: #fff;
+}
+
+/* Intro / Short description: khung bo tròn, nền xanh xám, bóng mềm, icon trích dẫn lớn */
+.bd-intro {
+  position: relative;
+  background: #eef2f7;
+  margin-bottom: 22px;
+  padding: 20px 24px 20px 32px;
+  border-radius: 10px;
+  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.06);
+}
+.bd-intro-quote {
+  position: absolute;
+  left: 12px;
+  top: 8px;
+  font-size: 42px;
+  line-height: 1;
+  color: #5a6578;
+  font-family: Georgia, serif;
+  opacity: 0.9;
+}
+.bd-intro p {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #333;
+  text-align: justify;
+}
+
+/* Kích thước chữ lớn hơn (khi bấm "Lớn hơn") */
+.bd-article.bd-font-large .bd-intro p {
+  font-size: 16px;
+}
+.bd-article.bd-font-large .bd-body {
+  font-size: 17px;
+}
+.bd-article.bd-font-large .bd-body :deep(p) {
+  font-size: 17px;
+}
+.bd-article.bd-font-large .bd-body :deep(li) {
+  font-size: 17px;
+}
+.bd-article.bd-font-large .bd-body :deep(h2) {
+  font-size: 20px;
+}
+.bd-article.bd-font-large .bd-body :deep(h3) {
+  font-size: 19px;
+}
+
+/* Nội dung chính: cỡ chữ mặc định nhỏ; căn đều 2 bên */
+.bd-body {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  text-align: justify;
+}
+
+.bd-body :deep(h2) {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 28px 0 14px;
+  color: #1a1a1a;
+  line-height: 1.35;
+  padding-bottom: 6px;
+  text-align: left;
+}
+
+.bd-body :deep(h3) {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 22px 0 10px;
+  color: #1a1a1a;
+  text-align: left;
+}
+
+.bd-body :deep(p) {
+  margin: 0 0 14px;
+  font-size: 14px;
+  text-align: justify;
+  max-width: 100%;
+}
+
+.bd-body :deep(ul),
+.bd-body :deep(ol) {
+  margin: 14px 0;
+  padding-left: 24px;
+}
+
+.bd-body :deep(ul) { list-style-type: disc; }
+.bd-body :deep(ol) { list-style-type: decimal; }
+
+.bd-body :deep(li) {
+  margin: 8px 0;
+  line-height: 1.7;
+}
+
+.bd-body :deep(strong) {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.bd-body :deep(a) {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.bd-body :deep(a:hover) {
+  text-decoration: underline;
+}
+
+.bd-body :deep(img) {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 6px;
+  margin: 18px auto;
+  display: block;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
-.bd-content :deep(p) {
-  margin-bottom: 1rem;
-}
-
-.bd-content :deep(h2),
-.bd-content :deep(h3) {
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-  color: #00589f;
-  font-weight: 700;
-}
-
-.bd-content :deep(ul),
-.bd-content :deep(ol) {
-  margin-bottom: 1rem;
-  padding-left: 1.5rem;
-}
-
-.bd-loading,
-.bd-error {
+.bd-body :deep(figure) {
+  margin: 22px 0;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 300px;
+}
+
+.bd-body :deep(figure img) {
+  margin: 18px auto;
+}
+
+.bd-body :deep(figcaption) {
+  font-size: 14px;
+  font-weight: 700;
+  font-style: italic;
+  color: #333;
+  margin-top: 8px;
+  line-height: 1.5;
   text-align: center;
+  max-width: 100%;
+}
+
+/* Đánh giá độ hữu ích - như Long Châu */
+.bd-feedback {
+  margin-top: 32px;
+  padding-top: 22px;
+  border-top: 1px solid #eee;
+}
+
+.bd-feedback-question {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 14px;
+}
+
+.bd-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.bd-reaction-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: 2px solid #dadce0;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.bd-reaction-btn:hover {
+  border-color: #0066cc;
+  background: #e8f2fc;
+}
+
+.bd-reaction-btn.active {
+  border-color: #0066cc;
+  background: #e8f2fc;
+}
+
+.bd-reaction-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.bd-reaction-label {
+  font-size: 12px;
+  color: #5f6368;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Thông tin tham khảo - khung như Long Châu */
+.bd-disclaimer {
+  margin-top: 28px;
+  padding: 16px 20px;
+  background: #e8f2fc;
+  border: 1px solid #0066cc;
+  border-radius: 6px;
+}
+
+.bd-disclaimer p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #333;
+}
+
+.bd-disclaimer-link {
+  color: #0066cc;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.bd-disclaimer-link:hover {
+  text-decoration: underline;
+}
+
+/* Các bài viết liên quan - kiểu danh sách đánh số Long Châu */
+.bd-related {
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+
+.bd-related-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 14px;
+}
+
+.bd-related-list {
+  list-style: decimal;
+  margin: 0 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px 0;
+}
+
+.bd-related-list li {
+  padding-left: 4px;
+}
+
+.bd-related-list a {
+  color: #0066cc;
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.bd-related-list a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1024px) {
+  .bd-container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .bd-page {
+    padding: 12px 0 32px;
+    background: #5a5a5a;
+  }
+
+  .bd-container {
+    padding: 20px 20px 28px;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0 12px;
+    max-width: calc(100% - 24px);
+  }
+
+  .bd-article {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .bd-breadcrumb {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .bd-breadcrumb-list {
+    font-size: 13px;
+  }
+
+  .bd-title {
+    font-size: 20px;
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+
+  .bd-meta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin-bottom: 16px;
+  }
+
+  .bd-meta .bd-font-size {
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .bd-meta .bd-share {
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .bd-font-size {
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .bd-font-size-label {
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+
+  .bd-font-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  .bd-font-btn.active {
+    background: #0066cc;
+    color: #fff;
+    border-color: #0066cc;
+  }
+
+  .bd-share {
+    margin-left: 0;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+  }
+
+  .bd-intro {
+    padding: 16px 20px 16px 28px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+  }
+
+  .bd-intro-quote {
+    font-size: 36px;
+    left: 10px;
+    top: 6px;
+  }
+
+  .bd-intro p {
+    font-size: 14px;
+  }
+
+  .bd-body :deep(h2) {
+    font-size: 18px;
+  }
+
+  .bd-body :deep(h3) {
+    font-size: 16px;
+  }
+
+  .bd-body :deep(p) {
+    font-size: 14px;
+  }
+
+  .bd-body :deep(img) {
+    max-width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .bd-body :deep(figure) {
+    margin: 20px 0;
+  }
+
+  .bd-body :deep(figure img) {
+    margin: 0 auto 10px;
+    display: block;
+    max-width: 85%;
+    border-radius: 8px;
+  }
+
+  .bd-body :deep(figcaption) {
+    font-size: 13px;
+    font-weight: 700;
+    font-style: italic;
+    text-align: center;
+    color: #333;
+    margin-top: 8px;
+    padding: 0 8px;
+  }
 }

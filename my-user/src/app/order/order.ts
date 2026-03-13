@@ -833,7 +833,7 @@ export class Order implements OnInit, OnDestroy {
     const payload: any = {
       user_id: userId,
       paymentMethod: this.paymentMethod,
-      statusPayment: this.paymentMethod === 'cod' ? 'unpaid' : 'pending',
+      statusPayment: this.paymentMethod === 'cod' ? 'unpaid' : 'paid',
       atPharmacy: this.deliveryTab === 'pharmacy',
       pharmacyAddress: this.deliveryTab === 'pharmacy' && this.selectedStore
         ? `${this.selectedStore.ten_cua_hang} - ${this.selectedStore.dia_chi?.dia_chi_day_du}, ${this.selectedStore.dia_chi?.phuong_xa}, ${this.selectedStore.dia_chi?.quan_huyen}, ${this.selectedStore.dia_chi?.tinh_thanh}`
@@ -856,6 +856,7 @@ export class Order implements OnInit, OnDestroy {
         unit: i.unit || 'Hộp',
         hasPromotion: i.hasPromotion || false,
         image: i.image || '',
+        slug: (i as any).slug || '',
       })),
       shippingInfo: this.deliveryTab === 'home' ? {
         fullName,

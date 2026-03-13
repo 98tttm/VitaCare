@@ -75,24 +75,30 @@ export class OrderService {
     }
 
     getOrdersByCustomer(customerID: string): Observable<{ success: boolean; data: any[] }> {
-    // Backend hiện tại lọc theo user_id và trả về { success, items }.
-    // Ở phiên bản Mongo này, customerID chính là user_id.
-    return this.http
-      .get<{ success: boolean; items: any[] }>(`${this.apiUrl}?user_id=${customerID}`)
-      .pipe(
-        map((res) => ({
-          success: res.success,
-          data: Array.isArray(res.items) ? res.items : [],
-        }))
-      );
+        // Backend hiện tại lọc theo user_id và trả về { success, items }.
+        // Ở phiên bản Mongo này, customerID chính là user_id.
+        return this.http
+            .get<{ success: boolean; items: any[] }>(`${this.apiUrl}?user_id=${customerID}`)
+            .pipe(
+                map((res) => ({
+                    success: res.success,
+                    data: Array.isArray(res.items) ? res.items : [],
+                }))
+            );
     }
 
-    cancelOrder(orderId: string): Observable<{ success: boolean; message: string }> {
-        return this.http.put<{ success: boolean; message: string }>(`${this.apiUrl}/${orderId}/cancel`, {});
+    cancelOrder(orderId: string, reason?: string): Observable<{ success: boolean; message: string }> {
+        return this.http.put<{ success: boolean; message: string }>(`${this.apiUrl}/${orderId}/cancel`, {
+            reason: reason || '',
+        });
     }
 
     confirmReceived(orderId: string): Observable<{ success: boolean; message: string }> {
         return this.http.put<{ success: boolean; message: string }>(`${this.apiUrl}/${orderId}/confirm-received`, {});
+    }
+
+    confirmReturned(orderId: string): Observable<{ success: boolean; message: string }> {
+        return this.http.put<{ success: boolean; message: string }>(`${this.apiUrl}/${orderId}/confirm-returned`, {});
     }
 
     /** Gửi yêu cầu trả hàng/hoàn tiền - backend chuyển status sang processing_return */
@@ -101,6 +107,10 @@ export class OrderService {
             reason: reason || '',
             detailedDescription: detailedDescription || '',
         });
+    }
+
+    cancelReturnRequest(orderId: string): Observable<{ success: boolean; message: string }> {
+        return this.http.put<{ success: boolean; message: string }>(`${this.apiUrl}/${orderId}/cancel-return`, {});
     }
 }
 

@@ -115,7 +115,7 @@
                     </div>
                     <div class="return-summary" *ngIf="order.status === 'returning'" (click)="$event.stopPropagation()">
                         <div class="summary-right">
-                            <button class="action-btn received-btn" (click)="confirmReceivedReturn(order)">Đã nhận hàng</button>
+                            <button class="action-btn received-btn" (click)="openConfirmReceivedModal(order)">Đã nhận hàng</button>
                         </div>
                     </div>
                     <div class="return-summary" *ngIf="order.status === 'returned'" (click)="$event.stopPropagation()">
@@ -258,7 +258,7 @@
                 <button class="detail-action-btn detail-cancel-btn" (click)="openCancelModal(selectedDetailOrder); closeDetailModal()" type="button">Hủy yêu cầu</button>
             </div>
             <div *ngIf="selectedDetailOrder.status === 'returning'" class="detail-footer-actions">
-                <button class="detail-action-btn detail-received-btn" (click)="confirmReceivedReturn(selectedDetailOrder)" type="button">Đã nhận hàng</button>
+                <button class="detail-action-btn detail-received-btn" (click)="openConfirmReceivedModal(selectedDetailOrder)" type="button">Đã nhận hàng</button>
             </div>
             <div *ngIf="selectedDetailOrder.status === 'returned' || selectedDetailOrder.status === 'rejected'" class="detail-footer-actions">
                 <button class="detail-action-btn detail-repurchase-btn" (click)="onRepurchase(selectedDetailOrder)" type="button">Mua lại</button>
@@ -284,6 +284,31 @@
         <div class="cancel-footer">
             <button type="button" class="cancel-modal-btn btn-secondary" (click)="closeCancelModal()">Không</button>
             <button type="button" class="cancel-modal-btn btn-primary" (click)="confirmCancelRequest()">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận đã nhận hàng (hoàn tất đổi trả) -->
+<div class="modal-overlay" *ngIf="showConfirmReceivedModal" (click)="closeConfirmReceivedModal()">
+    <div class="cancel-modal-content" (click)="$event.stopPropagation()">
+        <div class="warning-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" fill="#256e05" />
+                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </div>
+        <div class="cancel-message">
+            <h3 class="cancel-title">Xác nhận đã nhận hàng hoàn trả</h3>
+            <p class="cancel-text">Bạn đã nhận lại hàng/hoàn tiền cho yêu cầu này?</p>
+        </div>
+        <div class="cancel-footer">
+            <button type="button" class="cancel-modal-btn btn-secondary" (click)="closeConfirmReceivedModal()">
+                Hủy
+            </button>
+            <button type="button" class="cancel-modal-btn btn-primary" (click)="executeConfirmReceived()">
+                Xác nhận
+            </button>
         </div>
     </div>
 </div>

@@ -19,16 +19,19 @@
   font-size: 13px;
   color: #555;
 }
+
 .bv-cat-list-debug summary {
   cursor: pointer;
   font-weight: 600;
 }
+
 .bv-cat-list-debug ul {
   margin: 8px 0 0;
   padding-left: 20px;
   columns: 2;
   column-gap: 24px;
 }
+
 .bv-cat-list-debug li {
   margin: 4px 0;
 }
@@ -36,6 +39,37 @@
 .bv-container {
   width: min(1200px, calc(100% - 40px));
   margin: 0 auto;
+}
+
+/* ===== Loading state: hiển thị khi đang tải bài viết ===== */
+.bv-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 48px 24px;
+  color: #5f6368;
+}
+
+.bv-loading p {
+  margin: 16px 0 0;
+  font-size: 15px;
+}
+
+.bv-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e8eaed;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  animation: bv-spin 0.8s linear infinite;
+}
+
+@keyframes bv-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===== Section title chung ===== */
@@ -103,12 +137,13 @@
   background: #fff;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .bv-blog-main:hover {
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .bv-blog-main-img {
@@ -181,12 +216,13 @@
   padding: 8px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .bv-blog-side-item:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   color: #00589F;
 }
 
@@ -248,6 +284,7 @@
   font-weight: 500;
   color: #1a1a1a;
   cursor: pointer;
+  text-decoration: none;
   transition: 0.2s ease;
 }
 
@@ -256,12 +293,6 @@
   border-color: #00589F;
   color: #00589F;
   background: #fff;
-}
-
-.bv-cat-btn.active {
-  border-color: #00589F;
-  color: #fff;
-  background: #00589F;
 }
 
 /* 9 mục nhỏ: ô giới thiệu + Xem thêm */
@@ -431,6 +462,7 @@
   display: flex;
   gap: 20px;
   text-decoration: none;
+  cursor: pointer;
   color: inherit;
   transition: opacity 0.2s ease;
 }
@@ -486,6 +518,7 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  cursor: pointer;
   padding: 0 0 0 8px;
   transition: opacity 0.2s ease;
 }
@@ -529,6 +562,7 @@
   font-size: 15px;
   font-weight: 500;
   color: #0047AB;
+  cursor: pointer;
   text-decoration: none;
   line-height: 1.4;
   display: -webkit-box;
@@ -554,12 +588,12 @@
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.2s ease;
 }
 
 .bv-featured-card:hover {
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .bv-featured-img {
@@ -629,7 +663,7 @@
 }
 
 .bv-article-row:hover {
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
   color: #00589F;
 }
 
@@ -677,7 +711,7 @@
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 /* Chuyên đề nổi bật: list category + số bài, nền xanh nhạt */
@@ -896,33 +930,16 @@
   color: #666;
 }
 
-/* ===== Banner promo 3 ô ===== */
-.bv-banners {
-  margin: 24px 0;
-}
 
-.bv-banner-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
 
-.bv-banner-card {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border-radius: 12px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: #0d47a1;
-  font-weight: 700;
-  font-size: 16px;
-  transition: transform 0.2s ease;
-}
-
-.bv-banner-card:hover {
-  transform: translateY(-2px);
+/* Hide specific categories from sidebar if they leak through */
+.bv-ft-item[data-category*="khuyến mãi" i],
+.bv-ft-item[data-category*="Khuyến mãi" i],
+.bv-ft-item[data-category*="phân loại" i],
+.bv-ft-item[data-category*="Phân loại" i],
+.bv-ft-item[data-category*="truyền thông" i],
+.bv-ft-item[data-category*="Truyền thông" i] {
+  display: none !important;
 }
 
 /* ===== Responsive ===== */
@@ -930,27 +947,35 @@
   .bv-blog-hero {
     grid-template-columns: 1fr;
   }
+
   .bv-cat-intro-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .bv-prevention-with-sidebar {
     grid-template-columns: 1fr;
   }
+
   .bv-prevention-aside {
     position: static;
   }
+
   .bv-prevention-top {
     grid-template-columns: 1fr;
   }
+
   .bv-prevention-bottom {
     grid-template-columns: 1fr;
   }
+
   .bv-featured-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+
   .bv-two-col {
     grid-template-columns: 1fr;
   }
+
   .bv-article-row img {
     width: 120px;
     height: 80px;
@@ -961,50 +986,64 @@
   .bv-container {
     width: calc(100% - 24px);
   }
+
   .bv-section-title h2 {
     font-size: 18px;
   }
+
   .bv-cat-intro-grid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
+
   .bv-cat-intro-card {
     padding: 16px;
   }
+
   .bv-prevention-card {
     padding: 16px;
   }
+
   .bv-prevention-header {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .bv-prevention-featured {
     flex-direction: column;
   }
+
   .bv-prevention-featured-img {
     width: 100%;
   }
+
   .bv-featured-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
+
   .bv-featured-body h4 {
     font-size: 12px;
   }
+
   .bv-article-row {
     flex-direction: column;
     gap: 10px;
   }
+
   .bv-article-row img {
     width: 100%;
     height: 160px;
   }
+
   .bv-banner-row {
     grid-template-columns: 1fr;
   }
+
   .bv-cat-filters {
     gap: 8px;
   }
+
   .bv-cat-btn {
     padding: 6px 12px;
     font-size: 12px;

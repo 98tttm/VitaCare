@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -8,10 +8,11 @@ import { ReviewSyncService } from '../services/review-sync.service';
 import { ReviewBadgeService } from '../services/review-badge.service';
 import { ToastService } from '../services/toast.service';
 import { OrderService } from '../services/order.service';
+import { CartService, CartItem } from '../services/cart.service';
+import { CartSidebarService } from '../services/cart-sidebar.service';
 import { Subscription } from 'rxjs';
 import { forkJoin } from 'rxjs';
-import { OrderDetailModalService } from '../services/order-detail-modal.service';
-import { OrderDetailModal } from '../components/order-detail-modal/order-detail-modal';
+import { OrderDetailAcc } from '../order-detail-acc/order-detail-acc';
 
 
 interface ProductInfo {
@@ -27,6 +28,8 @@ interface ProductInfo {
   hasBuy1Get1?: boolean; // Có khuyến mãi buy1get1 không (deprecated, dùng itemType)
   originalPrice?: number; // Giá gốc trước khuyến mãi
   itemType?: 'purchased' | 'gifted'; // Loại item: mua hoặc tặng kèm
+  backendId?: string; // _id thực của sản phẩm (ObjectId/string) nếu có
+  slug?: string; // slug sản phẩm (nếu có)
 }
 
 interface ReviewItem {
@@ -71,7 +74,7 @@ interface ReviewItem {
     HttpClientModule,
     RouterModule,
     ReviewFormComponent,
-    OrderDetailModal,
+    OrderDetailAcc,
   ],
   templateUrl: './reviews.html',
   styleUrls: ['./reviews.css'],
@@ -82,6 +85,9 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
   /** Truyền từ Account để tải đơn ngay khi vào tab (tránh phải active 2 lần) */
   @Input() userId: string | undefined;
 
+  /** Khắc phục lỗi sidebar click không kích hoạt refresh */
+  @Input() forceReload: number = 0;
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -89,12 +95,17 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
     private reviewBadgeService: ReviewBadgeService,
     private toastService: ToastService,
     private orderService: OrderService,
-    private orderDetailModalService: OrderDetailModalService
+    private cdr: ChangeDetectorRef,
+    private cartService: CartService,
+    private cartSidebar: CartSidebarService,
   ) { }
 
   // Review modal state
   showReviewModal: boolean = false;
   selectedProductsForReview: ReviewProduct[] = [];
+
+  @ViewChild(OrderDetailAcc) orderDetailModal!: OrderDetailAcc;
+  allOrdersData: any[] = [];
 
   // Expanded orders state
   expandedOrders: Set<string> = new Set();
@@ -192,9 +203,8 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
 
   // View order details
   viewOrderDetails(item: ReviewItem): void {
-    const orderNumber = item.orderNumber || item.OrderID || item.orderId || item.id;
-    if (orderNumber) {
-      this.orderDetailModalService.openModal(orderNumber);
+    if (this.orderDetailModal && this.allOrdersData.length > 0) {
+      this.orderDetailModal.openModal(this.allOrdersData, item.orderId);
     }
   }
 
@@ -238,6 +248,7 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
         category: item.category,
         rating: item.rating,
         reviewText: item.reviewText,
+        images: item.images || [],
       },
     ];
     this.showReviewModal = true;
@@ -280,10 +291,16 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
     const firstProductId = reviewedProducts[0].id;
     const orderId = firstProductId.split('_')[0];
 
-    // Tìm order tương ứng từ unreviewedItems để lấy CustomerID và shippingInfo
-    const orderItem = this.unreviewedItems.find(
-      (item) => item.orderId === orderId || item.id === orderId
-    );
+    // Tìm order tương ứng để lấy CustomerID và shippingInfo
+    // Ưu tiên trong danh sách chưa đánh giá; nếu không có (trường hợp chỉnh sửa đánh giá)
+    // thì fallback sang danh sách đã đánh giá.
+    let orderItem =
+      this.unreviewedItems.find(
+        (item) => item.orderId === orderId || item.id === orderId
+      ) ||
+      this.allReviewedItems.find(
+        (item) => item.orderId === orderId || item.id === orderId
+      );
 
     if (!orderItem) {
       console.error('Không tìm thấy order tương ứng, không thể submit review');
@@ -506,7 +523,9 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
         }
       } else {
         console.error(' All reviews failed to submit');
+        // Giữ nguyên popup đánh giá để người dùng không mất nội dung/hình ảnh
         this.toastService.showError('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại.');
+        return;
       }
 
       this.onCloseReviewModal();
@@ -587,6 +606,7 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit(): void {
+    console.log('ngOnInit: Setting showReviewed to false');
     this.showReviewed = false;
     this.clearOldReviewData();
     this.loadPromotionsAndTargets();
@@ -610,9 +630,16 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['userId'] && this.userId) {
-      this.loadUnreviewedOrders();
-      this.loadReviewedItems();
+    if (changes['userId'] || changes['forceReload']) {
+      console.log('ngOnChanges: userId or forceReload changed, resetting showReviewed to false');
+      this.showReviewed = false;
+      const customerID = this.userId || this.orderService.getCustomerID();
+      if (customerID && customerID !== 'guest') {
+        this.loadUnreviewedOrders();
+        this.loadReviewedItems();
+      } else {
+        this.cdr.detectChanges();
+      }
     }
   }
 
@@ -622,6 +649,8 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
     if (customerID && customerID !== 'guest') {
       this.loadUnreviewedOrders();
       this.loadReviewedItems();
+    } else {
+      this.cdr.detectChanges();
     }
   }
 
@@ -668,10 +697,15 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
           // Nếu không có CustomerID, không load gì cả
           this.allReviewedItems = [];
         }
+        this.cdr.detectChanges();
       } catch (error) {
         console.error('Error loading reviewed items:', error);
         this.allReviewedItems = [];
+        this.cdr.detectChanges();
       }
+    } else {
+      this.allReviewedItems = [];
+      this.cdr.detectChanges();
     }
 
     // Then load from backend to get full data including images
@@ -694,8 +728,8 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
 
     try {
       const orders = JSON.parse(savedOrders);
-    // Filter các đơn đã giao xong (delivered/completed/received).
-    // Trạng thái "chưa đánh giá" được hiểu ở tầng UI: đơn đã giao xong nhưng chưa có review.
+      // Filter các đơn đã giao xong (delivered/completed/received).
+      // Trạng thái "chưa đánh giá" được hiểu ở tầng UI: đơn đã giao xong nhưng chưa có review.
       const completedOrders = orders.filter((order: any) => {
         const status = (order.status || '').toLowerCase().trim();
         const hasReceivedRoute = !!order.route?.received;
@@ -823,6 +857,7 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
         });
         localStorage.setItem('reviewedItems', JSON.stringify(this.allReviewedItems));
         console.log(' Loaded reviewed items from backend with full data (filtered by CustomerID)');
+        this.cdr.detectChanges();
       });
     } catch (error) {
       console.error('Error loading reviewed items from backend:', error);
@@ -837,29 +872,30 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.orderService.getOrdersByCustomer(customerID).subscribe({
-        next: (response: any) => {
-          if (response.success && response.data) {
-            console.log(' [Reviews] Loaded orders from backend:', response.data.length);
-            // Process orders từ backend
-            this.processOrders(response.data);
+      next: (response: any) => {
+        if (response.success && response.data) {
+          console.log(' [Reviews] Loaded orders from backend:', response.data.length);
+          this.allOrdersData = response.data.map((o: any) => this.mapBackendOrderToFrontendFormat(o));
+          this.processOrders(response.data);
 
-            // Save to localStorage để sync với orders component
-            localStorage.setItem(
-              'ordersData',
-              JSON.stringify(
-                response.data.map((order: any) => this.mapBackendOrderToFrontendFormat(order))
-              )
-            );
-          } else {
-            console.log('No orders found in backend, checking localStorage...');
-            this.loadFromLocalStorage();
-          }
-        },
-        error: (error: any) => {
-          console.error('[Reviews] Error loading orders from backend:', error);
+          // Save to localStorage để sync với orders component
+          localStorage.setItem(
+            'ordersData',
+            JSON.stringify(
+              response.data.map((order: any) => this.mapBackendOrderToFrontendFormat(order))
+            )
+          );
+          this.cdr.detectChanges();
+        } else {
+          console.log('No orders found in backend, checking localStorage...');
           this.loadFromLocalStorage();
-        },
-      });
+        }
+      },
+      error: (error: any) => {
+        console.error('[Reviews] Error loading orders from backend:', error);
+        this.loadFromLocalStorage();
+      },
+    });
   }
 
   mapBackendOrderToFrontendFormat(order: any): any {
@@ -867,8 +903,21 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
     // Backend /api/orders đang dùng field "item", một số nơi khác có thể dùng "items"
     const rawItems = order.items || order.item || [];
     const products = rawItems.map((item: any) => {
+      const rawPid = item?.productId || item?._id;
+      let backendId = '';
+      if (rawPid) {
+        if (typeof rawPid === 'string') backendId = rawPid;
+        else if (rawPid.$oid) backendId = rawPid.$oid;
+        else if (typeof rawPid.toString === 'function') backendId = rawPid.toString();
+      }
+      // Backup: nếu chưa có _id, dùng sku để backend map ngược
+      if (!backendId && item?.sku) {
+        backendId = item.sku;
+      }
+      const slug = item.slug || backendId || '';
+
       const product: ProductInfo = {
-        id: item.sku || item.productName, // Use SKU as ID if available
+        id: slug || backendId, // id dùng cho route /product/:slug (không dùng SKU)
         name: item.productName,
         price: item.price,
         unit: item.unit || '',
@@ -876,10 +925,12 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
         totalPrice: item.price * item.quantity,
         image: item.image || '',
         category: item.category || '',
-        sku: item.sku || item.id, // Add SKU for navigation
+        sku: item.sku || backendId || item.id, // SKU cho API review (vẫn giữ cho API /api/reviews)
         originalPrice: item.originalPrice || item.price, // Giá gốc
         itemType: item.itemType || 'purchased', // Loại item: mua hoặc tặng kèm
         hasBuy1Get1: item.itemType === 'gifted' || this.checkBuy1Get1PromotionBySku(item.sku), // Deprecated, dùng itemType
+        backendId,
+        slug,
       };
 
       return product;
@@ -977,6 +1028,7 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
 
     console.log('Final unreviewed items count:', this.unreviewedItems.length);
     this.reviewBadgeService.setUnreviewedCount(this.unreviewedItems.length);
+    this.cdr.detectChanges();
   }
 
   loadFromLocalStorage(): void {
@@ -988,16 +1040,22 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
       try {
         const orders = JSON.parse(savedOrders);
         console.log('Total orders from localStorage:', orders.length);
+        this.allOrdersData = orders.map((o: any) => {
+          if (o.products && !o.item) return o; // Already mapped
+          return this.mapBackendOrderToFrontendFormat(o);
+        });
         this.processOrders(orders);
       } catch (error) {
         console.error('Error parsing orders data:', error);
         this.unreviewedItems = [];
         this.reviewBadgeService.setUnreviewedCount(0);
+        this.cdr.detectChanges();
       }
     } else {
       console.log('No ordersData in localStorage, unreviewedItems will be empty');
       this.unreviewedItems = [];
       this.reviewBadgeService.setUnreviewedCount(0);
+      this.cdr.detectChanges();
     }
   }
 
@@ -1038,7 +1096,7 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   goToProductDetail(item: ReviewItem): void {
-    // Lấy SKU hoặc productId từ item
+    // Lấy slug/id sản phẩm để điều hướng
     const productId = item.productId || item.sku;
     if (!productId) {
       // Nếu không có productId, thử extract từ id (format: orderId_productId)
@@ -1052,28 +1110,63 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
             (p: any) => p.id === extractedId || (p.sku && p.sku === extractedId)
           );
           if (product) {
-            const finalId = (product as ProductInfo).sku || product.id;
-            this.router.navigate(['/product-detail', finalId]);
+            const finalId = (product as ProductInfo).slug || (product as ProductInfo).backendId || (product as ProductInfo).sku || product.id;
+            this.router.navigate(['/product', finalId]);
             return;
           }
         }
-        this.router.navigate(['/product-detail', extractedId]);
+        this.router.navigate(['/product', extractedId]);
         return;
       }
       console.warn('No product ID found for navigation');
       return;
     }
-    this.router.navigate(['/product-detail', productId]);
+    this.router.navigate(['/product', productId]);
   }
 
   goToProductDetailFromUnreviewed(product: ProductInfo): void {
-    // Lấy SKU hoặc id từ product
-    const productId = (product as any).sku || product.id;
+    // Lấy slug/id từ product (ưu tiên slug hoặc backendId)
+    const productId = product.slug || product.backendId || product.id || (product as any).sku;
     if (productId) {
-      this.router.navigate(['/product-detail', productId]);
+      this.router.navigate(['/product', productId]);
     } else {
       console.warn('No product ID found for navigation from unreviewed item');
     }
+  }
+
+  /** Mua lại từ tab "Chưa đánh giá" trong màn Quản lý đánh giá */
+  onRepurchaseFromUnreviewed(item: ReviewItem): void {
+    const products = item.products || [];
+    if (!products.length) return;
+
+    const skus = new Set<string>();
+    const ids = new Set<string>();
+
+    products
+      .filter((p) => p.itemType !== 'gifted')
+      .forEach((p) => {
+        const payload: Partial<CartItem> = {
+          _id: p.backendId || p.id || p.sku || '',
+          sku: p.sku || '',
+          productName: p.name,
+          price: p.price || 0,
+          discount: 0,
+          image: p.image || '',
+          unit: p.unit || 'Hộp',
+          category: p.category || '',
+          hasPromotion: false,
+        };
+        if (payload.sku) skus.add(payload.sku);
+        if (payload._id) ids.add(String(payload._id));
+        this.cartService.addItem(payload, p.quantity || 1);
+      });
+
+    localStorage.setItem('repurchase_selection', JSON.stringify({
+      skus: Array.from(skus),
+      ids: Array.from(ids),
+    }));
+
+    this.cartSidebar.openSidebar();
   }
 
   // Load promotions and targets for buy1get1
@@ -1185,7 +1278,8 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
 
   // Get status label for display
   getStatusLabel(status?: string): string {
-    if (!status) return 'Đã giao hàng';
+    const s = (status || '').toLowerCase().trim();
+    if (!s) return 'Đã giao hàng';
 
     const statusMap: { [key: string]: string } = {
       pending: 'Chờ xác nhận',
@@ -1194,14 +1288,16 @@ export class ReviewsComponent implements OnInit, OnDestroy, OnChanges {
       delivered: 'Đã giao hàng',
       received: 'Đã nhận hàng',
       unreview: 'Chưa đánh giá',
+      reviewed: 'Đã đánh giá',
       completed: 'Hoàn thành',
       cancelled: 'Đã hủy',
       processing_return: 'Xử lý trả hàng/hoàn tiền',
       returning: 'Xử lý trả hàng/hoàn tiền',
       returned: 'Đã trả hàng',
       refunded: 'Đã trả hàng',
+      refund_rejected: 'Từ chối hoàn tiền',
     };
 
-    return statusMap[status] || 'Đã giao hàng';
+    return statusMap[s] || 'Đã giao hàng';
   }
 }

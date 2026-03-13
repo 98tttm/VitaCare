@@ -58,7 +58,19 @@ export class Blogmanage implements OnInit {
     this.blogService.getBlogs(page, 100).subscribe({
       next: (res: BlogResponse) => {
         if (res.success) {
-          this.blogs = res.data.map(b => ({ ...b, selected: false }));
+          const parseMongoDate = (val: any) => {
+            if (!val) return null;
+            if (typeof val === 'object' && val.$date) return new Date(val.$date).toISOString();
+            const d = new Date(val);
+            return isNaN(d.getTime()) ? null : d.toISOString();
+          };
+
+          this.blogs = res.data.map(b => ({
+            ...b,
+            selected: false,
+            publishedAt: parseMongoDate(b.publishedAt) || b.publishedAt,
+            createdAt: parseMongoDate(b.createdAt) || b.createdAt
+          }));
           this.extractCategories();
           this.filterBlogs();
           this.currentPage = res.pagination.page;

@@ -1,270 +1,369 @@
 <main class="bv-page">
   <div class="bv-container">
 
-    <!-- ========== CHUYÊN TRANG SỨC KHỎE ========== -->
-    <section class="bv-section">
-      <div class="bv-section-title">
-        <img class="bv-section-icon" src="assets/images/homepage/title/4.webp" alt="" />
-        <h2>Chuyên trang sức khoẻ <span class="bv-sep">|</span> <a routerLink="/bai-viet" class="bv-view-all">Xem tất cả <i class="bi bi-chevron-right"></i></a></h2>
-      </div>
-      <div class="bv-cat-filters btn-cat">
-        <button *ngFor="let cat of blogCategories" type="button" class="bv-cat-btn" [class.active]="activeCategory === cat"
-          (click)="onCategoryFilter(cat)">{{ cat }}</button>
-      </div>
-      <div class="bv-blog-hero">
-        <a *ngIf="mainBlog" [routerLink]="mainBlog.link || '/bai-viet'" class="bv-blog-main">
-          <div class="bv-blog-main-img">
-            <img [src]="mainBlog.image || 'assets/images/homepage/blogs/ngu_ngon.jpg'" [alt]="mainBlog.title" (error)="$any($event.target).src='assets/images/homepage/blogs/ngu_ngon.jpg'" />
-            <span class="bv-badge">{{ mainBlog.categoryName || 'Bài viết' }}</span>
-          </div>
-          <div class="bv-blog-main-body">
-            <h3>{{ mainBlog.title }}</h3>
-            <p>{{ mainBlog.excerpt || 'Mô tả ngắn...' }}</p>
-          </div>
-        </a>
-        <div class="bv-blog-side">
-          <a *ngFor="let b of relatedBlogs" [routerLink]="b.link || '/bai-viet'" class="bv-blog-side-item">
-            <img [src]="b.image || 'assets/images/homepage/blogs/an_gi.jpg'" [alt]="b.title" (error)="$any($event.target).src='assets/images/homepage/blogs/an_gi.jpg'" />
-            <div class="bv-blog-side-content">
-              <span class="bv-badge-sm">{{ b.categoryName || 'Bài viết' }}</span>
-              <span class="bv-blog-side-title">{{ b.title }}</span>
+    <!-- Loading: hiển thị khi đang tải, ẩn khi đã có data -->
+    <div *ngIf="loading" class="bv-loading">
+      <div class="bv-loading-spinner"></div>
+      <p>Đang tải bài viết...</p>
+    </div>
+
+    <!-- Nội dung bài viết: chỉ hiển thị sau khi load xong -->
+    <ng-container *ngIf="!loading">
+      <!-- ========== GÓC SỨC KHỎE ========== -->
+      <section class="bv-section">
+        <div class="bv-section-title">
+          <img class="bv-section-icon" src="assets/images/homepage/title/4.webp" alt="Góc sức khỏe" />
+          <h2>Góc sức khoẻ</h2>
+        </div>
+        <div class="bv-cat-filters btn-cat">
+          <a *ngFor="let item of blogCategoryItems" [routerLink]="['/bai-viet/danh-muc', item.slug]" class="bv-cat-btn">{{
+            item.name }}</a>
+        </div>
+        <div class="bv-blog-hero">
+          <a *ngIf="mainBlog" [routerLink]="getBlogDetailLink(mainBlog)" class="bv-blog-main">
+            <div class="bv-blog-main-img">
+              <img [src]="mainBlog.image || 'assets/placeholder/blog-main.jpg'" [alt]="mainBlog.title" />
+              <span class="bv-badge">{{ mainBlog.categoryName || 'Bài viết' }}</span>
+            </div>
+            <div class="bv-blog-main-body">
+              <h3>{{ mainBlog.title }}</h3>
+              <p>{{ mainBlog.excerpt || 'Mô tả ngắn...' }}</p>
             </div>
           </a>
+          <div class="bv-blog-side">
+            <a *ngFor="let b of relatedBlogs" [routerLink]="getBlogDetailLink(b)" class="bv-blog-side-item">
+              <img [src]="b.image || 'assets/placeholder/blog-thumb.jpg'" [alt]="b.title" loading="lazy" />
+              <div class="bv-blog-side-content">
+                <span class="bv-badge-sm">{{ b.categoryName || 'Bài viết' }}</span>
+                <span class="bv-blog-side-title">{{ b.title }}</span>
+              </div>
+            </a>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ========== PHÒNG BỆNH & SỐNG KHỎE + DINH DƯỠNG (trái) | CHUYÊN ĐỀ NỔI BẬT (phải) ========== -->
-    <section class="bv-section">
-      <div class="bv-prevention-with-sidebar">
-        <div class="bv-prevention-left-col">
-          <div class="bv-prevention-card">
-            <div class="bv-prevention-header">
-              <h3 class="bv-prevention-title">Phòng bệnh & Sống khoẻ</h3>
-            <nav class="bv-prevention-subcat">
-              <a *ngFor="let sub of preventionSubCategories; let i = index" [routerLink]="['/bai-viet']" [queryParams]="{ category: 'phong-benh-song-khoe', subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
-              </a>
-            </nav>
-            <a routerLink="/bai-viet" [queryParams]="{ category: 'phong-benh-song-khoe' }" class="bv-prevention-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-          </div>
-          <div class="bv-prevention-articles">
-            <div class="bv-prevention-top">
-              <a *ngIf="preventionCardArticles[0]" [routerLink]="preventionCardArticles[0].link || '/bai-viet'" class="bv-prevention-featured">
-                <div class="bv-prevention-featured-img">
-                  <img [src]="preventionCardArticles[0].image || 'assets/images/homepage/blogs/ngu_ngon.jpg'" [alt]="preventionCardArticles[0].title" (error)="$any($event.target).src='assets/images/homepage/blogs/ngu_ngon.jpg'" />
+      <!-- ========== PHÒNG BỆNH & SỐNG KHỎE + DINH DƯỠNG (trái) | CHUYÊN ĐỀ NỔI BẬT (phải) ========== -->
+      <section class="bv-section">
+        <div class="bv-prevention-with-sidebar">
+          <div class="bv-prevention-left-col">
+            <div class="bv-prevention-card">
+              <div class="bv-prevention-header">
+                <h3 class="bv-prevention-title">Phòng bệnh & Sống khoẻ</h3>
+                <nav class="bv-prevention-subcat">
+                  <a *ngFor="let sub of preventionSubCategories; let i = index"
+                    [routerLink]="['/bai-viet/danh-muc/phong-benh-song-khoe']" [queryParams]="{ subcat: sub }"
+                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  </a>
+                </nav>
+                <a routerLink="/bai-viet/danh-muc/phong-benh-song-khoe" class="bv-prevention-viewall">Xem tất cả ({{
+                  getCategoryCount('Phòng bệnh & Sống khoẻ') }}) <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="bv-prevention-articles">
+                <div class="bv-prevention-top">
+                  <a *ngIf="preventionCardArticles[0]" [routerLink]="getBlogDetailLink(preventionCardArticles[0])"
+                    class="bv-prevention-featured">
+                    <div class="bv-prevention-featured-img">
+                      <img [src]="preventionCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
+                        [alt]="preventionCardArticles[0].title" />
+                    </div>
+                    <div class="bv-prevention-featured-body">
+                      <h4>{{ preventionCardArticles[0].title }}</h4>
+                      <p>{{ preventionCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
+                    </div>
+                  </a>
+                  <a *ngIf="preventionCardArticles[1]" [routerLink]="getBlogDetailLink(preventionCardArticles[1])"
+                    class="bv-prevention-text-only">
+                    <h4>{{ preventionCardArticles[1].title }}</h4>
+                    <p>{{ preventionCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
+                  </a>
                 </div>
-                <div class="bv-prevention-featured-body">
-                  <h4>{{ preventionCardArticles[0].title }}</h4>
-                  <p>{{ preventionCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
-                </div>
-              </a>
-              <a *ngIf="preventionCardArticles[1]" [routerLink]="preventionCardArticles[1].link || '/bai-viet'" class="bv-prevention-text-only">
-                <h4>{{ preventionCardArticles[1].title }}</h4>
-                <p>{{ preventionCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
-              </a>
-            </div>
-            <div class="bv-prevention-bottom">
-              <a *ngIf="preventionCardArticles[2]" [routerLink]="preventionCardArticles[2].link || '/bai-viet'" class="bv-prevention-title-link">{{ preventionCardArticles[2].title }}</a>
-              <a *ngIf="preventionCardArticles[3]" [routerLink]="preventionCardArticles[3].link || '/bai-viet'" class="bv-prevention-title-link">{{ preventionCardArticles[3].title }}</a>
-              <a *ngIf="preventionCardArticles[4]" [routerLink]="preventionCardArticles[4].link || '/bai-viet'" class="bv-prevention-title-link">{{ preventionCardArticles[4].title }}</a>
-            </div>
-          </div>
-        </div>
-        <div class="bv-prevention-card bv-nutrition-card">
-            <div class="bv-prevention-header">
-              <h3 class="bv-prevention-title">Dinh dưỡng</h3>
-              <nav class="bv-prevention-subcat">
-                <a *ngFor="let sub of nutritionSubCategories; let i = index" [routerLink]="['/bai-viet']" [queryParams]="{ category: 'dinh-duong', subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                  <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
-                </a>
-              </nav>
-              <a routerLink="/bai-viet" [queryParams]="{ category: 'dinh-duong' }" class="bv-prevention-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-            </div>
-            <div class="bv-prevention-articles">
-              <div class="bv-prevention-top">
-                <a *ngIf="nutritionCardArticles[0]" [routerLink]="nutritionCardArticles[0].link || '/bai-viet'" class="bv-prevention-featured">
-                  <div class="bv-prevention-featured-img">
-                    <img [src]="nutritionCardArticles[0].image || 'assets/images/homepage/blogs/an_gi.jpg'" [alt]="nutritionCardArticles[0].title" (error)="$any($event.target).src='assets/images/homepage/blogs/an_gi.jpg'" />
-                  </div>
-                  <div class="bv-prevention-featured-body">
-                    <h4>{{ nutritionCardArticles[0].title }}</h4>
-                    <p>{{ nutritionCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
-                  </div>
-                </a>
-                <a *ngIf="nutritionCardArticles[1]" [routerLink]="nutritionCardArticles[1].link || '/bai-viet'" class="bv-prevention-text-only">
-                  <h4>{{ nutritionCardArticles[1].title }}</h4>
-                  <p>{{ nutritionCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
-                </a>
-              </div>
-              <div class="bv-prevention-bottom">
-                <a *ngIf="nutritionCardArticles[2]" [routerLink]="nutritionCardArticles[2].link || '/bai-viet'" class="bv-prevention-title-link">{{ nutritionCardArticles[2].title }}</a>
-                <a *ngIf="nutritionCardArticles[3]" [routerLink]="nutritionCardArticles[3].link || '/bai-viet'" class="bv-prevention-title-link">{{ nutritionCardArticles[3].title }}</a>
-                <a *ngIf="nutritionCardArticles[4]" [routerLink]="nutritionCardArticles[4].link || '/bai-viet'" class="bv-prevention-title-link">{{ nutritionCardArticles[4].title }}</a>
-              </div>
-            </div>
-          </div>
-          <div class="bv-prevention-card bv-mombaby-card">
-            <div class="bv-prevention-header">
-              <h3 class="bv-prevention-title">Mẹ & bé</h3>
-              <nav class="bv-prevention-subcat">
-                <a *ngFor="let sub of momBabySubCategories; let i = index" [routerLink]="['/bai-viet']" [queryParams]="{ category: 'me-va-be', subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                  <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
-                </a>
-              </nav>
-              <a routerLink="/bai-viet" [queryParams]="{ category: 'me-va-be' }" class="bv-prevention-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-            </div>
-            <div class="bv-prevention-articles">
-              <div class="bv-prevention-top">
-                <a *ngIf="momBabyCardArticles[0]" [routerLink]="momBabyCardArticles[0].link || '/bai-viet'" class="bv-prevention-featured">
-                  <div class="bv-prevention-featured-img">
-                    <img [src]="momBabyCardArticles[0].image || 'assets/images/homepage/blogs/cam_cum.webp'" [alt]="momBabyCardArticles[0].title" (error)="$any($event.target).src='assets/images/homepage/blogs/cam_cum.webp'" />
-                  </div>
-                  <div class="bv-prevention-featured-body">
-                    <h4>{{ momBabyCardArticles[0].title }}</h4>
-                    <p>{{ momBabyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
-                  </div>
-                </a>
-                <a *ngIf="momBabyCardArticles[1]" [routerLink]="momBabyCardArticles[1].link || '/bai-viet'" class="bv-prevention-text-only">
-                  <h4>{{ momBabyCardArticles[1].title }}</h4>
-                  <p>{{ momBabyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
-                </a>
-              </div>
-              <div class="bv-prevention-bottom">
-                <a *ngIf="momBabyCardArticles[2]" [routerLink]="momBabyCardArticles[2].link || '/bai-viet'" class="bv-prevention-title-link">{{ momBabyCardArticles[2].title }}</a>
-                <a *ngIf="momBabyCardArticles[3]" [routerLink]="momBabyCardArticles[3].link || '/bai-viet'" class="bv-prevention-title-link">{{ momBabyCardArticles[3].title }}</a>
-                <a *ngIf="momBabyCardArticles[4]" [routerLink]="momBabyCardArticles[4].link || '/bai-viet'" class="bv-prevention-title-link">{{ momBabyCardArticles[4].title }}</a>
-              </div>
-            </div>
-          </div>
-          <div class="bv-prevention-card bv-beauty-card">
-            <div class="bv-prevention-header">
-              <h3 class="bv-prevention-title">Khỏe đẹp</h3>
-              <nav class="bv-prevention-subcat">
-                <a *ngFor="let sub of beautySubCategories; let i = index" [routerLink]="['/bai-viet']" [queryParams]="{ category: 'khoe-dep', subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                  <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
-                </a>
-              </nav>
-              <a routerLink="/bai-viet" [queryParams]="{ category: 'khoe-dep' }" class="bv-prevention-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-            </div>
-            <div class="bv-prevention-articles">
-              <div class="bv-prevention-top">
-                <a *ngIf="beautyCardArticles[0]" [routerLink]="beautyCardArticles[0].link || '/bai-viet'" class="bv-prevention-featured">
-                  <div class="bv-prevention-featured-img">
-                    <img [src]="beautyCardArticles[0].image || 'assets/images/homepage/blogs/an_gi.jpg'" [alt]="beautyCardArticles[0].title" (error)="$any($event.target).src='assets/images/homepage/blogs/an_gi.jpg'" />
-                  </div>
-                  <div class="bv-prevention-featured-body">
-                    <h4>{{ beautyCardArticles[0].title }}</h4>
-                    <p>{{ beautyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
-                  </div>
-                </a>
-                <a *ngIf="beautyCardArticles[1]" [routerLink]="beautyCardArticles[1].link || '/bai-viet'" class="bv-prevention-text-only">
-                  <h4>{{ beautyCardArticles[1].title }}</h4>
-                  <p>{{ beautyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
-                </a>
-              </div>
-              <div class="bv-prevention-bottom">
-                <a *ngIf="beautyCardArticles[2]" [routerLink]="beautyCardArticles[2].link || '/bai-viet'" class="bv-prevention-title-link">{{ beautyCardArticles[2].title }}</a>
-                <a *ngIf="beautyCardArticles[3]" [routerLink]="beautyCardArticles[3].link || '/bai-viet'" class="bv-prevention-title-link">{{ beautyCardArticles[3].title }}</a>
-                <a *ngIf="beautyCardArticles[4]" [routerLink]="beautyCardArticles[4].link || '/bai-viet'" class="bv-prevention-title-link">{{ beautyCardArticles[4].title }}</a>
-              </div>
-            </div>
-          </div>
-          <div class="bv-prevention-card bv-gender-card">
-            <div class="bv-prevention-header">
-              <h3 class="bv-prevention-title">Giới tính</h3>
-              <nav class="bv-prevention-subcat">
-                <a *ngFor="let sub of genderSubCategories; let i = index" [routerLink]="['/bai-viet']" [queryParams]="{ category: 'gioi-tinh', subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                  <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
-                </a>
-              </nav>
-              <a routerLink="/bai-viet" [queryParams]="{ category: 'gioi-tinh' }" class="bv-prevention-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-            </div>
-            <div class="bv-prevention-articles">
-              <div class="bv-prevention-top">
-                <a *ngIf="genderCardArticles[0]" [routerLink]="genderCardArticles[0].link || '/bai-viet'" class="bv-prevention-featured">
-                  <div class="bv-prevention-featured-img">
-                    <img [src]="genderCardArticles[0].image || 'assets/images/homepage/blogs/ngu_ngon.jpg'" [alt]="genderCardArticles[0].title" (error)="$any($event.target).src='assets/images/homepage/blogs/ngu_ngon.jpg'" />
-                  </div>
-                  <div class="bv-prevention-featured-body">
-                    <h4>{{ genderCardArticles[0].title }}</h4>
-                    <p>{{ genderCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
-                  </div>
-                </a>
-                <a *ngIf="genderCardArticles[1]" [routerLink]="genderCardArticles[1].link || '/bai-viet'" class="bv-prevention-text-only">
-                  <h4>{{ genderCardArticles[1].title }}</h4>
-                  <p>{{ genderCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
-                </a>
-              </div>
-              <div class="bv-prevention-bottom">
-                <a *ngIf="genderCardArticles[2]" [routerLink]="genderCardArticles[2].link || '/bai-viet'" class="bv-prevention-title-link">{{ genderCardArticles[2].title }}</a>
-                <a *ngIf="genderCardArticles[3]" [routerLink]="genderCardArticles[3].link || '/bai-viet'" class="bv-prevention-title-link">{{ genderCardArticles[3].title }}</a>
-                <a *ngIf="genderCardArticles[4]" [routerLink]="genderCardArticles[4].link || '/bai-viet'" class="bv-prevention-title-link">{{ genderCardArticles[4].title }}</a>
-              </div>
-            </div>
-          </div>
-          <div class="bv-prevention-card bv-health-news-card">
-            <div class="bv-prevention-header">
-              <h3 class="bv-prevention-title">Tin tức sức khoẻ</h3>
-              <nav class="bv-prevention-subcat">
-                <a *ngFor="let sub of healthNewsSubCategories; let i = index" [routerLink]="['/bai-viet']" [queryParams]="{ category: 'tin-tuc-suc-khoe', subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                  <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
-                </a>
-              </nav>
-              <a routerLink="/bai-viet" [queryParams]="{ category: 'tin-tuc-suc-khoe' }" class="bv-prevention-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-            </div>
-            <div class="bv-prevention-articles">
-              <div class="bv-prevention-top">
-                <a *ngIf="healthNewsCardArticles[0]" [routerLink]="healthNewsCardArticles[0].link || '/bai-viet'" class="bv-prevention-featured">
-                  <div class="bv-prevention-featured-img">
-                    <img [src]="healthNewsCardArticles[0].image || 'assets/images/homepage/blogs/cam_cum.webp'" [alt]="healthNewsCardArticles[0].title" (error)="$any($event.target).src='assets/images/homepage/blogs/cam_cum.webp'" />
-                  </div>
-                  <div class="bv-prevention-featured-body">
-                    <h4>{{ healthNewsCardArticles[0].title }}</h4>
-                    <p>{{ healthNewsCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
-                  </div>
-                </a>
-                <a *ngIf="healthNewsCardArticles[1]" [routerLink]="healthNewsCardArticles[1].link || '/bai-viet'" class="bv-prevention-text-only">
-                  <h4>{{ healthNewsCardArticles[1].title }}</h4>
-                  <p>{{ healthNewsCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
-                </a>
-              </div>
-              <div class="bv-prevention-bottom">
-                <a *ngIf="healthNewsCardArticles[2]" [routerLink]="healthNewsCardArticles[2].link || '/bai-viet'" class="bv-prevention-title-link">{{ healthNewsCardArticles[2].title }}</a>
-                <a *ngIf="healthNewsCardArticles[3]" [routerLink]="healthNewsCardArticles[3].link || '/bai-viet'" class="bv-prevention-title-link">{{ healthNewsCardArticles[3].title }}</a>
-                <a *ngIf="healthNewsCardArticles[4]" [routerLink]="healthNewsCardArticles[4].link || '/bai-viet'" class="bv-prevention-title-link">{{ healthNewsCardArticles[4].title }}</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <aside class="bv-prevention-aside">
-          <div class="bv-featured-topics-box">
-            <h3 class="bv-ft-title">Chuyên đề nổi bật</h3>
-            <div class="bv-ft-list">
-              <a *ngFor="let item of featuredTopicCategories" [routerLink]="['/bai-viet']" [queryParams]="{ category: getCategoryQueryParam(item.name) }" class="bv-ft-item">
-                <span class="bv-ft-name"># {{ item.name }}</span>
-                <span class="bv-ft-count">{{ item.count }} bài viết</span>
-              </a>
-            </div>
-            <a routerLink="/bai-viet" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-          </div>
-          <div class="bv-expert-team-box">
-            <h3 class="bv-et-title">Đội ngũ chuyên môn</h3>
-            <div class="bv-et-list">
-              <div *ngFor="let d of doctors" class="bv-doctor">
-                <img [src]="d.avatar" [alt]="d.name" class="bv-doctor-avatar" />
-                <div class="bv-doctor-info">
-                  <span class="bv-doctor-degree">{{ d.degree }}</span>
-                  <span class="bv-doctor-name">{{ d.name }}</span>
-                  <span class="bv-doctor-spec">{{ d.specialize }}</span>
+                <div class="bv-prevention-bottom">
+                  <a *ngIf="preventionCardArticles[2]" [routerLink]="getBlogDetailLink(preventionCardArticles[2])"
+                    class="bv-prevention-title-link">{{ preventionCardArticles[2].title }}</a>
+                  <a *ngIf="preventionCardArticles[3]" [routerLink]="getBlogDetailLink(preventionCardArticles[3])"
+                    class="bv-prevention-title-link">{{ preventionCardArticles[3].title }}</a>
+                  <a *ngIf="preventionCardArticles[4]" [routerLink]="getBlogDetailLink(preventionCardArticles[4])"
+                    class="bv-prevention-title-link">{{ preventionCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
-            <a routerLink="/bai-viet" class="bv-et-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
-          </div>
-        </aside>
-      </div>
-    </section>
+            <div class="bv-prevention-card bv-nutrition-card">
+              <div class="bv-prevention-header">
+                <h3 class="bv-prevention-title">Dinh dưỡng</h3>
+                <nav class="bv-prevention-subcat">
+                  <a *ngFor="let sub of nutritionSubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/dinh-duong']"
+                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  </a>
+                </nav>
+                <a routerLink="/bai-viet/danh-muc/dinh-duong" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Dinh
+                  dưỡng') }}) <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="bv-prevention-articles">
+                <div class="bv-prevention-top">
+                  <a *ngIf="nutritionCardArticles[0]" [routerLink]="getBlogDetailLink(nutritionCardArticles[0])"
+                    class="bv-prevention-featured">
+                    <div class="bv-prevention-featured-img">
+                      <img [src]="nutritionCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
+                        [alt]="nutritionCardArticles[0].title" />
+                    </div>
+                    <div class="bv-prevention-featured-body">
+                      <h4>{{ nutritionCardArticles[0].title }}</h4>
+                      <p>{{ nutritionCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
+                    </div>
+                  </a>
+                  <a *ngIf="nutritionCardArticles[1]" [routerLink]="getBlogDetailLink(nutritionCardArticles[1])"
+                    class="bv-prevention-text-only">
+                    <h4>{{ nutritionCardArticles[1].title }}</h4>
+                    <p>{{ nutritionCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
+                  </a>
+                </div>
+                <div class="bv-prevention-bottom">
+                  <a *ngIf="nutritionCardArticles[2]" [routerLink]="getBlogDetailLink(nutritionCardArticles[2])"
+                    class="bv-prevention-title-link">{{ nutritionCardArticles[2].title }}</a>
+                  <a *ngIf="nutritionCardArticles[3]" [routerLink]="getBlogDetailLink(nutritionCardArticles[3])"
+                    class="bv-prevention-title-link">{{ nutritionCardArticles[3].title }}</a>
+                  <a *ngIf="nutritionCardArticles[4]" [routerLink]="getBlogDetailLink(nutritionCardArticles[4])"
+                    class="bv-prevention-title-link">{{ nutritionCardArticles[4].title }}</a>
+                </div>
+              </div>
+            </div>
+            <div class="bv-prevention-card bv-mombaby-card">
+              <div class="bv-prevention-header">
+                <h3 class="bv-prevention-title">Mẹ & bé</h3>
+                <nav class="bv-prevention-subcat">
+                  <a *ngFor="let sub of momBabySubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/me-va-be']"
+                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  </a>
+                </nav>
+                <a routerLink="/bai-viet/danh-muc/me-va-be" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Mẹ &
+                  bé') }}) <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="bv-prevention-articles">
+                <div class="bv-prevention-top">
+                  <a *ngIf="momBabyCardArticles[0]" [routerLink]="getBlogDetailLink(momBabyCardArticles[0])"
+                    class="bv-prevention-featured">
+                    <div class="bv-prevention-featured-img">
+                      <img [src]="momBabyCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
+                        [alt]="momBabyCardArticles[0].title" />
+                    </div>
+                    <div class="bv-prevention-featured-body">
+                      <h4>{{ momBabyCardArticles[0].title }}</h4>
+                      <p>{{ momBabyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
+                    </div>
+                  </a>
+                  <a *ngIf="momBabyCardArticles[1]" [routerLink]="getBlogDetailLink(momBabyCardArticles[1])"
+                    class="bv-prevention-text-only">
+                    <h4>{{ momBabyCardArticles[1].title }}</h4>
+                    <p>{{ momBabyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
+                  </a>
+                </div>
+                <div class="bv-prevention-bottom">
+                  <a *ngIf="momBabyCardArticles[2]" [routerLink]="getBlogDetailLink(momBabyCardArticles[2])"
+                    class="bv-prevention-title-link">{{ momBabyCardArticles[2].title }}</a>
+                  <a *ngIf="momBabyCardArticles[3]" [routerLink]="getBlogDetailLink(momBabyCardArticles[3])"
+                    class="bv-prevention-title-link">{{ momBabyCardArticles[3].title }}</a>
+                  <a *ngIf="momBabyCardArticles[4]" [routerLink]="getBlogDetailLink(momBabyCardArticles[4])"
+                    class="bv-prevention-title-link">{{ momBabyCardArticles[4].title }}</a>
+                </div>
+              </div>
+            </div>
 
+            <div class="bv-prevention-card bv-elderly-card">
+              <div class="bv-prevention-header">
+                <h3 class="bv-prevention-title">Người cao tuổi</h3>
+                <a routerLink="/bai-viet/danh-muc/nguoi-cao-tuoi" class="bv-prevention-viewall">Xem tất cả ({{
+                  getCategoryCount('Người cao tuổi') }}) <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="bv-prevention-articles">
+                <div class="bv-prevention-top">
+                  <a *ngIf="elderlyCardArticles[0]" [routerLink]="getBlogDetailLink(elderlyCardArticles[0])"
+                    class="bv-prevention-featured">
+                    <div class="bv-prevention-featured-img">
+                      <img [src]="elderlyCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
+                        [alt]="elderlyCardArticles[0].title" />
+                    </div>
+                    <div class="bv-prevention-featured-body">
+                      <h4>{{ elderlyCardArticles[0].title }}</h4>
+                      <p>{{ elderlyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
+                    </div>
+                  </a>
+                  <a *ngIf="elderlyCardArticles[1]" [routerLink]="getBlogDetailLink(elderlyCardArticles[1])"
+                    class="bv-prevention-text-only">
+                    <h4>{{ elderlyCardArticles[1].title }}</h4>
+                    <p>{{ elderlyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
+                  </a>
+                </div>
+                <div class="bv-prevention-bottom">
+                  <a *ngIf="elderlyCardArticles[2]" [routerLink]="getBlogDetailLink(elderlyCardArticles[2])"
+                    class="bv-prevention-title-link">{{ elderlyCardArticles[2].title }}</a>
+                  <a *ngIf="elderlyCardArticles[3]" [routerLink]="getBlogDetailLink(elderlyCardArticles[3])"
+                    class="bv-prevention-title-link">{{ elderlyCardArticles[3].title }}</a>
+                  <a *ngIf="elderlyCardArticles[4]" [routerLink]="getBlogDetailLink(elderlyCardArticles[4])"
+                    class="bv-prevention-title-link">{{ elderlyCardArticles[4].title }}</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="bv-prevention-card bv-beauty-card">
+              <div class="bv-prevention-header">
+                <h3 class="bv-prevention-title">Khỏe đẹp</h3>
+                <nav class="bv-prevention-subcat">
+                  <a *ngFor="let sub of beautySubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/khoe-dep']"
+                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  </a>
+                </nav>
+                <a routerLink="/bai-viet/danh-muc/khoe-dep" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Khỏe
+                  đẹp') }}) <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="bv-prevention-articles">
+                <div class="bv-prevention-top">
+                  <a *ngIf="beautyCardArticles[0]" [routerLink]="getBlogDetailLink(beautyCardArticles[0])"
+                    class="bv-prevention-featured">
+                    <div class="bv-prevention-featured-img">
+                      <img [src]="beautyCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
+                        [alt]="beautyCardArticles[0].title" />
+                    </div>
+                    <div class="bv-prevention-featured-body">
+                      <h4>{{ beautyCardArticles[0].title }}</h4>
+                      <p>{{ beautyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
+                    </div>
+                  </a>
+                  <a *ngIf="beautyCardArticles[1]" [routerLink]="getBlogDetailLink(beautyCardArticles[1])"
+                    class="bv-prevention-text-only">
+                    <h4>{{ beautyCardArticles[1].title }}</h4>
+                    <p>{{ beautyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
+                  </a>
+                </div>
+                <div class="bv-prevention-bottom">
+                  <a *ngIf="beautyCardArticles[2]" [routerLink]="getBlogDetailLink(beautyCardArticles[2])"
+                    class="bv-prevention-title-link">{{ beautyCardArticles[2].title }}</a>
+                  <a *ngIf="beautyCardArticles[3]" [routerLink]="getBlogDetailLink(beautyCardArticles[3])"
+                    class="bv-prevention-title-link">{{ beautyCardArticles[3].title }}</a>
+                  <a *ngIf="beautyCardArticles[4]" [routerLink]="getBlogDetailLink(beautyCardArticles[4])"
+                    class="bv-prevention-title-link">{{ beautyCardArticles[4].title }}</a>
+                </div>
+              </div>
+            </div>
+            <div class="bv-prevention-card bv-gender-card">
+              <div class="bv-prevention-header">
+                <h3 class="bv-prevention-title">Giới tính</h3>
+                <nav class="bv-prevention-subcat">
+                  <a *ngFor="let sub of genderSubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/gioi-tinh']"
+                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  </a>
+                </nav>
+                <a routerLink="/bai-viet/danh-muc/gioi-tinh" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Giới
+                  tính') }}) <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="bv-prevention-articles">
+                <div class="bv-prevention-top">
+                  <a *ngIf="genderCardArticles[0]" [routerLink]="getBlogDetailLink(genderCardArticles[0])"
+                    class="bv-prevention-featured">
+                    <div class="bv-prevention-featured-img">
+                      <img [src]="genderCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
+                        [alt]="genderCardArticles[0].title" />
+                    </div>
+                    <div class="bv-prevention-featured-body">
+                      <h4>{{ genderCardArticles[0].title }}</h4>
+                      <p>{{ genderCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
+                    </div>
+                  </a>
+                  <a *ngIf="genderCardArticles[1]" [routerLink]="getBlogDetailLink(genderCardArticles[1])"
+                    class="bv-prevention-text-only">
+                    <h4>{{ genderCardArticles[1].title }}</h4>
+                    <p>{{ genderCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
+                  </a>
+                </div>
+                <div class="bv-prevention-bottom">
+                  <a *ngIf="genderCardArticles[2]" [routerLink]="getBlogDetailLink(genderCardArticles[2])"
+                    class="bv-prevention-title-link">{{ genderCardArticles[2].title }}</a>
+                  <a *ngIf="genderCardArticles[3]" [routerLink]="getBlogDetailLink(genderCardArticles[3])"
+                    class="bv-prevention-title-link">{{ genderCardArticles[3].title }}</a>
+                  <a *ngIf="genderCardArticles[4]" [routerLink]="getBlogDetailLink(genderCardArticles[4])"
+                    class="bv-prevention-title-link">{{ genderCardArticles[4].title }}</a>
+                </div>
+              </div>
+            </div>
+            <div class="bv-prevention-card bv-health-news-card">
+              <div class="bv-prevention-header">
+                <h3 class="bv-prevention-title">Tin tức sức khoẻ</h3>
+                <nav class="bv-prevention-subcat">
+                  <a *ngFor="let sub of healthNewsSubCategories; let i = index"
+                    [routerLink]="['/bai-viet/danh-muc/tin-tuc-suc-khoe']" [queryParams]="{ subcat: sub }"
+                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  </a>
+                </nav>
+                <a routerLink="/bai-viet/danh-muc/tin-tuc-suc-khoe" class="bv-prevention-viewall">Xem tất cả ({{
+                  getCategoryCount('Tin tức sức khỏe') }}) <i class="bi bi-chevron-right"></i></a>
+              </div>
+              <div class="bv-prevention-articles">
+                <div class="bv-prevention-top">
+                  <a *ngIf="healthNewsCardArticles[0]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[0])"
+                    class="bv-prevention-featured">
+                    <div class="bv-prevention-featured-img">
+                      <img [src]="healthNewsCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
+                        [alt]="healthNewsCardArticles[0].title" />
+                    </div>
+                    <div class="bv-prevention-featured-body">
+                      <h4>{{ healthNewsCardArticles[0].title }}</h4>
+                      <p>{{ healthNewsCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
+                    </div>
+                  </a>
+                  <a *ngIf="healthNewsCardArticles[1]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[1])"
+                    class="bv-prevention-text-only">
+                    <h4>{{ healthNewsCardArticles[1].title }}</h4>
+                    <p>{{ healthNewsCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
+                  </a>
+                </div>
+                <div class="bv-prevention-bottom">
+                  <a *ngIf="healthNewsCardArticles[2]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[2])"
+                    class="bv-prevention-title-link">{{ healthNewsCardArticles[2].title }}</a>
+                  <a *ngIf="healthNewsCardArticles[3]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[3])"
+                    class="bv-prevention-title-link">{{ healthNewsCardArticles[3].title }}</a>
+                  <a *ngIf="healthNewsCardArticles[4]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[4])"
+                    class="bv-prevention-title-link">{{ healthNewsCardArticles[4].title }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <aside class="bv-prevention-aside">
+            <div class="bv-featured-topics-box">
+              <h3 class="bv-ft-title">Chuyên đề nổi bật</h3>
+              <div class="bv-ft-list">
+                <ng-container *ngFor="let item of featuredTopicCategories">
+                  <a *ngIf="item.name.toLowerCase().indexOf('khuyến mãi') === -1 && item.name.toLowerCase().indexOf('phân loại') === -1 && item.name.toLowerCase().indexOf('truyền thông') === -1"
+                    [routerLink]="['/bai-viet', item.slug]" class="bv-ft-item" [attr.data-category]="item.name">
+                    <span class="bv-ft-name"># {{ item.name }}</span>
+                    <span class="bv-ft-count">{{ item.count }} bài viết</span>
+                  </a>
+                </ng-container>
+              </div>
+              <a routerLink="/bai-viet" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+            </div>
+            <div class="bv-expert-team-box">
+              <h3 class="bv-et-title">Đội ngũ chuyên môn</h3>
+              <div class="bv-et-list">
+                <div *ngFor="let d of doctors" class="bv-doctor">
+                  <img [src]="d.avatar" [alt]="d.name" class="bv-doctor-avatar" loading="lazy" />
+                  <div class="bv-doctor-info">
+                    <span class="bv-doctor-degree">{{ d.degree }}</span>
+                    <span class="bv-doctor-name">{{ d.name }}</span>
+                    <span class="bv-doctor-spec">{{ d.specialize }}</span>
+                  </div>
+                </div>
+              </div>
+              <a routerLink="/bai-viet" class="bv-et-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+    </ng-container>
   </div>
 </main>

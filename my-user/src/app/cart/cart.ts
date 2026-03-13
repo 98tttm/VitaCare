@@ -105,7 +105,7 @@ export class Cart implements OnInit, OnDestroy {
       totalQuantity: totalQty,
     };
     this.cart.set(cart);
-    this.cartSelectedIds.set(new Set(items.map((i) => i._id)));
+    this.cartSelectedIds.set(this.getPreselectedIds(items));
     this.cdr.markForCheck();
   }
 
@@ -113,7 +113,8 @@ export class Cart implements OnInit, OnDestroy {
     this.cartUpdatedSub = this.cartService.cartUpdated$.subscribe(updatedCart => {
       if (updatedCart && this.cartSidebar.isOpen()) {
         this.cart.set(updatedCart as CartModel);
-        this.cartSelectedIds.set(new Set(updatedCart.items?.map((i: any) => i._id) ?? []));
+        const items = updatedCart.items ?? [];
+        this.cartSelectedIds.set(this.getPreselectedIds(items as any));
         this.cdr.markForCheck();
       }
     });
@@ -124,6 +125,12 @@ export class Cart implements OnInit, OnDestroy {
   }
 
   close(): void {
+    try {
+      // Dọn cấu hình chọn sẵn sau khi đóng giỏ, để lần mở sau (không phải từ Mua lại) quay về hành vi mặc định.
+      localStorage.removeItem('repurchase_selection');
+    } catch {
+      // ignore
+    }
     this.cartSidebar.closeSidebar();
   }
 
@@ -139,10 +146,45 @@ export class Cart implements OnInit, OnDestroy {
         }
         (c as any).totalPrice = tp;
         this.cart.set(c);
-        this.cartSelectedIds.set(new Set(c.items?.map((i) => i._id) ?? []));
+        this.cartSelectedIds.set(this.getPreselectedIds(c.items ?? []));
         this.cdr.markForCheck();
       }
     });
+  }
+
+  /** Lấy danh sách _id được chọn dựa trên cấu hình "mua lại" (sku/id) nếu có, ngược lại chọn tất cả. */
+  private getPreselectedIds(items: CartItem[]): Set<string> {
+    if (!items?.length) return new Set();
+    let selection: { skus?: string[]; ids?: string[] } | null = null;
+    let hasSelectionFlag = false;
+    try {
+      const raw = localStorage.getItem('repurchase_selection');
+      if (raw) {
+        selection = JSON.parse(raw);
+        hasSelectionFlag = true;
+      }
+    } catch {
+      selection = null;
+    }
+
+    let selected = new Set<string>();
+    if (selection && (selection.skus?.length || selection.ids?.length)) {
+      const skus = new Set(selection.skus ?? []);
+      const ids = new Set(selection.ids ?? []);
+      items.forEach((i: any) => {
+        const idStr = String((i as any)._id ?? i._id ?? '');
+        if ((i.sku && skus.has(i.sku)) || (idStr && ids.has(idStr))) {
+          selected.add(idStr);
+        }
+      });
+    }
+
+    // Nếu mở cart bình thường (không phải từ "Mua lại"), mặc định chọn tất cả.
+    // Nếu có cờ repurchase_selection nhưng không khớp sản phẩm nào, giữ nguyên (không chọn gì).
+    if (!hasSelectionFlag && !selected.size) {
+      selected = new Set(items.map((i: any) => String((i as any)._id ?? i._id)));
+    }
+    return selected;
   }
 
   onSelectAllCart(checked: boolean): void {

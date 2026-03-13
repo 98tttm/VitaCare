@@ -215,6 +215,13 @@ export class Productmanage implements OnInit {
       next: (res: any) => {
         if (res.success) {
           this.products = res.data.map((item: any) => {
+            const parseMongoDate = (val: any) => {
+              if (!val) return null;
+              if (typeof val === 'object' && val.$date) return new Date(val.$date);
+              const d = new Date(val);
+              return isNaN(d.getTime()) ? null : d;
+            };
+
             let safeId = item._id;
             if (safeId && typeof safeId === 'object') {
               safeId = safeId.$oid || String(safeId);
@@ -232,8 +239,8 @@ export class Productmanage implements OnInit {
               image: item.image || (item.gallery && item.gallery.length > 0 ? item.gallery[0] : ''),
               categoryPath: pathSteps,
               categoryName: pathSteps.join(' > ') || 'Chưa phân loại',
-              importDate: item.created_at ? new Date(item.created_at) : (item.createDate ? new Date(item.createDate) : new Date()),
-              expiryDate: item.expiryDate ? new Date(item.expiryDate) : (item.expiredDate ? new Date(item.expiredDate) : null),
+              importDate: parseMongoDate(item.created_at) || parseMongoDate(item.createDate) || new Date(),
+              expiryDate: parseMongoDate(item.expiryDate) || parseMongoDate(item.expiredDate) || null,
               selected: this.selectedIds.has(safeId),
               _id: safeId
             };
@@ -569,6 +576,18 @@ export class Productmanage implements OnInit {
 
   closeProductModal() {
     this.isProductModalOpen = false;
+  }
+
+  openProductDetail(product: any, event: MouseEvent) {
+    // If user clicked inside a checkbox or another button, don't trigger row click
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.closest('button')) return;
+
+    this.selectedIds.clear();
+    this.selectedIds.add(product._id);
+    this.updateSelectionCount();
+    this.products.forEach(p => p.selected = (p._id === product._id));
+    this.openEditProductModal();
   }
 
   saveProduct() {

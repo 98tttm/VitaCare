@@ -134,7 +134,9 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     // fetch flash sale products
     this.loadFlashSaleProducts(8);
     // fetch blogs for 'Góc sức khỏe'
-    this.loadBlogs(6);
+    // Một request limit lớn hơn → đủ bài cho Góc SK + random popup, chờ API một lần
+    this.blogPopupPageEnterMs = typeof Date !== 'undefined' ? Date.now() : 0;
+    this.loadBlogs(6, 24);
     this.loadQuizItems();
     this.loadCategorySlugsFromApi();
     this.computeFlashSaleSlots();
@@ -178,6 +180,14 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     if (this.homeBlogFallbackTimer !== null && typeof window !== 'undefined') {
       window.clearTimeout(this.homeBlogFallbackTimer);
       this.homeBlogFallbackTimer = null;
+    }
+    if (this.blogPopupAutoCloseTimer !== null) {
+      window.clearTimeout(this.blogPopupAutoCloseTimer);
+      this.blogPopupAutoCloseTimer = null;
+    }
+    if (this.blogPopupRevealTimer !== null) {
+      window.clearTimeout(this.blogPopupRevealTimer);
+      this.blogPopupRevealTimer = null;
     }
 
     // this.stopAutoplay();
@@ -486,7 +496,18 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   ];
 
   // Health blogs fetched from backend
-  blogs: Array<{ title: string; image?: string; excerpt?: string; link?: string; categoryName?: string }> = [];
+  blogs: Array<{ title: string; image?: string; excerpt?: string; slug?: string; link?: string; categoryName?: string }> = [];
+
+  // "Có thể bạn chưa biết?" popup
+  popupBlog: { title: string; image?: string; excerpt?: string; link?: string } | null = null;
+  showBlogPopup = false;
+  /** Thời điểm vào Home — popup chỉ mở sau 3s kể từ đây */
+  private blogPopupPageEnterMs = 0;
+  private blogPopupRevealTimer: number | null = null;
+  readonly blogPopupDelayMs = 3000;
+  /** Tự đóng sau lâu (ms) — tăng thời gian để người dùng kịp đọc */
+  private blogPopupAutoCloseTimer: number | null = null;
+  readonly blogPopupAutoCloseMs = 5 * 60 * 1000;
 
   // featured products loading state
   isLoadingFeaturedProducts = false;
@@ -832,8 +853,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     requestAnimationFrame(() => this.recomputeSliderSteps());
   }
 
-  // fetch health blogs for the homepage (dùng BlogService để tận dụng cache /api/blogs)
-  private loadBlogs(limit = 5): void {
+  // fetch health blogs: fetchLimit lớn → random popup đa dạng, chỉ 1 round-trip API
+  private loadBlogs(displayLimit = 6, fetchLimit = 24): void {
     if (typeof window !== 'undefined') {
       this.homeBlogFallbackTimer = window.setTimeout(() => {
         if (!this.blogs || this.blogs.length === 0) {
@@ -842,21 +863,24 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
               title: '5 thói quen giúp ngủ ngon hơn',
               image: 'assets/images/homepage/blogs/ngu_ngon.jpg',
               excerpt: 'Tổng hợp 5 thói quen dễ thực hiện giúp cải thiện giấc ngủ...',
-              link: '/blog/ngu-nguon',
+              slug: 'ngu-nguon',
+              link: '/bai-viet/ngu-nguon',
               categoryName: 'Dinh dưỡng',
             },
             {
               title: 'Ăn gì để tăng sức đề kháng?',
               image: 'assets/images/homepage/blogs/an_gi.jpg',
               excerpt: 'Các thực phẩm giàu vitamin và khoáng chất cho hệ miễn dịch...',
-              link: '/blog/tang-suc-de-khang',
+              slug: 'tang-suc-de-khang',
+              link: '/bai-viet/tang-suc-de-khang',
               categoryName: 'Dinh dưỡng',
             },
             {
               title: 'Cách xử trí khi bị cảm lạnh',
               image: 'assets/images/homepage/blogs/cam_cum.webp',
               excerpt: 'Mẹo chăm sóc tại nhà và khi nên gặp bác sĩ...',
-              link: '/blog/xu-tri-cam-lanh',
+              slug: 'xu-tri-cam-lanh',
+              link: '/bai-viet/xu-tri-cam-lanh',
               categoryName: 'Sức khỏe',
             },
           ];
@@ -864,7 +888,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
       }, 1000);
     }
 
-    this.blogService.getBlogs({ limit }).subscribe({
+    this.blogService.getBlogs({ limit: fetchLimit, page: 1 }).subscribe({
       next: (res) => {
         const data = Array.isArray(res?.blogs) ? res.blogs : Array.isArray(res) ? res : [];
 
@@ -875,12 +899,17 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
           return `http://localhost:3000/${src}`;
         };
 
-        this.blogs = data.map((b: any) => {
+        const mapped = data.map((b: any) => {
           const primaryCat = Array.isArray(b.categories) ? b.categories.find((c: any) => c?.category?.isPrimary) : null;
           const cat = primaryCat?.category ?? (Array.isArray(b.categories) ? b.categories[0]?.category : null);
           const fromCategories = cat?.name ?? (Array.isArray(b.categories) && b.categories[0] ? (b.categories[0] as any).name : undefined);
           const categoryName = fromCategories ?? (b as any).category?.name ?? (b as any).categoryName ?? undefined;
           const rawImage = b.primaryImage?.url || b.image || b.imageUrl || undefined;
+          const rawSlug = (b.slug || (b as any).slug || (b as any)._id || '').toString().trim();
+          const normalizedSlug = rawSlug
+            .replace(/^\/+/, '')
+            .replace(/^bai-viet\//i, '')
+            .replace(/\.html?$/i, '');
           return {
             title: b.title || b.name || 'Bài viết sức khỏe',
             image: normalizeImageUrl(rawImage),
@@ -888,10 +917,13 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
               b.shortDescription ||
               b.excerpt ||
               (typeof b.description === 'string' ? b.description.replace(/<[^>]*>/g, '').slice(0, 160) : undefined),
-            link: b.slug ? `/blog/${b.slug}` : undefined,
+            slug: normalizedSlug || undefined,
+            link: normalizedSlug ? `/bai-viet/${normalizedSlug}` : undefined,
             categoryName: categoryName || 'Bài viết',
           };
         });
+
+        this.blogs = mapped.slice(0, displayLimit);
 
         if (!this.blogs || this.blogs.length === 0) {
           this.blogs = [
@@ -899,21 +931,24 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
               title: '5 thói quen giúp ngủ ngon hơn',
               image: 'assets/images/homepage/blogs/ngu_ngon.jpg',
               excerpt: 'Tổng hợp 5 thói quen dễ thực hiện giúp cải thiện giấc ngủ...',
-              link: '/blog/ngu-nguon',
+              slug: 'ngu-nguon',
+              link: '/bai-viet/ngu-nguon',
               categoryName: 'Dinh dưỡng',
             },
             {
               title: 'Ăn gì để tăng sức đề kháng?',
               image: 'assets/images/homepage/blogs/an_gi.jpg',
               excerpt: 'Các thực phẩm giàu vitamin và khoáng chất cho hệ miễn dịch...',
-              link: '/blog/tang-suc-de-khang',
+              slug: 'tang-suc-de-khang',
+              link: '/bai-viet/tang-suc-de-khang',
               categoryName: 'Dinh dưỡng',
             },
             {
               title: 'Cách xử trí khi bị cảm lạnh',
               image: 'assets/images/homepage/blogs/cam_cum.webp',
               excerpt: 'Mẹo chăm sóc tại nhà và khi nên gặp bác sĩ...',
-              link: '/blog/xu-tri-cam-lanh',
+              slug: 'xu-tri-cam-lanh',
+              link: '/bai-viet/xu-tri-cam-lanh',
               categoryName: 'Sức khỏe',
             },
           ];
@@ -923,6 +958,9 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
           window.clearTimeout(this.homeBlogFallbackTimer);
           this.homeBlogFallbackTimer = null;
         }
+        const pool = mapped.length ? mapped : this.blogs;
+        this.prepareBlogPopupFromPool(pool);
+        this.scheduleBlogPopupReveal();
       },
       error: (err) => {
         console.error('Failed to load blogs', err);
@@ -931,21 +969,24 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
             title: '5 thói quen giúp ngủ ngon hơn',
             image: 'assets/images/homepage/blogs/ngu_ngon.jpg',
             excerpt: 'Tổng hợp 5 thói quen dễ thực hiện giúp cải thiện giấc ngủ...',
-            link: '/blog/ngu-nguon',
+            slug: 'ngu-nguon',
+            link: '/bai-viet/ngu-nguon',
             categoryName: 'Dinh dưỡng',
           },
           {
             title: 'Ăn gì để tăng sức đề kháng?',
             image: 'assets/images/homepage/blogs/an_gi.jpg',
             excerpt: 'Các thực phẩm giàu vitamin và khoáng chất cho hệ miễn dịch...',
-            link: '/blog/tang-suc-de-khang',
+            slug: 'tang-suc-de-khang',
+            link: '/bai-viet/tang-suc-de-khang',
             categoryName: 'Dinh dưỡng',
           },
           {
             title: 'Cách xử trí khi bị cảm lạnh',
             image: 'assets/images/homepage/blogs/cam_cum.webp',
             excerpt: 'Mẹo chăm sóc tại nhà và khi nên gặp bác sĩ...',
-            link: '/blog/xu-tri-cam-lanh',
+            slug: 'xu-tri-cam-lanh',
+            link: '/bai-viet/xu-tri-cam-lanh',
             categoryName: 'Sức khỏe',
           },
         ];
@@ -954,6 +995,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
           window.clearTimeout(this.homeBlogFallbackTimer);
           this.homeBlogFallbackTimer = null;
         }
+        this.prepareBlogPopupFromPool(this.blogs);
+        this.scheduleBlogPopupReveal();
       },
     });
   }
@@ -1139,6 +1182,76 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     }
 
     return result;
+  }
+
+  /** Chỉ gán popupBlog — không mở popup (mở sau 3s + khi đã có data) */
+  private prepareBlogPopupFromPool(
+    pool: Array<{ title: string; image?: string; excerpt?: string; slug?: string; link?: string }>
+  ): void {
+    const valid = pool.filter((b) => b.image && b.title && b.link);
+    const picked =
+      valid.length > 0
+        ? valid[Math.floor(Math.random() * valid.length)]
+        : pool[0]
+          ? {
+              ...pool[0],
+              link: pool[0].link || (pool[0].slug ? `/bai-viet/${pool[0].slug}` : ''),
+              image: pool[0].image || 'assets/images/homepage/blogs/ngu_ngon.jpg',
+            }
+          : null;
+    if (!picked || !picked.title) return;
+    this.popupBlog = {
+      title: picked.title,
+      image: picked.image || 'assets/images/homepage/blogs/ngu_ngon.jpg',
+      excerpt: picked.excerpt || '',
+      link: (picked.link || (picked.slug ? `/bai-viet/${picked.slug}` : '')) as string,
+    };
+    this.cdr.detectChanges();
+  }
+
+  /** Sau đủ 3s từ lúc vào Home mới hiện popup; nếu API trả sau 3s thì hiện ngay khi có data */
+  private scheduleBlogPopupReveal(): void {
+    if (typeof window === 'undefined' || !this.popupBlog) return;
+    if (this.blogPopupRevealTimer !== null) {
+      window.clearTimeout(this.blogPopupRevealTimer);
+      this.blogPopupRevealTimer = null;
+    }
+    const elapsed = Date.now() - this.blogPopupPageEnterMs;
+    const wait = Math.max(0, this.blogPopupDelayMs - elapsed);
+    this.blogPopupRevealTimer = window.setTimeout(() => {
+      this.blogPopupRevealTimer = null;
+      if (!this.popupBlog || this.showBlogPopup) return;
+      this.showBlogPopup = true;
+      this.scheduleBlogPopupAutoClose();
+      this.cdr.detectChanges();
+    }, wait);
+  }
+
+  private scheduleBlogPopupAutoClose(): void {
+    if (this.blogPopupAutoCloseTimer !== null) {
+      window.clearTimeout(this.blogPopupAutoCloseTimer);
+      this.blogPopupAutoCloseTimer = null;
+    }
+    this.blogPopupAutoCloseTimer = window.setTimeout(() => {
+      this.showBlogPopup = false;
+      this.blogPopupAutoCloseTimer = null;
+      this.cdr.detectChanges();
+    }, this.blogPopupAutoCloseMs);
+  }
+
+  closeBlogPopup(): void {
+    this.showBlogPopup = false;
+    if (this.blogPopupAutoCloseTimer !== null) {
+      window.clearTimeout(this.blogPopupAutoCloseTimer);
+      this.blogPopupAutoCloseTimer = null;
+    }
+  }
+
+  goToBlogPopup(): void {
+    if (this.popupBlog?.link) {
+      this.router.navigateByUrl(this.popupBlog.link);
+    }
+    this.closeBlogPopup();
   }
 
   /** Fisher–Yates shuffle để random danh sách sản phẩm. */

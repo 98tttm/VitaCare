@@ -1,11 +1,12 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { OrderService } from '../services/order.service';
 import { CustomerService } from '../services/customer.service';
 import { ProductService } from '../services/product.service';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { ThemeService } from '../services/theme.service';
 
 declare var Chart: any;
 
@@ -42,6 +43,11 @@ export class Home implements OnInit {
   topProducts: any[] = [];
   outOfStockProducts: any[] = [];
 
+  private themeSubscription!: Subscription;
+  private charts: { [key: string]: any } = {};
+  private currentOrders: any[] = [];
+  private currentCustomers: any[] = [];
+
   constructor(
     private authService: AuthService,
     private orderService: OrderService,
@@ -49,17 +55,35 @@ export class Home implements OnInit {
     private productService: ProductService,
     private cdr: ChangeDetectorRef,
     private decimalPipe: DecimalPipe,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService
   ) { }
 
   ngOnInit() {
     this.loadData();
 
-    // Set default Chart.js font to Inter from variables.css
-    if (typeof Chart !== 'undefined') {
-      Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
-      Chart.defaults.color = "#616161";
+    // Listen to theme changes
+    this.themeSubscription = this.themeService.isDarkMode$.subscribe(isDark => {
+      this.updateChartDefaults(isDark);
+      if (!this.isLoading) {
+        this.initCharts(this.currentOrders, this.currentCustomers);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
     }
+    // Destroy all charts
+    Object.values(this.charts).forEach(chart => chart.destroy());
+  }
+
+  private updateChartDefaults(isDark: boolean) {
+    if (typeof Chart === 'undefined') return;
+    Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+    Chart.defaults.color = isDark ? '#cbd5e1' : '#64748b';
+    Chart.defaults.borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
   }
 
   printDashboard() {
@@ -76,16 +100,16 @@ export class Home implements OnInit {
     }).subscribe({
       next: (results: any) => {
         this.stats = results.stats.data || results.stats;
-        const orders = results.orders.data || results.orders;
-        const customers = results.customers.data || results.customers;
+        this.currentOrders = results.orders.data || results.orders;
+        this.currentCustomers = results.customers.data || results.customers;
         const products = results.products.data || results.products;
 
-        this.processMetrics(orders, customers, products);
+        this.processMetrics(this.currentOrders, this.currentCustomers, products);
         this.isLoading = false;
 
         this.cdr.detectChanges();
         // Slightly longer delay for high-quality rendering
-        setTimeout(() => this.initCharts(orders, customers), 300);
+        setTimeout(() => this.initCharts(this.currentOrders, this.currentCustomers), 300);
       },
       error: (err) => {
         console.error('Error loading dashboard data:', err);
@@ -100,9 +124,7 @@ export class Home implements OnInit {
     this.totalCustomersCount = customers.length;
     this.totalProductsCount = products.length;
 
-    this.totalRevenue = orders
-      .filter(o => o.statusPayment === 'paid' || o.status === 'delivered')
-      .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    this.totalRevenue = this.stats.totalRevenue || 0;
 
     this.recentOrders = [...orders].sort((a, b) => {
       const da = new Date(a.createdAt || a.route?.pending || Date.now()).getTime();
@@ -140,7 +162,7 @@ export class Home implements OnInit {
   initCharts(orders: any[], customers: any[]) {
     if (typeof Chart === 'undefined') return;
 
-    this.renderRevenueChart(orders);
+    this.renderRevenueChart(this.stats.revenue30d || []);
     this.renderOrdersVolumeChart(orders);
     this.renderPromoDistributionChart(orders);
     this.renderStatusPieChart(orders);
@@ -152,36 +174,32 @@ export class Home implements OnInit {
     this.renderPeakHoursChart(orders);
   }
 
-  private renderRevenueChart(orders: any[]) {
+  private renderRevenueChart(revenueData: any[]) {
     if (!this.revenueChartRef) return;
     const ctx = this.revenueChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
 
-    const dailyRev: { [key: string]: number } = {};
-    orders.forEach(o => {
-      if (o.statusPayment === 'paid' || o.status === 'delivered') {
-        const d = (o.createdAt || o.route?.pending || new Date().toISOString()).substring(0, 10);
-        dailyRev[d] = (dailyRev[d] || 0) + (o.totalAmount || 0);
-      }
-    });
+    if (this.charts['revenue']) this.charts['revenue'].destroy();
 
-    const labels = Object.keys(dailyRev).sort().slice(-15);
-    const data = labels.map(l => dailyRev[l]);
+    const labels = revenueData.map(r => r.date);
+    const data = revenueData.map(r => r.revenue);
 
-    new Chart(ctx, {
+    this.charts['revenue'] = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels.map(l => l.split('-').reverse().slice(0, 2).join('/')),
         datasets: [{
           label: 'Doanh thu (đ)',
           data: data,
-          borderColor: '#4A55A2',
-          backgroundColor: 'rgba(74, 85, 162, 0.1)',
+          borderColor: '#6366f1',
+          backgroundColor: isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
           fill: true,
           tension: 0.4,
           borderWidth: 3,
           pointRadius: 4,
           pointHoverRadius: 6,
-          pointBackgroundColor: '#fff'
+          pointBackgroundColor: isDark ? '#1e293b' : '#fff',
+          pointBorderColor: '#6366f1'
         }]
       },
       options: {
@@ -190,7 +208,7 @@ export class Home implements OnInit {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#1E293B',
+            backgroundColor: isDark ? '#334155' : '#1e293b',
             padding: 12,
             titleFont: { size: 14, weight: 'bold' },
             bodyFont: { size: 13 },
@@ -200,11 +218,20 @@ export class Home implements OnInit {
           }
         },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: isDark ? '#94a3b8' : '#64748b',
+              font: { size: 11 }
+            }
+          },
           y: {
             beginAtZero: true,
-            grid: { color: 'rgba(0,0,0,0.03)' },
+            grid: {
+              color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'
+            },
             ticks: {
+              color: isDark ? '#94a3b8' : '#64748b',
               font: { size: 11 },
               callback: (v: any) => v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v.toLocaleString()
             }
@@ -217,6 +244,10 @@ export class Home implements OnInit {
   private renderOrdersVolumeChart(orders: any[]) {
     if (!this.ordersVolumeChartRef) return;
     const ctx = this.ordersVolumeChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['ordersVolume']) this.charts['ordersVolume'].destroy();
+
     const volume: { [key: string]: number } = {};
     orders.forEach(o => {
       const d = (o.createdAt || o.route?.pending || new Date().toISOString()).substring(0, 10);
@@ -225,13 +256,13 @@ export class Home implements OnInit {
     const labels = Object.keys(volume).sort().slice(-10);
     const data = labels.map(l => volume[l]);
 
-    new Chart(ctx, {
+    this.charts['ordersVolume'] = new Chart(ctx, {
       type: 'line',
       data: {
         labels,
         datasets: [{
           data, borderColor: '#B620E0',
-          backgroundColor: 'rgba(182, 32, 224, 0.05)',
+          backgroundColor: isDark ? 'rgba(182, 32, 224, 0.1)' : 'rgba(182, 32, 224, 0.05)',
           fill: true, tension: 0.4, pointRadius: 0
         }]
       },
@@ -247,49 +278,84 @@ export class Home implements OnInit {
   private renderPromoDistributionChart(orders: any[]) {
     if (!this.promoDistributionChartRef) return;
     const ctx = this.promoDistributionChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['promo']) this.charts['promo'].destroy();
+
     const withPromo = orders.filter(o => o.promotion && (Array.isArray(o.promotion) ? o.promotion.length > 0 : !!o.promotion)).length;
     const defaultCnt = orders.length - withPromo;
 
-    new Chart(ctx, {
+    this.charts['promo'] = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: ['Dùng Mã', 'Mặc định'],
         datasets: [{
           data: [withPromo, defaultCnt],
-          backgroundColor: ['#4A55A2', '#EEF2FF'],
+          backgroundColor: ['#6366f1', isDark ? '#334155' : '#EEF2FF'],
           borderWidth: 0,
           hoverOffset: 4
         }]
       },
-      options: { cutout: '78%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 20 } } } }
+      options: {
+        cutout: '78%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 10,
+              padding: 20,
+              color: isDark ? '#cbd5e1' : '#64748b'
+            }
+          }
+        }
+      }
     });
   }
 
   private renderStatusPieChart(orders: any[]) {
     if (!this.statusPieChartRef) return;
     const ctx = this.statusPieChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['status']) this.charts['status'].destroy();
+
     const delivered = orders.filter(o => o.status === 'delivered').length;
     const pending = orders.filter(o => o.status === 'pending').length;
     const other = orders.length - delivered - pending;
 
-    new Chart(ctx, {
+    this.charts['status'] = new Chart(ctx, {
       type: 'pie',
       data: {
         labels: ['Hoàn tất', 'Chờ xử lý', 'Khác'],
         datasets: [{
           data: [delivered, pending, other],
-          backgroundColor: ['#4A55A2', '#F59E0B', '#B9A6DC'],
+          backgroundColor: ['#6366f1', '#F59E0B', '#B9A6DC'],
           borderWidth: 2,
-          borderColor: '#ffffff'
+          borderColor: isDark ? '#1e293b' : '#ffffff'
         }]
       },
-      options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15 } } } }
+      options: {
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 10,
+              padding: 15,
+              color: isDark ? '#cbd5e1' : '#64748b'
+            }
+          }
+        }
+      }
     });
   }
 
   private renderCustomerBarChart(customers: any[]) {
     if (!this.customerBarChartRef) return;
     const ctx = this.customerBarChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['customerBar']) this.charts['customerBar'].destroy();
+
     const days = [0, 0, 0, 0, 0, 0, 0];
     customers.forEach(u => {
       const d = u.registerdate || u.createdAt || Date.now();
@@ -297,16 +363,16 @@ export class Home implements OnInit {
       days[day === 0 ? 6 : day - 1]++;
     });
 
-    new Chart(ctx, {
+    this.charts['customerBar'] = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
         datasets: [{
           data: days,
-          backgroundColor: '#4f46e5',
+          backgroundColor: '#6366f1',
           borderRadius: 8,
           barThickness: 32,
-          hoverBackgroundColor: '#3730a3'
+          hoverBackgroundColor: '#4f46e5'
         }]
       },
       options: {
@@ -314,8 +380,18 @@ export class Home implements OnInit {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false } },
-          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.03)' }, ticks: { precision: 0 } }
+          x: {
+            grid: { display: false },
+            ticks: { color: isDark ? '#94a3b8' : '#64748b' }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' },
+            ticks: {
+              precision: 0,
+              color: isDark ? '#94a3b8' : '#64748b'
+            }
+          }
         }
       }
     });
@@ -326,17 +402,20 @@ export class Home implements OnInit {
   private renderPaymentMethodChart(orders: any[]) {
     if (!this.paymentMethodChartRef) return;
     const ctx = this.paymentMethodChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['payment']) this.charts['payment'].destroy();
 
     const cod = orders.filter(o => o.paymentMethod?.toLowerCase() === 'cod').length;
     const online = orders.length - cod;
 
-    new Chart(ctx, {
+    this.charts['payment'] = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: ['Tiền mặt (COD)', 'Chuyển khoản / Ví'],
         datasets: [{
           data: [cod, online],
-          backgroundColor: ['#4A55A2', '#10B981'],
+          backgroundColor: ['#6366f1', '#10B981'],
           borderWidth: 0,
           hoverOffset: 10
         }]
@@ -344,7 +423,14 @@ export class Home implements OnInit {
       options: {
         cutout: '70%',
         plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } }
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 12,
+              padding: 20,
+              color: isDark ? '#cbd5e1' : '#64748b'
+            }
+          }
         }
       }
     });
@@ -353,6 +439,9 @@ export class Home implements OnInit {
   private renderCustomerTierChart(customers: any[]) {
     if (!this.customerTierChartRef) return;
     const ctx = this.customerTierChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['tier']) this.charts['tier'].destroy();
 
     const tiers: { [key: string]: number } = { 'Đồng': 0, 'Bạc': 0, 'Vàng': 0, 'Kim cương': 0 };
     customers.forEach(c => {
@@ -360,7 +449,7 @@ export class Home implements OnInit {
       tiers[t] = (tiers[t] || 0) + 1;
     });
 
-    new Chart(ctx, {
+    this.charts['tier'] = new Chart(ctx, {
       type: 'polarArea',
       data: {
         labels: Object.keys(tiers),
@@ -368,16 +457,27 @@ export class Home implements OnInit {
           data: Object.values(tiers),
           backgroundColor: [
             'rgba(148, 163, 184, 0.7)', // Silver-ish
-            'rgba(74, 85, 162, 0.7)',  // Primary
+            'rgba(99, 102, 241, 0.7)',  // Primary
             'rgba(245, 158, 11, 0.7)',  // Gold
             'rgba(182, 32, 224, 0.7)'   // Diamond-ish Purple
           ]
         }]
       },
       options: {
-        scales: { r: { display: false } },
+        scales: {
+          r: {
+            display: false,
+            grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }
+          }
+        },
         plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12 } }
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 12,
+              color: isDark ? '#cbd5e1' : '#64748b'
+            }
+          }
         }
       }
     });
@@ -386,6 +486,9 @@ export class Home implements OnInit {
   private renderPeakHoursChart(orders: any[]) {
     if (!this.peakHoursChartRef) return;
     const ctx = this.peakHoursChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['peak']) this.charts['peak'].destroy();
 
     const hours = new Array(24).fill(0);
     orders.forEach(o => {
@@ -393,14 +496,14 @@ export class Home implements OnInit {
       hours[d.getHours()]++;
     });
 
-    new Chart(ctx, {
+    this.charts['peak'] = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: Array.from({ length: 24 }, (_, i) => i + 'h'),
         datasets: [{
           label: 'Số đơn hàng',
           data: hours,
-          backgroundColor: 'rgba(74, 85, 162, 0.7)',
+          backgroundColor: isDark ? 'rgba(99, 102, 241, 0.6)' : 'rgba(99, 102, 241, 0.7)',
           borderRadius: 2
         }]
       },
@@ -409,8 +512,19 @@ export class Home implements OnInit {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { ticks: { font: { size: 9 }, autoSkip: true, maxRotation: 0 } },
-          y: { display: false, beginAtZero: true }
+          x: {
+            grid: { display: false },
+            ticks: {
+              font: { size: 9 },
+              autoSkip: true,
+              maxRotation: 0,
+              color: isDark ? '#94a3b8' : '#64748b'
+            }
+          },
+          y: {
+            display: false,
+            beginAtZero: true
+          }
         }
       }
     });

@@ -119,6 +119,64 @@ export class CartService {
         }
     }
 
+    /**
+     * Thiết lập lại số lượng cho các sản phẩm trong luồng "Mua lại".
+     * - Các sản phẩm được truyền vào sẽ có quantity đúng bằng trong đơn hàng gốc.
+     * - Nếu sản phẩm đã có trong giỏ, quantity sẽ được GHI ĐÈ bằng quantity mới (không cộng dồn).
+     * - Các sản phẩm khác trong giỏ vẫn được giữ nguyên.
+     */
+    setItemsForRepurchase(items: Array<Partial<CartItem> & { quantity: number }>): void {
+        if (!items?.length) return;
+
+        const user = this.authService.currentUser();
+        const buildKey = (x: any) => String(x._id || x.id || x.sku || x.slug || '');
+
+        // Chuẩn hoá danh sách sản phẩm repurchase
+        const repurchaseIds = new Set<string>();
+        const repurchaseItems: CartItem[] = items
+            .map((p) => {
+                const id = buildKey(p);
+                if (!id) return null;
+                repurchaseIds.add(id);
+                const now = new Date().toISOString();
+                return {
+                    _id: id,
+                    sku: p.sku || '',
+                    productName: p.productName || (p as any).name || '',
+                    quantity: Math.max(1, Number(p.quantity) || 1),
+                    price: Number(p.price) || 0,
+                    discount: Number(p.discount) || 0,
+                    image: p.image || '',
+                    unit: p.unit || 'Hộp',
+                    category: (p as any).category || '',
+                    addedAt: (p as any).addedAt || now,
+                    updatedAt: now,
+                    hasPromotion: Boolean((p as any).hasPromotion),
+                } as CartItem;
+            })
+            .filter((x): x is CartItem => !!x);
+
+        if (user && user.user_id) {
+            // User đã đăng nhập: lấy giỏ hiện tại từ server rồi patch lại quantity
+            this.getCart(user.user_id).subscribe((res) => {
+                const currentItems = res.cart?.items ?? [];
+                const kept = currentItems.filter(
+                    (it) => !repurchaseIds.has(buildKey(it as any)),
+                );
+                const merged = [...repurchaseItems, ...kept];
+                this.updateCart(user.user_id, merged).subscribe(); // fire-and-forget
+            });
+        } else {
+            // Guest: thao tác trực tiếp trên localStorage
+            const currentItems = this.getGuestCartItems();
+            const kept = currentItems.filter(
+                (it) => !repurchaseIds.has(buildKey(it as any)),
+            );
+            const merged = [...repurchaseItems, ...kept];
+            this.updateGuestCart(merged);
+        }
+    }
+
     /** Gọi backend POST /api/carts/add-item */
     private addItemToServer(userId: string, item: any, quantity: number): void {
         const payload = {

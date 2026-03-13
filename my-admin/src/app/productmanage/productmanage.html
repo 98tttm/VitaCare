@@ -8,7 +8,10 @@
     <!-- Header -->
     <div class="page-header py-4"
         style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
-        <h1 class="content-title" style="margin: 0; font-size: 28px; text-transform: uppercase;">Danh sách sản phẩm</h1>
+        <h1 class="content-title"
+            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
+            Danh sách sản phẩm
+        </h1>
         <button class="btn-add-action" (click)="openAddProductModal()">
             <i class="bi bi-plus-lg"></i>
             Thêm sản phẩm
@@ -231,7 +234,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let p of products" [class.selected]="p.selected">
+                <tr *ngFor="let p of products" [class.selected]="p.selected" (click)="openProductDetail(p, $event)"
+                    style="cursor: pointer;">
                     <td>
                         <input type="checkbox" [(ngModel)]="p.selected" (change)="onSelectChange(p)">
                     </td>

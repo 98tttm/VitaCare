@@ -6,36 +6,17 @@
   background: #f8f9fa;
 }
 
-/* Breadcrumb */
+/* Breadcrumb - dùng chung style với product list */
 .health-detail-breadcrumb {
-  padding: 12px 0;
-  background: #fff;
-  border-bottom: 1px solid #eee;
+  padding: 8px 0 6px;
+  background: transparent;
+  border-bottom: none;
 }
 
 .health-detail-breadcrumb .breadcrumb {
   margin: 0;
   background: transparent;
   padding: 0;
-}
-
-.health-detail-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-  content: '';
-  padding: 0 8px;
-  color: #6c757d;
-}
-
-.health-detail-breadcrumb .breadcrumb-item a {
-  color: var(--color-primary, #00589F);
-  text-decoration: none;
-}
-
-.health-detail-breadcrumb .breadcrumb-item a:hover {
-  text-decoration: underline;
-}
-
-.health-detail-breadcrumb .breadcrumb-item.active {
-  color: #495057;
 }
 
 /* Hero section */

@@ -898,16 +898,13 @@
 .return-btn:hover,
 .action-btn.view-detail-btn:hover,
 .view-details-btn:hover {
-    background: var(--color-primary-hover) !important;
-    /* Dark Blue */
+    background: var(--color-primary-bg) !important;
     border-color: var(--color-primary-hover) !important;
-    color: white !important;
+    color: var(--color-primary) !important;
 }
 
 .rate-btn,
-.received-btn,
-.repurchase-btn,
-.action-btn.repurchase-btn {
+.received-btn {
     background: var(--color-primary) !important;
     color: white !important;
     border-radius: 4px;
@@ -915,10 +912,22 @@
 }
 
 .rate-btn:hover,
-.received-btn:hover,
+.received-btn:hover {
+    background: var(--color-primary-hover) !important;
+    border-color: var(--color-primary-hover) !important;
+}
+
+.repurchase-btn,
+.action-btn.repurchase-btn {
+    background: white !important;
+    color: var(--color-primary) !important;
+    border-radius: 4px;
+    border: 1px solid var(--color-primary) !important;
+}
+
 .repurchase-btn:hover,
 .action-btn.repurchase-btn:hover {
-    background: var(--color-primary-hover) !important;
+    background: var(--color-primary-bg) !important;
     border-color: var(--color-primary-hover) !important;
 }
 
@@ -1201,16 +1210,36 @@
     min-width: 80px;
 }
 
+.btn-secondary {
+    background: white !important;
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+
+.btn-secondary:hover {
+    background: var(--color-primary-bg) !important;
+}
+
+.btn-primary {
+    background: var(--color-primary) !important;
+    color: white !important;
+    border-color: var(--color-primary) !important;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-hover) !important;
+}
+
 .cancel-no-btn {
-    background: white;
-    color: var(--color-text-secondary);
-    border-color: var(--color-neutral-40);
+    background: white !important;
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
 }
 
 .cancel-yes-btn {
-    background: var(--color-danger);
-    color: white;
-    border-color: var(--color-danger);
+    background: var(--color-primary) !important;
+    color: white !important;
+    border-color: var(--color-primary) !important;
 }
 
 /* Empty State */
@@ -1246,6 +1275,7 @@
 }
 
 @media (max-width: 1024px) {
+
     .orders-title,
     .returns-title {
         font-size: 28px;
@@ -1259,6 +1289,7 @@
 }
 
 @media (max-width: 768px) {
+
     .orders-container,
     .returns-container {
         padding: 0;
@@ -1842,8 +1873,13 @@
 }
 
 @keyframes detailModalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .detail-modal-container {
@@ -1857,15 +1893,22 @@
     max-height: 850px;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0,0,0,0.25));
+    box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
     animation: detailModalSlideUp 0.3s ease;
     overflow: hidden;
     flex-shrink: 0;
 }
 
 @keyframes detailModalSlideUp {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .detail-modal-header {

@@ -36,7 +36,8 @@
             <div *ngIf="!showReviewed" class="reviews-list">
                 <div *ngFor="let item of unreviewedItems" class="order-wrapper">
                     <!-- Status Card -->
-                    <div class="order-status-card status-delivered" (click)="$event.stopPropagation()">
+                    <div class="order-status-card status-delivered" (click)="viewOrderDetails(item)"
+                        style="cursor: pointer">
                         <div class="status-left">
                             <span class="status-text">{{ getStatusLabel(item.orderStatus) }}</span>
                         </div>
@@ -122,7 +123,9 @@
                     <!-- Order Summary - Action Buttons -->
                     <div class="order-summary" (click)="$event.stopPropagation()">
                         <div class="summary-right">
-                            <button class="action-btn repurchase-btn">Mua lại</button>
+                            <button class="action-btn repurchase-btn" (click)="onRepurchaseFromUnreviewed(item)">
+                                Mua lại
+                            </button>
                             <button class="action-btn rate-btn" (click)="onAddReview(item)">Đánh giá</button>
                         </div>
                     </div>
@@ -131,50 +134,76 @@
 
             <!-- Reviewed Orders List -->
             <div *ngIf="showReviewed" class="reviews-list">
-                <div *ngFor="let item of reviewedItems" class="review-card">
-                    <!-- Review Header -->
-                    <div class="review-header">
-                        <div class="review-header-left">
-                            <div class="review-product-image" (click)="goToProductDetail(item)" style="cursor: pointer">
-                                <img [src]="item.productImage" [alt]="item.productName"
+                <div *ngFor="let item of reviewedItems" class="order-wrapper">
+                    <!-- Status Card -->
+                    <div class="order-status-card status-delivered" (click)="viewOrderDetails(item)"
+                        style="cursor: pointer">
+                        <div class="status-left">
+                            <span class="status-text">Đã đánh giá</span>
+                        </div>
+                        <div class="status-right">
+                            <span class="status-date">{{ item.reviewDate }}</span>
+                            <span class="status-separator">|</span>
+                            <span class="status-order-code">{{ item.orderNumber }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Order Card -->
+                    <div class="order-card" (click)="viewOrderDetails(item)" style="cursor: pointer">
+                        <!-- Products List -->
+                        <div class="products-section">
+                            <div class="product-item">
+                                <div class="product-left">
+                                    <div class="product-image"
+                                        (click)="goToProductDetail(item); $event.stopPropagation()"
+                                        style="cursor: pointer">
+                                        <img [src]="item.productImage" [alt]="item.productName" class="product-img"
+                                            onerror="this.src='assets/icon/no-order.png'" />
+                                    </div>
+                                    <div class="product-details"
+                                        (click)="goToProductDetail(item); $event.stopPropagation()"
+                                        style="cursor: pointer">
+                                        <h3 class="product-name">{{ item.productName }}</h3>
+                                        <p class="product-price">{{ item.category }}</p>
+                                    </div>
+                                </div>
+                                <div class="product-right" (click)="$event.stopPropagation()"
+                                    *ngIf="item.price && item.unit">
+                                    <div class="product-quantity" *ngIf="item.quantity">Số lượng: {{ item.quantity }}
+                                    </div>
+                                    <div class="product-total">{{ formatPriceNumber(item.price) }}/{{ item.unit }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review Details placed inside the card -->
+                        <div class="review-details-section">
+                            <div class="review-rating">
+                                <div class="stars">
+                                    <i class="bi bi-star-fill" *ngFor="let star of getStarArray(item.rating || 0)"></i>
+                                </div>
+                                <span class="reviewer-name">{{ item.reviewerName }}</span>
+                            </div>
+                            <div class="review-text" *ngIf="item.reviewText">
+                                {{ item.reviewText }}
+                            </div>
+                            <div class="review-images" *ngIf="item.images && item.images.length > 0">
+                                <img *ngFor="let image of item.images" [src]="image" class="review-image"
                                     onerror="this.src='assets/icon/no-order.png'" />
                             </div>
-                            <div class="review-product-info">
-                                <h3 class="review-product-name" (click)="goToProductDetail(item)"
-                                    style="cursor: pointer">{{ item.productName }}</h3>
-                                <p class="review-category">{{ item.category }}</p>
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Review Content -->
-                    <div class="review-content">
-                        <div class="review-rating">
-                            <div class="stars">
-                                <i class="bi bi-star-fill" *ngFor="let star of getStarArray(item.rating || 0)"></i>
-                            </div>
-                            <span class="reviewer-name">{{ item.reviewerName }}</span>
-                            <span class="review-date">{{ item.reviewDate }}</span>
+                    <!-- Order Summary - Action Buttons -->
+                    <div class="order-summary" (click)="$event.stopPropagation()">
+                        <div class="summary-left">
                         </div>
-                        <div class="review-text" *ngIf="item.reviewText">
-                            {{ item.reviewText }}
+                        <div class="summary-right">
+                            <button class="action-btn edit-review-btn-new" (click)="onEditReview(item)">
+                                <i class="bi bi-pencil"></i>
+                                <span>Chỉnh sửa đánh giá</span>
+                            </button>
                         </div>
-                        <div class="review-images" *ngIf="item.images && item.images.length > 0">
-                            <img *ngFor="let image of item.images" [src]="image" class="review-image"
-                                onerror="this.src='assets/icon/no-order.png'" />
-                        </div>
-                    </div>
-
-                    <!-- Review Footer -->
-                    <div class="review-footer">
-                        <button class="view-order-btn" (click)="viewOrderDetails(item)">
-                            <i class="bi bi-receipt"></i>
-                            <span>Xem đơn hàng</span>
-                        </button>
-                        <button class="edit-review-btn" (click)="onEditReview(item)">
-                            <i class="bi bi-pencil"></i>
-                            <span>Chỉnh sửa</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -198,4 +227,4 @@
 </app-review-form>
 
 <!-- Order Detail Modal Component -->
-<app-order-detail-modal></app-order-detail-modal>
+<app-order-detail-acc></app-order-detail-acc>

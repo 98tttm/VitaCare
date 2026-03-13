@@ -328,3 +328,25 @@
 
 </div>
 <!-- End of VitaCare Homepage -->
+
+<!-- Popup sau 3s — chỉ render khi đã có đủ data (prefetch + cache từ APP_INITIALIZER) -->
+<div class="vc-blog-popup-overlay" *ngIf="showBlogPopup && popupBlog" (click)="closeBlogPopup()">
+  <div class="vc-blog-popup" (click)="$event.stopPropagation()">
+    <button type="button" class="vc-blog-popup__close" (click)="closeBlogPopup()" aria-label="Đóng">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <div class="vc-blog-popup__image-wrap">
+      <img [src]="popupBlog.image" [alt]="popupBlog.title" class="vc-blog-popup__image"
+           (error)="$any($event.target).src='assets/images/homepage/blogs/ngu_ngon.jpg'" />
+      <div class="vc-blog-popup__image-fade"></div>
+    </div>
+    <div class="vc-blog-popup__body">
+      <span class="vc-blog-popup__label">Có thể bạn chưa biết?</span>
+      <h3 class="vc-blog-popup__title">{{ popupBlog.title }}</h3>
+      <p class="vc-blog-popup__excerpt" *ngIf="popupBlog.excerpt">{{ popupBlog.excerpt }}</p>
+      <button type="button" class="vc-blog-popup__cta" (click)="goToBlogPopup()">
+        Xem ngay <i class="bi bi-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

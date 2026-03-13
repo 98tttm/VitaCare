@@ -106,9 +106,9 @@
 }
 
 .about-breadcrumb {
-  padding: 12px 0 8px;
+  padding: 8px 0 6px;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #6b7280;
 }
 
 .breadcrumb-list {
@@ -122,17 +122,17 @@
 }
 
 .breadcrumb-item a {
-  color: #2563eb;
+  color: #6b7280;
   text-decoration: none;
   font-weight: 500;
 }
 
 .breadcrumb-item a:hover {
-  text-decoration: underline;
+  color: #00589F;
 }
 
 .breadcrumb-item.current {
-  color: #6b7280;
+  color: #00589F;
   font-weight: 600;
 }
 

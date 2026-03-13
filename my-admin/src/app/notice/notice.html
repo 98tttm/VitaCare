@@ -1,0 +1,63 @@
+<div class="notice-wrapper" (mouseenter)="onBellEnter()" (mouseleave)="onBellLeave()">
+  <!-- Bell icon + badge -->
+  <button class="notice-bell-btn" type="button">
+    <img src="assets/icon/notification-bell.png" alt="Notification">
+    <span class="badge" *ngIf="unreadCount > 0">
+      {{ unreadCount > 99 ? '99+' : unreadCount }}
+    </span>
+  </button>
+
+  <!-- Dropdown on hover -->
+  <div class="notice-dropdown" *ngIf="isDropdownOpen">
+    <div class="notice-dropdown-header">
+      <span>Thông báo</span>
+      <button type="button" class="view-all" (click)="viewAll(); $event.stopPropagation()">Xem tất cả</button>
+    </div>
+    <div class="notice-list">
+      <div
+        class="notice-item"
+        *ngFor="let item of notifications | slice:0:20; let i = index"
+        [class.notice-item--highlight]="i < 3"
+        (click)="openItem(item); $event.stopPropagation()"
+      >
+        <div class="notice-item-main">
+          <div class="notice-title">{{ item.title }}</div>
+          <div class="notice-message">{{ item.message }}</div>
+        </div>
+        <div class="notice-time">
+          <span>{{ item.createdAt | date:'HH:mm dd/MM' }}</span>
+        </div>
+      </div>
+
+      <div class="notice-empty" *ngIf="!notifications || notifications.length === 0">
+        Không có thông báo mới.
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup khi có thông báo mới lúc login / reload -->
+  <div class="notice-popup-backdrop" *ngIf="showPopup">
+    <div class="notice-popup">
+      <div class="notice-popup-header">
+        <h3>Thông báo mới</h3>
+        <button type="button" class="close-btn" (click)="closePopup()">&times;</button>
+      </div>
+      <div class="notice-popup-body">
+        <div class="notice-item" *ngFor="let item of popupNotifications">
+          <div class="notice-item-main">
+            <div class="notice-title">{{ item.title }}</div>
+            <div class="notice-message">{{ item.message }}</div>
+          </div>
+          <div class="notice-time">
+            <span>{{ item.createdAt | date:'HH:mm dd/MM' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="notice-popup-footer">
+        <button type="button" class="btn-secondary" (click)="closePopup()">Đóng</button>
+        <button type="button" class="btn-primary" (click)="viewAll(); closePopup()">Xem tất cả</button>
+      </div>
+    </div>
+  </div>
+</div>
+

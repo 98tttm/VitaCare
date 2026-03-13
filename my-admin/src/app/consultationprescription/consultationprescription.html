@@ -1,10 +1,17 @@
-<div class="page-container">
-    <div class="breadcrumb">
-        Quản lý Tư vấn / <span class="current">Tư vấn đơn thuốc</span>
+<div class="container page-container consultation-prescription-container">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
+        Quản lý Tư vấn <span class="mx-1">/</span>
+        <span style="color: var(--color-primary);">Tư vấn đơn thuốc</span>
     </div>
 
-    <div class="page-header">
-        <h1 class="page-title">TƯ VẤN ĐƠN THUỐC</h1>
+    <!-- Header -->
+    <div class="page-header py-4"
+        style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+        <h1 class="content-title"
+            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
+            Tư vấn đơn thuốc
+        </h1>
     </div>
 
     <div class="stats-container">
@@ -202,8 +209,6 @@
             </tbody>
         </table>
     </div>
-</div>
-
 <!-- Modal -->
 <div class="modal-wrapper" *ngIf="isModalOpen">
     <div class="modal-backdrop" (click)="closeModal()"></div>
@@ -242,27 +247,40 @@
                 <div class="item-card" *ngIf="selectedPrescription?.images?.length > 0"
                     style="display: flex; align-items: center; border-bottom: 1px solid var(--color-neutral-30); padding: 10px 0;">
                     <div class="img-placeholder"
-                        style="width: 40px; height: 40px; background: #e0e0e0; border-radius: 4px; display: flex; justify-content: center; align-items: center; margin-right: 15px;">
-                        <i class="bi bi-image" style="color: var(--color-text-tertiary);"></i>
+                        style="width: 40px; height: 40px; border-radius: 4px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-right: 15px; background: #e0e0e0;">
+                        <img *ngIf="selectedPrescription?.images?.[0]" [src]="selectedPrescription?.images?.[0]"
+                            alt="Đơn thuốc" style="width: 100%; height: 100%; object-fit: cover;">
+                        <i *ngIf="!selectedPrescription?.images?.[0]" class="bi bi-image"
+                            style="color: var(--color-text-tertiary);"></i>
                     </div>
-                    <div class="item-info" style="flex: 1;">
-                        <span class="item-name" style="color: var(--color-text-primary); font-weight: 500;">Hình ảnh đơn
-                            thuốc ({{
-                            selectedPrescription?.images?.length }})</span>
+                    <div class="item-info" style="flex: 1; display: flex; flex-direction: column;">
+                        <span class="item-name"
+                            style="color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px;">Hình ảnh đơn
+                            thuốc</span>
+                        <span style="font-size: 12px; color: var(--color-text-tertiary);">
+                            {{ selectedPrescription?.images?.length }} hình ảnh được đính kèm
+                        </span>
                     </div>
                 </div>
 
                 <div class="item-card" *ngFor="let med of selectedPrescription?.medicines_requested; let i = index"
                     style="display: flex; align-items: center; border-bottom: 1px solid var(--color-neutral-30); padding: 10px 0;">
                     <div class="img-placeholder"
-                        style="width: 40px; height: 40px; background: #e0e0e0; border-radius: 4px; display: flex; justify-content: center; align-items: center; margin-right: 15px;">
-                        <i class="bi bi-box" style="color: var(--color-text-tertiary);"></i>
+                        style="width: 40px; height: 40px; border-radius: 4px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-right: 15px; background: #e0e0e0;">
+                        <img *ngIf="med?.image" [src]="med.image" [alt]="med.name"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                        <i *ngIf="!med?.image" class="bi bi-box" style="color: var(--color-text-tertiary);"></i>
                     </div>
                     <div class="item-info"
                         style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
-                        <span class="item-name" style="color: var(--color-text-primary); font-weight: 500;">Tên sản phẩm
-                            {{ i + 1 }}</span>
-                        <span style="font-size: 12px; color: var(--color-text-tertiary);">Số lượng x Đơn vị tính</span>
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="item-name"
+                                style="color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px;">
+                                {{ med?.name || ('Tên sản phẩm ' + (i + 1)) }}
+                            </span>
+                            <span *ngIf="med?.sku"
+                                style="font-size: 12px; color: var(--color-text-tertiary);">SKU: {{ med.sku }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -282,23 +300,43 @@
             style="display: flex; justify-content: flex-end; gap: 10px; padding: 15px 20px; background-color: var(--color-bg-secondary); border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
             <button type="button" class="btn btn-cancel" (click)="closeModal()"
                 style="padding: 8px 16px; border: 1px solid var(--color-neutral-40); background-color: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 6px; cursor: pointer;">Hủy</button>
-            <button type="button" id="btn-submit-prescription" class="btn btn-primary" (click)="savePrescription()"
+            <button type="button" id="btn-submit-prescription" class="btn btn-primary" (click)="onPrimaryButtonClick()"
                 [disabled]="isSaving"
                 style="padding: 10px 24px; border: none; background: #6a1b9a; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 10px rgba(106, 27, 154, 0.2); transition: all 0.2s; min-width: 140px;"
                 [style.opacity]="isSaving ? '0.7' : '1'" [style.cursor]="isSaving ? 'not-allowed' : 'pointer'">
-                <span *ngIf="!isSaving">Gửi yêu cầu</span>
+                <span *ngIf="!isSaving">{{ primaryButtonLabel }}</span>
                 <span *ngIf="isSaving"><i class="bi bi-arrow-repeat spin"></i> Đang gửi...</span>
             </button>
         </div>
     </div>
+</div>
 
-    <!-- Notification Toast -->
-    <div class="notification-toast" *ngIf="notification.show" [ngClass]="notification.type">
-        <i class="bi" [ngClass]="{
-            'bi-check-circle-fill': notification.type === 'success',
-            'bi-x-circle-fill': notification.type === 'error',
-            'bi-exclamation-triangle-fill': notification.type === 'warning'
-        }"></i>
-        <span>{{ notification.message }}</span>
+<!-- Notification Toast (luôn hiển thị ở góc phải, không phụ thuộc modal) -->
+<div class="notification-toast" *ngIf="notification.show" [ngClass]="notification.type">
+    <i class="bi" [ngClass]="{
+        'bi-check-circle-fill': notification.type === 'success',
+        'bi-x-circle-fill': notification.type === 'error',
+        'bi-exclamation-triangle-fill': notification.type === 'warning'
+    }"></i>
+    <span>{{ notification.message }}</span>
+</div>
+
+<!-- Dialog chọn trạng thái khi đang tư vấn -->
+<div class="status-dialog-backdrop" *ngIf="statusDialog.show">
+    <div class="status-dialog-card">
+        <h4 class="status-dialog-title">Cập nhật trạng thái đơn thuốc</h4>
+        <p class="status-dialog-message">
+            Vui lòng chọn kết quả sau khi liên hệ với khách hàng cho đơn
+            <strong>{{ selectedPrescription?.prescriptionId }}</strong>.
+        </p>
+        <div class="status-dialog-actions">
+            <button type="button" class="btn btn-secondary" (click)="markAsUnreachable()">
+                Chưa thể liên hệ
+            </button>
+            <button type="button" class="btn btn-primary" (click)="markAsContacted()">
+                Đã liên hệ
+            </button>
+        </div>
+        <button type="button" class="status-dialog-close" (click)="closeStatusDialog()">&times;</button>
     </div>
 </div>

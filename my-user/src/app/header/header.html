@@ -1,6 +1,6 @@
 <header class="vc_header" [class.vc_header_compact]="isHeaderCompact">
-  <img class="vc_mascot_left" src="assets/images/mascot/mascot_tet1.png" alt="mascot left" aria-hidden="true" />
-  <img class="vc_mascot_right" src="assets/images/mascot/mascot_tet2.png" alt="mascot right" aria-hidden="true" />
+  <!-- <img class="vc_mascot_left" src="assets/images/mascot/mascot_tet1.png" alt="mascot left" aria-hidden="true" />
+  <img class="vc_mascot_right" src="assets/images/mascot/mascot_tet2.png" alt="mascot right" aria-hidden="true" /> -->
 
   <!-- MOBILE HEADER (<= 767px) -->
   <div class="vc_m_header">
@@ -302,7 +302,7 @@
               <div class="vc_notify_empty">Chưa có thông báo</div>
             </div>
             <div class="vc_notify_body" *ngIf="!notificationsLoading && !notificationsError && notificationsPreview.length > 0">
-              <div class="vc_notify_item" *ngFor="let n of notificationsPreview">
+              <div class="vc_notify_item" *ngFor="let n of notificationsPreview" [class.vc_notify_item--remind]="n.type === 'medication_reminder'">
                 <div class="vc_notify_item_title">{{ n.title }}</div>
                 <div class="vc_notify_item_message">{{ n.message }}</div>
               </div>
@@ -507,6 +507,16 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <!-- Thanh ngang: chỉ lịch nhắc uống thuốc — mỗi lần vào trang / chuyển trang (khi còn mốc chưa uống) -->
+  <div class="vc_reminder_banner" *ngIf="showReminderPopup && medicationDueList.length > 0" role="region" aria-label="Nhắc uống thuốc">
+    <div class="vc_reminder_banner_inner">
+      <span class="vc_reminder_banner_icon" aria-hidden="true"><i class="bi bi-capsule"></i></span>
+      <p class="vc_reminder_banner_text">{{ reminderBannerLine }}</p>
+      <a href="#" class="vc_reminder_banner_link" (click)="openRemindFromPopup($event)">Ghi nhận đã uống</a>
+      <button type="button" class="vc_reminder_banner_dismiss" (click)="dismissReminderPopup()" aria-label="Đóng thông báo">×</button>
     </div>
   </div>
 </header>

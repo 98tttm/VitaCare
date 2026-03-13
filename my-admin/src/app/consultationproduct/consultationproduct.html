@@ -1,12 +1,19 @@
-<div class="page-container">
+<div class="container page-container consultation-product-container">
     <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        Quản lý Tư vấn / <span class="current">{{ selectedProduct ? selectedProduct.sku : 'Tư vấn sản phẩm' }}</span>
+    <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
+        Quản lý Tư vấn <span class="mx-1">/</span>
+        <span style="color: var(--color-primary);">
+            {{ selectedProduct ? selectedProduct.sku : 'Tư vấn sản phẩm' }}
+        </span>
     </div>
 
     <!-- Page Header - Fixed Title -->
-    <div class="page-header">
-        <h1 class="page-title">{{ selectedProduct ? selectedProduct.sku : 'TƯ VẤN SẢN PHẨM' }}</h1>
+    <div class="page-header py-4"
+        style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+        <h1 class="content-title"
+            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
+            {{ selectedProduct ? selectedProduct.sku : 'Tư vấn sản phẩm' }}
+        </h1>
     </div>
 
     <!-- Stats Container - Consistent with other pages -->
@@ -61,7 +68,7 @@
                         </td>
                         <td style="text-align: center;">
                             <button class="btn btn-outline"
-                                style="border-color: #6a1b9a; color: #6a1b9a; padding: 4px 12px; font-size: 13px;">Chi
+                                style="border-color: var(--color-primary); color: var(--color-primary); padding: 4px 12px; font-size: 13px;">Chi
                                 tiết</button>
                         </td>
                     </tr>
@@ -225,7 +232,7 @@
                         }})</span>
                 </h6>
                 <p
-                    style="margin: 0; color: var(--color-text-primary); font-weight: 500; font-size: 15px; padding: 10px; background: #f9f9f9; border-left: 3px solid #6a1b9a; border-radius: 4px;">
+                    style="margin: 0; color: var(--color-text-primary); font-weight: 500; font-size: 15px; padding: 10px; background: #f9f9f9; border-left: 3px solid var(--color-primary); border-radius: 4px;">
                     {{ selectedQuestion?.question }}</p>
             </div>
 
@@ -256,7 +263,7 @@
             <button type="button" class="btn btn-cancel" (click)="closeModal()"
                 style="padding: 8px 16px; border: 1px solid var(--color-neutral-40); background-color: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 6px; cursor: pointer;">Hủy</button>
             <button type="button" class="btn btn-primary" (click)="saveQuestion()"
-                style="padding: 8px 16px; border: none; background: #6a1b9a; color: white; border-radius: 6px; cursor: pointer;">Lưu
+                style="padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">Lưu
                 trả lời</button>
         </div>
     </div>

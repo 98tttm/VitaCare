@@ -56,6 +56,11 @@ export class Consultationprescription implements OnInit {
   // Selection
   selectedCount = 0;
 
+  // Dialog cho trạng thái "Đang tư vấn"
+  statusDialog = {
+    show: false
+  };
+
   constructor(
     @Inject(ConsultationService) private consultationService: ConsultationService,
     private datePipe: DatePipe,
@@ -344,7 +349,11 @@ export class Consultationprescription implements OnInit {
 
   isSaving = false;
 
-  savePrescription() {
+  /**
+   * Lưu đơn tư vấn với trạng thái hiện tại,
+   * hoặc ép sang trạng thái mới nếu truyền newStatus.
+   */
+  savePrescription(newStatus?: 'waiting' | 'unreachable' | 'advised', successMessage?: string) {
     if (this.isSaving) return;
 
     if (!this.selectedPrescription) return;
@@ -359,8 +368,11 @@ export class Consultationprescription implements OnInit {
 
     this.isSaving = true;
 
-    // If assigning a pharmacist to a pending request, move it to 'waiting'
-    if (this.selectedPrescription.status === 'pending') {
+    // Nếu truyền vào trạng thái mới thì dùng, ngược lại mặc định:
+    // pending -> waiting khi gửi yêu cầu lần đầu.
+    if (newStatus) {
+      this.selectedPrescription.status = newStatus;
+    } else if (this.selectedPrescription.status === 'pending') {
       this.selectedPrescription.status = 'waiting';
     }
 
@@ -374,14 +386,16 @@ export class Consultationprescription implements OnInit {
       }
     } catch (e) { }
 
+    const appliedStatus = this.selectedPrescription.status;
+
     const historyEntry = {
-      status: this.selectedPrescription.status,
+      status: appliedStatus,
       changedAt: new Date().toISOString(),
       changedBy: adminName
     };
 
     const payload = {
-      status: this.selectedPrescription.status,
+      status: appliedStatus,
       pharmacist_id: this.editedPharmacistId,
       pharmacistName: pharmacist.pharmacistName,
       pharmacistPhone: pharmacist.pharmacistPhone,
@@ -392,13 +406,21 @@ export class Consultationprescription implements OnInit {
     this.consultationService.updatePrescription(this.selectedPrescription.id, payload).subscribe({
       next: (res) => {
         this.isSaving = false;
-        if (res.success) {
-          this.showNotification('Đã gửi yêu cầu tư vấn thành công');
-          this.fetchPrescriptions();
-          this.closeModal();
-        } else {
-          this.showNotification('Lỗi: ' + res.message, 'error');
+        const ok = !res || res.success !== false;
+        if (!ok) {
+          this.showNotification('Lỗi: ' + (res?.message || 'Không thể cập nhật đơn tư vấn'), 'error');
+          return;
         }
+
+        const finalMessage = successMessage ||
+          (appliedStatus === 'waiting'
+            ? 'Đã gửi yêu cầu tư vấn đến dược sĩ.'
+            : `Đã cập nhật trạng thái đơn thuốc sang ${this.getStatusLabel(appliedStatus)}.`);
+
+        this.showNotification(finalMessage);
+        this.fetchPrescriptions();
+        this.closeModal();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.isSaving = false;
@@ -410,5 +432,43 @@ export class Consultationprescription implements OnInit {
   showNotification(message: string, type: 'success' | 'error' | 'warning' = 'success') {
     this.notification = { show: true, message, type };
     setTimeout(() => this.notification.show = false, 3000);
+  }
+
+  // === Điều khiển nút chính trên modal ===
+
+  get primaryButtonLabel(): string {
+    if (!this.selectedPrescription) return 'Lưu';
+    if (this.selectedPrescription.status === 'pending') return 'Gửi yêu cầu';
+    if (this.selectedPrescription.status === 'waiting') return 'Cập nhật trạng thái';
+    return 'Lưu thay đổi';
+  }
+
+  onPrimaryButtonClick() {
+    if (!this.selectedPrescription) return;
+
+    // Với trạng thái "Đang tư vấn" thì hỏi tiếp Đã liên hệ / Chưa thể liên hệ
+    if (this.selectedPrescription.status === 'waiting') {
+      this.statusDialog.show = true;
+      return;
+    }
+
+    // Các trạng thái khác dùng luồng lưu mặc định
+    this.savePrescription();
+  }
+
+  closeStatusDialog() {
+    this.statusDialog.show = false;
+  }
+
+  markAsContacted() {
+    if (!this.selectedPrescription) return;
+    this.statusDialog.show = false;
+    this.savePrescription('advised', 'Đơn thuốc đã được cập nhật sang trạng thái Đã tư vấn.');
+  }
+
+  markAsUnreachable() {
+    if (!this.selectedPrescription) return;
+    this.statusDialog.show = false;
+    this.savePrescription('unreachable', 'Đơn thuốc đã được cập nhật sang trạng thái Chưa thể liên hệ.');
   }
 }

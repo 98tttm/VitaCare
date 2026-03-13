@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class CustomerService {
-    private apiUrl = 'http://localhost:3000/api/users';
+    private apiUrl = 'http://localhost:3000/api/admin/users';
 
     constructor(private http: HttpClient) { }
 
@@ -32,14 +32,14 @@ export class CustomerService {
 
     // Groups
     getGroups(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/customer_groups');
+        return this.http.get<any>('http://localhost:3000/api/admin/customer_groups');
     }
 
     createGroup(group: any): Observable<any> {
-        return this.http.post<any>('http://localhost:3000/api/customer_groups', group);
+        return this.http.post<any>('http://localhost:3000/api/admin/customer_groups', group);
     }
 
     deleteGroup(id: string): Observable<any> {
-        return this.http.delete<any>(`http://localhost:3000/api/customer_groups/${id}`);
+        return this.http.delete<any>(`http://localhost:3000/api/admin/customer_groups/${id}`);
     }
 }

@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { OrderService, Order as BackendOrder } from '../services/order.service';
 import { AuthService } from '../services/auth.service';
 import { OrderDetailAcc } from '../order-detail-acc/order-detail-acc';
+import { CartService, CartItem } from '../services/cart.service';
+import { CartSidebarService } from '../services/cart-sidebar.service';
 
 interface OrderProduct {
   id: string;
@@ -18,6 +20,7 @@ interface OrderProduct {
   category?: string;
   gifted?: boolean;
   parentId?: string;
+  sku?: string;
 }
 
 interface Order {
@@ -26,19 +29,19 @@ interface Order {
   orderDate: string;
   // Đồng bộ với Order trong order-detail-acc.ts
   status:
-    | 'pending'
-    | 'confirmed'
-    | 'shipping'
-    | 'delivered'
-    | 'received'
-    | 'completed'
-    | 'cancelled'
-    | 'refund_rejected'
-    | 'unreview'
-    | 'reviewed'
-    | 'processing_return'
-    | 'returning'
-    | 'returned';
+  | 'pending'
+  | 'confirmed'
+  | 'shipping'
+  | 'delivered'
+  | 'received'
+  | 'completed'
+  | 'cancelled'
+  | 'refund_rejected'
+  | 'unreview'
+  | 'reviewed'
+  | 'processing_return'
+  | 'returning'
+  | 'returned';
   totalAmount: number;
   products: OrderProduct[];
   isReviewed?: boolean;
@@ -67,6 +70,8 @@ export class Orders implements OnInit, OnChanges {
   private router = inject(Router);
   private orderService = inject(OrderService);
   private authService = inject(AuthService); // Kept for other needs if any
+  private cartService = inject(CartService);
+  private cartSidebar = inject(CartSidebarService);
 
   @Input() userId: string | undefined;
 
@@ -179,17 +184,33 @@ export class Orders implements OnInit, OnChanges {
     const orderDate = backendOrder.route?.pending || new Date().toISOString();
 
     // Map products
-    const products: OrderProduct[] = (backendOrder.item || []).map((item, index) => ({
-      id: `${backendOrder.order_id}_${index}`, // Generate a unique ID for product item
-      name: item.productName,
-      image: item.image, // Use the image URL from backend
-      price: item.price,
-      quantity: item.quantity,
-      unit: item.unit,
-      totalPrice: item.price * item.quantity,
-      category: '', // Not available in orders.json
-      gifted: false, // Default false
-    }));
+    const products: OrderProduct[] = (backendOrder.item || []).map((item: any, index) => {
+      // Ưu tiên productId (được lưu trong đơn) hoặc _id để điều hướng chi tiết sản phẩm
+      const rawPid = item?.productId || item?._id;
+      let productId = '';
+      if (rawPid) {
+        if (typeof rawPid === 'string') productId = rawPid;
+        else if (rawPid.$oid) productId = rawPid.$oid;
+        else if (typeof rawPid.toString === 'function') productId = rawPid.toString();
+      }
+      // Backup: nếu đơn cũ chưa có _id, dùng sku làm id để backend có thể map ngược lại
+      if (!productId && item?.sku) {
+        productId = item.sku;
+      }
+
+      return {
+        id: productId,
+        name: item.productName,
+        image: item.image, // Use the image URL from backend
+        price: item.price,
+        quantity: item.quantity,
+        unit: item.unit,
+        totalPrice: item.price * item.quantity,
+        category: '', // Not available in orders.json
+        gifted: false, // Default false
+        sku: item.sku,
+      };
+    });
 
     // Normalize status (chấp nhận đầy đủ các trạng thái dùng trong account)
     let status: any = backendOrder.status;
@@ -238,14 +259,9 @@ export class Orders implements OnInit, OnChanges {
     // Filter by Tab
     if (this.activeTab !== 'all') {
       if (this.activeTab === 'delivered') {
-        // Tab "Đã giao hàng" hiển thị cả các đơn đã giao, đã hoàn thành
-        // và các đơn "unreview" / "reviewed".
-        filtered = filtered.filter(o =>
-          o.status === 'delivered' ||
-          o.status === 'completed' ||
-          o.status === 'unreview' ||
-          o.status === 'reviewed'
-        );
+        // Tab "Đã giao hàng" chỉ hiển thị đơn 'delivered'.
+        // Các đơn 'unreview'/'reviewed' sẽ hiển thị ở Quản lý đánh giá.
+        filtered = filtered.filter(o => o.status === 'delivered' || o.status === 'completed');
       } else {
         filtered = filtered.filter(o => o.status === this.activeTab);
       }
@@ -300,9 +316,12 @@ export class Orders implements OnInit, OnChanges {
 
   // --- Display Helpers ---
   getDisplayStatusLabel(order: Order): string {
-    switch (order.status) {
+    const s = (order.status || '').toLowerCase().trim();
+    switch (s) {
       case 'pending':
         return 'Chờ xác nhận';
+      case 'confirmed':
+        return 'Đã xác nhận';
       case 'shipping':
         return 'Đang giao hàng';
       case 'delivered':
@@ -310,17 +329,23 @@ export class Orders implements OnInit, OnChanges {
       case 'received':
         return 'Đã nhận hàng';
       case 'unreview':
-        // Đơn đã giao thành công, đang chờ đánh giá
-        return 'Giao hàng thành công';
+        return 'Chưa đánh giá';
       case 'reviewed':
-        // Đơn đã được đánh giá xong
         return 'Đã đánh giá';
       case 'completed':
         return 'Hoàn thành';
       case 'cancelled':
         return 'Đã hủy';
+      case 'processing_return':
+        return 'Yêu cầu trả hàng';
+      case 'returning':
+        return 'Đang hoàn trả';
+      case 'returned':
+        return 'Đã hoàn trả';
+      case 'refund_rejected':
+        return 'Từ chối hoàn tiền';
       default:
-        return '';
+        return order.status || '';
     }
   }
 
@@ -408,6 +433,8 @@ export class Orders implements OnInit, OnChanges {
         this.showReturnModal = false;
         this.showSuccessModal = true;
         this.cdr.detectChanges();
+         // Reload lại trang sau khi gửi yêu cầu trả hàng
+         window.location.reload();
       },
       error: (err) => {
         console.error('Request return error:', err);
@@ -431,8 +458,8 @@ export class Orders implements OnInit, OnChanges {
     if (this.showReasonDropdown && this.reasonDropdownButton) {
       const rect = this.reasonDropdownButton.nativeElement.getBoundingClientRect();
       this.reasonDropdownPosition = {
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        top: rect.bottom, // Use rect directly for position: fixed
+        left: rect.left,
         width: rect.width
       };
     }
@@ -489,22 +516,21 @@ export class Orders implements OnInit, OnChanges {
       : this.getCancelReasonLabel(this.selectedCancelReason);
 
     // Gửi orderNumber (order_id trên MongoDB) để backend tìm đúng đơn
-    this.orderService.cancelOrder(order.orderNumber).subscribe({
+    this.orderService.cancelOrder(order.orderNumber, reason).subscribe({
       next: () => {
         order.status = 'cancelled';
         this.updateTabCounts();
         this.closeCancelOrderModal();
         this.showSuccessModal = true;
         this.cdr.detectChanges();
+        // Reload lại trang để đồng bộ toàn bộ danh sách đơn hàng
+        window.location.reload();
       },
       error: (err) => {
         console.error('Cancel order API error:', err);
-        // Vẫn cập nhật local khi backend báo lỗi format (trạng thái đã giao v.v.)
-        order.status = 'cancelled';
-        this.updateTabCounts();
         this.closeCancelOrderModal();
-        this.showSuccessModal = true;
         this.cdr.detectChanges();
+        alert('Hủy đơn hàng không thành công. Vui lòng thử lại sau hoặc kiểm tra lại trạng thái đơn.');
       },
     });
   }
@@ -515,8 +541,8 @@ export class Orders implements OnInit, OnChanges {
     if (this.showCancelReasonDropdown && this.cancelReasonDropdownButton) {
       const rect = this.cancelReasonDropdownButton.nativeElement.getBoundingClientRect();
       this.cancelReasonDropdownPosition = {
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        top: rect.bottom, // Use rect directly for position: fixed
+        left: rect.left,
         width: rect.width
       };
     }
@@ -565,6 +591,8 @@ export class Orders implements OnInit, OnChanges {
         this.updateTabCounts();
         this.closeConfirmReceivedModal();
         this.cdr.detectChanges();
+        // Reload lại trang để đảm bảo trạng thái đơn hàng được cập nhật đầy đủ
+        window.location.reload();
       },
       error: (err) => {
         console.error('Confirm received API error:', err);
@@ -580,7 +608,42 @@ export class Orders implements OnInit, OnChanges {
 
   // --- Other Actions ---
   onRepurchaseOrder(order: Order): void {
-    console.log('Repurchase', order.id);
+    // Chuẩn hóa sản phẩm của đơn sang CartItem (chỉ lấy sản phẩm mua, bỏ quà tặng)
+    const purchasedProducts = this.getDisplayProducts(order);
+    if (!purchasedProducts.length) return;
+
+    const skus = new Set<string>();
+    const ids = new Set<string>();
+
+    const repurchaseItems: Array<Partial<CartItem> & { quantity: number }> = purchasedProducts.map((p) => {
+      const payload: Partial<CartItem> & { quantity: number } = {
+        _id: p.id || p.sku || '',
+        sku: p.sku || '',
+        productName: p.name,
+        price: p.price || 0,
+        discount: 0,
+        image: p.image || '',
+        unit: p.unit || 'Hộp',
+        category: p.category || '',
+        hasPromotion: false,
+        quantity: p.quantity || 1,
+      };
+      if (payload.sku) skus.add(payload.sku);
+      if (payload._id) ids.add(String(payload._id));
+      return payload;
+    });
+
+    // Ghi đè số lượng trong giỏ theo đúng số lượng của đơn mua lại
+    this.cartService.setItemsForRepurchase(repurchaseItems);
+
+    // Lưu cấu hình chọn sẵn (sku/id) để Cart biết chỉ select các sản phẩm vừa thêm
+    localStorage.setItem('repurchase_selection', JSON.stringify({
+      skus: Array.from(skus),
+      ids: Array.from(ids),
+    }));
+
+    // Mở sidebar giỏ hàng để user thấy các sản phẩm đã được chọn sẵn
+    this.cartSidebar.openSidebar();
   }
 
   onRate(order: Order): void {
@@ -610,6 +673,31 @@ export class Orders implements OnInit, OnChanges {
   }
 
   confirmCancelRequest(): void {
+    if (this.selectedOrder) {
+      this.orderService.cancelReturnRequest(this.selectedOrder.orderNumber).subscribe({
+        next: (res) => {
+          if (res.success) {
+            // Cập nhật trạng thái local
+            if (this.selectedOrder) {
+              this.selectedOrder.status = 'unreview';
+              this.updateTabCounts();
+              this.cdr.detectChanges();
+              // Reload lại trang sau khi hủy yêu cầu trả hàng
+              window.location.reload();
+            }
+          }
+        },
+        error: (err) => {
+          console.error('Cancel return error:', err);
+          // Fallback local update
+          if (this.selectedOrder) {
+            this.selectedOrder.status = 'unreview';
+            this.updateTabCounts();
+            this.cdr.detectChanges();
+          }
+        }
+      });
+    }
     this.showReturnModal = false;
     this.showCancelModal = false;
   }

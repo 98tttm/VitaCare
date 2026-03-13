@@ -18,7 +18,7 @@ interface ApiResponse {
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:3000/api';
+    private apiUrl = 'http://localhost:3000/api/admin';
 
     constructor(private http: HttpClient) { }
 

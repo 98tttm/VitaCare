@@ -5,11 +5,12 @@
     padding-bottom: 48px;
 }
 
-/* Breadcrumb */
+/* Breadcrumb - dùng chung style với trang danh sách sản phẩm */
 .breadcrumb-wrapper {
-    background: #fff;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 10px 0;
+    background: transparent;
+    border-bottom: none;
+    padding: 8px 0 6px;
+    margin-bottom: 8px;
 }
 
 .breadcrumb {
@@ -20,21 +21,21 @@
     margin: 0;
     padding: 0;
     font-size: 13px;
-    color: #757575;
+    color: #6b7280;
 }
 
 .breadcrumb-item a {
-    color: #757575;
+    color: #6b7280;
     text-decoration: none;
 }
 
 .breadcrumb-item a:hover {
-    color: var(--color-primary);
+    color: #00589F;
 }
 
 .breadcrumb-item.active {
-    color: var(--color-primary);
-    font-weight: 500;
+    color: #00589F;
+    font-weight: 600;
 }
 
 .breadcrumb-item+.breadcrumb-item::before {

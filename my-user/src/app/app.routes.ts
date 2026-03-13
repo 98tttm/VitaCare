@@ -123,6 +123,14 @@ export const routes: Routes = [
     loadComponent: () => import('./about/about').then(m => m.About),
   },
   {
+    path: 'bai-viet/danh-muc/:categorySlug/:subcategorySlug',
+    loadComponent: () => import('./bai-viet/blog-category/blog-category').then(m => m.BlogCategory),
+  },
+  {
+    path: 'bai-viet/danh-muc/:categorySlug',
+    loadComponent: () => import('./bai-viet/blog-category/blog-category').then(m => m.BlogCategory),
+  },
+  {
     path: 'bai-viet/:slug',
     loadComponent: () => import('./bai-viet/blog-detail/blog-detail').then(m => m.BlogDetail),
   },

@@ -236,12 +236,12 @@ body.vitacare-order-page .app-layout {
     padding: 0 15px;
 }
 
-/* Breadcrumb: link xanh, "/" xám đen, mục hiện tại tím lavender; giảm khoảng trống xuống content */
+/* Breadcrumb: mẫu chuẩn theo trang danh sách sản phẩm */
 .breadcrumb-wrapper {
     background: transparent;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 10px 0;
-    margin-bottom: 12px;
+    border-bottom: none;
+    padding: 8px 0 6px;
+    margin-bottom: 8px;
 }
 
 .breadcrumb-wrapper .container {
@@ -267,6 +267,7 @@ body.vitacare-order-page .app-layout {
     font-size: var(--font-size-sm);
     font-family: var(--font-content-title-family);
     font-weight: 400;
+    color: #6b7280; /* xám nhạt cho tất cả crumb */
     line-height: 1.4;
 }
 
@@ -280,21 +281,126 @@ body.vitacare-order-page .app-layout {
 }
 
 .breadcrumb-item a {
-    color: #275AAB;
+    color: #6b7280; /* link cũng xám, giống mẫu */
     text-decoration: none;
     font-weight: 400;
     transition: color 0.2s ease;
 }
 
 .breadcrumb-item a:hover {
-    color: #1e4290;
+    color: #00589F;
     text-decoration: none;
 }
 
 /* Mục hiện tại: tím lavender, in đậm */
 .breadcrumb-item.active {
-    color: #9b8ab8;
+    color: #00589F; /* crumb cuối xanh dương */
     font-weight: 600;
+}
+
+/* Ưu tiên style breadcrumb bên trong page-container (tài khoản, BMI, v.v.) giống product list */
+.page-container .breadcrumb-item {
+  font-size: var(--font-size-sm);
+  font-family: var(--font-content-title-family);
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.page-container .breadcrumb-item a {
+  color: #6b7280;
+}
+
+.page-container .breadcrumb-item a:hover {
+  color: #00589F;
+}
+
+.page-container .breadcrumb-item.active {
+  color: #00589F;
+  font-weight: 600;
+}
+
+/* Chặn mọi màu khác (tím, v.v.) ghi đè crumb cuối trong tài khoản */
+.page-container .breadcrumb-item.active,
+.page-container .breadcrumb-item.active *,
+.page-container .breadcrumb-item.active a {
+  color: #00589F !important;
+}
+
+/* =========================================================================
+   GLOBAL BREADCRUMB THEME
+   Dùng breadcrumb của trang danh sách sản phẩm làm mẫu cho tất cả trang
+   (tài khoản, BMI, bài viết, chính sách, bệnh, hệ thống nhà thuốc, ...)
+   ========================================================================= */
+
+/* Wrapper cho các trang đang dùng layout riêng: canh vị trí & khoảng cách giống nhau */
+.pc-breadcrumb,
+.ht-breadcrumb,
+.bd-breadcrumb,
+.bv-cat-breadcrumb,
+.health-detail-breadcrumb,
+.page-header-vc .breadcrumb {
+    background: transparent;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 10px 0;
+    margin: 0 0 12px 0;
+    font-family: var(--font-content-title-family);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+}
+
+/* Chính sách & các container full-width: canh theo max-width 1200px giống product */
+.pc-container,
+.ht-root,
+.bd-container,
+.bv-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Link breadcrumb: xám mặc định, hover xanh; giống breadcrumb sản phẩm */
+.pc-breadcrumb a,
+.ht-breadcrumb a,
+.bd-breadcrumb a,
+.bv-cat-breadcrumb a,
+.health-detail-breadcrumb .breadcrumb-item a,
+.page-header-vc .breadcrumb a {
+    color: #6b7280;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.2s ease;
+}
+
+.pc-breadcrumb a:hover,
+.ht-breadcrumb a:hover,
+.bd-breadcrumb a:hover,
+.bv-cat-breadcrumb a:hover,
+.health-detail-breadcrumb .breadcrumb-item a:hover,
+.page-header-vc .breadcrumb a:hover {
+    color: #00589F;
+    text-decoration: none;
+}
+
+/* Mục hiện tại: crumb cuối xanh dương, in đậm – đồng nhất với .breadcrumb-item.active */
+.pc-breadcrumb span:last-child,
+.ht-breadcrumb span:last-child,
+.bd-breadcrumb .current,
+.bv-cat-breadcrumb .current,
+.health-detail-breadcrumb .breadcrumb-item.active,
+.page-header-vc .breadcrumb .current {
+    color: #00589F;
+    font-weight: 600;
+}
+
+/* Ký tự phân tách: "/" hoặc "›" xám đậm, khoảng cách gọn */
+.pc-breadcrumb span.separator,
+.ht-breadcrumb span,
+.bd-breadcrumb-sep,
+.bv-cat-breadcrumb .separator,
+.page-header-vc .breadcrumb .sep {
+    color: #333;
+    font-size: 14px;
+    padding: 0 2px;
 }
 
 /* Link Styles */

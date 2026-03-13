@@ -2,7 +2,8 @@
   display: block;
   width: 100%;
   font-family: Inter, Arimo, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --container-padding: 170px;
+  /* Thu hẹp nội dung header lại một chút so với body */
+  --container-padding: 60px;
 }
 
 .vc_header.vc_header_fixed {
@@ -102,10 +103,15 @@
 /* row: logo - search - actions */
 .vc_main_inner {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  /* trái | giữa | phải */
+  grid-template-columns: auto minmax(0, 1.25fr) auto;
+  /* trái (logo lớn hơn) | giữa (search) | phải */
   gap: 24px;
   align-items: center;
+  transition:
+    grid-template-columns 220ms cubic-bezier(0.33, 1, 0.68, 1),
+    gap 220ms cubic-bezier(0.33, 1, 0.68, 1),
+    transform 220ms cubic-bezier(0.33, 1, 0.68, 1);
+  transform: translateY(0) scale(1);
 }
 
 /* logo */
@@ -116,9 +122,8 @@
   gap: 4px;
   text-decoration: none;
 
-  /* 🔑 quan trọng */
-  max-width: 380px;
-  /* giới hạn bề ngang cụm logo */
+  /* Tăng kích thước cụm logo */
+  max-width: 400px;
   flex-shrink: 0;
   /* không bị ép */
 }
@@ -137,14 +142,14 @@
 }
 
 .vc_logo_img {
-  width: 70px;
+  width: 78px;
   height: auto;
   display: block;
 }
 
 /* TÊN */
 .vc_logo_name {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   color: #fff;
   line-height: 1.1;
@@ -167,7 +172,8 @@
   align-items: center;
   width: 100%;
   max-width: 720px;
-  margin: 0 auto;
+  /* Đẩy cụm search & keyword lệch sang phải một chút */
+  margin: 0 40px 0 8px;
 }
 
 /* search wrap contains mascot and input */
@@ -180,7 +186,7 @@
 
 .vc_mascot {
   position: absolute;
-  left: -50px;
+  left: -40px; /* dịch mascot search sang phải một chút để hở logo */
   width: 100px;
   height: 100px;
   object-fit: contain;
@@ -214,7 +220,7 @@
 .vc_actions {
   display: flex;
   justify-content: flex-end;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
 }
 
@@ -553,6 +559,116 @@
   text-decoration: underline;
 }
 
+.vc_notify_item--remind {
+  border-left: 3px solid #0d9488;
+  padding-left: 10px;
+  margin-left: 2px;
+  background: linear-gradient(90deg, rgba(13, 148, 136, 0.08) 0%, transparent 100%);
+}
+.vc_notify_item--remind .vc_notify_item_title {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+/* Thanh ngang nhắc uống thuốc — full width, dưới header */
+.vc_reminder_banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 10048;
+  padding-top: env(safe-area-inset-top, 0);
+  animation: vc_reminder_banner_in 0.28s ease-out;
+  pointer-events: none;
+}
+@keyframes vc_reminder_banner_in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.vc_reminder_banner_inner {
+  pointer-events: auto;
+  margin: 72px 12px 0;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px 14px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #ecfdf5 0%, #d1fae5 35%, #ecfdf5 100%);
+  border: 1px solid #6ee7b7;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.12);
+}
+.vc_header_compact ~ .vc_reminder_banner .vc_reminder_banner_inner,
+.vc_header.vc_header_compact + .vc_reminder_banner .vc_reminder_banner_inner {
+  margin-top: 56px;
+}
+.vc_reminder_banner_icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff;
+  color: #0d9488;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.vc_reminder_banner_text {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #065f46;
+  line-height: 1.35;
+}
+.vc_reminder_banner_link {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #047857;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.vc_reminder_banner_link:hover {
+  color: #065f46;
+}
+.vc_reminder_banner_dismiss {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vc_reminder_banner_dismiss:hover {
+  background: #fff;
+  color: #0f172a;
+}
+@media (max-width: 767px) {
+  .vc_reminder_banner_inner {
+    margin-top: 120px;
+  }
+}
+
 /* nav menu keywords under search bar */
 .vc_nav_keywords {
   display: flex;
@@ -595,9 +711,12 @@
 .vc_categories_inner {
   display: flex;
   justify-content: space-between;
-  /* Spread items evenly across the width */
   align-items: center;
   flex-wrap: nowrap;
+  transition:
+    transform 220ms cubic-bezier(0.33, 1, 0.68, 1),
+    gap 220ms cubic-bezier(0.33, 1, 0.68, 1);
+  transform: translateY(0) scale(1);
 }
 
 .vc_cat_item {
@@ -1579,17 +1698,17 @@
 .vc_mascot_left,
 .vc_mascot_right {
   position: absolute;
-  top: 0.09rem;
-  width: 130px;
+  top: 15px; /* hạ xuống thêm một chút */
+  width: 96px;
   height: auto;
   pointer-events: none;
   z-index: 60;
 }
 .vc_mascot_left {
-  left: 8px;
+  left: -15px;  /* xích trái thêm một chút */
 }
 .vc_mascot_right {
-  right: 8px;
+  right: 0; /* sát lề phải, tránh đè cụm giỏ/chuông */
 }
 
 /* COMPACT MODE */
@@ -1597,22 +1716,33 @@
 .vc_header.vc_header_compact .vc_nav_keywords { display: none !important; }
 .vc_header.vc_header_compact .vc_logo_tagline { display: none !important; }
 .vc_header.vc_header_compact .vc_main_bar { padding: 10px 0 10px !important; }
-.vc_header.vc_header_compact .vc_logo { max-width: 240px; }
-.vc_header.vc_header_compact .vc_logo_img { width: 56px; }
-.vc_header.vc_header_compact .vc_logo_name { font-size: 22px; }
+.vc_header.vc_header_compact .vc_main_inner {
+  grid-template-columns: auto minmax(0, 1.15fr) auto;
+  gap: 18px;
+  justify-content: center;
+  transform: translateY(-2px) scale(0.96); /* thu nhỏ quanh tâm header */
+}
+.vc_header.vc_header_compact .vc_logo { max-width: 320px; }
+.vc_header.vc_header_compact .vc_logo_img { width: 64px; }
+.vc_header.vc_header_compact .vc_logo_name { font-size: 24px; }
+.vc_header.vc_header_compact .vc_search_section {
+  max-width: 640px;
+  margin: 0 auto;
+}
 .vc_header.vc_header_compact .vc_search_input { height: 40px; font-size: 13px; }
 .vc_header.vc_header_compact .vc_actions { gap: 10px; }
 .vc_header.vc_header_compact .vc_action { padding: 8px 10px; }
 .vc_header.vc_header_compact .vc_action_icon .bi { font-size: 20px; }
 .vc_header.vc_header_compact .vc_categories { padding: 8px 0 10px !important; }
 .vc_header.vc_header_compact .vc_categories_inner {
-  justify-content: flex-start !important;
+  justify-content: center !important;
   gap: 10px !important;
   flex-wrap: nowrap !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  transform: translateY(-2px) scale(0.96);
 }
 .vc_header.vc_header_compact .vc_categories_inner::-webkit-scrollbar { display: none; }
 .vc_header.vc_header_compact .vc_pill {

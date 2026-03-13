@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class ProductService {
-    private apiUrl = 'http://localhost:3000/api/products';
+    private apiUrl = 'http://localhost:3000/api/admin/products';
 
     constructor(private http: HttpClient) { }
 
@@ -46,17 +46,16 @@ export class ProductService {
     deleteProduct(id: string): Observable<any> {
         return this.http.delete<any>(`${this.apiUrl}/${id}`);
     }
-
     // Groups
     getGroups(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/product_groups');
+        return this.http.get<any>('http://localhost:3000/api/admin/product_groups');
     }
 
     createGroup(group: any): Observable<any> {
-        return this.http.post<any>('http://localhost:3000/api/product_groups', group);
+        return this.http.post<any>('http://localhost:3000/api/admin/product_groups', group);
     }
 
     deleteGroup(id: string): Observable<any> {
-        return this.http.delete<any>(`http://localhost:3000/api/product_groups/${id}`);
+        return this.http.delete<any>(`http://localhost:3000/api/admin/product_groups/${id}`);
     }
 }

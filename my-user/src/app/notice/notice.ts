@@ -10,7 +10,8 @@ export type NoticeType =
   | 'order_updated'
   | 'prescription_created'
   | 'prescription_updated'
-  | 'health_check';
+  | 'health_check'
+  | 'medication_reminder';
 
 export interface NoticeItem {
   id: string;
@@ -79,6 +80,11 @@ export class Notice implements OnInit {
       iconClass: 'notice-icon-health',
       label: 'Sổ sức khỏe',
     },
+    medication_reminder: {
+      icon: 'bi-alarm-fill',
+      iconClass: 'notice-icon-prescription',
+      label: 'Nhắc uống thuốc',
+    },
   };
 
   ngOnInit(): void {
@@ -143,6 +149,10 @@ export class Notice implements OnInit {
   }
 
   markAsRead(item: NoticeItem): void {
+    if (String(item.id || '').startsWith('reminder-due-')) {
+      item.read = true;
+      return;
+    }
     const userId = (this.authService.currentUser() as { user_id?: string })?.user_id;
     if (!userId) return;
     item.read = true;
@@ -155,11 +165,13 @@ export class Notice implements OnInit {
     if (item.link) {
       if (item.link === '/account') {
         const menu =
-          item.type === 'health_check'
-            ? 'health'
-            : item.type?.startsWith('prescription')
-              ? 'prescriptions'
-              : 'orders';
+          item.type === 'medication_reminder'
+            ? 'remind'
+            : item.type === 'health_check'
+              ? 'health'
+              : item.type?.startsWith('prescription')
+                ? 'prescriptions'
+                : 'orders';
         this.router.navigate(['/account'], { queryParams: { menu } });
       } else {
         this.router.navigateByUrl(item.link);
