@@ -1,202 +1,256 @@
 /* Container */
 .pc-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Inter', sans-serif;
-    color: #333;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  color: #333;
 }
 
 /* Breadcrumb */
 .pc-breadcrumb {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #0066CC;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #0066CC;
 }
 
 .pc-breadcrumb a {
-    text-decoration: none;
-    color: #0066CC;
+  text-decoration: none;
+  color: #0066CC;
 }
 
 .pc-breadcrumb span {
-    color: #555;
+  color: #555;
 }
 
 /* Layout */
 .pc-layout {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
 }
 
 /* Sidebar */
 .pc-sidebar {
-    width: 280px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
+  width: 280px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
 .pc-sidebar-header {
-    background-color: #fff;
-    padding: 15px;
-    font-weight: bold;
-    border-bottom: 2px solid #E0E0E0;
-    color: #0056b3;
+  background-color: #fff;
+  padding: 15px;
+  font-weight: bold;
+  border-bottom: 2px solid #E0E0E0;
+  color: #0056b3;
 }
 
 .pc-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .pc-menu li {
-    border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .pc-menu li a {
-    display: block;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: #333;
-    transition: background 0.2s;
-    font-size: 14px;
+  display: block;
+  padding: 12px 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.2s;
+  font-size: 14px;
 }
 
 .pc-menu li a:hover {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 .pc-menu li.active a {
-    background-color: #E8EAF6;
-    /* Light purple/blue active bg */
-    color: #000;
-    font-weight: 600;
-    border-left: 4px solid #000;
-    /* Assuming black accent from image */
+  background-color: #E8EAF6;
+  /* Light purple/blue active bg */
+  color: #000;
+  font-weight: 600;
+  border-left: 4px solid #000;
+  /* Assuming black accent from image */
 }
 
 /* Adjust active style to match image strictly */
 .pc-menu li.active {
-    background-color: #F3F0F5;
-    /* Very light purple */
+  background-color: #F3F0F5;
+  /* Very light purple */
 }
 
 .pc-menu li.active a {
-    font-weight: bold;
-    border-left: none;
-    /* Image doesn't show border-left clearly, let's stick to bg */
+  font-weight: bold;
+  border-left: none;
+  /* Image doesn't show border-left clearly, let's stick to bg */
 }
 
 /* Main Content */
 .pc-content {
-    flex: 1;
-    background: #fff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   TABLE STYLE
+   ========================= */
+
+.pc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+/* Header */
+.pc-content table thead {
+  background: #f1f3f5;
+}
+
+.pc-content table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Cell */
+.pc-content table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+/* Zebra rows (trắng - xám) */
+.pc-content table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.pc-content table tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
+/* Hover nhẹ để dễ đọc */
+.pc-content table tbody tr:hover {
+  background: #eef4ff;
+  transition: 0.2s;
+}
+
+/* Border tổng thể */
+.pc-content table {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .pc-title {
-    color: #0056b3;
-    /* Blue heading */
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 24px;
+  color: #0056b3;
+  /* Blue heading */
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 24px;
 }
 
 .pc-section h3 {
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 .pc-section ul {
-    list-style-type: disc;
-    padding-left: 20px;
+  list-style-type: disc;
+  padding-left: 20px;
 }
 
 .pc-section ul li {
-    margin-bottom: 10px;
-    line-height: 1.6;
-    font-size: 14px;
-    text-align: justify;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  font-size: 14px;
+  text-align: justify;
 }
 
 .pc-section p {
-    line-height: 1.6;
-    font-size: 14px;
-    text-align: justify;
+  line-height: 1.6;
+  font-size: 14px;
+  text-align: justify;
 }
 
 /* Feature Footer (Bottom of page, not site footer) */
 .pc-features {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-    padding: 20px 0;
-    background: transparent;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding: 20px 0;
+  background: transparent;
 }
 
 .pc-feature-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: center;
 }
 
 .pc-feature-icon {
-    width: 48px;
-    height: 48px;
-    /* Placeholder background for icon */
-    background: #e0e7ff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 48px;
+  height: 48px;
+  /* Placeholder background for icon */
+  background: #e0e7ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pc-feature-icon img {
-    width: 66px;
-    height: 66px;
-    object-fit: contain;
+  width: 66px;
+  height: 66px;
+  object-fit: contain;
 }
 
 .pc-feature-text {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .pc-feature-text strong {
-    font-size: 14px;
-    color: #0056b3;
-    text-transform: uppercase;
-    font-weight: 700;
+  font-size: 14px;
+  color: #0056b3;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .pc-feature-text span {
-    font-size: 12px;
-    color: #666;
+  font-size: 12px;
+  color: #666;
 }
 
 /* Responsive */
 /* =========================
    Mobile
    ========================= */
-@media (max-width: 768px){
+@media (max-width: 768px) {
 
   /* Container: bớt padding để thoáng */
-  .pc-container{
+  .pc-container {
     padding: 14px;
   }
 
   /* Breadcrumb: gọn và không tràn */
-  .pc-breadcrumb{
+  .pc-breadcrumb {
     font-size: 13px;
     line-height: 1.35;
     margin-bottom: 12px;
@@ -204,57 +258,58 @@
   }
 
   /* Layout: xếp dọc, khoảng cách vừa */
-  .pc-layout{
+  .pc-layout {
     flex-direction: column;
     gap: 12px;
   }
 
   /* Sidebar: thành card gọn */
-  .pc-sidebar{
+  .pc-sidebar {
     width: 100%;
     border-radius: 14px;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
   }
 
-  .pc-sidebar-header{
+  .pc-sidebar-header {
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     font-size: 14px;
   }
 
   /* Menu: biến thành danh sách gọn, bấm dễ */
-  .pc-menu li{
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+  .pc-menu li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   }
 
-  .pc-menu li a{
+  .pc-menu li a {
     padding: 12px 14px;
     font-size: 14px;
   }
 
   /* Active: rõ ràng nhưng nhẹ nhàng */
-  .pc-menu li.active{
+  .pc-menu li.active {
     background: #f3f6ff;
   }
-  .pc-menu li.active a{
+
+  .pc-menu li.active a {
     font-weight: 800;
     color: #0b2b4b;
   }
 
   /* Content: padding nhỏ lại, bo góc lớn, shadow nhẹ */
-  .pc-content{
+  .pc-content {
     padding: 16px;
     border-radius: 14px;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
   }
 
-  .pc-title{
+  .pc-title {
     font-size: 18px;
     margin-bottom: 14px;
     line-height: 1.25;
   }
 
-  .pc-section h3{
+  .pc-section h3 {
     font-size: 15px;
     margin-top: 16px;
     margin-bottom: 8px;
@@ -262,18 +317,19 @@
 
   /* Text dễ đọc trên mobile */
   .pc-section p,
-  .pc-section ul li{
+  .pc-section ul li {
     font-size: 14px;
     line-height: 1.65;
-    text-align: left;     /* mobile đọc dễ hơn justify */
+    text-align: left;
+    /* mobile đọc dễ hơn justify */
   }
 
-  .pc-section ul{
+  .pc-section ul {
     padding-left: 18px;
   }
 
   /* Features: đổi sang grid 2 cột */
-  .pc-features{
+  .pc-features {
     margin-top: 16px;
     padding: 10px 0 0;
     display: grid;
@@ -281,16 +337,16 @@
     gap: 12px;
   }
 
-  .pc-feature-item{
+  .pc-feature-item {
     justify-content: flex-start;
     gap: 10px;
     padding: 12px;
     border-radius: 14px;
     background: #ffffff;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
   }
 
-  .pc-feature-icon{
+  .pc-feature-icon {
     width: 44px;
     height: 44px;
     flex: 0 0 44px;
@@ -299,94 +355,98 @@
   }
 
   /* icon img: đang set 66px bị to, giảm lại cho vừa */
-  .pc-feature-icon img{
+  .pc-feature-icon img {
     width: 28px;
     height: 28px;
   }
 
-  .pc-feature-text strong{
+  .pc-feature-text strong {
     font-size: 12px;
     letter-spacing: .02em;
   }
-  .pc-feature-text span{
+
+  .pc-feature-text span {
     font-size: 12px;
     line-height: 1.35;
   }
 }
 
 /* Mobile nhỏ hơn: features 1 cột */
-@media (max-width: 420px){
-  .pc-features{
+@media (max-width: 420px) {
+  .pc-features {
     grid-template-columns: 1fr;
   }
 }
+
 /* =========================
    Tablet overrides (769px–1100px)
    ========================= */
-@media (min-width: 769px) and (max-width: 1100px){
+@media (min-width: 769px) and (max-width: 1100px) {
 
-  .pc-container{
+  .pc-container {
     max-width: 1000px;
     padding: 18px;
   }
 
-  .pc-layout{
+  .pc-layout {
     gap: 16px;
   }
 
   /* Sidebar gọn để nhường content */
-  .pc-sidebar{
+  .pc-sidebar {
     width: 260px;
     border-radius: 12px;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
   }
 
-  .pc-sidebar-header{
+  .pc-sidebar-header {
     padding: 14px;
     font-size: 14px;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
-  .pc-menu li a{
+  .pc-menu li a {
     padding: 11px 14px;
     font-size: 14px;
   }
 
-  .pc-menu li.active{
+  .pc-menu li.active {
     background: #f3f6ff;
   }
-  .pc-menu li.active a{
+
+  .pc-menu li.active a {
     font-weight: 800;
     color: #0b2b4b;
   }
 
   /* Content vừa phải */
-  .pc-content{
+  .pc-content {
     padding: 24px;
     border-radius: 12px;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
   }
 
-  .pc-title{
+  .pc-title {
     font-size: 22px;
     margin-bottom: 18px;
   }
 
-  .pc-section h3{
+  .pc-section h3 {
     font-size: 16px;
     margin-top: 18px;
     margin-bottom: 10px;
   }
 
   .pc-section p,
-  .pc-section ul li{
+  .pc-section ul li {
     font-size: 14px;
     line-height: 1.65;
-    text-align: left;   /* tablet đọc thoải mái hơn justify */
+    text-align: left;
+    /* tablet đọc thoải mái hơn justify */
   }
 
   /* Features: 2 cột */
-  .pc-features{
+  .pc-features {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
@@ -394,16 +454,16 @@
     padding: 14px 0 0;
   }
 
-  .pc-feature-item{
+  .pc-feature-item {
     justify-content: flex-start;
     gap: 12px;
     padding: 14px;
     border-radius: 14px;
     background: #fff;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
   }
 
-  .pc-feature-icon{
+  .pc-feature-icon {
     width: 46px;
     height: 46px;
     flex: 0 0 46px;
@@ -412,25 +472,33 @@
   }
 
   /* icon đang 66px hơi to -> thu lại */
-  .pc-feature-icon img{
+  .pc-feature-icon img {
     width: 30px;
     height: 30px;
   }
 
-  .pc-feature-text strong{
+  .pc-feature-text strong {
     font-size: 13px;
     letter-spacing: .02em;
   }
 
-  .pc-feature-text span{
+  .pc-feature-text span {
     font-size: 12px;
     line-height: 1.4;
   }
 }
 
 /* Tablet ngang rộng hơn chút (tuỳ chọn) */
-@media (min-width: 1101px) and (max-width: 1280px){
-  .pc-container{ padding: 20px; }
-  .pc-sidebar{ width: 280px; }
-  .pc-content{ padding: 32px; }
+@media (min-width: 1101px) and (max-width: 1280px) {
+  .pc-container {
+    padding: 20px;
+  }
+
+  .pc-sidebar {
+    width: 280px;
+  }
+
+  .pc-content {
+    padding: 32px;
+  }
 }

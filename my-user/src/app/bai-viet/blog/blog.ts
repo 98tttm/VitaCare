@@ -67,44 +67,36 @@ export class Blog implements OnInit {
     this.loadCategoryCounts();
   }
 
-  /** Đếm số bài cho từng chuyên mục dựa trên API /api/blogs (dùng total từ MongoDB) */
+  /** Đếm số bài cho từng chuyên mục dựa trên API /api/blogs/category-counts */
   private loadCategoryCounts(): void {
-    const API = 'http://localhost:3000/api/blogs';
-    const results: { name: string; count: number; slug: string }[] = [];
-
-    const loadNext = (index: number) => {
-      if (index >= this.blogCategoryItems.length) {
-        this.featuredTopicCategories = results
-          .filter(c => {
-            const lower = c.name.toLowerCase();
-            return !lower.includes('khuyến mãi') && !lower.includes('phân loại') && !lower.includes('truyền thông');
-          })
-          .sort((a, b) => b.count - a.count);
-        this.cdr.detectChanges();
-        return;
+    const url = 'http://localhost:3000/api/blogs/category-counts';
+    this.http.get<any>(url).subscribe({
+      next: (res) => {
+        if (res?.success && res?.counts) {
+          const countsMap = res.counts;
+          this.featuredTopicCategories = this.blogCategoryItems
+            .map(cat => ({
+              name: cat.name,
+              count: countsMap[cat.name] || 0,
+              slug: cat.slug
+            }))
+            .filter(c => {
+              const lower = c.name.toLowerCase();
+              return !lower.includes('khuyến mãi') && !lower.includes('phân loại') && !lower.includes('truyền thông');
+            })
+            .sort((a, b) => b.count - a.count);
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Lỗi khi lấy số lượng bài viết theo danh mục:', err);
       }
-
-      const cat = this.blogCategoryItems[index];
-      const url = `${API}?limit=1&page=1&category=${encodeURIComponent(cat.name)}`;
-
-      this.http.get<any>(url).subscribe({
-        next: (res) => {
-          const total = typeof res?.total === 'number' ? res.total : 0;
-          results.push({ name: cat.name, count: total, slug: cat.slug });
-          loadNext(index + 1);
-        },
-        error: () => {
-          results.push({ name: cat.name, count: 0, slug: cat.slug });
-          loadNext(index + 1);
-        },
-      });
-    };
-
-    loadNext(0);
+    });
   }
 
   /** Lấy số lượng bài viết của một danh mục từ featuredTopicCategories */
   getCategoryCount(categoryName: string): number {
+    if (!this.featuredTopicCategories || this.featuredTopicCategories.length === 0) return 0;
     const cat = this.featuredTopicCategories.find(c => c.name === categoryName);
     return cat ? cat.count : 0;
   }
@@ -210,10 +202,8 @@ export class Blog implements OnInit {
   }
 
   private normalizeBlog(b: any): BlogItem {
-    const primaryCat = Array.isArray(b.categories) ? b.categories.find((c: any) => c?.category?.isPrimary) : null;
-    const cat = primaryCat?.category ?? (Array.isArray(b.categories) ? b.categories[0]?.category : null);
-    const fromCategories = cat?.name ?? (Array.isArray(b.categories) && b.categories[0] ? (b.categories[0] as any).name : undefined);
-    const categoryName = fromCategories ?? (b as any).category?.name ?? (b as any).categoryName ?? 'Bài viết';
+    const mainCat = Array.isArray(b.categories) && b.categories[0] ? b.categories[0].name : null;
+    const categoryName = mainCat || b.categoryName || 'Bài viết';
     const slugRaw = (b.slug || (b as any).slug)?.trim();
     const idStr = b._id != null ? String(b._id) : '';
     const slug = this.normalizeSlug(slugRaw || '') || idStr;
@@ -224,7 +214,7 @@ export class Blog implements OnInit {
       excerpt: b.shortDescription || b.excerpt || (typeof b.description === 'string' ? b.description.replace(/<[^>]*>/g, '').slice(0, 160) : ''),
       link,
       slug: slug || undefined,
-      categoryName: categoryName || 'Bài viết',
+      categoryName: categoryName,
     };
   }
 

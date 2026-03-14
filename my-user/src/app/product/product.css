@@ -29,22 +29,21 @@
 }
 
 /* Bố cục 2 cột: dùng Bootstrap grid; sidebar lọc sticky trong vùng content sản phẩm */
-.product-two-columns {
-    /* giữ nguyên behavior .row */
-}
+
 .product-filter-column {
     position: static;
 }
-.product-main-column {
-}
+
 
 /* Desktop: sidebar lọc chỉ "freeze" từ dưới header + thanh danh mục tới trước block 'Sản phẩm vừa xem' */
 @media (min-width: 992px) {
     .product-filter-column {
         position: sticky;
-        top: 140px;         /* bắt đầu ngay dưới header + thanh danh mục */
+        top: 140px;
+        /* bắt đầu ngay dưới header + thanh danh mục */
         align-self: flex-start;
-        z-index: 5;         /* dưới header (2000), cùng grid nên không đè lên sản phẩm bên phải */
+        z-index: 5;
+        /* dưới header (2000), cùng grid nên không đè lên sản phẩm bên phải */
     }
 }
 
@@ -597,6 +596,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     color: #666;
+    text-align: justify;
 }
 
 .blog-meta {

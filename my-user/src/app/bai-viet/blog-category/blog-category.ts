@@ -61,12 +61,12 @@ export class BlogCategory implements OnInit {
       slug: 'phong-benh-song-khoe',
       keywords: ['phòng ngừa bệnh', 'phòng bệnh', 'phòng ngừa', 'sống khoẻ', 'sống khỏe', 'kiến thức y khoa', 'y học cổ truyền', 'sức khỏe gia đình', 'tiêm chủng', 'tâm lý', 'xét nghiệm'],
       subcategories: [
-        { name: 'Y học cổ truyền', slug: 'y-hoc-co-truyen', icon: 'assets/icon/medical_16660084.png', count: 0, countKeywords: ['y học cổ truyền', 'đông y', 'thuốc nam', 'cổ truyền'] },
-        { name: 'Kiến thức y khoa', slug: 'kien-thuc-y-khoa', icon: 'assets/icon/medical_16660084.png', count: 0, countKeywords: ['kiến thức y khoa', 'y khoa', 'bác sĩ', 'chẩn đoán'] },
-        { name: 'Sức khỏe gia đình', slug: 'suc-khoe-gia-dinh', icon: 'assets/icon/leaf.png', count: 0, countKeywords: ['sức khỏe gia đình', 'gia đình', 'trẻ em', 'người thân'] },
-        { name: 'Tiêm chủng', slug: 'tiem-chung', icon: 'assets/icon/thuoc/thuoctiemchichvadichtruyen.png', count: 0, countKeywords: ['tiêm chủng', 'vaccine', 'tiêm ngừa', 'chủng ngừa'] },
-        { name: 'Tâm lý - Tâm thần', slug: 'tam-ly-tam-than', icon: 'assets/icon/disease/grouptamthan.png', count: 0, countKeywords: ['tâm lý', 'tâm thần', 'trầm cảm', 'stress', 'lo âu', 'tâm thần kinh'] },
-        { name: 'Xét Nghiệm', slug: 'xet-nghiem', icon: 'assets/icon/thuoc/hetieuhoa-ganmat.png', count: 0, countKeywords: ['xét nghiệm', 'xét nghiệm máu', 'chẩn đoán hình ảnh', 'laboratory'] }
+        { name: 'Y học cổ truyền', slug: 'y-hoc-co-truyen', icon: 'assets/images/homepage/blogs/y_hoc_co_truyen.webp', count: 0, countKeywords: ['y học cổ truyền', 'đông y', 'thuốc nam', 'cổ truyền'] },
+        { name: 'Kiến thức y khoa', slug: 'kien-thuc-y-khoa', icon: 'assets/images/homepage/blogs/kien_thuc_y_khoa.webp', count: 0, countKeywords: ['kiến thức y khoa', 'y khoa', 'bác sĩ', 'chẩn đoán'] },
+        { name: 'Sức khỏe gia đình', slug: 'suc-khoe-gia-dinh', icon: 'assets/images/homepage/blogs/suc_khoe_gia_dinh.webp', count: 0, countKeywords: ['sức khỏe gia đình', 'gia đình', 'trẻ em', 'người thân'] },
+        { name: 'Tiêm chủng', slug: 'tiem-chung', icon: 'assets/images/homepage/blogs/tiem_chung.webp', count: 0, countKeywords: ['tiêm chủng', 'vaccine', 'tiêm ngừa', 'chủng ngừa'] },
+        { name: 'Tâm lý - Tâm thần', slug: 'tam-ly-tam-than', icon: 'assets/images/homepage/blogs/tam_ly.webp', count: 0, countKeywords: ['tâm lý', 'tâm thần', 'trầm cảm', 'stress', 'lo âu', 'tâm thần kinh'] },
+        { name: 'Xét Nghiệm', slug: 'xet-nghiem', icon: 'assets/images/homepage/blogs/xet_nghiem.webp', count: 0, countKeywords: ['xét nghiệm', 'xét nghiệm máu', 'chẩn đoán hình ảnh', 'laboratory'] }
       ]
     },
     {
@@ -204,23 +204,14 @@ export class BlogCategory implements OnInit {
 
     this.currentCategoryItems.subcategories.forEach((sub: any) => {
       const kw = (sub.countKeywords && sub.countKeywords.length ? sub.countKeywords : [sub.name]).join(',');
-      // limit>1: lấy vài bài để chọn bài có ảnh làm cover (đúng dữ liệu DB)
-      const url = `${base}?limit=12&page=1&category=${encodeURIComponent(categoryName)}&keywords=${encodeURIComponent(kw)}`;
+      const url = `${base}?limit=1&page=1&category=${encodeURIComponent(categoryName)}&keywords=${encodeURIComponent(kw)}`;
 
       this.http.get<any>(url).subscribe({
         next: (res) => {
           if (res && typeof res.total === 'number') {
             sub.count = res.total;
           }
-          const list = this.extractBlogList(res);
-          let cover = '';
-          if (Array.isArray(list)) {
-            for (const doc of list) {
-              cover = this.thumbFromBlogDoc(doc);
-              if (cover) break;
-            }
-          }
-          sub.coverImage = cover || undefined;
+          sub.coverImage = undefined;
           this.cdr.detectChanges();
         },
         error: () => {
@@ -262,10 +253,11 @@ export class BlogCategory implements OnInit {
     const limit = this.initialSize;
     const cat = this.blogCategoryItems.find(c => c.slug === this.categorySlug);
 
-    const keywordsParam = this.subcat ? this.subcat : (cat && cat.keywords.length > 0 ? cat.keywords.join(',') : '');
+    const keywordsParam = cat && cat.keywords.length > 0 ? cat.keywords.join(',') : '';
     const kwQuery = keywordsParam ? `&keywords=${encodeURIComponent(keywordsParam)}` : '';
-    const categoryQuery = this.categoryName !== 'Danh mục bài viết' && !kwQuery ? `&category=${encodeURIComponent(this.categoryName)}` : '';
-    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${kwQuery}`;
+    const categoryQuery = this.categoryName !== 'Danh mục bài viết' ? `&category=${encodeURIComponent(this.categoryName)}` : '';
+    const subcategoryQuery = this.subcat ? `&subcategory=${encodeURIComponent(this.subcat)}` : '';
+    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${subcategoryQuery}${kwQuery}`;
 
     this.http.get<any>(url).subscribe({
       next: (res) => {
@@ -300,10 +292,11 @@ export class BlogCategory implements OnInit {
     const limit = this.pageSize;
     const cat = this.blogCategoryItems.find(c => c.slug === this.categorySlug);
 
-    const keywordsParam = this.subcat ? this.subcat : (cat && cat.keywords.length > 0 ? cat.keywords.join(',') : '');
+    const keywordsParam = cat && cat.keywords.length > 0 ? cat.keywords.join(',') : '';
     const kwQuery = keywordsParam ? `&keywords=${encodeURIComponent(keywordsParam)}` : '';
-    const categoryQuery = this.categoryName !== 'Danh mục bài viết' && !kwQuery ? `&category=${encodeURIComponent(this.categoryName)}` : '';
-    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${kwQuery}`;
+    const categoryQuery = this.categoryName !== 'Danh mục bài viết' ? `&category=${encodeURIComponent(this.categoryName)}` : '';
+    const subcategoryQuery = this.subcat ? `&subcategory=${encodeURIComponent(this.subcat)}` : '';
+    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${subcategoryQuery}${kwQuery}`;
 
     this.http.get<any>(url).subscribe({
       next: (res) => {
@@ -351,10 +344,8 @@ export class BlogCategory implements OnInit {
   }
 
   private normalizeBlog(b: any): BlogItem {
-    const primaryCat = Array.isArray(b.categories) ? b.categories.find((c: any) => c?.category?.isPrimary) : null;
-    const cat = primaryCat?.category ?? (Array.isArray(b.categories) ? b.categories[0]?.category : null);
-    const fromCategories = cat?.name ?? (Array.isArray(b.categories) && b.categories[0] ? (b.categories[0] as any).name : undefined);
-    const categoryName = fromCategories ?? (b as any).category?.name ?? (b as any).categoryName ?? 'Bài viết';
+    const mainCat = Array.isArray(b.categories) && b.categories[0] ? b.categories[0].name : null;
+    const categoryName = mainCat || b.categoryName || 'Bài viết';
     const slugRaw = (b.slug || (b as any).slug)?.trim();
     const idStr = b._id != null ? String(b._id) : '';
     const slug = this.normalizeSlug(slugRaw || '') || idStr;
@@ -365,7 +356,7 @@ export class BlogCategory implements OnInit {
       excerpt: b.shortDescription || b.excerpt || (typeof b.description === 'string' ? b.description.replace(/<[^>]*>/g, '').slice(0, 160) : ''),
       link,
       slug: slug || undefined,
-      categoryName: categoryName || 'Bài viết',
+      categoryName: categoryName,
     };
   }
 

@@ -2168,12 +2168,63 @@ const HEALTH_INDICATOR_KEYWORDS = {
   pregnancy: ['thai kỳ', 'mẹ bầu', 'bà bầu', 'mang thai'],
 };
 
+// GET /api/blogs/category-counts - Thống kê số lượng bài viết theo danh mục
+app.get('/api/blogs/category-counts', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const blogCount = await db.collection('blog').countDocuments().catch(() => 0);
+    const collName = blogCount > 0 ? 'blog' : 'blogs';
+    const blogsCol = db.collection(collName);
+
+    const filter = {
+      $and: [
+        {
+          $or: [
+            { isActive: true },
+            { isApproved: true },
+            { isActive: { $exists: false }, isApproved: { $exists: false } }
+          ]
+        }
+      ]
+    };
+
+    const stats = await blogsCol.aggregate([
+      { $match: filter },
+      {
+        $project: {
+          categories: {
+            $setUnion: [
+              { $ifNull: ["$categories.category.name", []] },
+              { $ifNull: ["$categories.name", []] },
+              { $cond: [{ $eq: [{ $type: "$category.name" }, "string"] }, ["$category.name"], []] },
+              { $cond: [{ $eq: [{ $type: "$categoryName" }, "string"] }, ["$categoryName"], []] }
+            ]
+          }
+        }
+      },
+      { $unwind: "$categories" },
+      { $group: { _id: "$categories", count: { $sum: 1 } } }
+    ]).toArray();
+
+    const counts = {};
+    stats.forEach(s => {
+      if (s._id) counts[s._id] = s.count;
+    });
+
+    res.json({ success: true, counts });
+  } catch (err) {
+    console.error('[GET /api/blogs/category-counts] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server', error: err.message });
+  }
+});
+
 // GET /api/blogs - danh sách bài viết sức khỏe (từ MongoDB collection blog/blogs)
 app.get('/api/blogs', async (req, res) => {
   try {
     const keyword = String(req.query.keyword || '').trim();
     const healthIndicator = String(req.query.healthIndicator || '').trim();
     const category = String(req.query.category || '').trim();
+    const subcategory = String(req.query.subcategory || '').trim();
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(Math.max(1, parseInt(req.query.limit, 10) || 10), 100);
     const hasSkip = req.query.skip !== undefined;
@@ -2221,24 +2272,36 @@ app.get('/api/blogs', async (req, res) => {
         }
       ]
     };
+
+    // If orConds (keywords) exist, we want them to filter WITHIN the category if specified
     if (orConds.length) {
       filter.$and.push({ $or: orConds });
     }
+
     if (category) {
       filter.$and.push({
         $or: [
-          { 'category.name': { $regex: category, $options: 'i' } },
-          { 'categories.name': { $regex: category, $options: 'i' } },
-          { 'categories.category.name': { $regex: category, $options: 'i' } },
+          { 'categories.0.name': { $regex: category, $options: 'i' } },
+          { 'categories.name': { $regex: category, $options: 'i' } }, // Fallback for flattened
           { categoryName: { $regex: category, $options: 'i' } }
+        ]
+      });
+    }
+
+    if (subcategory) {
+      filter.$and.push({
+        $or: [
+          { 'categories.1.name': { $regex: subcategory, $options: 'i' } },
+          { 'categories.category.name': { $regex: subcategory, $options: 'i' } },
+          { 'category.name': { $regex: subcategory, $options: 'i' } }
         ]
       });
     }
 
     // Collection: thử 'blog' (Atlas) trước, fallback 'blogs' (local)
     const db = mongoose.connection.db;
-    const colls = await db.listCollections({ name: { $in: ['blog', 'blogs'] } }).toArray();
-    const collName = colls.some((c) => c.name === 'blog') ? 'blog' : 'blogs';
+    const blogCount = await db.collection('blog').countDocuments().catch(() => 0);
+    const collName = blogCount > 0 ? 'blog' : 'blogs';
     const blogsCol = db.collection(collName);
     const projection = {
       title: 1,
@@ -2316,8 +2379,8 @@ app.get('/api/blogs/:slug', async (req, res) => {
     if (!slugParam) return res.status(400).json({ message: 'Not found' });
 
     const db = mongoose.connection.db;
-    const colls = await db.listCollections({ name: { $in: ['blog', 'blogs'] } }).toArray();
-    const collName = colls.some((c) => c.name === 'blog') ? 'blog' : 'blogs';
+    const blogCount = await db.collection('blog').countDocuments().catch(() => 0);
+    const collName = blogCount > 0 ? 'blog' : 'blogs';
     const blogsCol = db.collection(collName);
 
     // Chuẩn hoá slug: có thể nhận "1-cai-xuc-xich..." hoặc "bai-viet/1-cai-xuc-xich....html"
@@ -4485,13 +4548,13 @@ app.put('/api/admin/orders/:id', async (req, res) => {
       if (userId) {
         const orderCode = data.order_id || oldDoc.order_id || id;
         const statusNoticeMap = {
-          confirmed:       { title: 'Đơn hàng đã được xác nhận',         message: `Đơn hàng ${orderCode} đã được xác nhận và đang được chuẩn bị.` },
-          shipping:        { title: 'Đơn hàng đang được giao',            message: `Đơn hàng ${orderCode} đang trên đường giao đến bạn.` },
-          delivered:       { title: 'Đơn hàng đã được giao',              message: `Đơn hàng ${orderCode} đã được giao thành công. Vui lòng xác nhận nhận hàng.` },
-          cancelled:       { title: 'Đơn hàng đã bị huỷ',                 message: `Đơn hàng ${orderCode} đã bị huỷ bởi hệ thống.` },
-          returning:       { title: 'Yêu cầu trả hàng được chấp nhận',    message: `Yêu cầu trả hàng đơn ${orderCode} đã được chấp nhận, đang xử lý hoàn trả.` },
-          returned:        { title: 'Đơn hàng đã hoàn trả',               message: `Đơn hàng ${orderCode} đã được hoàn trả thành công.` },
-          refund_rejected: { title: 'Yêu cầu hoàn tiền bị từ chối',       message: `Yêu cầu hoàn tiền cho đơn hàng ${orderCode} đã bị từ chối.` },
+          confirmed: { title: 'Đơn hàng đã được xác nhận', message: `Đơn hàng ${orderCode} đã được xác nhận và đang được chuẩn bị.` },
+          shipping: { title: 'Đơn hàng đang được giao', message: `Đơn hàng ${orderCode} đang trên đường giao đến bạn.` },
+          delivered: { title: 'Đơn hàng đã được giao', message: `Đơn hàng ${orderCode} đã được giao thành công. Vui lòng xác nhận nhận hàng.` },
+          cancelled: { title: 'Đơn hàng đã bị huỷ', message: `Đơn hàng ${orderCode} đã bị huỷ bởi hệ thống.` },
+          returning: { title: 'Yêu cầu trả hàng được chấp nhận', message: `Yêu cầu trả hàng đơn ${orderCode} đã được chấp nhận, đang xử lý hoàn trả.` },
+          returned: { title: 'Đơn hàng đã hoàn trả', message: `Đơn hàng ${orderCode} đã được hoàn trả thành công.` },
+          refund_rejected: { title: 'Yêu cầu hoàn tiền bị từ chối', message: `Yêu cầu hoàn tiền cho đơn hàng ${orderCode} đã bị từ chối.` },
         };
         const noticeInfo = statusNoticeMap[newStatus];
         if (noticeInfo) {
@@ -4621,10 +4684,10 @@ app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
         const prescriptionCode = updated.prescriptionId || id;
         const pharmacistInfo = pharmacistName ? ` bởi dược sĩ ${pharmacistName}` : '';
         const prescriptionStatusNoticeMap = {
-          waiting:     { title: 'Đơn thuốc đang được tư vấn',          message: `Đơn thuốc ${prescriptionCode} đang được tư vấn${pharmacistInfo}. Dược sĩ sẽ liên hệ sớm nhất.` },
-          advised:     { title: 'Đơn thuốc đã được tư vấn',            message: `Đơn thuốc ${prescriptionCode} đã được tư vấn xong${pharmacistInfo}.` },
-          unreachable: { title: 'Dược sĩ chưa thể liên hệ',            message: `Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc ${prescriptionCode}. Vui lòng kiểm tra lại số điện thoại.` },
-          cancelled:   { title: 'Đơn thuốc tư vấn đã bị huỷ',          message: `Đơn thuốc tư vấn ${prescriptionCode} đã bị huỷ.` },
+          waiting: { title: 'Đơn thuốc đang được tư vấn', message: `Đơn thuốc ${prescriptionCode} đang được tư vấn${pharmacistInfo}. Dược sĩ sẽ liên hệ sớm nhất.` },
+          advised: { title: 'Đơn thuốc đã được tư vấn', message: `Đơn thuốc ${prescriptionCode} đã được tư vấn xong${pharmacistInfo}.` },
+          unreachable: { title: 'Dược sĩ chưa thể liên hệ', message: `Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc ${prescriptionCode}. Vui lòng kiểm tra lại số điện thoại.` },
+          cancelled: { title: 'Đơn thuốc tư vấn đã bị huỷ', message: `Đơn thuốc tư vấn ${prescriptionCode} đã bị huỷ.` },
         };
         const noticeInfo = prescriptionStatusNoticeMap[status];
         if (noticeInfo) {

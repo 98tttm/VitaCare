@@ -1,0 +1,9 @@
+﻿Mongoose ─æ├ú kß║┐t nß╗æi vß╗¢i MongoDB
+Γ£à Kß║┐t nß╗æi MongoDB th├ánh c├┤ng!
+≡ƒôè Database: VitaCare
+≡ƒöî Port: 27019
+≡ƒÜÇ VitaCare API: http://localhost:3000
+Γ£à Index slug cho collection blog
+Γ£à Index slug cho collection blogs
+Γ£à ─É├ú tß╗▒ ─æß╗Öng load 5 th├┤ng b├ío mß║½u v├áo collection notice
+Γ£à All background seeding completed

@@ -16,7 +16,8 @@
           <h2>Góc sức khoẻ</h2>
         </div>
         <div class="bv-cat-filters btn-cat">
-          <a *ngFor="let item of blogCategoryItems" [routerLink]="['/bai-viet/danh-muc', item.slug]" class="bv-cat-btn">{{
+          <a *ngFor="let item of blogCategoryItems" [routerLink]="['/bai-viet/danh-muc', item.slug]"
+            class="bv-cat-btn">{{
             item.name }}</a>
         </div>
         <div class="bv-blog-hero">
@@ -53,11 +54,11 @@
                   <a *ngFor="let sub of preventionSubCategories; let i = index"
                     [routerLink]="['/bai-viet/danh-muc/phong-benh-song-khoe']" [queryParams]="{ subcat: sub }"
                     class="bv-prevention-subcat-link" [class.active]="i === 0">
-                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                    {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/phong-benh-song-khoe" class="bv-prevention-viewall">Xem tất cả ({{
-                  getCategoryCount('Phòng bệnh & Sống khoẻ') }}) <i class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/phong-benh-song-khoe" class="bv-prevention-viewall">Xem tất cả <i
+                    class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -92,13 +93,14 @@
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Dinh dưỡng</h3>
                 <nav class="bv-prevention-subcat">
-                  <a *ngFor="let sub of nutritionSubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/dinh-duong']"
-                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  <a *ngFor="let sub of nutritionSubCategories; let i = index"
+                    [routerLink]="['/bai-viet/danh-muc/dinh-duong']" [queryParams]="{ subcat: sub }"
+                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/dinh-duong" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Dinh
-                  dưỡng') }}) <i class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/dinh-duong" class="bv-prevention-viewall">Xem tất cả <i
+                    class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -133,13 +135,14 @@
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Mẹ & bé</h3>
                 <nav class="bv-prevention-subcat">
-                  <a *ngFor="let sub of momBabySubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/me-va-be']"
-                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  <a *ngFor="let sub of momBabySubCategories; let i = index"
+                    [routerLink]="['/bai-viet/danh-muc/me-va-be']" [queryParams]="{ subcat: sub }"
+                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/me-va-be" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Mẹ &
-                  bé') }}) <i class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/me-va-be" class="bv-prevention-viewall">Xem tất cả <i
+                    class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -174,8 +177,8 @@
             <div class="bv-prevention-card bv-elderly-card">
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Người cao tuổi</h3>
-                <a routerLink="/bai-viet/danh-muc/nguoi-cao-tuoi" class="bv-prevention-viewall">Xem tất cả ({{
-                  getCategoryCount('Người cao tuổi') }}) <i class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/nguoi-cao-tuoi" class="bv-prevention-viewall">Xem tất cả <i
+                    class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -211,13 +214,14 @@
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Khỏe đẹp</h3>
                 <nav class="bv-prevention-subcat">
-                  <a *ngFor="let sub of beautySubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/khoe-dep']"
-                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  <a *ngFor="let sub of beautySubCategories; let i = index"
+                    [routerLink]="['/bai-viet/danh-muc/khoe-dep']" [queryParams]="{ subcat: sub }"
+                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/khoe-dep" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Khỏe
-                  đẹp') }}) <i class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/khoe-dep" class="bv-prevention-viewall">Xem tất cả <i
+                    class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -252,13 +256,14 @@
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Giới tính</h3>
                 <nav class="bv-prevention-subcat">
-                  <a *ngFor="let sub of genderSubCategories; let i = index" [routerLink]="['/bai-viet/danh-muc/gioi-tinh']"
-                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
-                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                  <a *ngFor="let sub of genderSubCategories; let i = index"
+                    [routerLink]="['/bai-viet/danh-muc/gioi-tinh']" [queryParams]="{ subcat: sub }"
+                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                    {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/gioi-tinh" class="bv-prevention-viewall">Xem tất cả ({{ getCategoryCount('Giới
-                  tính') }}) <i class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/gioi-tinh" class="bv-prevention-viewall">Xem tất cả <i
+                    class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -296,11 +301,11 @@
                   <a *ngFor="let sub of healthNewsSubCategories; let i = index"
                     [routerLink]="['/bai-viet/danh-muc/tin-tuc-suc-khoe']" [queryParams]="{ subcat: sub }"
                     class="bv-prevention-subcat-link" [class.active]="i === 0">
-                    <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
+                    {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/tin-tuc-suc-khoe" class="bv-prevention-viewall">Xem tất cả ({{
-                  getCategoryCount('Tin tức sức khỏe') }}) <i class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/tin-tuc-suc-khoe" class="bv-prevention-viewall">Xem tất cả <i
+                    class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -344,7 +349,6 @@
                   </a>
                 </ng-container>
               </div>
-              <a routerLink="/bai-viet" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
             </div>
             <div class="bv-expert-team-box">
               <h3 class="bv-et-title">Đội ngũ chuyên môn</h3>
