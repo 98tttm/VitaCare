@@ -2255,6 +2255,9 @@ app.post('/api/reminders/upload-image', (req, res) => {
 // GET /api/reminders?user_id=...
 app.get('/api/reminders', async (req, res) => {
   try {
+    if (!mongoose.connection || !mongoose.connection.db) {
+      return res.status(503).json({ success: false, message: 'Cơ sở dữ liệu chưa sẵn sàng.' });
+    }
     const user_id = String(req.query.user_id || '').trim();
     if (!user_id) {
       return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
@@ -2263,11 +2266,33 @@ app.get('/api/reminders', async (req, res) => {
       .find({ user_id })
       .sort({ start_date: 1 })
       .toArray();
-    const reminders = list.map((r) => ({
-      ...r,
-      _id: getId(r),
-      completion_log: r.completion_log || [],
-    }));
+    const reminders = list.map((r) => {
+      const id = getId(r);
+      const log = Array.isArray(r.completion_log) ? r.completion_log : [];
+      return {
+        _id: id,
+        user_id: r.user_id,
+        start_date: r.start_date,
+        end_date: r.end_date,
+        frequency: r.frequency,
+        times_per_day: r.times_per_day,
+        reminder_times: Array.isArray(r.reminder_times) ? r.reminder_times : [],
+        med_id: r.med_id,
+        med_name: r.med_name,
+        dosage: r.dosage,
+        unit: r.unit,
+        route: r.route,
+        instruction: r.instruction,
+        note: r.note,
+        image_url: r.image_url,
+        config_status: r.config_status,
+        schedule_status: r.schedule_status,
+        reminder_sound: r.reminder_sound,
+        is_completed: r.is_completed,
+        last_completed_date: r.last_completed_date,
+        completion_log: log.map((c) => ({ date: String(c.date || ''), time: String(c.time || '') })),
+      };
+    });
     res.json({ success: true, reminders });
   } catch (err) {
     console.error('Get reminders error:', err);
@@ -2336,10 +2361,11 @@ app.patch('/api/reminders/:id', async (req, res) => {
       { $set: set },
       { returnDocument: 'after' }
     );
-    if (!result || !result.value) {
+    const doc = result && result.value !== undefined ? result.value : result;
+    if (!doc) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy lời nhắc.' });
     }
-    const reminder = { ...result.value, _id: getId(result.value) };
+    const reminder = { ...doc, _id: getId(doc) };
     res.json({ success: true, reminder });
   } catch (err) {
     console.error('Patch reminders error:', err);
@@ -2366,26 +2392,39 @@ app.delete('/api/reminders/:id', async (req, res) => {
 // POST /api/reminders/:id/complete - Đánh dấu hoàn thành (theo ngày + giờ)
 app.post('/api/reminders/:id/complete', async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = String(req.params.id || '').trim();
     const { date, time } = req.body || {};
     if (!date || !time) {
       return res.status(400).json({ success: false, message: 'Thiếu date hoặc time.' });
     }
     const dateNorm = String(date).slice(0, 10);
     const timeNorm = normalizeReminderTimeStr(time);
-    const oid = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
-    const result = await remindersCollection().findOneAndUpdate(
-      { _id: oid },
-      {
-        $set: { last_completed_date: new Date().toISOString() },
-        $addToSet: { completion_log: { date: dateNorm, time: timeNorm } },
-      },
-      { returnDocument: 'after' }
-    );
-    if (!result || !result.value) {
+    const update = {
+      $set: { last_completed_date: new Date().toISOString() },
+      $addToSet: { completion_log: { date: dateNorm, time: timeNorm } },
+    };
+    const opts = { returnDocument: 'after' };
+    let doc = null;
+    if (id.length === 24 && /^[a-f0-9]{24}$/i.test(id)) {
+      const result = await remindersCollection().findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(id) },
+        update,
+        opts
+      );
+      doc = result && result.value !== undefined ? result.value : result;
+    }
+    if (!doc) {
+      const result = await remindersCollection().findOneAndUpdate(
+        { _id: id },
+        update,
+        opts
+      );
+      doc = result && result.value !== undefined ? result.value : result;
+    }
+    if (!doc) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy lời nhắc.' });
     }
-    const reminder = { ...result.value, _id: getId(result.value) };
+    const reminder = { ...doc, _id: getId(doc) };
     res.json({ success: true, reminder });
   } catch (err) {
     console.error('Complete reminder error:', err);

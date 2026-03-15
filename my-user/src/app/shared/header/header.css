@@ -246,21 +246,23 @@
 }
 
 .vc_action_icon {
-  width: 22px;
-  height: 22px;
-  display: inline-grid;
-  place-items: center;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .vc_action_icon svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .vc_action_icon .bi {
-  font-size: 26px;
+  font-size: 18px;
   line-height: 1;
-  display: inline-block;
+  display: block;
 }
 
 .vc_action_cart {
@@ -273,6 +275,18 @@
   line-height: 1;
 }
 
+/* Chuông thông báo: căn giữa khung tròn khi hover */
+.vc_action_notify .vc_action_icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vc_action_notify .vc_action_icon .bi {
+  font-size: 18px;
+  line-height: 1;
+  display: block;
+}
 
 .vc_badge {
   position: absolute;
@@ -619,7 +633,7 @@
   font-weight: 700;
 }
 
-/* Thanh ngắn bên phải: nhắc uống thuốc — màu tím từ root (--vc-infor) */
+/* Thanh ngắn bên phải: nhắc uống thuốc / đơn thuốc / đơn hàng — màu tím từ root (--vc-infor) */
 .vc_reminder_bar {
   position: fixed;
   top: 180px;
@@ -629,6 +643,16 @@
   max-width: calc(100vw - 24px);
   animation: vc_reminder_bar_in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
+}
+
+/* Popup đơn thuốc: dưới popup nhắc lịch uống thuốc */
+.vc_reminder_bar.vc_notify_bar--prescription {
+  top: 312px;
+}
+
+/* Popup đơn hàng: dưới popup đơn thuốc */
+.vc_reminder_bar.vc_notify_bar--order {
+  top: 444px;
 }
 
 .vc_reminder_bar_inner {
@@ -653,6 +677,22 @@
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+/* Hiệu ứng tắt: trượt đi vào (về phía phải) */
+.vc_reminder_bar.vc_reminder_bar--closing {
+  animation: vc_reminder_bar_out 0.28s ease-in forwards;
+}
+
+@keyframes vc_reminder_bar_out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
   }
 }
 

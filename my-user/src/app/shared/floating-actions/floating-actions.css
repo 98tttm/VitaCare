@@ -28,6 +28,42 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Icon viên thuốc: phía trên chatbot, chỉ hiện khi popup nhắc đã đóng và còn lời nhắc */
+.fab-reminder {
+  position: fixed;
+  right: 20px;
+  bottom: calc(20px + 48px + 12px + 48px + 12px);
+  background: var(--vc-infor-bg, #F1ECFA);
+  color: var(--vc-infor-text, #6B52A8);
+  border: 1px solid var(--vc-infor, #B9A6DC);
+}
+
+.fab-reminder:hover {
+  background: var(--vc-infor, #B9A6DC);
+  color: #fff;
+}
+
+.fab-reminder .bi-capsule {
+  font-size: 1.35rem;
+}
+
+.fab-reminder-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--vc-infor-hover, #7B63C6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Vitabot luôn ở trên nút scroll, vị trí cố định (scroll hiện/ẩn không đẩy Vitabot) */
 .fab-chat {
   position: fixed;
@@ -319,6 +355,11 @@
 }
 
 @media (max-width: 480px) {
+  .fab-reminder {
+    right: 12px;
+    bottom: calc(12px + 48px + 10px + 48px + 10px);
+  }
+
   .fab-chat {
     right: 12px;
     bottom: calc(12px + 48px + 10px);

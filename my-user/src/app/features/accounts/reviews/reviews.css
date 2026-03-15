@@ -1,11 +1,12 @@
 /* Reviews Component Styles - Matching Orders Component */
 
-/* ===== REVIEWS PAGE LAYOUT ===== */
+/* ===== REVIEWS PAGE LAYOUT - cùng padding với orders (override vc_container 15px) ===== */
 .reviews-container {
     width: 100%;
     max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0 40px;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
     font-family: var(--font-family-base);
     color: var(--color-text-primary);
 }

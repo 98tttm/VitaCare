@@ -21,6 +21,8 @@ import { CartService, Cart, CartItem } from '../../core/services/cart.service';
 import { CartSidebarService } from '../../core/services/cart-sidebar.service';
 import { NoticeService } from '../../core/services/notice.service';
 import { ReminderService } from '../../core/services/reminder.service';
+import { ReminderBadgeService } from '../../core/services/reminder-badge.service';
+import { BlogPopupService } from '../../core/services/blog-popup.service';
 import type { NoticeItem } from '../../features/accounts/notice/notice';
 import { getLocalIcon } from './header-icons';
 
@@ -42,6 +44,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private zone = inject(NgZone);
   private noticeService = inject(NoticeService);
   private reminderService = inject(ReminderService);
+  private reminderBadgeService = inject(ReminderBadgeService);
+  private blogPopupService = inject(BlogPopupService);
+  private notificationPopupsScheduled = false;
 
   search_value = '';
   cart_count = 0;
@@ -54,9 +59,25 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   notificationsError: string | null = null;
   /** Nhắc uống thuốc quá hạn (từ API) — popup thanh ngắn bên phải */
   showReminderPopup = false;
+  /** Đang chạy hiệu ứng đóng (trượt ra) trước khi ẩn hẳn */
+  reminderPopupClosing = false;
   medicationDueList: NoticeItem[] = [];
   /** Đang gửi "ghi nhận đã uống" để tránh double submit */
   reminderMarkingComplete = false;
+  /** Popup đơn thuốc — hiện sau 5s, đóng sau 3s, dưới popup nhắc thuốc */
+  prescriptionNoticeList: NoticeItem[] = [];
+  showPrescriptionPopup = false;
+  prescriptionPopupClosing = false;
+  private prescriptionPopupTimeout: ReturnType<typeof setTimeout> | null = null;
+  private prescriptionPopupAutoCloseTimeout: ReturnType<typeof setTimeout> | null = null;
+  /** Popup đơn hàng — hiện sau 6s, đóng sau 3s, dưới popup đơn thuốc */
+  orderNoticeList: NoticeItem[] = [];
+  showOrderPopup = false;
+  orderPopupClosing = false;
+  private orderPopupTimeout: ReturnType<typeof setTimeout> | null = null;
+  private orderPopupAutoCloseTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly PRESCRIPTION_POPUP_DELAY_MS = 5000;
+  private readonly ORDER_POPUP_DELAY_MS = 6000;
   isAccountDropdownVisible = false;
   private accountDropdownTimeout: ReturnType<typeof setTimeout> | null = null;
   private cartHoverTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -64,6 +85,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private cartCountSub?: Subscription;
   private cartUpdatedSub?: Subscription;
   private reminderPopupTimeout: ReturnType<typeof setTimeout> | null = null;
+  private reminderPopupAutoCloseTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly REMINDER_POPUP_AUTO_CLOSE_MS = 5000;
+  private readonly REMINDER_POPUP_CLOSE_DURATION_MS = 280;
 
   isHeaderCompact = false;
   private headerEl: HTMLElement | null = null;
@@ -161,6 +185,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.resetNotificationsState();
       }
     });
+    effect(() => {
+      if (this.blogPopupService.dismissed()) {
+        this.tryScheduleNotificationPopups(true);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -221,6 +250,26 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.reminderPopupTimeout) {
       clearTimeout(this.reminderPopupTimeout);
       this.reminderPopupTimeout = null;
+    }
+    if (this.reminderPopupAutoCloseTimeout) {
+      clearTimeout(this.reminderPopupAutoCloseTimeout);
+      this.reminderPopupAutoCloseTimeout = null;
+    }
+    if (this.prescriptionPopupTimeout) {
+      clearTimeout(this.prescriptionPopupTimeout);
+      this.prescriptionPopupTimeout = null;
+    }
+    if (this.prescriptionPopupAutoCloseTimeout) {
+      clearTimeout(this.prescriptionPopupAutoCloseTimeout);
+      this.prescriptionPopupAutoCloseTimeout = null;
+    }
+    if (this.orderPopupTimeout) {
+      clearTimeout(this.orderPopupTimeout);
+      this.orderPopupTimeout = null;
+    }
+    if (this.orderPopupAutoCloseTimeout) {
+      clearTimeout(this.orderPopupAutoCloseTimeout);
+      this.orderPopupAutoCloseTimeout = null;
     }
     window.removeEventListener('scroll', this.onWindowScroll as any);
     window.removeEventListener('resize', this.onWindowResize as any);
@@ -390,6 +439,26 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       clearTimeout(this.reminderPopupTimeout);
       this.reminderPopupTimeout = null;
     }
+    if (this.reminderPopupAutoCloseTimeout) {
+      clearTimeout(this.reminderPopupAutoCloseTimeout);
+      this.reminderPopupAutoCloseTimeout = null;
+    }
+    if (this.prescriptionPopupTimeout) {
+      clearTimeout(this.prescriptionPopupTimeout);
+      this.prescriptionPopupTimeout = null;
+    }
+    if (this.prescriptionPopupAutoCloseTimeout) {
+      clearTimeout(this.prescriptionPopupAutoCloseTimeout);
+      this.prescriptionPopupAutoCloseTimeout = null;
+    }
+    if (this.orderPopupTimeout) {
+      clearTimeout(this.orderPopupTimeout);
+      this.orderPopupTimeout = null;
+    }
+    if (this.orderPopupAutoCloseTimeout) {
+      clearTimeout(this.orderPopupAutoCloseTimeout);
+      this.orderPopupAutoCloseTimeout = null;
+    }
     this.isNotifyHoverVisible = false;
     this.unreadNotifyCount = 0;
     this.notificationsPreview = [];
@@ -397,10 +466,18 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.notificationsError = null;
     this.showReminderPopup = false;
     this.medicationDueList = [];
+    this.reminderBadgeService.setReminderDueCount(0);
+    this.showPrescriptionPopup = false;
+    this.prescriptionNoticeList = [];
+    this.showOrderPopup = false;
+    this.orderNoticeList = [];
+    this.notificationPopupsScheduled = false;
     this.cdr.markForCheck();
   }
 
   private static REMINDER_ACK_KEY = 'vc_reminder_ack';
+  private static PRESCRIPTION_POPUP_ACK_KEY = 'vc_prescription_popup_ack';
+  private static ORDER_POPUP_ACK_KEY = 'vc_order_popup_ack';
 
   /** Đã ghi nhận/đóng popup trong phiên này (theo origin) → không nhắc lại; mở cổng khác = origin khác = nhắc lại. */
   private getReminderAckSession(): boolean {
@@ -412,12 +489,224 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       sessionStorage.setItem(HeaderComponent.REMINDER_ACK_KEY, '1');
     } catch (_) {}
+    this.reminderBadgeService.setPopupAcked();
+  }
+
+  private getPrescriptionPopupAckSession(): boolean {
+    if (typeof sessionStorage === 'undefined') return false;
+    return sessionStorage.getItem(HeaderComponent.PRESCRIPTION_POPUP_ACK_KEY) === '1';
+  }
+  private setPrescriptionPopupAckSession(): void {
+    try {
+      sessionStorage.setItem(HeaderComponent.PRESCRIPTION_POPUP_ACK_KEY, '1');
+    } catch (_) {}
+  }
+  private getOrderPopupAckSession(): boolean {
+    if (typeof sessionStorage === 'undefined') return false;
+    return sessionStorage.getItem(HeaderComponent.ORDER_POPUP_ACK_KEY) === '1';
+  }
+  private setOrderPopupAckSession(): void {
+    try {
+      sessionStorage.setItem(HeaderComponent.ORDER_POPUP_ACK_KEY, '1');
+    } catch (_) {}
+  }
+
+  /** Chạy hiệu ứng đóng (trượt ra) rồi gọi callback (nếu có). */
+  private runReminderPopupCloseAnimation(callback?: () => void): void {
+    if (this.reminderPopupAutoCloseTimeout) {
+      clearTimeout(this.reminderPopupAutoCloseTimeout);
+      this.reminderPopupAutoCloseTimeout = null;
+    }
+    if (this.reminderPopupClosing) return;
+    if (!this.showReminderPopup) {
+      callback?.();
+      this.cdr.markForCheck();
+      return;
+    }
+    this.reminderPopupClosing = true;
+    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.showReminderPopup = false;
+      this.reminderPopupClosing = false;
+      callback?.();
+      this.cdr.markForCheck();
+    }, this.REMINDER_POPUP_CLOSE_DURATION_MS);
   }
 
   dismissReminderPopup(): void {
-    this.showReminderPopup = false;
-    this.setReminderAckSession();
+    const userId = (this.authService.currentUser() as { user_id?: string })?.user_id;
+    const ids = this.medicationDueList.map((n) => n.id);
+    this.runReminderPopupCloseAnimation(() => {
+      this.setReminderAckSession();
+      if (userId && ids.length) {
+        ids.forEach((id) =>
+          this.noticeService.markAsRead(id, userId).subscribe({ error: () => {} })
+        );
+      }
+    });
+  }
+
+  private runPrescriptionPopupCloseAnimation(callback?: () => void): void {
+    if (this.prescriptionPopupAutoCloseTimeout) {
+      clearTimeout(this.prescriptionPopupAutoCloseTimeout);
+      this.prescriptionPopupAutoCloseTimeout = null;
+    }
+    if (this.prescriptionPopupClosing) return;
+    if (!this.showPrescriptionPopup) {
+      callback?.();
+      this.cdr.markForCheck();
+      return;
+    }
+    this.prescriptionPopupClosing = true;
     this.cdr.markForCheck();
+    setTimeout(() => {
+      this.showPrescriptionPopup = false;
+      this.prescriptionPopupClosing = false;
+      callback?.();
+      this.cdr.markForCheck();
+    }, this.REMINDER_POPUP_CLOSE_DURATION_MS);
+  }
+
+  dismissPrescriptionPopup(): void {
+    const userId = (this.authService.currentUser() as { user_id?: string })?.user_id;
+    const ids = this.prescriptionNoticeList.map((n) => n.id);
+    this.runPrescriptionPopupCloseAnimation(() => {
+      this.setPrescriptionPopupAckSession();
+      if (userId && ids.length) {
+        ids.forEach((id) =>
+          this.noticeService.markAsRead(id, userId).subscribe({ error: () => {} })
+        );
+      }
+    });
+  }
+
+  goToPrescriptionFromPopup(e: Event): void {
+    e.preventDefault();
+    this.runPrescriptionPopupCloseAnimation(() => {
+      this.setPrescriptionPopupAckSession();
+      this.router.navigate(['/account'], { queryParams: { menu: 'prescriptions' } });
+    });
+  }
+
+  private runOrderPopupCloseAnimation(callback?: () => void): void {
+    if (this.orderPopupAutoCloseTimeout) {
+      clearTimeout(this.orderPopupAutoCloseTimeout);
+      this.orderPopupAutoCloseTimeout = null;
+    }
+    if (this.orderPopupClosing) return;
+    if (!this.showOrderPopup) {
+      callback?.();
+      this.cdr.markForCheck();
+      return;
+    }
+    this.orderPopupClosing = true;
+    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.showOrderPopup = false;
+      this.orderPopupClosing = false;
+      callback?.();
+      this.cdr.markForCheck();
+    }, this.REMINDER_POPUP_CLOSE_DURATION_MS);
+  }
+
+  dismissOrderPopup(): void {
+    const userId = (this.authService.currentUser() as { user_id?: string })?.user_id;
+    const ids = this.orderNoticeList.map((n) => n.id);
+    this.runOrderPopupCloseAnimation(() => {
+      this.setOrderPopupAckSession();
+      if (userId && ids.length) {
+        ids.forEach((id) =>
+          this.noticeService.markAsRead(id, userId).subscribe({ error: () => {} })
+        );
+      }
+    });
+  }
+
+  goToOrderFromPopup(e: Event): void {
+    e.preventDefault();
+    this.runOrderPopupCloseAnimation(() => {
+      this.setOrderPopupAckSession();
+      this.router.navigate(['/account'], { queryParams: { menu: 'orders' } });
+    });
+  }
+
+  /**
+   * Lên lịch 3 popup (nhắc lịch, đơn thuốc, đơn hàng) chỉ khi popup "Có thể bạn chưa biết?" đã đóng/xem.
+   * Chỉ hiện các thông báo chưa đọc (lists đã filter ở subscribe).
+   */
+  tryScheduleNotificationPopups(mayShowReminderPopup = true): void {
+    if (!this.blogPopupService.dismissed()) return;
+    if (this.notificationPopupsScheduled) return;
+
+    if (this.reminderPopupTimeout) {
+      clearTimeout(this.reminderPopupTimeout);
+      this.reminderPopupTimeout = null;
+    }
+    if (this.prescriptionPopupTimeout) {
+      clearTimeout(this.prescriptionPopupTimeout);
+      this.prescriptionPopupTimeout = null;
+    }
+    if (this.orderPopupTimeout) {
+      clearTimeout(this.orderPopupTimeout);
+      this.orderPopupTimeout = null;
+    }
+
+    let didSchedule = false;
+    if (
+      mayShowReminderPopup &&
+      this.medicationDueList.length > 0 &&
+      !this.getReminderAckSession()
+    ) {
+      didSchedule = true;
+      this.reminderPopupTimeout = setTimeout(() => {
+        this.reminderPopupTimeout = null;
+        this.showReminderPopup = true;
+        this.cdr.markForCheck();
+        if (this.reminderPopupAutoCloseTimeout) {
+          clearTimeout(this.reminderPopupAutoCloseTimeout);
+          this.reminderPopupAutoCloseTimeout = null;
+        }
+        this.reminderPopupAutoCloseTimeout = setTimeout(() => {
+          this.reminderPopupAutoCloseTimeout = null;
+          this.dismissReminderPopup();
+        }, this.REMINDER_POPUP_AUTO_CLOSE_MS);
+      }, 4000);
+    }
+    if (this.prescriptionNoticeList.length > 0 && !this.getPrescriptionPopupAckSession()) {
+      didSchedule = true;
+      this.prescriptionPopupTimeout = setTimeout(() => {
+        this.prescriptionPopupTimeout = null;
+        this.showPrescriptionPopup = true;
+        this.cdr.markForCheck();
+        if (this.prescriptionPopupAutoCloseTimeout) {
+          clearTimeout(this.prescriptionPopupAutoCloseTimeout);
+          this.prescriptionPopupAutoCloseTimeout = null;
+        }
+        this.prescriptionPopupAutoCloseTimeout = setTimeout(() => {
+          this.prescriptionPopupAutoCloseTimeout = null;
+          this.dismissPrescriptionPopup();
+        }, this.REMINDER_POPUP_AUTO_CLOSE_MS);
+      }, this.PRESCRIPTION_POPUP_DELAY_MS);
+    }
+    if (this.orderNoticeList.length > 0 && !this.getOrderPopupAckSession()) {
+      didSchedule = true;
+      this.orderPopupTimeout = setTimeout(() => {
+        this.orderPopupTimeout = null;
+        this.showOrderPopup = true;
+        this.cdr.markForCheck();
+        if (this.orderPopupAutoCloseTimeout) {
+          clearTimeout(this.orderPopupAutoCloseTimeout);
+          this.orderPopupAutoCloseTimeout = null;
+        }
+        this.orderPopupAutoCloseTimeout = setTimeout(() => {
+          this.orderPopupAutoCloseTimeout = null;
+          this.dismissOrderPopup();
+        }, this.REMINDER_POPUP_AUTO_CLOSE_MS);
+      }, this.ORDER_POPUP_DELAY_MS);
+    }
+    if (didSchedule) {
+      this.notificationPopupsScheduled = true;
+    }
   }
 
   /** Một dòng cho thanh ngang: "Bạn có 2 lời nhắc uống thuốc lúc 08:00, 14:00" */
@@ -443,6 +732,22 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     return `Bạn có ${n} lời nhắc uống thuốc lúc ${timeStr}.`;
   }
 
+  get prescriptionBannerLine(): string {
+    const n = this.prescriptionNoticeList.length;
+    if (n === 0) return '';
+    return n === 1
+      ? 'Bạn có 1 thông báo về đơn thuốc.'
+      : `Bạn có ${n} thông báo về đơn thuốc.`;
+  }
+
+  get orderBannerLine(): string {
+    const n = this.orderNoticeList.length;
+    if (n === 0) return '';
+    return n === 1
+      ? 'Bạn có 1 thông báo về đơn hàng.'
+      : `Bạn có ${n} thông báo về đơn hàng.`;
+  }
+
   /** Parse notice id "reminder-due-<rid>-<YYYY>-<MM>-<DD>-<HHmm>" → { reminderId, date, time }. */
   private parseReminderDueId(id: string): { reminderId: string; date: string; time: string } | null {
     if (!id || !id.startsWith('reminder-due-')) return null;
@@ -466,22 +771,29 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     return m ? m[1] : null;
   }
 
-  /** Chỉ giữ các lời nhắc chưa qua giờ (giờ uống >= hiện tại). */
-  private filterNotYetPassed(list: NoticeItem[]): NoticeItem[] {
+  /** Chỉ giữ các lời nhắc trong cửa sổ ±60 phút: ví dụ lịch 15h chỉ hiện khi thời gian thực từ 14h đến 16h (chưa tick). */
+  private filterReminderWithin60Minutes(list: NoticeItem[]): NoticeItem[] {
     const now = new Date();
     const curMin = now.getHours() * 60 + now.getMinutes();
+    const WINDOW_MIN = 60;
     return list.filter((n) => {
       const timeStr = this.getReminderScheduledTime(n);
       if (!timeStr) return true;
       const [h, m] = timeStr.split(':').map((x) => parseInt(x, 10) || 0);
       const slotMin = h * 60 + m;
-      return slotMin >= curMin;
+      const low = Math.max(0, slotMin - WINDOW_MIN);
+      const high = Math.min(23 * 60 + 59, slotMin + WINDOW_MIN);
+      return curMin >= low && curMin <= high;
     });
   }
 
   openRemindFromPopup(e: Event): void {
     e.preventDefault();
     if (this.reminderMarkingComplete) return;
+    if (this.reminderPopupAutoCloseTimeout) {
+      clearTimeout(this.reminderPopupAutoCloseTimeout);
+      this.reminderPopupAutoCloseTimeout = null;
+    }
     const list = [...this.medicationDueList];
     const parsed = list
       .map((n) => this.parseReminderDueId(n.id))
@@ -498,23 +810,25 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       ).subscribe({
         next: () => {
           this.reminderMarkingComplete = false;
-          this.setReminderAckSession();
-          this.showReminderPopup = false;
-          this.medicationDueList = [];
-          this.cdr.markForCheck();
-          this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+          this.runReminderPopupCloseAnimation(() => {
+            this.setReminderAckSession();
+            this.medicationDueList = [];
+            this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+          });
         },
         error: () => {
           this.reminderMarkingComplete = false;
-          this.setReminderAckSession();
-          this.showReminderPopup = false;
-          this.cdr.markForCheck();
-          this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+          this.runReminderPopupCloseAnimation(() => {
+            this.setReminderAckSession();
+            this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+          });
         },
       });
     } else {
-      this.dismissReminderPopup();
-      this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+      this.runReminderPopupCloseAnimation(() => {
+        this.setReminderAckSession();
+        this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+      });
     }
   }
 
@@ -536,6 +850,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           this.notificationsPreview = [];
           this.unreadNotifyCount = 0;
           this.medicationDueList = [];
+          this.reminderBadgeService.setReminderDueCount(0);
+          this.prescriptionNoticeList = [];
+          this.orderNoticeList = [];
           this.cdr.markForCheck();
           return of({ success: false, items: [] as NoticeItem[] });
         }),
@@ -545,8 +862,20 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         if (res.success && Array.isArray(res.items)) {
           const items = res.items as NoticeItem[];
           const dueMed = items.filter((n) => n.type === 'medication_reminder');
-          const dueMedNotPassed = this.filterNotYetPassed(dueMed);
-          this.medicationDueList = dueMedNotPassed;
+          const dueMedUnread = dueMed.filter((n) => !n.read);
+          const dueMedWithinWindow = this.filterReminderWithin60Minutes(dueMedUnread);
+          this.medicationDueList = dueMedWithinWindow;
+          this.reminderBadgeService.setReminderDueCount(dueMedWithinWindow.length);
+          const prescriptionItems = items.filter(
+            (n) => n.type === 'prescription_created' || n.type === 'prescription_updated'
+          );
+          const prescriptionUnread = prescriptionItems.filter((n) => !n.read);
+          const orderItems = items.filter(
+            (n) => n.type === 'order_created' || n.type === 'order_updated'
+          );
+          const orderUnread = orderItems.filter((n) => !n.read);
+          this.prescriptionNoticeList = prescriptionUnread;
+          this.orderNoticeList = orderUnread;
           const unread = items.filter((n) => !n.read);
           this.unreadNotifyCount = Math.min(unread.length, 99);
           const sorted = [...items].sort((a, b) => {
@@ -578,25 +907,14 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
           this.notificationsPreview = pick.slice(0, 5);
-          if (this.reminderPopupTimeout) {
-            clearTimeout(this.reminderPopupTimeout);
-            this.reminderPopupTimeout = null;
-          }
-          if (
-            mayShowReminderPopup &&
-            dueMedNotPassed.length > 0 &&
-            !this.getReminderAckSession()
-          ) {
-            this.reminderPopupTimeout = setTimeout(() => {
-              this.reminderPopupTimeout = null;
-              this.showReminderPopup = true;
-              this.cdr.markForCheck();
-            }, 5000);
-          }
+          this.tryScheduleNotificationPopups(mayShowReminderPopup);
         } else {
           this.notificationsPreview = [];
           this.unreadNotifyCount = 0;
           this.medicationDueList = [];
+          this.reminderBadgeService.setReminderDueCount(0);
+          this.prescriptionNoticeList = [];
+          this.orderNoticeList = [];
         }
         this.cdr.markForCheck();
       });
