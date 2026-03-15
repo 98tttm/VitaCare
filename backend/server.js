@@ -19,21 +19,21 @@ const transporter = nodemailer.createTransport({
 
 let resetCodes = {}; // Temporary store for forgot password codes
 
-// Mongoose models (được định nghĩa trong my-user/src/app/models)
-const Product = require('../my-user/src/app/models/Product');
-const Category = require('../my-user/src/app/models/Category');
-const Blog = require('../my-user/src/app/models/Blog');
-const HealthVideo = require('../my-user/src/app/models/HealthVideo');
-const Consultation = require('../my-user/src/app/models/Consultation');
-const Review = require('../my-user/src/app/models/Review');
-const User = require('../my-user/src/app/models/User');
-const Order = require('../my-user/src/app/models/Order');
-const Cart = require('../my-user/src/app/models/Cart');
-const HealthProfile = require('../my-user/src/app/models/HealthProfile');
-const Prescription = require('../my-user/src/app/models/Prescription');
-// const ProductFAQ = require('../my-user/src/app/models/ProductFAQ');
-// const Quiz = require('../my-user/src/app/models/quiz');
-// const Result = require('../my-user/src/app/models/result');
+// Mongoose models (được định nghĩa trong my-user/src/app/core/models)
+const Product = require('../my-user/src/app/core/models/Product');
+const Category = require('../my-user/src/app/core/models/Category');
+const Blog = require('../my-user/src/app/core/models/Blog');
+const HealthVideo = require('../my-user/src/app/core/models/HealthVideo');
+const Consultation = require('../my-user/src/app/core/models/Consultation');
+const Review = require('../my-user/src/app/core/models/Review');
+const User = require('../my-user/src/app/core/models/User');
+const Order = require('../my-user/src/app/core/models/Order');
+const Cart = require('../my-user/src/app/core/models/Cart');
+const HealthProfile = require('../my-user/src/app/core/models/HealthProfile');
+const Prescription = require('../my-user/src/app/core/models/Prescription');
+// const ProductFAQ = require('../my-user/src/app/core/models/ProductFAQ');
+// const Quiz = require('../my-user/src/app/core/models/quiz');
+// const Result = require('../my-user/src/app/core/models/result');
 
 // --- Admin Models ---
 const genericSchema = new Schema({
