@@ -49,6 +49,12 @@
     --color-info-light: #9B51E0;
     --color-info-bg: #F8F0FC;
 
+    /* Info Purple - Nhắc lịch / popup (Light Purple #B9A6DC) */
+    --vc-infor: #B9A6DC;
+    --vc-infor-text: #6B52A8;
+    --vc-infor-bg: #F1ECFA;
+    --vc-infor-hover: #7B63C6;
+
     /* Neutral Colors - Màu trung tính */
     --color-neutral-100: #0A0A0A;
     /* Đen đậm nhất */

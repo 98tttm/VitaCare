@@ -502,10 +502,10 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   // "Có thể bạn chưa biết?" popup
   popupBlog: { title: string; image?: string; excerpt?: string; link?: string } | null = null;
   showBlogPopup = false;
-  /** Thời điểm vào Home — popup chỉ mở sau 3s kể từ đây */
+  /** Thời điểm vào Home — popup chỉ mở sau 4s kể từ đây */
   private blogPopupPageEnterMs = 0;
   private blogPopupRevealTimer: number | null = null;
-  readonly blogPopupDelayMs = 3000;
+  readonly blogPopupDelayMs = 4000;
   /** Tự đóng sau lâu (ms) — tăng thời gian để người dùng kịp đọc */
   private blogPopupAutoCloseTimer: number | null = null;
   readonly blogPopupAutoCloseMs = 5 * 60 * 1000;
@@ -897,6 +897,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
               categoryName: 'Sức khỏe',
             },
           ];
+          this.prepareBlogPopupFromPool(this.blogs);
+          this.scheduleBlogPopupReveal();
         }
       }, 1000);
     }
@@ -1202,7 +1204,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     return result;
   }
 
-  /** Chỉ gán popupBlog — không mở popup (mở sau 3s + khi đã có data) */
+  /** Chỉ gán popupBlog — không mở popup (mở sau 4s + khi đã có data) */
   private prepareBlogPopupFromPool(
     pool: Array<{ title: string; image?: string; excerpt?: string; slug?: string; link?: string }>
   ): void {
@@ -1227,7 +1229,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  /** Sau đủ 3s từ lúc vào Home mới hiện popup; nếu API trả sau 3s thì hiện ngay khi có data */
+  /** Sau đủ 4s từ lúc vào Home mới hiện popup; nếu API trả sau 4s thì hiện ngay khi có data */
   private scheduleBlogPopupReveal(): void {
     if (typeof window === 'undefined' || !this.popupBlog) return;
     if (this.blogPopupRevealTimer !== null) {

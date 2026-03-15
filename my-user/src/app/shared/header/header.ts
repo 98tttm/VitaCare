@@ -20,6 +20,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { CartService, Cart, CartItem } from '../../core/services/cart.service';
 import { CartSidebarService } from '../../core/services/cart-sidebar.service';
 import { NoticeService } from '../../core/services/notice.service';
+import { ReminderService } from '../../core/services/reminder.service';
 import type { NoticeItem } from '../../features/accounts/notice/notice';
 import { getLocalIcon } from './header-icons';
 
@@ -40,6 +41,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private zone = inject(NgZone);
   private noticeService = inject(NoticeService);
+  private reminderService = inject(ReminderService);
 
   search_value = '';
   cart_count = 0;
@@ -50,15 +52,18 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   notificationsPreview: NoticeItem[] = [];
   notificationsLoading = false;
   notificationsError: string | null = null;
-  /** Nhắc uống thuốc quá hạn (từ API) — popup góc phải */
+  /** Nhắc uống thuốc quá hạn (từ API) — popup thanh ngắn bên phải */
   showReminderPopup = false;
   medicationDueList: NoticeItem[] = [];
+  /** Đang gửi "ghi nhận đã uống" để tránh double submit */
+  reminderMarkingComplete = false;
   isAccountDropdownVisible = false;
   private accountDropdownTimeout: ReturnType<typeof setTimeout> | null = null;
   private cartHoverTimeout: ReturnType<typeof setTimeout> | null = null;
   private notifyHoverTimeout: ReturnType<typeof setTimeout> | null = null;
   private cartCountSub?: Subscription;
   private cartUpdatedSub?: Subscription;
+  private reminderPopupTimeout: ReturnType<typeof setTimeout> | null = null;
 
   isHeaderCompact = false;
   private headerEl: HTMLElement | null = null;
@@ -213,6 +218,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.cartCountSub?.unsubscribe();
     this.cartUpdatedSub?.unsubscribe();
+    if (this.reminderPopupTimeout) {
+      clearTimeout(this.reminderPopupTimeout);
+      this.reminderPopupTimeout = null;
+    }
     window.removeEventListener('scroll', this.onWindowScroll as any);
     window.removeEventListener('resize', this.onWindowResize as any);
     if (this.rafId) cancelAnimationFrame(this.rafId);
@@ -377,6 +386,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private resetNotificationsState(): void {
+    if (this.reminderPopupTimeout) {
+      clearTimeout(this.reminderPopupTimeout);
+      this.reminderPopupTimeout = null;
+    }
     this.isNotifyHoverVisible = false;
     this.unreadNotifyCount = 0;
     this.notificationsPreview = [];
@@ -387,8 +400,23 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  private static REMINDER_ACK_KEY = 'vc_reminder_ack';
+
+  /** Đã ghi nhận/đóng popup trong phiên này (theo origin) → không nhắc lại; mở cổng khác = origin khác = nhắc lại. */
+  private getReminderAckSession(): boolean {
+    if (typeof sessionStorage === 'undefined') return false;
+    return sessionStorage.getItem(HeaderComponent.REMINDER_ACK_KEY) === '1';
+  }
+
+  private setReminderAckSession(): void {
+    try {
+      sessionStorage.setItem(HeaderComponent.REMINDER_ACK_KEY, '1');
+    } catch (_) {}
+  }
+
   dismissReminderPopup(): void {
     this.showReminderPopup = false;
+    this.setReminderAckSession();
     this.cdr.markForCheck();
   }
 
@@ -415,10 +443,79 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     return `Bạn có ${n} lời nhắc uống thuốc lúc ${timeStr}.`;
   }
 
+  /** Parse notice id "reminder-due-<rid>-<YYYY>-<MM>-<DD>-<HHmm>" → { reminderId, date, time }. */
+  private parseReminderDueId(id: string): { reminderId: string; date: string; time: string } | null {
+    if (!id || !id.startsWith('reminder-due-')) return null;
+    const parts = id.split('-');
+    // reminder-due-<24charId>-YYYY-MM-DD-HHmm
+    if (parts.length < 7) return null;
+    const reminderId = parts[2];
+    const date = `${parts[3]}-${parts[4]}-${parts[5]}`;
+    const t = parts[6] || '';
+    const time = t.length >= 4 ? `${t.slice(0, 2)}:${t.slice(2)}` : '08:00';
+    return { reminderId, date, time };
+  }
+
+  /** Lấy giờ (HH:mm) lên lịch từ notice medication_reminder; trả về null nếu không parse được. */
+  private getReminderScheduledTime(n: NoticeItem): string | null {
+    const parsed = this.parseReminderDueId(n.id);
+    if (parsed) return parsed.time;
+    const meta = (n.meta || '').split('·')[0]?.trim() || '';
+    if (/^\d{1,2}:\d{2}$/.test(meta)) return meta;
+    const m = (n.message || '').match(/lịch\s+(\d{1,2}:\d{2})/i);
+    return m ? m[1] : null;
+  }
+
+  /** Chỉ giữ các lời nhắc chưa qua giờ (giờ uống >= hiện tại). */
+  private filterNotYetPassed(list: NoticeItem[]): NoticeItem[] {
+    const now = new Date();
+    const curMin = now.getHours() * 60 + now.getMinutes();
+    return list.filter((n) => {
+      const timeStr = this.getReminderScheduledTime(n);
+      if (!timeStr) return true;
+      const [h, m] = timeStr.split(':').map((x) => parseInt(x, 10) || 0);
+      const slotMin = h * 60 + m;
+      return slotMin >= curMin;
+    });
+  }
+
   openRemindFromPopup(e: Event): void {
     e.preventDefault();
-    this.dismissReminderPopup();
-    this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+    if (this.reminderMarkingComplete) return;
+    const list = [...this.medicationDueList];
+    const parsed = list
+      .map((n) => this.parseReminderDueId(n.id))
+      .filter((p): p is { reminderId: string; date: string; time: string } => p !== null);
+    if (parsed.length > 0) {
+      this.reminderMarkingComplete = true;
+      this.cdr.markForCheck();
+      forkJoin(
+        parsed.map((p) =>
+          this.reminderService.markComplete(p.reminderId, p.date, p.time).pipe(
+            catchError(() => of({ success: false }))
+          )
+        )
+      ).subscribe({
+        next: () => {
+          this.reminderMarkingComplete = false;
+          this.setReminderAckSession();
+          this.showReminderPopup = false;
+          this.medicationDueList = [];
+          this.cdr.markForCheck();
+          this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+        },
+        error: () => {
+          this.reminderMarkingComplete = false;
+          this.setReminderAckSession();
+          this.showReminderPopup = false;
+          this.cdr.markForCheck();
+          this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+        },
+      });
+    } else {
+      this.dismissReminderPopup();
+      this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+    }
   }
 
   private fetchNotificationsPreview(userId: string, mayShowReminderPopup: boolean): void {
@@ -448,7 +545,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         if (res.success && Array.isArray(res.items)) {
           const items = res.items as NoticeItem[];
           const dueMed = items.filter((n) => n.type === 'medication_reminder');
-          this.medicationDueList = dueMed;
+          const dueMedNotPassed = this.filterNotYetPassed(dueMed);
+          this.medicationDueList = dueMedNotPassed;
           const unread = items.filter((n) => !n.read);
           this.unreadNotifyCount = Math.min(unread.length, 99);
           const sorted = [...items].sort((a, b) => {
@@ -480,8 +578,20 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
           this.notificationsPreview = pick.slice(0, 5);
-          if (mayShowReminderPopup && dueMed.length > 0) {
-            this.showReminderPopup = true;
+          if (this.reminderPopupTimeout) {
+            clearTimeout(this.reminderPopupTimeout);
+            this.reminderPopupTimeout = null;
+          }
+          if (
+            mayShowReminderPopup &&
+            dueMedNotPassed.length > 0 &&
+            !this.getReminderAckSession()
+          ) {
+            this.reminderPopupTimeout = setTimeout(() => {
+              this.reminderPopupTimeout = null;
+              this.showReminderPopup = true;
+              this.cdr.markForCheck();
+            }, 5000);
           }
         } else {
           this.notificationsPreview = [];
