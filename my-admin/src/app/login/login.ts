@@ -20,6 +20,7 @@ export class Login {
   isLoading = false;
   errorMessage = '';
   popupMessage: string | null = null;
+  isLoginSuccess = false;
 
   // Data for flow
   verificationEmail = '';
@@ -103,12 +104,12 @@ export class Login {
       next: (success) => {
         this.isLoading = false;
         if (success) {
-          this.popupMessage = 'Đăng nhập thành công!';
+          this.isLoginSuccess = true;
+          this.cdr.detectChanges();
           setTimeout(() => {
             // Navigate to Admin Dashboard
             this.router.navigate(['/admin/dashboard']);
-            this.closePopup();
-          }, 1500);
+          }, 2000);
         }
       },
       error: (err) => {
