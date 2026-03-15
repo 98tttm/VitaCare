@@ -38,11 +38,13 @@ export class Cart implements OnInit, OnDestroy {
 
   cart = signal<CartModel | null>(null);
   cartSelectedIds = signal<Set<string>>(new Set());
+  isSummaryExpanded = signal(true);
 
-  cartCount = computed(() => {
-    const c = this.cart();
-    return c?.items?.reduce((s, i) => s + (i.quantity || 0), 0) ?? 0;
-  });
+  toggleSummary(): void {
+    this.isSummaryExpanded.update((v) => !v);
+  }
+
+  cartCount = computed(() => this.cart()?.items?.length ?? 0);
 
   cartTotalPrice = computed(() => {
     const c = this.cart();
@@ -78,6 +80,22 @@ export class Cart implements OnInit, OnDestroy {
   selectedTotalPrice = computed(() => {
     const items = this.selectedCartItems();
     return items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0);
+  });
+
+  selectedSubtotal = computed(() => {
+    const items = this.selectedCartItems();
+    return items.reduce((s, i) => s + ((i.price || 0) + (i.discount || 0)) * (i.quantity || 1), 0);
+  });
+
+  selectedDirectDiscount = computed(() => {
+    const items = this.selectedCartItems();
+    return items.reduce((s, i) => s + (i.discount || 0) * (i.quantity || 1), 0);
+  });
+
+  voucherDiscount = signal(0);
+
+  finalAmount = computed(() => {
+    return Math.max(0, this.selectedTotalPrice() - this.voucherDiscount());
   });
 
   constructor() {
@@ -214,15 +232,61 @@ export class Cart implements OnInit, OnDestroy {
       this.confirmRemoveCartItem(item);
       return;
     }
+    const currentQty = item.quantity || 1;
+    let newQty = currentQty + delta;
+
+    // Check stock limit when increasing
+    if (delta > 0 && item.stock !== undefined && item.stock !== null && newQty > item.stock) {
+      newQty = item.stock;
+    }
+
+    this.applyQuantityUpdate(item, Math.max(1, newQty));
+  }
+
+  onQtyInputChange(item: CartItem, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let val = parseInt(input.value, 10);
+
+    if (isNaN(val)) return; // User might be typing, wait for blur or valid number
+
+    if (val < 1) val = 1;
+    if (item.stock !== undefined && item.stock !== null && val > item.stock) {
+      val = item.stock;
+    }
+
+    if (val !== item.quantity) {
+      this.applyQuantityUpdate(item, val);
+    }
+  }
+
+  onQtyBlur(item: CartItem, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let val = parseInt(input.value, 10);
+
+    if (isNaN(val) || val < 1) {
+      val = 1;
+    }
+    if (item.stock !== undefined && item.stock !== null && val > item.stock) {
+      val = item.stock;
+    }
+
+    input.value = String(val);
+    if (val !== item.quantity) {
+      this.applyQuantityUpdate(item, val);
+    }
+  }
+
+  private applyQuantityUpdate(item: CartItem, newQty: number): void {
     const user = this.authService.currentUser();
     const c = this.cart();
     if (!c?.items) return;
     const itemId = String((item as any)._id ?? item._id);
-    const newQty = Math.max(1, (item.quantity || 1) + delta);
+
     const nextItems = c.items.map((i) => {
       const id = String((i as any)._id ?? i._id);
       return id === itemId ? { ...i, quantity: newQty } : { ...i };
     });
+
     let tp = 0;
     nextItems.forEach((i) => { tp += (i.price || 0) * (i.quantity || 1); });
     this.cart.set({ ...c, items: nextItems, totalPrice: tp } as CartModel);

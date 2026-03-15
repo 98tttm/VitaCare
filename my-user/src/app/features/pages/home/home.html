@@ -92,8 +92,9 @@
                 <i class="bi bi-chevron-left"></i>
             </button>
             <div class="flash-products" #flashProductsSlider>
-                <div class="product-card fs-card" *ngFor="let p of flashSaleProducts" (click)="goToProductDetail(p)"
-                    role="button" tabindex="0">
+                <div class="product-card fs-card" [class.is-out-of-stock]="p.stock === 0"
+                    *ngFor="let p of flashSaleProducts" (click)="goToProductDetail(p)" role="button" tabindex="0">
+                    <!-- Out of Stock Badge -->
                     <div class="fs-img-wrap">
                         <span class="fs-sale-tag" *ngIf="getFlashSaleTag(p) !== '0%'">{{ getFlashSaleTag(p) }}</span>
                         <img [src]="p.image" [alt]="p.name" />
@@ -101,15 +102,30 @@
                     <h4 class="fs-product-name">{{ p.name }}</h4>
                     <div class="price-row">
                         <span class="price">{{ getFlashPriceDisplay(p) }}đ<span class="price-unit">/Hộp</span></span>
-                        <span class="original-price" *ngIf="p.originalPrice && p.originalPrice > p.price">
+                        <div class="low-stock-remind"
+                            *ngIf="p.stock !== undefined && p.stock !== null && p.stock > 0 && p.stock < 5">
+                            <i class="bi bi-fire"></i> Chỉ còn: {{ p.stock }}
+                        </div>
+                    </div>
+                    <div class="old-price-row" *ngIf="p.originalPrice && p.originalPrice > p.price">
+                        <span class="original-price">
                             {{ getFlashOriginalPriceDisplay(p) }}đ/Hộp
                         </span>
                     </div>
                     <div class="home-product-button-group">
-                        <button type="button" class="btn-home-cart"
-                            (click)="addToCart(p, $event); $event.stopPropagation()">Thêm vào giỏ</button>
-                        <button type="button" class="btn-home-buy" (click)="buyNow(p); $event.stopPropagation()">Mua
-                            ngay</button>
+                        <ng-container
+                            *ngIf="p.stock === undefined || p.stock === null || p.stock > 0; else outOfStockHomeFlash">
+                            <button type="button" class="btn-home-cart"
+                                (click)="addToCart(p, $event); $event.stopPropagation()">Thêm vào giỏ</button>
+                            <button type="button" class="btn-home-buy" (click)="buyNow(p); $event.stopPropagation()">Mua
+                                ngay</button>
+                        </ng-container>
+                        <ng-template #outOfStockHomeFlash>
+                            <button type="button" class="btn-home-cart"
+                                (click)="requestConsultation(p); $event.stopPropagation()">Tư vấn</button>
+                            <button type="button" class="btn-home-buy" disabled
+                                style="background: #ccc; border-color: #ccc;">Hết hàng</button>
+                        </ng-template>
                     </div>
                 </div>
             </div>
@@ -178,20 +194,37 @@
 
                 <!-- Actual products -->
                 <ng-container *ngIf="!isLoadingFeaturedProducts && !isFeaturedProductsError">
-                    <div class="product-card" *ngFor="let product of products" (click)="goToProductDetail(product)"
-                        role="button" tabindex="0">
+                    <div class="product-card" [class.is-out-of-stock]="product.stock === 0"
+                        *ngFor="let product of products" (click)="goToProductDetail(product)" role="button"
+                        tabindex="0">
+                        <!-- Out of Stock Badge -->
                         <!-- Discount badge nếu có khuyến mãi (dùng hàm helper để tránh lỗi TS "possibly undefined") -->
                         <div class="discount-badge" *ngIf="getFeaturedDiscountPercent(product) > 0">
                             -{{ getFeaturedDiscountPercent(product) | number:'1.0-0' }}%
                         </div>
                         <img [src]="product.image" [alt]="product.name" />
                         <h4>{{ product.name }}</h4>
-                        <p class="price">{{ product.price | number:'1.0-0' }}đ</p>
+                        <div class="price-row">
+                            <p class="price">{{ product.price | number:'1.0-0' }}đ</p>
+                            <div class="low-stock-remind"
+                                *ngIf="product.stock !== undefined && product.stock !== null && product.stock > 0 && product.stock < 5">
+                                <i class="bi bi-fire"></i> Chỉ còn: {{ product.stock }}
+                            </div>
+                        </div>
                         <div class="home-product-button-group">
-                            <button type="button" class="btn-home-cart"
-                                (click)="addToCart(product, $event); $event.stopPropagation()">Thêm vào giỏ</button>
-                            <button type="button" class="btn-home-buy"
-                                (click)="buyNow(product); $event.stopPropagation()">Mua ngay</button>
+                            <ng-container
+                                *ngIf="product.stock === undefined || product.stock === null || product.stock > 0; else outOfStockHomeFeatured">
+                                <button type="button" class="btn-home-cart"
+                                    (click)="addToCart(product, $event); $event.stopPropagation()">Thêm vào giỏ</button>
+                                <button type="button" class="btn-home-buy"
+                                    (click)="buyNow(product); $event.stopPropagation()">Mua ngay</button>
+                            </ng-container>
+                            <ng-template #outOfStockHomeFeatured>
+                                <button type="button" class="btn-home-cart"
+                                    (click)="requestConsultation(product); $event.stopPropagation()">Tư vấn</button>
+                                <button type="button" class="btn-home-buy" disabled
+                                    style="background: #ccc; border-color: #ccc;">Hết hàng</button>
+                            </ng-template>
                         </div>
                     </div>
                 </ng-container>

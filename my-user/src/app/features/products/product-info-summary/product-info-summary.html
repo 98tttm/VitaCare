@@ -29,20 +29,34 @@
     <!-- Price -->
     <!-- Price -->
     <div class="vc_pd_price_section">
-        <ng-container *ngIf="getCurrentPrice() > 0; else contactPrice">
-            <div class="vc_pd_main_price">
-                {{ getCurrentPrice() | number:'1.0-0' }}đ <span class="vc_price_unit">/ {{ product.unit || 'Hộp'
-                    }}</span>
-            </div>
-            <div class="vc_pd_old_price_row text-secondary small mt-1" *ngIf="getDiscountPercent() > 0">
-                <del>{{ getOldPrice() | number:'1.0-0' }}đ</del>
-                <span class="badge bg-danger ms-2" style="background-color: #ef4444 !important;">-{{
-                    getDiscountPercent() }}%</span>
-            </div>
+        <ng-container
+            *ngIf="product.stock === undefined || product.stock === null || product.stock > 0; else outOfStockPrice">
+            <ng-container *ngIf="getCurrentPrice() > 0; else contactPrice">
+                <div class="vc_pd_price_row">
+                    <div class="vc_pd_main_price">
+                        {{ getCurrentPrice() | number:'1.0-0' }}đ <span class="vc_price_unit">/ {{ product.unit || 'Hộp'
+                            }}</span>
+                    </div>
+                    <div class="low-stock-limit-badge"
+                        *ngIf="product.stock !== undefined && product.stock !== null && product.stock > 0 && product.stock < 5">
+                        <i class="bi bi-fire"></i> Chỉ còn: {{ product.stock }} sản phẩm
+                    </div>
+                </div>
+                <div class="vc_pd_old_price_row text-secondary small mt-1" *ngIf="getDiscountPercent() > 0">
+                    <del>{{ getOldPrice() | number:'1.0-0' }}đ</del>
+                    <span class="badge bg-danger ms-2" style="background-color: #ef4444 !important;">-{{
+                        getDiscountPercent() }}%</span>
+                </div>
+            </ng-container>
+            <ng-template #contactPrice>
+                <div class="vc_pd_main_price text-primary"
+                    style="font-size: 20px; margin-top: 12px; margin-bottom: 12px;">
+                    Cần tư vấn từ dược sĩ</div>
+            </ng-template>
         </ng-container>
-        <ng-template #contactPrice>
-            <div class="vc_pd_main_price text-primary" style="font-size: 20px; margin-top: 12px; margin-bottom: 12px;">
-                Cần tư vấn từ dược sĩ</div>
+        <ng-template #outOfStockPrice>
+            <div class="vc_pd_main_price text-danger" style="font-size: 20px; margin-top: 12px; margin-bottom: 12px;">
+                Tạm hết hàng</div>
         </ng-template>
     </div>
 
@@ -57,19 +71,29 @@
         <div class="vc_selector_row mt-2">
             <div class="vc_label">Chọn số lượng</div>
             <div class="vc_qty_box">
-                <button (click)="updateQuantity(-1)"><i class="bi bi-dash"></i></button>
+                <button (click)="updateQuantity(-1)" [disabled]="quantity <= 1"><i class="bi bi-dash"></i></button>
                 <span class="vc_qty_value">{{ quantity }}</span>
-                <button (click)="updateQuantity(1)"><i class="bi bi-plus"></i></button>
+                <button (click)="updateQuantity(1)"
+                    [disabled]="product.stock !== undefined && product.stock !== null && quantity >= product.stock"><i
+                        class="bi bi-plus"></i></button>
             </div>
         </div>
     </div>
 
     <!-- Action Buttons -->
     <div class="vc_pd_btn_group">
-        <button class="btn btn-buy-now" (click)="buyNow()" *ngIf="getCurrentPrice() > 0">Chọn mua</button>
-        <button class="btn btn-buy-now" (click)="requestConsultation()" *ngIf="getCurrentPrice() <= 0">Yêu cầu tư
-            vấn</button>
-        <button class="btn btn-add-cart" (click)="addToCart($event)">Thêm vào giỏ</button>
+        <ng-container
+            *ngIf="product.stock === undefined || product.stock === null || product.stock > 0; else outOfStockButtonsDetail">
+            <button class="btn btn-buy-now" (click)="buyNow()" *ngIf="getCurrentPrice() > 0">Chọn mua</button>
+            <button class="btn btn-buy-now" (click)="requestConsultation()" *ngIf="getCurrentPrice() <= 0">Yêu cầu tư
+                vấn</button>
+            <button class="btn btn-add-cart" (click)="addToCart($event)">Thêm vào giỏ</button>
+        </ng-container>
+        <ng-template #outOfStockButtonsDetail>
+            <button class="btn btn-buy-now btn-disabled" disabled
+                style="background: #ccc; border-color: #ccc; color: #666;">Tạm hết hàng</button>
+            <button class="btn btn-add-cart" (click)="requestConsultation()">Yêu cầu tư vấn</button>
+        </ng-template>
     </div>
 
     <!-- Trending Notice -->

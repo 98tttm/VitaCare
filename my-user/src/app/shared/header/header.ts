@@ -177,10 +177,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cartUpdatedSub = this.cartService.cartUpdated$.subscribe(cart => {
       if (cart) {
         this.cart = cart as Cart;
-        this.cart_count = (cart.items || []).reduce(
-          (sum, it) => sum + (Number(it.quantity) || 0),
-          0
-        );
+        this.cart_count = (cart.items || []).length;
         this.cdr.detectChanges();
       }
     });
@@ -314,10 +311,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cartService.getCart(userId).subscribe((res) => {
       if (res.success && res.cart) {
         this.cart = res.cart;
-        this.cart_count = (this.cart.items || []).reduce(
-          (sum, it) => sum + (Number(it.quantity) || 0),
-          0
-        );
+        this.cart_count = (this.cart.items || []).length;
         this.cartService.setCartCount(this.cart_count);
         let tp = 0;
         if (this.cart.items) {

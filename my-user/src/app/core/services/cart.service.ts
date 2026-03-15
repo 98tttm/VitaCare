@@ -11,6 +11,7 @@ export interface CartItem {
     quantity: number;
     discount: number;
     price: number;
+    stock: number;
     hasPromotion: boolean;
     image: string;
     unit: string;
@@ -93,10 +94,7 @@ export class CartService {
                             image: this.normalizeMediaUrl(it.image)
                         }));
                     }
-                    const totalQty = (res.cart.items || []).reduce(
-                        (sum, it) => sum + (Number(it.quantity) || 0),
-                        0
-                    );
+                    const totalQty = (res.cart.items || []).length;
                     this._cartCount$.next(totalQty);
                 }
             })
@@ -118,10 +116,7 @@ export class CartService {
                         }));
                     }
                     this.cache = { userId, res, at: Date.now() };
-                    const totalQty = (res.cart.items || []).reduce(
-                        (sum, it) => sum + (Number(it.quantity) || 0),
-                        0
-                    );
+                    const totalQty = (res.cart.items || []).length;
                     this._cartCount$.next(totalQty);
                     this._cartUpdated$.next(res.cart);
                 }
@@ -177,6 +172,7 @@ export class CartService {
                     category: (p as any).category || '',
                     addedAt: (p as any).addedAt || now,
                     updatedAt: now,
+                    stock: Number(p.stock) || 0,
                     hasPromotion: Boolean((p as any).hasPromotion),
                 } as CartItem;
             })
@@ -203,8 +199,10 @@ export class CartService {
         }
     }
 
-    /** Gọi backend POST /api/carts/add-item */
     private addItemToServer(userId: string, item: any, quantity: number): void {
+        const stock = Number(item.stock) || 99;
+        const requestedQty = Math.max(1, quantity);
+
         const payload = {
             user_id: userId,
             item: {
@@ -217,19 +215,17 @@ export class CartService {
                 unit: item.unit || 'Hộp',
                 category: item.category || '',
                 slug: item.slug || '',
+                stock: stock,
                 hasPromotion: Boolean(item.hasPromotion),
             },
-            quantity: Math.max(1, quantity),
+            quantity: requestedQty,
         };
 
         this.http.post<CartResponse>(`${this.apiUrl}/add-item`, payload).subscribe({
             next: (res) => {
                 if (res.success && res.cart) {
                     this.cache = null;
-                    const totalQty = (res.cart.items || []).reduce(
-                        (sum, it) => sum + (Number(it.quantity) || 0),
-                        0
-                    );
+                    const totalQty = (res.cart.items || []).length;
                     this._cartCount$.next(totalQty);
                     this._cartUpdated$.next(res.cart);
                 }
@@ -261,6 +257,7 @@ export class CartService {
                 unit: p.unit || 'Hộp',
                 category: p.category || '',
                 slug: p.slug || '',
+                stock: Number(p.stock) || 0,
                 hasPromotion: Boolean(p.hasPromotion),
                 addedAt: p.addedAt || '',
                 updatedAt: p.updatedAt || '',
@@ -307,9 +304,10 @@ export class CartService {
                 unit: i.unit ?? 'Hộp',
                 category: (i as any).category,
                 slug: (i as any).slug,
+                stock: i.stock ?? 0,
             }));
             localStorage.setItem(GUEST_CART_KEY, JSON.stringify(toStore));
-            const totalQty = toStore.reduce((s, it) => s + (Number(it.quantity) || 0), 0);
+            const totalQty = items.length;
             this._cartCount$.next(totalQty);
             this._cartUpdated$.next({ user_id: 'guest', items, itemCount: items.length, totalQuantity: totalQty });
         } catch {
@@ -331,22 +329,23 @@ export class CartService {
         const id = item._id || item.id || item.sku || item.slug;
         if (!id) return;
 
+        const stock = Number(item.stock) || 99;
         const existingIdx = items.findIndex((p: any) => (p._id || p.id || p.sku || p.slug) === id);
+
         if (existingIdx > -1) {
-            items[existingIdx].quantity = (items[existingIdx].quantity || 0) + quantity;
+            const nextQty = (items[existingIdx].quantity || 0) + quantity;
+            items[existingIdx].quantity = Math.min(nextQty, stock);
         } else {
             items.unshift({
                 ...item,
-                quantity: quantity > 0 ? quantity : 1,
+                quantity: Math.min(quantity > 0 ? quantity : 1, stock),
+                stock: stock
             });
         }
 
         localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
 
-        const totalQty = items.reduce(
-            (sum, it) => sum + (Number(it.quantity) || 0),
-            0
-        );
+        const totalQty = items.length;
         this._cartCount$.next(totalQty);
     }
 
@@ -367,10 +366,7 @@ export class CartService {
             const raw = localStorage.getItem(GUEST_CART_KEY);
             const items = raw ? JSON.parse(raw) : [];
             if (!Array.isArray(items)) return 0;
-            return items.reduce(
-                (sum: number, it: any) => sum + (Number(it.quantity) || 0),
-                0
-            );
+            return items.length;
         } catch {
             return 0;
         }

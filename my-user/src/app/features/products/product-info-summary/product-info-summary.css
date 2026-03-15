@@ -85,11 +85,45 @@
     margin-bottom: 6px;
 }
 
+.vc_pd_price_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
 .vc_pd_main_price {
     font-size: 28px;
     /* Reduced from 32px */
     font-weight: 700;
     color: #00589f;
+}
+
+@keyframes fire-jump {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px) scale(1.1);
+    }
+}
+
+.low-stock-limit-badge {
+    color: #e8590c;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.low-stock-limit-badge i.bi-fire {
+    animation: fire-jump 0.8s infinite ease-in-out;
+    display: inline-block;
 }
 
 .vc_price_unit {
@@ -180,15 +214,13 @@
 .vc_qty_box {
     display: flex;
     align-items: center;
-    border: 1px solid #dee2e6;
-    /* Grey border for qty */
+    border: 1px solid #00589f;
+    /* VitaCare Blue border */
     border-radius: 50px;
-    /* Pill shape */
     height: 36px;
     background: #fff;
     width: 130px;
     overflow: hidden;
-    /* To clip children borders */
 }
 
 .vc_qty_box button {
@@ -206,19 +238,25 @@
     transition: background 0.2s;
 }
 
-.vc_qty_box button:hover {
-    background-color: #f8f9fa;
+.vc_qty_box button:hover:not(:disabled) {
+    background-color: #f0f7ff;
+}
+
+.vc_qty_box button:disabled {
+    color: #ccc !important;
+    cursor: not-allowed;
+    background: #fafafa;
 }
 
 /* Minus Button */
 .vc_qty_box button:first-child {
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid #00589f;
     color: #666;
 }
 
 /* Plus Button */
 .vc_qty_box button:last-child {
-    border-left: 1px solid #dee2e6;
+    border-left: 1px solid #00589f;
     color: #00589f;
     /* VitaCare Blue */
     font-weight: 700;

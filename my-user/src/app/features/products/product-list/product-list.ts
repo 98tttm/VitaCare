@@ -181,6 +181,7 @@ export class ProductList implements OnInit {
       image: product?.image || '',
       price: this.getDiscountedPrice(product?.price || 0, product?.discount || 0),
       discount: product?.discount || 0,
+      stock: product?.stock || 0,
       unit: product?.unit || 'Hộp',
       slug: this.getProductSlug(product),
     }, 1);

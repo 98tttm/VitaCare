@@ -24,7 +24,8 @@
       <ng-container *ngIf="cart()?.items?.length">
         <div class="cart-sidebar-grid cart-sidebar-header-row">
           <label class="cart-sidebar-select-all">
-            <input type="checkbox" [checked]="isAllCartSelected()" (change)="onSelectAllCart($any($event.target).checked)" />
+            <input type="checkbox" [checked]="isAllCartSelected()"
+              (change)="onSelectAllCart($any($event.target).checked)" />
             <span>Chọn tất cả ({{ selectedItemCount() }})</span>
           </label>
           <span class="cart-sidebar-header-price">Giá thành</span>
@@ -33,15 +34,27 @@
         <div class="cart-sidebar-list">
           <div class="cart-sidebar-item cart-sidebar-grid" *ngFor="let item of cart()?.items">
             <label class="cart-sidebar-item-check">
-              <input type="checkbox" [checked]="isItemSelected(item)" (change)="onItemCheck(item, $any($event.target).checked)" />
+              <input type="checkbox" [checked]="isItemSelected(item)" [disabled]="item.stock === 0"
+                (change)="onItemCheck(item, $any($event.target).checked)" />
             </label>
             <img [src]="item.image" [alt]="item.productName" class="cart-sidebar-item-img" />
-            <div class="cart-sidebar-item-name">{{ item.productName }}</div>
-            <span class="cart-sidebar-item-price">{{ (item.price * (item.quantity || 1)) | number:'1.0-0' }}₫</span>
+            <div class="cart-sidebar-item-name">
+              {{ item.productName }}
+              <div class="text-danger small mt-1" *ngIf="item.stock === 0">Tạm hết hàng</div>
+            </div>
+            <div class="cart-sidebar-item-price">
+              {{ (item.price * (item.quantity || 1)) | number:'1.0-0' }}₫
+              <div class="cart-low-stock-limit"
+                *ngIf="item.stock !== undefined && item.stock !== null && item.stock > 0 && item.stock < 5">
+                <i class="bi bi-fire"></i> Chỉ còn: {{ item.stock }}
+              </div>
+            </div>
             <span class="cart-sidebar-qty">
-              <button type="button" (click)="cartQtyChange(item, -1)">−</button>
-              <span>{{ item.quantity }}</span>
-              <button type="button" (click)="cartQtyChange(item, 1)">+</button>
+              <button type="button" (click)="cartQtyChange(item, -1)" [disabled]="item.stock === 0">−</button>
+              <input type="number" [value]="item.quantity" (input)="onQtyInputChange(item, $event)"
+                (blur)="onQtyBlur(item, $event)" [disabled]="item.stock === 0">
+              <button type="button" (click)="cartQtyChange(item, 1)"
+                [disabled]="item.stock === 0 || (item.stock !== undefined && item.stock !== null && item.quantity >= item.stock)">+</button>
             </span>
             <button type="button" class="cart-sidebar-remove" (click)="confirmRemoveCartItem(item)" aria-label="Xóa">
               <i class="bi bi-trash"></i>
@@ -53,28 +66,39 @@
 
     <div class="cart-sidebar-footer" *ngIf="cart()?.items?.length">
       <div class="cart-sidebar-selected-count">Đã chọn ({{ selectedCount() }}) sản phẩm</div>
-      <div class="cart-sidebar-promo">
-        <i class="bi bi-ticket-perforated"></i>
-        <span class="cart-sidebar-promo-text">Áp dụng ưu đãi từ VitaCare để được giảm giá</span>
-        <i class="bi bi-chevron-right"></i>
+      <div class="cart-sidebar-toggle-handle" (click)="toggleSummary()">
+        <i class="bi bi-chevron-double-up" [class.expanded]="isSummaryExpanded()"></i>
       </div>
-      <div class="cart-sidebar-summary">
-        <div class="cart-sidebar-summary-row">
-          <span>Tổng tiền</span>
-          <strong>{{ selectedTotalPrice() | number:'1.0-0' }}₫</strong>
+
+      <div class="cart-sidebar-collapsible" [class.is-expanded]="isSummaryExpanded()">
+        <div class="cart-sidebar-promo">
+          <i class="bi bi-ticket-perforated"></i>
+          <span class="cart-sidebar-promo-text">Áp dụng ưu đãi từ VitaCare để được giảm giá</span>
+          <i class="bi bi-chevron-right"></i>
         </div>
-        <div class="cart-sidebar-summary-row">
-          <span>Giảm giá trực tiếp</span>
-          <strong class="cart-sidebar-discount">0₫</strong>
+        <div class="cart-sidebar-summary">
+          <div class="cart-sidebar-summary-row">
+            <span>Tổng tiền</span>
+            <strong>{{ selectedSubtotal() | number:'1.0-0' }}₫</strong>
+          </div>
+          <div class="cart-sidebar-summary-row">
+            <span>Giảm giá trực tiếp</span>
+            <strong class="cart-sidebar-discount">
+              <span *ngIf="selectedDirectDiscount() > 0">-</span>{{ selectedDirectDiscount() | number:'1.0-0' }}₫
+            </strong>
+          </div>
+          <div class="cart-sidebar-summary-row border-0">
+            <span>Giảm giá voucher</span>
+            <strong class="cart-sidebar-discount" [class.has-value]="voucherDiscount() > 0">
+              <span *ngIf="voucherDiscount() > 0">-</span>{{ voucherDiscount() | number:'1.0-0' }}₫
+            </strong>
+          </div>
         </div>
-        <div class="cart-sidebar-summary-row">
-          <span>Giảm giá voucher</span>
-          <strong class="cart-sidebar-discount">0₫</strong>
-        </div>
-        <div class="cart-sidebar-summary-row cart-sidebar-summary-final">
-          <span>Thành tiền</span>
-          <strong class="cart-sidebar-final-amount">{{ selectedTotalPrice() | number:'1.0-0' }}₫</strong>
-        </div>
+      </div>
+
+      <div class="cart-sidebar-summary-row cart-sidebar-summary-final">
+        <span>Thành tiền</span>
+        <strong class="cart-sidebar-final-amount">{{ finalAmount() | number:'1.0-0' }}₫</strong>
       </div>
       <div class="cart-sidebar-buttons">
         <button type="button" class="cart-sidebar-btn cart-sidebar-btn-secondary" (click)="goToConsultation($event)">

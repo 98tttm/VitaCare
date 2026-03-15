@@ -72,8 +72,10 @@
 <!-- ===== PRODUCT GRID/LIST ===== -->
 <div class="product-container" [class.list-mode]="viewMode === 'list'">
 
-    <div class="product-card" *ngFor="let product of products; trackBy: trackByProduct"
-        [class.list-item]="viewMode === 'list'">
+    <div class="product-card" [class.is-out-of-stock]="product.stock === 0"
+        *ngFor="let product of products; trackBy: trackByProduct" [class.list-item]="viewMode === 'list'">
+
+        <!-- Out of Stock Badge -->
 
         <!-- Discount - Only show if > 0 and < 100 -->
         <div class="discount-badge"
@@ -106,10 +108,16 @@
             <div class="price-section">
                 <!-- Regular Price -->
                 <ng-container *ngIf="getDiscountedPrice(product.price, product.discount) > 0">
-                    <div class="current-price">
-                        {{ getDiscountedPrice(product.price, product.discount) | number }}đ
-                        <span *ngIf="product.unit && !isNumber(product.unit)">/ {{ product.unit }}</span>
-                        <span *ngIf="!product.unit || isNumber(product.unit)">/ Hộp</span>
+                    <div class="current-price-row">
+                        <div class="current-price">
+                            {{ getDiscountedPrice(product.price, product.discount) | number }}đ
+                            <span *ngIf="product.unit && !isNumber(product.unit)">/ {{ product.unit }}</span>
+                            <span *ngIf="!product.unit || isNumber(product.unit)">/ Hộp</span>
+                        </div>
+                        <div class="low-stock-remind"
+                            *ngIf="product.stock !== undefined && product.stock !== null && product.stock > 0 && product.stock < 5">
+                            <i class="bi bi-fire"></i> Chỉ còn: {{ product.stock }}
+                        </div>
                     </div>
 
                     <div class="old-price" *ngIf="product.discount > 0 && product.price > product.discount">
@@ -133,15 +141,23 @@
             </div>
 
             <div class="button-group">
-                <button class="btn-cart" (click)="addToCart(product, $event)">Thêm vào giỏ</button>
+                <ng-container
+                    *ngIf="product.stock === undefined || product.stock === null || product.stock > 0; else outOfStockButtons">
+                    <button class="btn-cart" (click)="addToCart(product, $event)">Thêm vào giỏ</button>
 
-                <ng-container *ngIf="getDiscountedPrice(product.price, product.discount) > 0">
-                    <button class="btn-buy" (click)="buyNow(product)">Mua ngay</button>
+                    <ng-container *ngIf="getDiscountedPrice(product.price, product.discount) > 0">
+                        <button class="btn-buy" (click)="buyNow(product)">Mua ngay</button>
+                    </ng-container>
+
+                    <ng-container *ngIf="getDiscountedPrice(product.price, product.discount) <= 0">
+                        <button class="btn-buy" (click)="requestConsultation(product)">Yêu cầu tư vấn</button>
+                    </ng-container>
                 </ng-container>
 
-                <ng-container *ngIf="getDiscountedPrice(product.price, product.discount) <= 0">
-                    <button class="btn-buy" (click)="requestConsultation(product)">Yêu cầu tư vấn</button>
-                </ng-container>
+                <ng-template #outOfStockButtons>
+                    <button class="btn-cart" (click)="requestConsultation(product)">Yêu cầu tư vấn</button>
+                    <button class="btn-buy" disabled style="background: #ccc; border-color: #ccc;">Hết hàng</button>
+                </ng-template>
             </div>
 
         </div>

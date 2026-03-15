@@ -523,6 +523,7 @@ app.get('/api/products', async (req, res) => {
         country: p.country || '',
         origin: p.origin || '',
         sku: p.sku || '',
+        stock: p.stock !== undefined ? p.stock : 99,
         rating: p.rating || null,
         gallery: p.gallery || [],
       };
@@ -642,6 +643,7 @@ app.get('/api/products/related/:id', async (req, res) => {
         image: p.image,
         categoryId: p.categoryId ? getId(p.categoryId) : null,
         slug: p.slug || id,
+        stock: p.stock !== undefined ? p.stock : 99,
         gallery: p.gallery || [],
       };
     });
@@ -1484,20 +1486,26 @@ app.post('/api/carts/add-item', async (req, res) => {
 
     const itemId = String(item._id || item.sku || item.slug || '');
     const now = new Date().toISOString();
+    const existIdx = items.findIndex(it => String(it._id || it.sku || '') === itemId);
 
-    const existIdx = items.findIndex(i =>
-      String(i._id || i.sku || '') === itemId || String(i.sku || '') === String(item.sku || '_')
+    // Fetch actual stock from Products DB
+    const pInfo = await productsCollection().findOne(
+      { $or: [{ _id: itemId }, { _id: mongoose.Types.ObjectId.isValid(itemId) ? new mongoose.Types.ObjectId(itemId) : null }, { sku: item.sku || itemId }].filter(q => q._id !== null) },
+      { projection: { stock: 1 } }
     );
+    const availableStock = pInfo?.stock !== undefined ? Number(pInfo.stock) : 99;
 
     if (existIdx > -1) {
-      items[existIdx].quantity = (Number(items[existIdx].quantity) || 0) + qty;
+      const nextQty = (Number(items[existIdx].quantity) || 0) + qty;
+      items[existIdx].quantity = Math.min(nextQty, availableStock);
       items[existIdx].updatedAt = now;
+      items[existIdx].stock = availableStock;
     } else {
       items.unshift({
         _id: itemId,
         sku: item.sku || '',
         productName: item.productName || item.name || '',
-        quantity: qty,
+        quantity: Math.min(qty, availableStock),
         discount: Number(item.discount) || 0,
         price: Number(item.price) || 0,
         hasPromotion: Boolean(item.hasPromotion),
@@ -1506,6 +1514,7 @@ app.post('/api/carts/add-item', async (req, res) => {
         category: item.category || '',
         addedAt: now,
         updatedAt: now,
+        stock: availableStock,
       });
     }
 
@@ -1580,16 +1589,21 @@ app.patch('/api/carts', async (req, res) => {
       }).flat();
 
       if (idFilters.length > 0) {
-        const products = await productsCollection().find({ $or: idFilters }, { projection: { _id: 1, image: 1, gallery: 1, images: 1, imageUrl: 1 } }).toArray();
+        const dbProducts = await productsCollection().find({ $or: idFilters }, { projection: { _id: 1, image: 1, gallery: 1, images: 1, imageUrl: 1, stock: 1 } }).toArray();
         const productMap = {};
-        products.forEach(p => {
+        dbProducts.forEach(p => {
           const pid = p._id?.$oid || String(p._id);
           const primaryImage = p.image || (Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '') || (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery[0] : '') || p.imageUrl || '';
-          productMap[pid] = primaryImage;
+          productMap[pid] = { image: primaryImage, stock: p.stock !== undefined ? p.stock : 99 };
         });
         itemsArray.forEach(it => {
           const itId = it._id?.$oid || String(it._id);
-          if (productMap[itId]) it.image = productMap[itId];
+          if (productMap[itId]) {
+            it.image = productMap[itId].image;
+            const available = productMap[itId].stock;
+            it.stock = available;
+            it.quantity = Math.min(Number(it.quantity) || 1, available);
+          }
         });
       }
     }

@@ -17,6 +17,7 @@ interface Product {
   price: number;
   originalPrice?: number;
   discount?: number;
+  stock?: number;
   categoryId?: any;
   slug?: string;  // dùng để điều hướng /product/:slug
 }
@@ -698,6 +699,18 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  requestConsultation(product?: any): void {
+    const queryParams: any = {};
+    if (product) {
+      const productId = product.id || product._id;
+      if (productId) {
+        queryParams.productId = productId;
+      }
+    }
+    this.router.navigate(['/consultation'], { queryParams });
+    window.scrollTo(0, 0);
+  }
+
   scrollFlashPrev(): void {
     if (!this.flashProductsSlider) return;
     const el = this.flashProductsSlider.nativeElement;
@@ -1087,6 +1100,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
       discount: product?.discount || 0,
       unit: product?.unit || 'Hộp',
       slug: this.getProductSlug(product),
+      stock: product?.stock !== undefined ? product.stock : 99
     }, 1);
 
     if (event) {
@@ -1100,7 +1114,11 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   /** "Mua ngay" → chuyển thẳng tới trang đặt hàng với sản phẩm này. */
   buyNow(product: Product | any): void {
     if (!product) return;
-    this.buyNowService.buyNow(product, 1);
+    const stock = product.stock !== undefined ? product.stock : 99;
+    this.buyNowService.buyNow({
+      ...product,
+      stock: stock
+    }, 1);
   }
 
   // seasonal diseases (Bệnh theo mùa) - images ordered left-to-right

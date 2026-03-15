@@ -30,8 +30,9 @@ export class ProductInfoSummary {
   private quickViewService = inject(QuickViewService);
 
   updateQuantity(delta: number): void {
+    const stock = this.product?.stock !== undefined ? this.product.stock : 99;
     const newQty = this.quantity + delta;
-    if (newQty >= 1) {
+    if (newQty >= 1 && newQty <= stock) {
       this.quantityChange.emit(newQty);
     }
   }
@@ -47,6 +48,7 @@ export class ProductInfoSummary {
       image: p.image || '',
       price: this.getCurrentPrice(),
       discount: p.discount || 0,
+      stock: p.stock || 0,
       unit: p.unit || 'Hộp',
       category: p.category || '',
       slug: p.slug || '',
@@ -60,11 +62,15 @@ export class ProductInfoSummary {
 
   buyNow(): void {
     if (!this.product) return;
+    const stock = this.product.stock !== undefined ? this.product.stock : 99;
+    const finalQty = Math.min(this.quantity, stock);
+
     this.buyNowService.buyNow({
       ...this.product,
       price: this.getOldPrice(),
       discount: this.product.discount || 0,
-    }, this.quantity);
+      stock: stock
+    }, finalQty);
 
     // Close the quick view popup after clicking Buy Now
     this.quickViewService.close();
