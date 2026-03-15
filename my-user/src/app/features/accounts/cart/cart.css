@@ -1,4 +1,8 @@
 /* Sidebar giỏ hàng - theo mẫu thiết kế VitaCare */
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
 .cart-sidebar-overlay {
   position: fixed;
   inset: 0;

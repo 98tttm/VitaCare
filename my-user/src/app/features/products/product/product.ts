@@ -12,7 +12,6 @@ import { ProductFilter } from '../product-filter/product-filter';
 import { FeatureCategories } from '../feature-categories/feature-categories';
 import { ProductList } from '../product-list/product-list';
 import { getLocalIcon } from '../../../shared/header/header-icons';
-import { BlogResults } from '../../blogs/blog-results/blog-results';
 import { RecentlyViewedProducts } from '../recently-viewed-products/recently-viewed-products';
 import { RecentlyViewedBlogs } from '../../blogs/recently-viewed-blogs/recently-viewed-blogs';
 
@@ -26,7 +25,6 @@ import { RecentlyViewedBlogs } from '../../blogs/recently-viewed-blogs/recently-
         ProductFilter,
         FeatureCategories,
         ProductList,
-        BlogResults,
         RecentlyViewedProducts,
         RecentlyViewedBlogs,
     ],
@@ -610,15 +608,22 @@ export class Product implements OnInit, OnDestroy {
         this.recentlyViewedBlogs = viewed.slice(0, 6);
     }
 
+    getBlogDetailLink(blog: any): string {
+        if (!blog) return '/bai-viet';
+        const slug = blog.slug || (blog.url && typeof blog.url === 'string' ? blog.url.replace(/.*\/bai-viet\/?/i, '').replace(/\.html$/i, '').trim() : '') || (blog._id ? String(blog._id) : '');
+        return slug ? `/bai-viet/${encodeURIComponent(slug)}` : '/bai-viet';
+    }
+
     trackRecentlyViewedBlog(blog: any) {
         if (!blog) return;
+        const blogUrl = blog.url || this.getBlogDetailLink(blog);
         let viewed = JSON.parse(localStorage.getItem('recentlyViewedBlogs') || '[]');
-        // Remove if already exists
-        viewed = viewed.filter((b: any) => b.url !== blog.url);
+        viewed = viewed.filter((b: any) => (b.url || b.link) !== blogUrl);
         // Add to top
         viewed.unshift({
             title: blog.title,
-            url: blog.url,
+            url: blogUrl,
+            link: this.getBlogDetailLink(blog),
             primaryImage: blog.primaryImage,
             shortDescription: blog.shortDescription,
             publishedAt: blog.publishedAt,

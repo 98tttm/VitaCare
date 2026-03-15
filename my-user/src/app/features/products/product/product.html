@@ -82,13 +82,92 @@
                 (removeFilter)="onRemoveFilter($event)" (clearAllFilters)="onClearAllFilters()">
             </app-product-list>
 
-            <!-- Blog Article List with Sidebar (tách thành component riêng) -->
-            <app-blog-results *ngIf="searchMode === 'article'" [blogs]="blogs" [displayedBlogs]="displayedBlogs"
-                [isLoading]="isLoading" [initialBlogLimit]="initialBlogLimit" [blogDisplayLimit]="blogDisplayLimit"
-                [searchHistory]="searchHistory" (loadMoreBlogs)="loadMoreBlogs()" (collapseBlogs)="collapseBlogs()"
-                (clearSearchHistory)="clearSearchHistory()" (removeSearchHistoryItem)="removeSearchHistoryItem($event)"
-                (trackRecentlyViewedBlog)="trackRecentlyViewedBlog($event)">
-            </app-blog-results>
+            <!-- Blog Article List with Sidebar -->
+            <div *ngIf="searchMode === 'article'" class="blog-layout-wrapper">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div *ngIf="isLoading" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Đang tải...</span>
+                            </div>
+                        </div>
+                        <div *ngIf="!isLoading && blogs.length > 0" class="blog-articles">
+                            <div class="blog-item d-flex gap-3 mb-3 pb-3 border-bottom" *ngFor="let blog of displayedBlogs">
+                                <div class="blog-image-wrapper flex-shrink-0">
+                                    <a [routerLink]="getBlogDetailLink(blog)" (click)="trackRecentlyViewedBlog(blog)">
+                                        <img [src]="blog.primaryImage?.url || blog.image || blog.imageUrl || 'assets/images/homepage/blogs/ngu_ngon.jpg'"
+                                            [alt]="blog.title" class="blog-thumbnail rounded-3" (error)="handleImageError($event)" />
+                                    </a>
+                                </div>
+                                <div class="blog-content flex-grow-1">
+                                    <a [routerLink]="getBlogDetailLink(blog)" class="text-decoration-none" (click)="trackRecentlyViewedBlog(blog)">
+                                        <h3 class="blog-title text-primary fw-bold mb-2">{{ blog.title }}</h3>
+                                    </a>
+                                    <p class="blog-description text-muted mb-1">{{ blog.shortDescription }}</p>
+                                    <div class="blog-meta d-flex align-items-center gap-3 text-muted small">
+                                        <span *ngIf="blog.publishedAt"><i class="bi bi-clock"></i> {{ blog.publishedAt | date: 'dd/MM/yyyy' }}</span>
+                                        <span *ngIf="blog.author?.fullName"><i class="bi bi-person"></i> {{ blog.author.fullName }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4 mb-4" *ngIf="blogs.length > initialBlogLimit">
+                                <button *ngIf="blogDisplayLimit < blogs.length" class="btn btn-link text-primary text-decoration-none fw-bold d-inline-flex align-items-center gap-2 px-4 py-2" style="font-size: 15px; letter-spacing: 0.3px;" (click)="loadMoreBlogs()">
+                                    <i class="bi bi-chevron-double-down" style="font-size: 15px;"></i>
+                                    <span>Xem thêm {{ blogs.length - blogDisplayLimit }} bài viết</span>
+                                </button>
+                                <button *ngIf="blogDisplayLimit > initialBlogLimit" class="btn btn-link text-primary text-decoration-none fw-bold d-inline-flex align-items-center gap-2 px-4 py-2" style="font-size: 15px; letter-spacing: 0.3px;" (click)="collapseBlogs()">
+                                    <i class="bi bi-chevron-double-up" style="font-size: 15px;"></i>
+                                    <span>Thu gọn</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div *ngIf="!isLoading && blogs.length === 0" class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <p class="text-muted mt-3">Không tìm thấy bài viết nào</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="search-history-sidebar bg-white rounded-3 p-3" style="position: sticky; top: 150px;">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-1">
+                                    <i class="bi bi-clock-history text-primary fs-5"></i>
+                                    <h5 class="mb-0 fw-bold text-primary">Lịch sử tìm kiếm</h5>
+                                </div>
+                                <button *ngIf="searchHistory.length > 0" class="btn btn-link text-muted text-decoration-none p-0 d-flex align-items-center gap-1" style="font-size: 12px;" (click)="clearSearchHistory()">
+                                    <i class="bi bi-trash3"></i>
+                                    <span>Xóa tất cả</span>
+                                </button>
+                            </div>
+                            <div *ngIf="searchHistory.length > 0" class="history-list">
+                                <div class="history-item d-flex align-items-start gap-2 mb-2 pb-2 border-bottom position-relative" *ngFor="let item of searchHistory.slice(0, 7)">
+                                    <i class="bi bi-clock-fill text-primary mt-1" style="font-size: 0.9rem;"></i>
+                                    <div class="flex-grow-1">
+                                        <a [routerLink]="['/products']" [queryParams]="{ keyword: item.keyword, mode: 'article' }" class="text-decoration-none text-dark history-link">
+                                            <strong class="d-block">{{ item.keyword }}</strong>
+                                        </a>
+                                        <small class="text-muted">{{ item.timestamp | date: 'dd/MM/yyyy HH:mm' }}</small>
+                                    </div>
+                                    <button class="btn btn-link text-muted p-0 ms-1" style="font-size: 14px; line-height: 1;" (click)="removeSearchHistoryItem(item.keyword)" title="Xóa">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div *ngIf="searchHistory.length === 0" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p class="mb-0 mt-2 small">Chưa có lịch sử tìm kiếm</p>
+                            </div>
+                            <div class="mt-3 pt-2 border-top">
+                                <h6 class="fw-bold mb-2">Từ khóa phổ biến</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'vitamin', mode: 'article' }" class="badge bg-light text-primary border border-primary px-3 py-2 text-decoration-none">Vitamin</a>
+                                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'canxi', mode: 'article' }" class="badge bg-light text-primary border border-primary px-3 py-2 text-decoration-none">Canxi</a>
+                                    <a [routerLink]="['/products']" [queryParams]="{ keyword: 'tăng chiều cao', mode: 'article' }" class="badge bg-light text-primary border border-primary px-3 py-2 text-decoration-none">Tăng chiều cao</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div> <!-- End main row -->
 

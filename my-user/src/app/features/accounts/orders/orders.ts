@@ -350,7 +350,7 @@ export class Orders implements OnInit, OnChanges {
   }
 
   getDisplayStatusClass(order: Order): string {
-    return `status - ${order.status} `;
+    return `order-status-card status-${order.status}`;
   }
 
   formatDate(dateStr: string): string {

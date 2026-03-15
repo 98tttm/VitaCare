@@ -4,13 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 
 @Component({
-    selector: 'app-chuyen-de',
+    selector: 'app-topic',
     standalone: true,
     imports: [CommonModule, RouterLink],
-    templateUrl: './chuyen-de.html',
-    styleUrl: './chuyen-de.css'
+    templateUrl: './topic.html',
+    styleUrl: './topic.css'
 })
-export class ChuyenDe implements OnInit {
+export class Topic implements OnInit {
     featuredTopicCategories: { name: string; count: number; slug: string }[] = [];
     loading = true;
 

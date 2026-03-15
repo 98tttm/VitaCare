@@ -1,12 +1,17 @@
 /* Account Component - Bộ nhận diện VitaCare */
 /* Primary: #00589F | Light: #43A2E6 | Soft: #AACEF2 | Purple: #BAA7DE */
 
+.page-container {
+  font-family: 'Inter', sans-serif;
+}
+
 .account-wrapper {
   display: flex;
   gap: 24px;
   padding: 10px 0;
   max-width: 1200px;
   margin: 0 auto;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Sidebar - nền gradient VitaCare (Primary #00589F) */
@@ -59,14 +64,14 @@
   font-weight: 600;
   margin-bottom: 5px;
   color: #fff;
-  font-family: var(--font-content-title-family);
+  font-family: 'Inter', sans-serif;
 }
 
 .user-phone {
   font-size: var(--font-size-sm);
   color: rgba(255, 255, 255, 0.8);
   margin: 0;
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
 }
 
 /* Navigation - khoảng cách rộng, font nổi bật */
@@ -87,7 +92,7 @@
   font-size: 15px;
   font-weight: 500;
   position: relative;
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
   margin-left: 0;
   overflow: hidden;
   transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
@@ -196,7 +201,7 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  font-family: 'Arimo', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: background-color 0.25s ease, transform 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 

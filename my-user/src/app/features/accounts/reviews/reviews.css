@@ -1,5 +1,9 @@
 /* Reviews Component Styles - Matching Orders Component */
 
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
 /* ===== REVIEWS PAGE LAYOUT - cùng padding với orders (override vc_container 15px) ===== */
 .reviews-container {
     width: 100%;
@@ -7,7 +11,7 @@
     margin: 0 auto;
     padding-left: 40px !important;
     padding-right: 40px !important;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     color: var(--color-text-primary);
 }
 
@@ -20,7 +24,7 @@
 }
 
 .reviews-title {
-    font-family: var(--font-content-title-family);
+    font-family: 'Inter', sans-serif;
     font-size: var(--font-content-title-size);
     font-weight: var(--font-content-title-weight);
     color: var(--font-content-title-color);
@@ -32,7 +36,7 @@
     color: var(--color-text-secondary);
     font-size: 16px;
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* ===== SEARCH ===== */
@@ -84,7 +88,7 @@
     font-size: 14px;
     width: 450px;
     background: white;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     transition: all 0.2s ease;
 }
 
@@ -143,7 +147,7 @@
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.3s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     position: relative;
     display: flex;
     align-items: center;
@@ -232,7 +236,7 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--color-text-secondary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* ===== REVIEWS LIST ===== */
@@ -271,7 +275,7 @@
     margin-bottom: 0;
     width: 100%;
     min-width: 200px;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     border: none;
     transition: background-color 0.2s;
     cursor: pointer;
@@ -378,7 +382,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0 0 2px 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     line-height: 1.4;
 }
 
@@ -386,7 +390,7 @@
     font-size: 13px;
     color: var(--color-text-secondary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .product-right {
@@ -401,7 +405,7 @@
     font-size: 13px;
     color: var(--color-text-secondary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .product-total {
@@ -409,7 +413,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* Free Item */
@@ -498,7 +502,7 @@
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* Order Summary */
@@ -548,14 +552,14 @@
 .total-label {
     font-size: 14px;
     color: var(--color-text-secondary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .total-amount {
     font-size: 18px;
     font-weight: 700;
     color: var(--color-primary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* Action Buttons */
@@ -568,7 +572,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     white-space: nowrap;
 }
 
@@ -647,7 +651,7 @@
     color: var(--color-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .filter-btn:hover {
@@ -717,7 +721,7 @@
     color: var(--color-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .sort-btn:hover {
@@ -781,7 +785,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     transition: color 0.2s ease;
 }
@@ -794,7 +798,7 @@
     font-size: 13px;
     color: var(--color-text-secondary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .review-header-right {
@@ -814,7 +818,7 @@
     color: var(--color-primary) !important;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .view-order-btn:hover {
@@ -847,13 +851,13 @@
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .review-date {
     font-size: 13px;
     color: var(--color-text-secondary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .review-text {
@@ -861,7 +865,7 @@
     line-height: 1.6;
     color: var(--color-text-primary);
     margin-bottom: 12px;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .review-images {
@@ -905,7 +909,7 @@
     color: var(--color-primary);
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .edit-review-btn:hover {

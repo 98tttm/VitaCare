@@ -4,6 +4,7 @@
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--color-bg-light) !important;
+  font-family: 'Inter', sans-serif;
 }
 
 /* ========== TYPOGRAPHY TRANG ORDER (3 cấp thống nhất) ==========
@@ -16,7 +17,7 @@
   min-height: 100dvh;
   background-color: var(--color-bg-light) !important;
   padding: var(--spacing-4) 0 var(--spacing-8);
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
 }
 
 .order-container {
@@ -1161,7 +1162,7 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
   padding: var(--spacing-6);
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
   animation: order-addr-slideUp 0.25s ease-out;
 }
 
@@ -1188,7 +1189,7 @@
 }
 
 .order-addr-form-title {
-  font-family: var(--font-content-title-family);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
@@ -1214,7 +1215,7 @@
   align-items: center;
   gap: var(--spacing-2);
   margin-bottom: var(--spacing-3);
-  font-family: var(--font-family-title);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
@@ -1258,7 +1259,7 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--color-neutral-40);
   font-size: var(--font-size-sm);
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
   color: var(--color-text-primary);
   background: var(--color-neutral-10);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -1312,7 +1313,7 @@
   min-width: 120px;
   padding: 10px 20px;
   border-radius: var(--radius-md);
-  font-family: var(--font-family-content);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
@@ -1444,7 +1445,7 @@
 }
 
 .vc-order-success-title {
-  font-family: var(--font-family-title, 'Inter', sans-serif);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-xl, 20px);
   font-weight: 700;
   color: var(--color-text-primary, #0A0A0A);
@@ -1452,7 +1453,7 @@
 }
 
 .vc-order-success-desc {
-  font-family: var(--font-family-base, 'Arimo', sans-serif);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-sm, 14px);
   color: var(--color-text-secondary, #616161);
   line-height: 1.6;
@@ -1477,7 +1478,7 @@
 }
 
 .vc-order-success-code-value {
-  font-family: var(--font-family-title, 'Inter', sans-serif);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-lg, 18px);
   font-weight: 700;
   color: var(--color-primary, #00589F);
@@ -1494,7 +1495,7 @@
   width: 100%;
   padding: 12px 20px;
   border-radius: var(--radius-md, 8px);
-  font-family: var(--font-family-title, 'Inter', sans-serif);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-base, 15px);
   font-weight: 600;
   border: 1.5px solid transparent;

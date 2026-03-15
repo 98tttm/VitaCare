@@ -148,27 +148,27 @@ export const routes: Routes = [
   },
   {
     path: 'bai-viet/danh-muc/:categorySlug/:subcategorySlug',
-    loadComponent: () => import('./features/blogs/bai-viet/blog-sub-category/blog-sub-category').then(m => m.BlogSubCategory),
+    loadComponent: () => import('./features/blogs/blog-sub-category/blog-sub-category').then(m => m.BlogSubCategory),
   },
   {
-    path: 'bai-viet/chuyen-de/:specialtySlug',
-    loadComponent: () => import('./features/blogs/bai-viet/blog-category/blog-category').then(m => m.BlogCategory),
+    path: 'bai-viet/topic/:specialtySlug',
+    loadComponent: () => import('./features/blogs/blog-category/blog-category').then(m => m.BlogCategory),
   },
   {
     path: 'bai-viet/danh-muc/:categorySlug',
-    loadComponent: () => import('./features/blogs/bai-viet/blog-category/blog-category').then(m => m.BlogCategory),
+    loadComponent: () => import('./features/blogs/blog-category/blog-category').then(m => m.BlogCategory),
   },
   {
-    path: 'chuyen-de',
-    loadComponent: () => import('./features/blogs/bai-viet/chuyen-de/chuyen-de').then(m => m.ChuyenDe),
+    path: 'topic',
+    loadComponent: () => import('./features/blogs/topic/topic').then(m => m.Topic),
   },
   {
     path: 'bai-viet/:slug',
-    loadComponent: () => import('./features/blogs/bai-viet/blog-detail/blog-detail').then(m => m.BlogDetail),
+    loadComponent: () => import('./features/blogs/blog-detail/blog-detail').then(m => m.BlogDetail),
   },
   {
     path: 'bai-viet',
-    loadComponent: () => import('./features/blogs/bai-viet/blog/blog').then(m => m.Blog),
+    loadComponent: () => import('./features/blogs/blog/blog').then(m => m.Blog),
   },
   {
     path: 'disease',

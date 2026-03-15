@@ -46,7 +46,7 @@
             <div *ngIf="getFilteredOrders().length > 0" class="orders-list">
                 <div *ngFor="let order of getFilteredOrders()" class="order-wrapper">
                     <!-- Status Card - Outside the main order card -->
-                    <div class="order-status-card" [class]="getDisplayStatusClass(order)"
+                    <div [class]="getDisplayStatusClass(order)"
                         (click)="$event.stopPropagation()">
                         <div class="status-left">
                             <span class="status-text">{{ getDisplayStatusLabel(order) }}</span>

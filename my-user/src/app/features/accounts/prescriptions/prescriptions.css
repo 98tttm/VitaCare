@@ -1,5 +1,9 @@
 /* Prescriptions Component Styles */
 
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
 /* ===== PRESCRIPTIONS PAGE LAYOUT ===== */
 .prescriptions-page {
     width: 100%;
@@ -10,7 +14,7 @@
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 40px;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     color: var(--color-text-primary);
 }
 
@@ -23,7 +27,7 @@
 }
 
 .prescriptions-title {
-    font-family: var(--font-content-title-family);
+    font-family: 'Inter', sans-serif;
     font-size: var(--font-content-title-size);
     font-weight: var(--font-content-title-weight);
     color: var(--font-content-title-color);
@@ -36,7 +40,7 @@
     /* #808080 */
     font-size: 16px;
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     /* Lexend/Arimo */
 }
 
@@ -95,7 +99,7 @@
     font-size: 14px;
     width: 450px;
     background: white;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     transition: all 0.2s ease;
 }
 
@@ -217,7 +221,7 @@
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.3s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     position: relative;
     display: flex;
     align-items: center;
@@ -355,7 +359,7 @@
     margin-bottom: 0;
     width: 100%;
     min-width: 200px;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     border: none;
 }
 
@@ -395,7 +399,7 @@
 }
 
 .status-prescription-code {
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* Status Colors - Mapped to Variables */
@@ -534,7 +538,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0 0 2px 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     line-height: 1.4;
 }
 
@@ -542,7 +546,7 @@
     font-size: 13px;
     color: var(--color-text-secondary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .product-right {
@@ -557,7 +561,7 @@
     font-size: 13px;
     color: var(--color-text-secondary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .product-total {
@@ -565,7 +569,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* Free Item */
@@ -649,7 +653,7 @@
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 
@@ -711,7 +715,7 @@
 .total-label {
     font-size: 14px;
     color: var(--color-text-secondary);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .total-amount {
@@ -719,7 +723,7 @@
     font-weight: 700;
     color: var(--color-primary);
     /* Blue */
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* Action Buttons */
@@ -732,7 +736,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     white-space: nowrap;
 }
 
@@ -858,7 +862,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .close-btn {
@@ -890,7 +894,7 @@
 .prescription-detail-modal .modal-title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
-    font-family: var(--font-family-title);
+    font-family: 'Inter', sans-serif;
     color: var(--color-text-inverse);
 }
 
@@ -914,7 +918,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0 0 15px 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 /* Modal Product List */
@@ -963,7 +967,7 @@
     border: 1px solid var(--color-neutral-40) !important;
     border-radius: 8px !important;
     font-size: 14px !important;
-    font-family: var(--font-family-base) !important;
+    font-family: 'Inter', sans-serif !important;
     background: white !important;
     color: var(--color-text-primary) !important;
     cursor: pointer !important;
@@ -985,7 +989,7 @@
     border: 1px solid var(--color-neutral-40);
     border-radius: 4px;
     font-size: 14px;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     min-height: 100px;
 }
 
@@ -1010,7 +1014,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     border: 1px solid;
 }
 
@@ -1053,7 +1057,7 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0 0 10px 0;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .success-ok-btn {
@@ -1066,7 +1070,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     min-width: 100px;
 }
 
@@ -1099,7 +1103,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     border: 1px solid #00589F;
     min-width: 96px;
 }
@@ -1451,27 +1455,27 @@
 
 .detail-label {
     font-weight: var(--font-weight-medium);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
 }
 
 .detail-value {
     font-weight: var(--font-weight-medium);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
     text-align: right;
 }
 
 .detail-code {
-    font-family: var(--font-family-mono, var(--font-family-base));
+    font-family: 'Inter', sans-serif;
 }
 
 .prescription-detail-column .section-title {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
-    font-family: var(--font-family-title);
+    font-family: 'Inter', sans-serif;
     color: var(--color-primary) !important;
     margin: 0 0 var(--spacing-3) 0;
     padding-bottom: var(--spacing-2);
@@ -1623,7 +1627,7 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--color-primary);
-    font-family: var(--font-family-title);
+    font-family: 'Inter', sans-serif;
 }
 
 .prescription-status-badge {
@@ -1631,7 +1635,7 @@
     padding: 4px var(--spacing-2);
     border-radius: var(--radius-full);
     font-weight: var(--font-weight-medium);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
 }
 
@@ -1640,7 +1644,7 @@
     flex-direction: column;
     gap: var(--spacing-1);
     font-size: var(--font-size-xs);
-    font-family: var(--font-family-base);
+    font-family: 'Inter', sans-serif;
 }
 
 .prescription-date {

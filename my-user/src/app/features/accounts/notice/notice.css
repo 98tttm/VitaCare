@@ -1,5 +1,9 @@
 /* Notice - Thông báo tài khoản | Đồng bộ với Orders (padding, header, tab, session) */
 
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
 /* ===== CONTAINER - cùng padding với orders (override vc_container 15px) ===== */
 .notice-container {
   width: 100%;
@@ -7,7 +11,7 @@
   margin: 0 auto;
   padding-left: 40px !important;
   padding-right: 40px !important;
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
   color: var(--color-text-primary);
 }
 
@@ -20,7 +24,7 @@
 }
 
 .notice-title {
-  font-family: var(--font-content-title-family);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-content-title-size);
   font-weight: var(--font-content-title-weight);
   color: var(--font-content-title-color);
@@ -32,7 +36,7 @@
   color: var(--color-text-secondary);
   font-size: 16px;
   margin: 0;
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
 }
 
 .notice-mark-all-btn {
@@ -43,7 +47,7 @@
   color: white;
   font-size: 14px;
   font-weight: 500;
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: background 0.2s ease, opacity 0.2s ease;
   white-space: nowrap;
@@ -99,7 +103,7 @@
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.3s ease;
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
   position: relative;
   display: flex;
   align-items: center;
@@ -219,7 +223,7 @@
   margin-bottom: 0;
   width: 100%;
   min-width: 200px;
-  font-family: var(--font-family-base);
+  font-family: 'Inter', sans-serif;
   border: none;
 }
 
@@ -319,7 +323,7 @@
 }
 
 .notice-card-title {
-  font-family: var(--font-family-title);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
@@ -405,7 +409,7 @@
 }
 
 .notice-empty-title {
-  font-family: var(--font-family-title);
+  font-family: 'Inter', sans-serif;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
