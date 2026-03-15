@@ -1,442 +1,848 @@
-/* =========================================
-   DISEASE LOOKUP PAGE - LONG CHAU STYLE
-   ========================================= */
+/* ==========================================================================
+   VITACARE DISEASE PORTAL REBUILD
+   ========================================================================== */
 
-.vc_disease_lookup_page {
-    background-color: #E5EEF8;
-    /*Nền xanh nhạt*/
+:host {
+    display: block;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.vc_portal_wrapper {
+    background: #f8fbff;
     min-height: 100vh;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    padding-bottom: 60px;
 }
 
-/* Breadcrumb dùng chung theme với product list (màu xám / xanh) */
+.vc_portal_container {
+    max-width: 1200px;
+    /* Narrowed from 1280px */
+    margin: 0 auto;
+}
 
-.vc_page_title {
-    font-size: 28px;
+/* ---------------- SECTION: HERO HEADING ---------------- */
+.vc_portal_hero {
+    text-align: center;
+    padding: 20px 20px 10px;
+    /* Reduced bottom padding from 40px to 10px */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    scroll-margin-top: 120px;
+    /* Alignment for cards scroll */
+}
+
+.vc_hero_badge {
+    background: #deebf7;
+    color: #00589f;
+    font-size: 11px;
     font-weight: 800;
-    color: #1a202c;
-    margin-bottom: 24px;
+    padding: 8px 24px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    /* Reduced from 20px */
+    display: inline-block;
+    opacity: 0;
+    animation: slideUpFade 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) 0.1s forwards;
 }
 
-.vc_body_section_header {
+.vc_hero_main_title {
+    font-size: 42px;
+    font-weight: 900;
+    color: #00589f;
+    margin-bottom: 5px;
+    /* Reduced from 15px */
+    opacity: 0;
+    animation: slideUpFade 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s forwards;
+}
+
+.vc_hero_sub_text {
+    font-size: 16px;
+    color: #5a7184;
+    max-width: 1000px;
+    /* Increased to keep on one line */
+    line-height: 1.6;
+    margin: 0 auto;
+    font-weight: 500;
+    opacity: 0;
+    animation: slideUpFade 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) 0.3s forwards;
+}
+
+/* ---------------- RESTORED: DISPLAY CARDS STYLES ---------------- */
+.vc_hero_cards_container {
+    margin-top: 15px;
+    /* Reduced from 40px */
+}
+
+.vc_display_card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 200px;
+    /* Reduced from 240px */
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: pointer;
+    background: #fff;
+    border: 4px solid #fff;
+    opacity: 0;
+    animation: slideUpFade 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.col-md-4:nth-child(1) .vc_display_card {
+    animation-delay: 0.2s;
+}
+
+.col-md-4:nth-child(2) .vc_display_card {
+    animation-delay: 0.35s;
+}
+
+.col-md-4:nth-child(3) .vc_display_card {
+    animation-delay: 0.5s;
+}
+
+.vc_display_card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.vc_display_overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 88, 159, 0.7) 0%, transparent 60%);
+    display: flex;
+    align-items: flex-end;
+    padding: 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+.vc_display_overlay span {
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.vc_aside_item {
     display: flex;
     align-items: center;
-    font-size: 18px;
-    color: #00589f;
-    /* Màu xanh Vitacare */
-    margin-top: 20px;
-    /* Nhích xuống để không dính breadcrumb */
-}
-
-.vc_body_section_header i {
-    color: #00589f !important;
-}
-
-.vc_body_title {
-    font-size: 18px;
-    color: #00589f;
-    /* Đồng bộ màu xanh */
-}
-
-/* ---------------- BODY MAP CARD ---------------- */
-.vc_lookup_inner {
-    display: flex;
-    gap: 0;
-    min-height: auto;
-    border-radius: 16px;
-    padding: 20px 0 0 0 !important;
-    /* Nén gọn lại theo yêu cầu */
+    padding: 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     overflow: hidden;
 }
 
-/* Visualization */
-.vc_lookup_visual {
-    flex: 0 0 30%;
-    border-right: 1px solid #edf2f7;
-    padding: 0 0 20px 20px;
-    /* Bỏ padding phải để dính sát sidebar */
-    margin-top: 0;
-    /* Hiện đầy đủ đầu ảnh */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.vc_aside_item:hover {
+    background: #f8fafc;
+    padding-left: 28px;
+    /* Smooth slide effect */
 }
 
-.vc_body_image_container {
-    height: 460px;
-    /* Phóng to ảnh lên thêm 1 xíu nữa theo yêu cầu */
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    /* Đẩy ảnh sang phải để dính sát sidebar */
-    width: 100%;
+.vc_aside_item .vc_item_name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    transition: color 0.3s ease;
 }
 
-.vc_body_full_img {
-    height: 100%;
-    max-width: 100%;
-    object-fit: contain;
+.vc_aside_item:hover .vc_item_name {
+    color: #1e5ba0;
+    /* VitaCare Blue */
 }
 
-/* Selectors (Sidebar style) */
-.vc_lookup_selectors {
-    flex: 0 0 15%;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    border-right: 1px solid #edf2f7;
-    background-color: #fff;
-    /* Sidebar trắng tinh */
-}
-
-.vc_part_btn_lc {
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    height: 60px;
-    /* Giãn thêm 1 xíu để thoáng và sang hơn */
-    border: none;
-    background: transparent;
-    transition: all 0.2s ease;
-    width: 100%;
-    position: relative;
-    border-bottom: 1px solid #f8fafc;
-    cursor: pointer;
-}
-
-.vc_part_btn_lc:hover {
-    background-color: #f1f5f9;
-    /* Chỉ đổi nền xám khi hover */
-}
-
-.vc_part_btn_lc.active {
-    background-color: #f1f5f9;
-    color: #00589f;
-    /* Màu xanh Vitacare */
-    font-weight: 700;
-}
-
-/* Thanh dọc màu xanh (Vertical Tag) - CHỈ HIỆN KHI ACTIVE */
-.vc_part_btn_lc::after {
+/* Optional: Add a small indicator pipe on hover */
+.vc_aside_item::before {
     content: '';
     position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background-color: #00589f;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 0;
+    background: #1e5ba0;
+    border-radius: 0 4px 4px 0;
+    transition: all 0.3s ease;
 }
 
-.vc_part_btn_lc.active::after {
+.vc_aside_item:hover::before {
+    left: 0;
+    height: 60%;
+}
+
+.vc_display_card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 30px 60px rgba(0, 88, 159, 0.15);
+    border-color: #00589f;
+}
+
+.vc_display_card:hover img {
+    transform: scale(1.1);
+}
+
+.vc_display_card:hover .vc_display_overlay {
     opacity: 1;
+    transform: translateY(0);
 }
 
-.vc_part_icon_wrap_lc {
-    width: 32px;
-    height: 32px;
-    margin-right: 12px;
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ---------------- SECTION: LOOKUP PORTAL ---------------- */
+.vc_lookup_session {
+    padding-bottom: 40px;
+    scroll-margin-top: 120px;
+    /* Offset for smooth scroll alignment */
+}
+
+.vc_portal_external_header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: transparent;
-    /* Loại bỏ vòng tròn xanh */
-    border-radius: 50%;
+    justify-content: flex-start;
+    padding: 10px 0;
+    margin-left: -5px;
+    /* Slight nudge left to perfectly align with margin tổng */
+    margin-bottom: 8px;
+}
+
+.vc_header_left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.vc_title_group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vc_title_group i {
+    font-size: 24px;
+    /* Slightly adjusted for BI icon */
+    color: #1e5ba0;
+    margin-right: 2px;
+}
+
+.vc_section_title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1e5ba0;
+    margin: 0;
+}
+
+
+.vc_lookup_portal_card {
+    background: #fff;
+    border-radius: 20px;
+    /* Increased corner radius for premium look */
+    box-shadow: 0 15px 50px rgba(0, 88, 159, 0.12), 0 5px 15px rgba(0, 0, 0, 0.05);
+    /* Strong blue shadow */
+    overflow: hidden;
+    border: 1px solid rgba(0, 88, 159, 0.08);
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+}
+
+.vc_lookup_portal_card:hover {
+    box-shadow: 0 30px 80px rgba(0, 88, 159, 0.2);
+    /* Dynamic hover shadow */
+}
+
+/* 3-Column Portal Body */
+.vc_lookup_portal_body {
+    display: flex;
+    height: 460px;
+    /* Reduced from 500px for a more compact, streamlined look */
+}
+
+/* 1. 3D Section (Left - wider) */
+.vc_portal_3d_section {
+    flex: 1.25;
+    /* Adjusted from 1.3 to give slightly more space to right column */
+    position: relative;
+    background: radial-gradient(circle at center, #f4f9ff 0%, #e6f2ff 100%);
+    /* Màu xanh nhạt */
     overflow: hidden;
 }
 
-.vc_part_btn_lc.active .vc_part_icon_wrap_lc {
-    background: transparent;
-}
-
-.vc_part_icon_wrap_lc img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    opacity: 0.7;
-}
-
-.vc_part_btn_lc.active .vc_part_icon_wrap_lc img {
-    filter: none;
-    /* Không cần invert màu trắng nữa */
-    opacity: 1;
-}
-
-.vc_part_name_lc {
-    font-size: 15px;
-    color: #4a5568;
-    font-weight: 500;
-}
-
-.vc_part_btn_lc.active .vc_part_name_lc {
-    color: #1a202c;
-    font-weight: 700;
-}
-
-.vc_visual_disclaimer_lc {
-    margin-top: 5px;
-    /* Giảm gap để nhường chỗ cho ảnh to hơn */
-    font-size: 10px !important;
-    color: #4a5568;
-    font-style: italic !important;
-    font-weight: 700 !important;
-    opacity: 0.9;
-    text-align: center;
+.vc_three_canvas {
     width: 100%;
-    display: block;
+    height: 100%;
+    cursor: grab;
+    opacity: 0;
+    filter: blur(15px);
+    transform: scale(0.95);
+    transition: opacity 2s ease-out, filter 2.5s ease-out, transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.arrow-icon {
-    font-size: 12px;
+.vc_three_canvas.vc_3d_ready {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
 }
 
-/* Results Content */
-.vc_lookup_results_lc {
-    flex: 1;
+.vc_portal_loader {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
     display: flex;
     flex-direction: column;
-    padding: 20px 24px 24.5px 24px;
-    /* Căn chỉnh để 2 bên dài bằng nhau đúng 420px */
-    background: #f8fafc;
-    /* Màu xám nhạt để phân tách với sidebar trắng */
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    z-index: 10;
 }
 
-.vc_disease_grid_lc {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0 40px;
+/* 3D Hint & Disclaimer Wrapper */
+.vc_portal_hint_wrapper {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
 }
 
-.vc_disease_row_lc {
-    padding: 10px 0;
-    /* Nén lại để khớp tuyệt đối với sidebar cao 420px */
-    border-bottom: 0.5px solid #edf2f7;
+.vc_portal_hint {
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: #4a5568;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    line-height: 1.4;
+    border: 1px solid #edf2f7;
+}
+
+.vc_portal_disclaimer {
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: 500;
+    white-space: nowrap;
+    font-style: italic;
+}
+
+.vc_portal_parts_list {
+    width: 165px;
+    /* Thu hẹp lại một chút cho vừa vặn */
+    border-left: 1px solid #f0f4f8;
+    background: #fdfdfe;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 10px 5px;
+    gap: 12px;
+    /* Giảm khoảng cách để menu cô đọng hơn */
+}
+
+.vc_portal_part_btn {
+    display: flex;
+    flex-direction: row;
+    /* Changed from column */
+    align-items: center;
+    justify-content: flex-start;
+    /* Align to start for row layout */
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 13.5px;
-    color: #111827;
     transition: all 0.2s;
-    line-height: 1.3;
-    font-family: 'Inter', system-ui, sans-serif;
+    border: none;
+}
+
+.vc_portal_part_btn:hover {
+    background: #f4f7f9;
+    /* Nền nhạt, không viền */
+    color: var(--color-primary);
+}
+
+.vc_portal_part_btn:hover span {
+    color: var(--color-primary);
+}
+
+.vc_portal_part_btn.active {
+    background: #f4f7f9;
+}
+
+.vc_part_icon {
+    width: 36px;
+    /* Giảm size xuống mức vừa vặn nhất */
+    height: 36px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+.vc_part_icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.vc_portal_part_btn span {
+    font-size: 15px;
+    /* Increased font for readability */
+    font-weight: 700;
+    color: #4a5568;
+    text-align: left;
+    /* Better for wider layout */
+    white-space: nowrap;
+    /* Prevent wrapping */
+}
+
+.vc_portal_part_btn.active span {
+    color: var(--color-primary);
+
+}
+
+/* 3. Results Aside (Right - narrower) */
+.vc_portal_results_aside {
+    flex: 1.75;
+    /* Adjusted from 1.7 to increase right column size */
+    border-left: 1px solid #f0f4f8;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.vc_aside_header {
+    padding: 20px;
+    border-bottom: 1px solid #f8faff;
+}
+
+.vc_aside_count {
+    font-size: 14px;
+    color: #6a7c92;
     font-weight: 600;
 }
 
-.vc_disease_row_lc:hover {
-    color: #00589f !important;
-    /* Luôn là màu xanh brand khi hover */
-    padding-left: 2px;
+.vc_aside_count b {
+    color: var(--color-primary);
 }
 
-.vc_list_loader_lc,
-.vc_empty_state_lc {
+.vc_aside_list_scroll {
+    flex: 1;
+    overflow-y: hidden;
+    /* No scrolling */
+    padding: 15px 0 0 0;
+    /* Shift down a bit */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* 2 Columns grid */
+    align-content: flex-start;
+}
+
+.vc_aside_item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    padding: 8px 15px;
+    /* Minimal padding for high density */
+    background: transparent;
+    border-bottom: 1px solid #f1f5f9;
+    border-right: 1px solid #f1f5f9;
+    /* Vertical divider */
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 40px;
+}
+
+.vc_aside_item:nth-child(2n) {
+    border-right: none;
+    /* No vertical divider for right column */
+}
+
+.vc_aside_item:hover {
+    background: #f8fbff;
+    color: #00589f;
+}
+
+.vc_item_name {
+    font-size: 13px;
+    /* Slightly smaller for density */
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.vc_aside_item i {
+    font-size: 14px;
+    /* Slightly smaller icon */
+    color: #cbd5e0;
+}
+
+.vc_aside_empty {
+    grid-column: 1 / -1;
+    /* Luôn chiếm toàn bộ chiều ngang để không làm lệch lưới */
+    text-align: center;
     padding: 60px 0;
+    color: #94a3b8;
+    font-size: 14px;
 }
 
-/* ---------------- PAGINATION ---------------- */
-.vc_pagination_lc {
+.vc_aside_pagination {
+    padding: 0 15px 15px;
+    /* Nudged up: removed top padding */
+    border-top: none;
+    /* Removed line between pagination and list */
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Căn giữa phân trang */
-    gap: 8px;
-    padding: 20px 0;
+    gap: 12px;
 }
 
-.page-numbers {
+.vc_pagination_group {
+    display: flex;
+    gap: 4px;
+}
+
+.vc_pagination_numbers {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.page-num-btn {
-    width: 34px;
-    height: 34px;
-    border: 1px solid #e2e8f0;
-    background: #fff;
+.vc_aside_pagination button {
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: #4a5568;
-    transition: all 0.2s;
-}
-
-.page-num-btn:hover {
-    border-color: #00589f;
-    color: #00589f;
-}
-
-.page-num-btn.active {
-    background-color: #00589f;
-    color: #fff;
-    border-color: #00589f;
-    box-shadow: 0 4px 6px -1px rgba(0, 88, 159, 0.3);
-}
-
-.page-arrow {
-    width: 34px;
-    height: 34px;
-    border: 1px solid #e2e8f0;
-    background: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #cbd5e0;
-}
-
-.page-arrow:not(:disabled) {
-    color: #718096;
+    border: 1px solid transparent;
+    background: transparent;
     cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.page-arrow:not(:disabled):hover {
-    border-color: #00589f;
+.vc_aside_pagination button.vc_page_nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #1e5ba0;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 8px;
+    font-size: 18px;
+    /* Slightly larger icons */
+    padding: 0;
+}
+
+.vc_aside_pagination button.vc_page_nav i {
+    display: block;
+}
+
+.vc_aside_pagination button.vc_page_nav:hover:not(:disabled) {
+    color: #004695;
+    transform: scale(1.2);
+}
+
+.vc_aside_pagination button.vc_page_nav:disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.vc_aside_pagination button:hover:not(:disabled) {
+    color: var(--color-primary);
+    background: #f0f7ff;
+}
+
+.vc_aside_pagination button.active {
+    background: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    font-weight: 700;
+}
+
+.vc_aside_pagination button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.vc_page_dots {
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* --- 3D Markers Styling --- */
+.vc_3d_markers_overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.vc_3d_marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    z-index: 21;
+    transition: opacity 0.3s ease;
+}
+
+.vc_marker_dot {
+    width: 8px;
+    height: 8px;
+    background: #4489fb;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(68, 137, 251, 0.4);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.vc_marker_dot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 1.5px solid rgba(68, 137, 251, 0.3);
+    border-radius: 50%;
+    animation: pulseMarker 2s infinite;
+}
+
+@keyframes pulseMarker {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+.vc_marker_label {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(2px);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 8px;
+    font-weight: 800;
     color: #00589f;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    opacity: 0.6;
+    transition: all 0.3s ease;
 }
 
-.page-dots {
-    color: #a0aec0;
-    margin: 0 4px;
+.vc_3d_marker:hover .vc_marker_dot {
+    transform: scale(1.4);
+    background: #1e5ba0;
+    box-shadow: 0 0 12px rgba(30, 91, 160, 0.8);
 }
 
-/* ---------------- GROUP CARDS (NEW) ---------------- */
-.vc_group_grid_lc {
+.vc_3d_marker:hover .vc_marker_label {
+    opacity: 1;
+    transform: translateY(-1px);
+    background: #1e5ba0;
+    color: #fff;
+    z-index: 30;
+}
+
+.vc_3d_marker.active .vc_marker_dot {
+    background: #1e5ba0;
+    transform: scale(1.5);
+    box-shadow: 0 0 15px rgba(30, 91, 160, 1);
+}
+
+.vc_3d_marker.active .vc_marker_label {
+    opacity: 1;
+    background: #1e5ba0;
+    color: #fff;
+    font-weight: 900;
+}
+
+/* ==================== SECTION 2: SPECIALIZED GROUPS GRID ==================== */
+.vc_groups_session {
+    margin-top: 20px;
+    padding-bottom: 60px;
+}
+
+.vc_groups_grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
+    margin-top: 15px;
 }
 
-.vc_group_card_lc {
+.vc_group_card {
     background: #fff;
-    border-radius: 20px;
-    padding: 24px;
+    border-radius: 16px;
+    padding: 20px 16px;
+    /* Reduced vertical padding */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-    border: 1.5px solid transparent;
-    /* Chuẩn bị stroke cho hover */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-.vc_group_card_lc:hover {
-    transform: translateY(-8px);
-    /* Nhảy khung lên cao hơn chút */
-    box-shadow: 0 15px 30px rgba(0, 88, 159, 0.1);
-    border-color: #00589f;
-    /* Stroke xanh Vitacare */
-}
-
-.vc_group_card_lc:hover .vc_group_name_lc {
-    color: #00589f;
-    /* Chữ sang màu xanh */
-}
-
-.vc_group_card_lc.active {
-    background: #f0f7ff;
-    border-color: #00589f;
-}
-
-.vc_group_icon_circle {
-    width: 90px;
-    /* Tăng size khung icon một xíu */
-    height: 90px;
+.vc_group_icon_wrapper {
+    width: 100px;
+    /* Increased size */
+    height: 100px;
+    /* Increased size */
     border-radius: 50%;
-    background: #f0f7ff;
+    background: #f8fbff;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    /* Reduced margin */
+    transition: transform 0.3s ease;
     overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(30, 91, 160, 0.05);
 }
 
-.vc_group_icon_circle img {
+.vc_group_icon_wrapper img {
     width: 100%;
-    /* Fix fill hết khung tròn */
+    /* Fill circle */
     height: 100%;
+    /* Fill circle */
     object-fit: cover;
-    /* Đảm bảo hình ảnh đầy đặn */
+    /* Fill circle completely */
 }
 
-.vc_group_name_lc {
-    font-size: 17px;
+.vc_group_title {
+    font-size: 15px;
+    /* Slightly smaller title for compactness */
     font-weight: 700;
-    color: #1a202c;
-    margin-bottom: 4px;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+    transition: color 0.3s ease;
 }
 
-.vc_group_count_lc {
-    font-size: 14px;
-    color: #718096;
+.vc_group_stats {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
 }
 
-/* Show More Btn */
-.vc_show_more_btn_lc {
+/* Hover Effects */
+.vc_group_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(30, 91, 160, 0.12);
+    border-color: rgba(30, 91, 160, 0.2);
+}
+
+.vc_group_card:hover .vc_group_icon_wrapper {
+    transform: scale(1.05);
+    background: #eef6ff;
+}
+
+.vc_group_card:hover .vc_group_title {
+    color: #1e5ba0;
+}
+
+/* Footer & See More */
+.vc_groups_footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.vc_see_more_btn {
     background: transparent;
     border: none;
-    color: #00589f;
-    /* Màu xanh Vitacare */
-    font-weight: 600;
+    color: #1e5ba0;
+    font-size: 14px;
+    font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 0 auto;
-    padding: 8px 24px;
-    transition: all 0.2s;
+    gap: 10px;
+    padding: 10px 24px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.vc_show_more_btn_lc:hover {
-    color: #3182ce;
+.vc_see_more_btn i {
+    font-size: 16px;
+    animation: bounceDown 2s infinite;
 }
 
-
-
-/* Responsiveness */
-@media (max-width: 1024px) {
-    .vc_lookup_inner {
-        flex-direction: column;
-    }
-
-    .vc_lookup_visual,
-    .vc_lookup_selectors {
-        flex: 0 0 100%;
-        border-right: none;
-        border-bottom: 1px solid #edf2f7;
-    }
-
-    .vc_group_grid_lc {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .vc_disease_grid_cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.vc_see_more_btn:hover {
+    background: #f0f7ff;
+    transform: scale(1.02);
 }
 
-@media (max-width: 576px) {
-    .vc_disease_grid_lc {
-        grid-template-columns: 1fr;
+@keyframes bounceDown {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
     }
 
-    .vc_group_grid_lc {
-        grid-template-columns: 1fr;
+    40% {
+        transform: translateY(-4px);
     }
 
-    .vc_disease_grid_cards {
-        grid-template-columns: 1fr;
+    60% {
+        transform: translateY(-2px);
     }
 }
 
-/* ---------------- BREADCRUMB ---------------- */
-.breadcrumb {
-    background: transparent;
-    padding: 0;
-    margin-bottom: 12px;
+/* ==================== SCROLL REVEAL ANIMATION ==================== */
+.vc_reveal_element {
+    opacity: 0;
+    transform: translateY(60px) scale(0.92);
+    filter: blur(8px);
+    transition: opacity 1.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+        transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+        filter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform, opacity, filter;
+}
+
+.vc_reveal_element.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+}
+
+/* Enhancing the banner appearance in the scroll section */
+.vc_reveal_section {
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
 }

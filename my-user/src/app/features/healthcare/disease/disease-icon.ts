@@ -9,14 +9,14 @@
 const BASE = 'assets/icon/disease';
 
 // ==================== ICON BỘ PHẬN CƠ THỂ ====================
-export const BODY_PART_ICONS: { name: string; icon: string }[] = [
-    { name: 'Đầu', icon: `${BASE}/dau.png` },
-    { name: 'Cổ', icon: `${BASE}/co.png` },
-    { name: 'Ngực', icon: `${BASE}/nguc.png` },
-    { name: 'Bụng', icon: `${BASE}/bung.png` },
-    { name: 'Sinh dục', icon: `${BASE}/sinhduc.png` },
-    { name: 'Tứ chi', icon: `${BASE}/tuchi.png` },
-    { name: 'Da', icon: `${BASE}/da.png` },
+export const BODY_PART_ICONS: { name: string; slug: string; icon: string }[] = [
+    { name: 'Đầu', slug: 'dau', icon: `${BASE}/dau.png` },
+    { name: 'Cổ', slug: 'co', icon: `${BASE}/co.png` },
+    { name: 'Ngực', slug: 'nguc', icon: `${BASE}/nguc.png` },
+    { name: 'Bụng', slug: 'bung', icon: `${BASE}/bung.png` },
+    { name: 'Sinh dục', slug: 'sinh-duc', icon: `${BASE}/sinhduc.png` },
+    { name: 'Tứ chi', slug: 'tu-chi', icon: `${BASE}/tuchi.png` },
+    { name: 'Da', slug: 'da', icon: `${BASE}/da.png` },
 ];
 
 // ==================== ICON NHÓM BỆNH ====================
