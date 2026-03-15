@@ -1,13 +1,15 @@
 <main class="bd-page">
   <div class="vc_container pt-2 pb-5">
     <!-- Breadcrumb -->
-    <nav class="bd-breadcrumb" aria-label="Breadcrumb">
-      <ol class="bd-breadcrumb-list">
-        <li class="bd-breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
-        <li class="bd-breadcrumb-sep">/</li>
-        <li class="bd-breadcrumb-item"><a routerLink="/bai-viet">Bài viết</a></li>
-        <li class="bd-breadcrumb-sep">/</li>
-        <li class="bd-breadcrumb-item current" aria-current="page">{{ blog?.title || 'Chi tiết' }}</li>
+    <nav class="vc_breadcrumb" aria-label="Breadcrumb" style="--vc-breadcrumb-sep: '/';">
+      <ol class="vc_breadcrumb_list" style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; font-size: 14px; gap: 8px; align-items: center;">
+        <ng-container *ngFor="let bc of breadcrumbs; let last = last">
+          <li class="vc_breadcrumb_item" [class.current]="last" [attr.aria-current]="last ? 'page' : null">
+            <a *ngIf="!last" [routerLink]="bc.link" style="color: var(--vc-primary-color); text-decoration: none;">{{ bc.name }}</a>
+            <span *ngIf="last" style="color: #6c757d;">{{ bc.name }}</span>
+          </li>
+          <li *ngIf="!last" class="vc_breadcrumb_sep" style="color: #6c757d;">/</li>
+        </ng-container>
       </ol>
     </nav>
 
@@ -91,7 +93,7 @@
 
       <!-- Có thể bạn quan tâm -->
       <section *ngIf="relatedBlogs.length" class="bd-related">
-        <h3 class="bd-related-title">Có thể bạn quan tâm</h3>
+        <h2 class="bd-related-title">Có thể bạn quan tâm</h2>
         <ul class="bd-related-list">
           <li *ngFor="let r of relatedBlogs">
             <a [routerLink]="r.link || '/bai-viet'">{{ r.title }}</a>

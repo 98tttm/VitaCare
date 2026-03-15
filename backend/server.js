@@ -161,6 +161,9 @@ app.get('/api/admin/notifications', async (req, res) => {
       ConsultationProductModel.find({})
         .sort({ createdAt: -1 })
         .limit(limit),
+      ConsultationDiseaseModel.find({})
+        .sort({ createdAt: -1 })
+        .limit(limit),
     ]);
 
     const notifications = [];
@@ -206,6 +209,18 @@ app.get('/api/admin/notifications', async (req, res) => {
         message: `${c.fullName || c.name || 'Khách hàng'} vừa hỏi về sản phẩm ${c.productName || ''}`.trim(),
         createdAt: c.createdAt || new Date(),
         link: '/admin/consultation-product'
+      });
+    });
+
+    const consultDis = await ConsultationDiseaseModel.find({}).sort({ createdAt: -1 }).limit(limit);
+    consultDis.forEach((c) => {
+      notifications.push({
+        _id: getId(c),
+        type: 'consultation_disease',
+        title: 'Câu hỏi tư vấn bệnh mới',
+        message: `${c.fullName || c.name || 'Khách hàng'} vừa hỏi về bệnh ${c.productName || ''}`.trim(),
+        createdAt: c.createdAt || new Date(),
+        link: '/admin/consultation-disease'
       });
     });
 
@@ -658,7 +673,7 @@ app.get('/api/products/related/:id', async (req, res) => {
 app.get('/api/promotions', async (req, res) => {
   try {
     const db = mongoose.connection.db;
-    const list = await db.collection('promotion_promotions').find({}).toArray();
+    const list = await db.collection('promotion_promotions').find({ is_visible: { $ne: false } }).toArray();
     res.json({ success: true, data: list });
   } catch (err) {
     console.error('[GET /api/promotions] Error:', err);
@@ -4417,7 +4432,8 @@ async function seedDataAdmin() {
     { model: PromotionTarget, file: 'promotion_target.json' },
     { model: PromotionUsage, file: 'promotion_usage.json' },
     { model: CustomerGroup, file: 'customer_groups.json' },
-    { model: ProductGroup, file: 'product_groups.json' }
+    { model: ProductGroup, file: 'product_groups.json' },
+    { model: ConsultationDiseaseModel, file: 'consultations_disease.json' }
   ];
 
   function convertMongoJson(obj) {
@@ -4499,7 +4515,7 @@ app.get('/api/admin/stats', async (req, res) => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const [products, users, orders, promos, blogs, pharmacists, consults_p, consults_pr, revenue30dAgg, totalRevenueAgg] = await Promise.all([
+    const [products, users, orders, promos, blogs, pharmacists, consults_p, consults_pr, consults_d, revenue30dAgg, totalRevenueAgg] = await Promise.all([
       ProductModel.countDocuments(),
       UserModel.countDocuments(),
       OrderModel.countDocuments(),
@@ -4508,6 +4524,7 @@ app.get('/api/admin/stats', async (req, res) => {
       Pharmacist.countDocuments(),
       ConsultationProductModel.countDocuments(),
       ConsultationPrescriptionModel.countDocuments(),
+      ConsultationDiseaseModel.countDocuments(),
       OrderModel.aggregate([
         { $addFields: { rawDate: { $ifNull: ["$createdAt", "$route.pending"] } }, },
         { $addFields: { parsedDate: { $toDate: "$rawDate" } } },
@@ -4554,6 +4571,7 @@ app.get('/api/admin/stats', async (req, res) => {
         pharmacists,
         consultations_product: consults_p,
         consultations_prescription: consults_pr,
+        consultations_disease: consults_d,
         revenue30d: finalRevenue,
         totalRevenue: totalRevenueAgg[0]?.total || 0
       }
@@ -4706,6 +4724,13 @@ app.delete('/api/admin/products/:id', async (req, res) => {
     }
     await ProductModel.findOneAndDelete({ $or: query });
     res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/categories', async (req, res) => {
+  try {
+    const data = await CategoryModel.find().lean();
+    res.json({ success: true, data });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
 
@@ -5107,6 +5132,84 @@ app.patch('/api/admin/consultations_product/reply', async (req, res) => {
     }
 
     res.json({ success: true, data: product });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/consultations_disease', async (req, res) => {
+  try {
+    const data = await ConsultationDiseaseModel.find().sort({ updatedAt: -1 });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.get('/api/admin/consultations_disease/stats', async (req, res) => {
+  try {
+    const diseases = await ConsultationDiseaseModel.find().lean();
+    const stats = diseases.map(d => {
+      const unanswered = (d.questions || []).filter(q => q.status === 'pending' || !q.answer).length;
+      return {
+        sku: d.sku,
+        productName: d.productName,
+        unansweredCount: unanswered,
+        totalQuestions: (d.questions || []).length,
+        _id: d._id
+      };
+    });
+    res.json({ success: true, data: stats });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.patch('/api/admin/consultations_disease/reply', async (req, res) => {
+  try {
+    const { sku, questionId, answer, answeredBy } = req.body;
+    const disease = await ConsultationDiseaseModel.findOne({ sku });
+    if (!disease) return res.status(404).json({ success: false, message: 'Disease not found' });
+    const question = disease.questions?.id ? disease.questions.id(questionId) : disease.questions.find(q => q.id === questionId || q._id === questionId);
+    if (!question) return res.status(404).json({ success: false, message: 'Question not found' });
+
+    const userId = question.user_id || null;
+    const diseaseName = disease.productName || sku;
+
+    question.answer = answer;
+    question.answeredBy = answeredBy;
+    question.status = 'answered';
+    question.answeredAt = new Date();
+    disease.updatedAt = new Date();
+
+    await disease.save();
+
+    // Lưu notice cho user khi admin trả lời câu hỏi về bệnh
+    if (userId) {
+      try {
+        await noticesCollection().insertOne({
+          user_id: String(userId),
+          type: 'order_updated',
+          title: 'Câu hỏi về bệnh đã có phản hồi',
+          message: `Câu hỏi của bạn về bệnh "${diseaseName}" đã được ${answeredBy || 'dược sĩ'} giải đáp.`,
+          createdAt: new Date().toISOString(),
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem phản hồi',
+          meta: sku,
+        });
+      } catch (e) {
+        console.warn('[PATCH /api/admin/consultations_disease/reply] Cannot create notice:', e.message);
+      }
+    }
+
+    res.json({ success: true, data: disease });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+app.delete('/api/admin/consultations_disease/:sku/:questionId', async (req, res) => {
+  try {
+    const { sku, questionId } = req.params;
+    const disease = await ConsultationDiseaseModel.findOne({ sku });
+    if (!disease) return res.status(404).json({ success: false, message: 'Disease not found' });
+
+    disease.questions = disease.questions.filter(q => (q._id?.toString() !== questionId && q.id !== questionId));
+    await disease.save();
+    res.json({ success: true });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
 

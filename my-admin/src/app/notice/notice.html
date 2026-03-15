@@ -1,6 +1,6 @@
-<div class="notice-wrapper" (mouseenter)="onBellEnter()" (mouseleave)="onBellLeave()">
+<div class="notice-wrapper">
   <!-- Bell icon + badge -->
-  <button class="notice-bell-btn" type="button">
+  <button class="notice-bell-btn" type="button" (click)="toggleDropdown($event)">
     <img src="assets/icon/notification-bell.png" alt="Notification">
     <span class="badge" *ngIf="unreadCount > 0">
       {{ unreadCount > 99 ? '99+' : unreadCount }}

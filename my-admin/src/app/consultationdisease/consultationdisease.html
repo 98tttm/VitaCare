@@ -1,0 +1,274 @@
+<div class="container page-container consultation-disease-container">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
+        Quản lý Tư vấn <span class="mx-1">/</span>
+        <span style="color: var(--color-primary);">
+            {{ selectedDisease ? selectedDisease.sku : 'Tư vấn bệnh' }}
+        </span>
+    </div>
+
+    <!-- Page Header - Fixed Title -->
+    <div class="page-header py-4"
+        style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+        <h1 class="content-title"
+            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
+            {{ selectedDisease ? selectedDisease.sku : 'Tư vấn bệnh' }}
+        </h1>
+    </div>
+
+    <!-- Stats Container -->
+    <div class="stats-container">
+        <div class="stat-card stat-all" (click)="filterByStatus('')" [class.active-filter]="currentFilter === ''"
+            style="cursor: pointer;">
+            <span class="stat-label">TỔNG CÂU HỎI</span>
+            <span class="stat-value">{{ totalQuestions }}</span>
+        </div>
+        <div class="stat-card stat-pending" (click)="filterByStatus('pending')"
+            [class.active-filter]="currentFilter === 'pending'" style="cursor: pointer;">
+            <span class="stat-label">CẦN PHẢN HỒI</span>
+            <span class="stat-value">{{ pendingCount }}</span>
+        </div>
+        <div class="stat-card stat-answered" (click)="filterByStatus('answered')"
+            [class.active-filter]="currentFilter === 'answered'" style="cursor: pointer;">
+            <span class="stat-label">ĐÃ TRẢ LỜI</span>
+            <span class="stat-value">{{ answeredCount }}</span>
+        </div>
+    </div>
+
+    <!-- 1. DISEASE LIST VIEW -->
+    <ng-container *ngIf="!selectedDisease">
+        <div class="filter-bar">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Tìm bệnh theo Tên hoặc SKU..." [(ngModel)]="diseaseSearchText"
+                    (input)="applyDiseaseFilters()">
+            </div>
+        </div>
+
+        <div class="table-scrollable">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th width="250">MÃ BỆNH (SKU)</th>
+                        <th>TÊN BỆNH</th>
+                        <th width="120" style="text-align: center;">TỔNG CÂU HỎI</th>
+                        <th width="120" style="text-align: center;">CẦN PHẢN HỒI</th>
+                        <th width="120" style="text-align: center;">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let d of filteredDiseases" (click)="selectDisease(d)">
+                        <td><b>{{ d.sku }}</b></td>
+                        <td>{{ d.productName }}</td>
+                        <td style="text-align: center;">{{ d.totalQuestions }}</td>
+                        <td style="text-align: center;">
+                            <span *ngIf="d.unansweredCount > 0" style="color: #c62828; font-weight: bold;">{{
+                                d.unansweredCount }}</span>
+                            <span *ngIf="d.unansweredCount === 0" style="color: #999;">0</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <button class="btn btn-outline"
+                                style="border-color: var(--color-primary); color: var(--color-primary); padding: 4px 12px; font-size: 13px;">Chi
+                                tiết</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </ng-container>
+
+    <!-- 2. QUESTIONS TABLE VIEW (For Selected Disease) -->
+    <ng-container *ngIf="selectedDisease">
+        <div class="selected-product-info" style="margin-bottom: 20px;">
+            <div class="product-details">
+                <h2 style="color: #6a1b9a;">Bệnh: {{ selectedDisease.productName }}</h2>
+                <span>Mã: {{ selectedDisease.sku }} • {{ selectedDisease.unansweredCount }} câu hỏi mới</span>
+            </div>
+            <button (click)="goBackToDiseases()" class="btn-back-main">
+                <i class="bi bi-arrow-left"></i> Quay lại danh sách
+            </button>
+        </div>
+
+        <div class="filter-bar">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Tìm kiếm nội dung/khách hàng..." [(ngModel)]="searchText"
+                    (input)="onSearchChange()">
+            </div>
+
+            <div class="filter-actions">
+                <div class="dropdown-container">
+                    <button class="btn-action" [class.active]="showFilterDropdown || activeFilterCount > 0"
+                        (click)="toggleFilterDropdown($event)">
+                        <i class="bi bi-funnel"></i>
+                        <span>Lọc</span>
+                        <span class="selected-badge" *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</span>
+                        <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+                    </button>
+
+                    <div class="dropdown-menu-multilevel" *ngIf="showFilterDropdown" (click)="$event.stopPropagation()">
+                        <div class="dropdown-item-parent">
+                            <div class="dropdown-item">
+                                <span>Trạng thái phản hồi</span>
+                                <span class="arrow-right">›</span>
+                            </div>
+                            <div class="dropdown-submenu">
+                                <label class="dropdown-option">
+                                    <input type="checkbox" [checked]="isFilterSelected('status', 'pending')"
+                                        (change)="toggleFilter('status', 'pending')">
+                                    <span>Chờ phản hồi</span>
+                                </label>
+                                <label class="dropdown-option">
+                                    <input type="checkbox" [checked]="isFilterSelected('status', 'answered')"
+                                        (change)="toggleFilter('status', 'answered')">
+                                    <span>Đã trả lời</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-actions">
+                            <button class="btn-clear-filter" (click)="clearAllFilters()">
+                                <i class="bi bi-trash"></i>
+                                <span>Xóa tất cả bộ lọc</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dropdown-container">
+                    <button class="btn-action" [class.active]="showSortDropdown" (click)="toggleSortDropdown($event)">
+                        <i class="bi bi-sort-down"></i>
+                        <span>Sắp xếp</span>
+                        <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+                    </button>
+
+                    <div class="dropdown-menu-multilevel dropdown-menu-sort" *ngIf="showSortDropdown"
+                        (click)="$event.stopPropagation()">
+                        <div class="sort-option" [class.active]="currentSort === 'newest'"
+                            (click)="applySort('newest')">
+                            <span class="sort-option-label">Ngày hỏi (Mới nhất)</span>
+                            <span class="sort-option-desc">Câu hỏi mới nhất sẽ hiện lên đầu</span>
+                        </div>
+                        <div class="sort-option" [class.active]="currentSort === 'oldest'"
+                            (click)="applySort('oldest')">
+                            <span class="sort-option-label">Ngày hỏi (Cũ nhất)</span>
+                            <span class="sort-option-desc">Câu hỏi cũ nhất sẽ hiện lên đầu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-scrollable">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th width="150">NGÀY HỎI</th>
+                        <th width="180">KHÁCH HÀNG</th>
+                        <th>NỘI DUNG CÂU HỎI</th>
+                        <th width="150">TRẠNG THÁI</th>
+                        <th width="100">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of filteredQuestions" (click)="openDetailModal(item)">
+                        <td>{{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                        <td>{{ item.full_name || 'Khách vãng lai' }}</td>
+                        <td>
+                            <div
+                                style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ item.question }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-badge"
+                                [ngClass]="(!item.answer || item.status === 'unreviewed' || item.status === 'pending') ? 'status-pending' : 'status-answered'">
+                                <span class="status-dot"></span>
+                                <span class="status-text">{{ (!item.answer || item.status === 'unreviewed' ||
+                                    item.status === 'pending') ? 'Đang chờ' : 'Đã trả lời' }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;">{{ (!item.answer
+                                || item.status === 'unreviewed' || item.status === 'pending') ?
+                                'Trả lời' : 'Sửa' }}</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="filteredQuestions.length === 0" style="padding: 30px; text-align: center; color: #999;">
+                Không có câu hỏi nào để hiển thị.
+            </div>
+        </div>
+    </ng-container>
+</div>
+
+<!-- Trả lời Modal -->
+<div class="modal-wrapper" *ngIf="isModalOpen">
+    <div class="modal-backdrop" (click)="closeModal()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="header-titles">
+                <h5 class="modal-title">TRẢ LỜI CÂU HỎI VỀ BỆNH</h5>
+                <span class="modal-subtitle">{{ formatDate(selectedQuestion?.createdAt) }}</span>
+            </div>
+            <button type="button" class="close-btn" (click)="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body scrollable">
+            <div class="info-section mb-3">
+                <h6 style="color: var(--color-text-primary); font-weight: 600; margin-bottom: 5px;">Bệnh:</h6>
+                <p style="margin: 0; color: var(--color-text-secondary);">{{ selectedQuestion?.productName }} (Mã: {{
+                    selectedQuestion?.productSku }})</p>
+            </div>
+
+            <div class="info-section mb-3" style="margin-top: 15px;">
+                <h6 style="color: var(--color-text-primary); font-weight: 600; margin-bottom: 5px;">Khách hàng hỏi:
+                    <span style="font-weight: normal; color: var(--color-text-secondary);">({{
+                        selectedQuestion?.full_name || 'Khách vãng lai'
+                        }})</span>
+                </h6>
+                <p
+                    style="margin: 0; color: var(--color-text-primary); font-weight: 500; font-size: 15px; padding: 10px; background: #f9f9f9; border-left: 3px solid var(--color-primary); border-radius: 4px;">
+                    {{ selectedQuestion?.question }}</p>
+            </div>
+
+            <div class="form-group mt-3" style="margin-top: 15px;">
+                <label
+                    style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Nội
+                    dung trả
+                    lời:</label>
+                <textarea class="form-control" rows="4" [(ngModel)]="replyContent"
+                    placeholder="Nhập câu trả lời của bạn..."
+                    style="width: 100%; border-radius: 6px; border: 1px solid var(--color-neutral-40); padding: 10px; resize: none; color: var(--color-text-primary);"></textarea>
+            </div>
+
+            <div class="form-group mt-3" style="margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+                <label
+                    style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Người
+                    trả lời (Dược
+                    sĩ)</label>
+                <select class="form-control" [(ngModel)]="editedPharmacistId"
+                    style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--color-neutral-40); outline: none;">
+                    <option value="">Chọn dược sĩ</option>
+                    <option *ngFor="let p of pharmacists" [value]="p._id">Dược sĩ {{ p.pharmacistName }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer"
+            style="display: flex; justify-content: flex-end; gap: 10px; padding: 15px 20px; background-color: var(--color-bg-secondary); border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            <button type="button" class="btn btn-cancel" (click)="closeModal()">Hủy</button>
+            <button type="button" class="btn btn-primary" (click)="saveQuestion()">Lưu trả lời</button>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast" *ngIf="notification.show" [ngClass]="notification.type">
+        <i class="bi" [ngClass]="{
+            'bi-check-circle-fill': notification.type === 'success',
+            'bi-x-circle-fill': notification.type === 'error',
+            'bi-exclamation-triangle-fill': notification.type === 'warning'
+        }"></i>
+        <span>{{ notification.message }}</span>
+    </div>
+</div>

@@ -33,6 +33,8 @@ interface Promotion {
   customer_group_id?: string;
   product_group_id?: string;
   target_category_id?: string;
+  images?: string[];
+  typeBanner?: string;
 }
 
 @Component({
@@ -67,9 +69,18 @@ export class Promotionmanage implements OnInit {
   sortDirection: 'desc' | 'asc' = 'desc';
 
   // Target Options
-  categories: any[] = [];
+  bannerSlots: any[] = [
+    { id: 'none', name: 'Không hiển thị' },
+    { id: 'main_1', name: 'Banner chính 1' },
+    { id: 'main_2', name: 'Banner chính 2' },
+    { id: 'main_3', name: 'Banner chính 3' },
+    { id: 'sub_1', name: 'Banner phụ 1' },
+    { id: 'sub_2', name: 'Banner phụ 2' },
+    { id: 'sub_3', name: 'Banner phụ 3' }
+  ];
   customerGroups: any[] = [];
   productGroups: any[] = [];
+  imageInput: string = '';
 
   constructor(
     @Inject(PromotionService) private promotionService: PromotionService,
@@ -81,7 +92,6 @@ export class Promotionmanage implements OnInit {
 
   ngOnInit(): void {
     this.fetchData();
-    this.fetchCategories();
     this.fetchGroups();
   }
 
@@ -94,15 +104,7 @@ export class Promotionmanage implements OnInit {
     });
   }
 
-  fetchCategories() {
-    this.productService.getCategories().subscribe({
-      next: (res) => {
-        if (res.success && Array.isArray(res.data)) {
-          this.categories = res.data;
-        }
-      }
-    });
-  }
+
 
   fetchData() {
     this.isLoading = true;
@@ -304,6 +306,12 @@ export class Promotionmanage implements OnInit {
     this.currentPromotion = { ...selected[0] };
     if (this.currentPromotion.start_date) this.currentPromotion.start_date = new Date(this.currentPromotion.start_date).toISOString().split('T')[0];
     if (this.currentPromotion.end_date) this.currentPromotion.end_date = new Date(this.currentPromotion.end_date).toISOString().split('T')[0];
+    if (!this.currentPromotion.images) this.currentPromotion.images = [];
+    if (!this.currentPromotion.typeBanner) this.currentPromotion.typeBanner = 'none';
+    if (this.currentPromotion.image && this.currentPromotion.images.length === 0) {
+      this.currentPromotion.images = [this.currentPromotion.image];
+    }
+    delete this.currentPromotion.image;
     this.isModalOpen = true;
   }
 
@@ -338,12 +346,51 @@ export class Promotionmanage implements OnInit {
       discount_type: 'percent', discount_value: 0, min_order_value: 0,
       max_discount_value: 0, start_date: '', end_date: '', usage_limit: 0,
       user_limit: 0, is_first_order_only: false,
-      customer_group_id: '', product_group_id: '', target_category_id: ''
+      customer_group_id: '', product_group_id: '', target_category_id: '',
+      images: [], typeBanner: 'none'
     };
+    this.imageInput = '';
+  }
+
+  selectBannerSlot(slotId: string) {
+    this.currentPromotion.typeBanner = slotId;
+  }
+
+  isBannerSlotSelected(slotId: string): boolean {
+    return this.currentPromotion.typeBanner === slotId;
   }
 
   showNotification(message: string, type: 'success' | 'error' | 'warning' = 'success') {
     this.notification = { show: true, message, type };
     setTimeout(() => this.notification.show = false, 3000);
+  }
+
+  // Image Library Methods
+  addImage() {
+    if (this.imageInput && this.imageInput.trim()) {
+      if (!this.currentPromotion.images) this.currentPromotion.images = [];
+      this.currentPromotion.images.push(this.imageInput.trim());
+      this.imageInput = '';
+      this.showNotification('Đã thêm ảnh vào thư viện');
+    }
+  }
+
+  removeImage(index: number) {
+    if (this.currentPromotion.images) {
+      this.currentPromotion.images.splice(index, 1);
+    }
+  }
+
+  onFileUpload(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        if (!this.currentPromotion.images) this.currentPromotion.images = [];
+        this.currentPromotion.images.push(e.target.result);
+        this.cdr.markForCheck();
+      };
+      reader.readAsDataURL(file);
+    }
   }
 }

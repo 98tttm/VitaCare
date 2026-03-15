@@ -61,12 +61,9 @@ export class Notice implements OnInit {
     }
   }
 
-  onBellEnter(): void {
-    this.isDropdownOpen = true;
-  }
-
-  onBellLeave(): void {
-    this.isDropdownOpen = false;
+  toggleDropdown(event: Event): void {
+    event.stopPropagation();
+    this.isDropdownOpen = !this.isDropdownOpen;
   }
 
   closePopup(): void {

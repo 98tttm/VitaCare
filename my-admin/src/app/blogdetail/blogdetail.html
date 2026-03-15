@@ -46,7 +46,15 @@
             </div>
 
             <div class="info-wrapper">
-                <input class="input-title" type="text" [(ngModel)]="blogData.title" placeholder="TITLE">
+                <input class="input-title" type="text" [(ngModel)]="blogData.title" (ngModelChange)="onTitleChange()" placeholder="TITLE">
+
+                <div style="margin-bottom: 24px;">
+                    <label class="text-xs font-bold text-neutral-50 block mb-1">Slug (Link bài viết):</label>
+                    <input type="text" [(ngModel)]="blogData.slug"
+                        style="border: 1px solid var(--color-neutral-30); border-radius: 6px; padding: 8px 12px; font-size: 14px; width: 100%; outline: none; background: var(--color-bg-secondary); color: var(--color-text-primary);"
+                        placeholder="ten-bai-viet.html">
+                    <small class="text-neutral-40" style="font-size: 11px;">Tự động tạo từ tiêu đề nếu để trống</small>
+                </div>
 
                 <div style="margin-bottom: 24px;">
                     <label class="text-xs font-bold text-neutral-50 block mb-1">Chuyên mục:</label>

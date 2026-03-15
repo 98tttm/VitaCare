@@ -96,7 +96,7 @@ export class Home implements OnInit {
       stats: this.authService.getStats(),
       orders: this.orderService.getOrders(),
       customers: this.customerService.getCustomers(),
-      products: this.productService.getProducts()
+      products: this.productService.getAllProducts()
     }).subscribe({
       next: (results: any) => {
         this.stats = results.stats.data || results.stats;

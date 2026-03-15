@@ -202,9 +202,8 @@ export class Blog implements OnInit {
   }
 
   private normalizeBlog(b: any): BlogItem {
-    const mainCat = Array.isArray(b.categories) && b.categories[0] ? b.categories[0].name : null;
-    const categoryName = mainCat || b.categoryName || 'Góc sức khoẻ';
-    const slugRaw = (b.slug || (b as any).slug)?.trim();
+    const categoryName = b.category?.name || b.categoryName || 'Góc sức khoẻ';
+    const slugRaw = (b.slug || b.url || '')?.trim();
     const idStr = b._id != null ? String(b._id) : '';
     const slug = this.normalizeSlug(slugRaw || '') || idStr;
     const link = slug ? `/bai-viet/${slug}` : '/bai-viet';

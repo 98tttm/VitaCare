@@ -26,7 +26,7 @@ export interface BlogDetailData {
   image?: string;
   imageUrl?: string;
   primaryImage?: { url?: string };
-  categories?: Array<{ category?: { name?: string } }>;
+  category?: { name?: string; slug?: string };
   categoryName?: string;
   author?: string;
   authorName?: string;
@@ -123,12 +123,8 @@ export class BlogDetail implements OnInit {
 
   get categoryName(): string {
     if (!this.blog) return 'Góc sức khoẻ';
-    const cats = this.blog.categories;
-    if (Array.isArray(cats) && cats.length > 0) {
-      const first = cats[0];
-      const name = (first as any)?.category?.name ?? (first as any)?.name;
-      if (name) return name;
-    }
+    const cat = this.blog.category;
+    if (cat?.name) return cat.name;
     return (this.blog as any).categoryName ?? 'Góc sức khoẻ';
   }
 
@@ -207,15 +203,17 @@ export class BlogDetail implements OnInit {
   }
 
   get breadcrumbs(): { name: string; link?: string }[] {
-    const list = [{ name: 'Trang chủ', link: '/' }, { name: 'Góc sức khỏe', link: '/bai-viet' }];
+    const list: { name: string; link?: string }[] = [{ name: 'Trang chủ', link: '/' }, { name: 'Góc sức khỏe', link: '/bai-viet' }];
 
-    if (this.blog && Array.isArray(this.blog.categories)) {
-      this.blog.categories.forEach(c => {
-        const cat = (c as any).category || c;
-        if (cat.name) {
-          list.push({ name: cat.name, link: `/bai-viet/danh-muc/${cat.slug || ''}` });
-        }
-      });
+    if (this.blog && this.blog.category) {
+      const cat = this.blog.category;
+      if (cat.name) {
+        list.push({ name: cat.name, link: `/bai-viet/danh-muc/${cat.slug || ''}` });
+      }
+    }
+
+    if (this.blog && this.blog.title) {
+      list.push({ name: this.blog.title });
     }
 
     return list;

@@ -23,8 +23,9 @@ export class Blogdetail implements OnInit {
         publishedAt: '',
         descriptionHtml: '',
         categoryId: '',
+        slug: '',
         primaryImage: { url: '' },
-        category: { name: '' },
+        category: { name: '', slug: '' },
         isApproved: false
     };
 
@@ -67,8 +68,9 @@ export class Blogdetail implements OnInit {
                     publishedAt: this.formatDateForInput(new Date()),
                     descriptionHtml: '',
                     categoryId: '',
+                    slug: '',
                     primaryImage: { url: '' },
-                    category: { name: '' },
+                    category: { name: '', slug: '' },
                     isApproved: false
                 };
                 setTimeout(() => this.initEditorContent(), 100);
@@ -84,16 +86,14 @@ export class Blogdetail implements OnInit {
     }
 
     loadCategories() {
-        this.blogService.getBlogs(1, 50).subscribe({
+        this.blogService.getCategories().subscribe({
             next: (res) => {
                 if (res && res.success) {
-                    const catsMap = new Map();
-                    res.data.forEach((b: any) => {
-                        if (b.category && b.category.name) {
-                            catsMap.set(b.category.id || b.category._id || b.category.name, b.category.name);
-                        }
-                    });
-                    this.categories = Array.from(catsMap.entries()).map(([id, name]) => ({ id, name }));
+                    this.categories = res.data.map((c: any) => ({
+                        id: c._id || c.id,
+                        name: c.name,
+                        slug: c.slug
+                    }));
                 }
             },
             error: (err) => console.error('Lỗi tải danh mục', err)
@@ -110,8 +110,10 @@ export class Blogdetail implements OnInit {
                         this.blogData = { ...foundBlog };
                         if (!this.blogData.author) this.blogData.author = { fullName: '', email: '' };
                         if (!this.blogData.categoryId && this.blogData.category) {
-                            this.blogData.categoryId = this.blogData.category.id || this.blogData.category._id || this.blogData.category.name;
+                            this.blogData.categoryId = this.blogData.category.id || this.blogData.category._id;
                         }
+                        // Remove plural categories if exist to unify
+                        if (this.blogData.categories) delete this.blogData.categories;
                         if (this.blogData.publishedAt) {
                             this.blogData.publishedAt = this.formatDateForInput(new Date(this.blogData.publishedAt));
                         }
@@ -181,7 +183,14 @@ export class Blogdetail implements OnInit {
         // Find complete category from choices
         const cat = this.categories.find(c => c.id === this.blogData.categoryId);
         if (cat) {
-            this.blogData.category = { id: cat.id, name: cat.name };
+            this.blogData.category = { id: cat.id, name: cat.name, slug: cat.slug };
+            // Ensure plural is gone
+            if (this.blogData.categories) delete this.blogData.categories;
+        }
+
+        // Final slug check
+        if (!this.blogData.slug && this.blogData.title) {
+            this.blogData.slug = this.generateSlug(this.blogData.title);
         }
 
         const action = this.isEditMode && this.blogId
@@ -423,19 +432,6 @@ export class Blogdetail implements OnInit {
         this.contentEditor.nativeElement.focus();
         document.execCommand('formatBlock', false, value);
         setTimeout(() => {
-            const blockElement = this.getCurrentBlockElement();
-            if (blockElement && this.fontSizeSelect?.nativeElement) {
-                const tagName = blockElement.tagName.toLowerCase();
-                let fontSizeValue = '3';
-                if (tagName === 'h1') { fontSizeValue = '7'; blockElement.style.fontSize = '36pt'; }
-                else if (tagName === 'h2') { fontSizeValue = '6'; blockElement.style.fontSize = '24pt'; }
-                else if (tagName === 'h3') { fontSizeValue = '5'; blockElement.style.fontSize = '18pt'; }
-                else if (tagName === 'h4') { fontSizeValue = '4'; blockElement.style.fontSize = '14pt'; }
-                else if (tagName === 'h5') { fontSizeValue = '3'; blockElement.style.fontSize = '12pt'; }
-                else if (tagName === 'h6') { fontSizeValue = '2'; blockElement.style.fontSize = '10pt'; }
-                else fontSizeValue = this.fontSizeSelect.nativeElement.value || '3';
-                this.fontSizeSelect.nativeElement.value = fontSizeValue;
-            }
             this.updateToolbarDropdowns();
         }, 10);
         this.saveToHistory();
@@ -539,5 +535,35 @@ export class Blogdetail implements OnInit {
         document.execCommand('foreColor', false, color);
         this.saveToHistory();
         this.updateBlogContent({ target: this.contentEditor.nativeElement } as any);
+    }
+
+    onTitleChange() {
+        // Luôn tự động tạo slug dựa trên title mới nhất
+        this.blogData.slug = this.generateSlug(this.blogData.title);
+    }
+
+    generateSlug(title: string): string {
+        if (!title) return '';
+        let slug = title.toLowerCase();
+
+        // Vietnamese tone normalization
+        slug = slug.replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, "a");
+        slug = slug.replace(/[èéẹẻẽêềếệểễ]/g, "e");
+        slug = slug.replace(/[ìíịỉĩ]/g, "i");
+        slug = slug.replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, "o");
+        slug = slug.replace(/[ùúụủũưừứựửữ]/g, "u");
+        slug = slug.replace(/[ỳýỵỷỹ]/g, "y");
+        slug = slug.replace(/đ/g, "d");
+
+        // Remove accents marks still present if any (using NFD)
+        slug = slug.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        slug = slug.replace(/[^a-z0-9\s-]/g, ''); // Remove other special chars
+        slug = slug.replace(/\s+/g, '-'); // Replace space with -
+        slug = slug.replace(/-+/g, '-'); // Remove double -
+        slug = slug.trim();
+
+        if (slug) return slug + '.html';
+        return '';
     }
 }

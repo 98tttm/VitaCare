@@ -41,7 +41,7 @@
     justify-content: space-between;
     height: 100%;
     transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    z-index: 100;
+    z-index: 1200;
     flex-shrink: 0;
     will-change: width;
 }
@@ -108,8 +108,8 @@
 
 .sidebar-nav {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-y: visible;
+    overflow-x: visible;
     width: 100%;
     margin-top: 10px;
 }
@@ -318,13 +318,21 @@
     display: block;
     position: absolute;
     top: 0;
-    left: 100%;
+    left: calc(var(--sidebar-collapsed-width) + 2px);
     background-color: var(--sidebar-bg);
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.35);
-    padding: 6px 0;
-    z-index: 150;
+    border-radius: 0 10px 10px 0;
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.25);
+    padding: 8px 0;
+    z-index: 9999;
     min-width: 220px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: none;
+    animation: fadeInFly 0.2s ease-out;
+}
+
+@keyframes fadeInFly {
+    from { opacity: 0; transform: translateX(5px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .consultation-float-menu ul {

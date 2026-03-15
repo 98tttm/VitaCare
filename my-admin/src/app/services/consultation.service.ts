@@ -41,4 +41,20 @@ export class ConsultationService {
     deleteProductConsultation(sku: string, questionId: string): Observable<any> {
         return this.http.delete<any>(`${this.apiUrl}/consultations_product/${sku}/${questionId}`);
     }
+
+    getDiseaseConsultations(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/consultations_disease`);
+    }
+
+    getDiseaseConsultationStats(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/consultations_disease/stats`);
+    }
+
+    replyDiseaseQuestion(data: { sku: string, questionId: string, answer: string, answeredBy: string }): Observable<any> {
+        return this.http.patch<any>(`${this.apiUrl}/consultations_disease/reply`, data);
+    }
+
+    deleteDiseaseConsultation(sku: string, questionId: string): Observable<any> {
+        return this.http.delete<any>(`${this.apiUrl}/consultations_disease/${sku}/${questionId}`);
+    }
 }

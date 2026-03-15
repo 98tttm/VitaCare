@@ -234,21 +234,13 @@
                         </select>
                     </div>
 
-                    <!-- Target Product Group/Category (for Product type) -->
+                    <!-- Target Product Group (for Product type) -->
                     <ng-container *ngIf="currentPromotion.type === 'product'">
                         <div class="form-group">
                             <label class="form-label">Áp dụng cho Nhóm sản phẩm</label>
                             <select class="form-control" [(ngModel)]="currentPromotion.product_group_id">
                                 <option value="">Không chọn nhóm</option>
                                 <option *ngFor="let g of productGroups" [value]="g._id">{{ g.name }}</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Hoặc áp dụng cho Danh mục</label>
-                            <select class="form-control" [(ngModel)]="currentPromotion.target_category_id">
-                                <option value="">Tất cả danh mục</option>
-                                <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
                             </select>
                         </div>
                     </ng-container>
@@ -285,6 +277,48 @@
                         <label class="form-label">Giá trị tối đa (đ)</label>
                         <input type="number" class="form-control" [(ngModel)]="currentPromotion.max_discount_value"
                             placeholder="0">
+                    </div>
+
+                    <div class="form-group full-width" style="border-top: 1px solid #eef2f7; padding-top: 15px; margin-top: 15px;">
+                        <h6 style="color: var(--color-primary); font-weight: 700; margin-bottom: 20px; font-size: 16px;">Thư viện hình ảnh & Cấu hình hiển thị</h6>
+                    </div>
+
+                    <div class="form-group full-width mb-4">
+                        <label class="form-label" style="font-weight: 600; color: #475569;">Hình ảnh khuyến mãi (Dán link hoặc Tải lên)</label>
+                        <div class="image-upload-wrapper">
+                            <input type="text" class="form-control" [(ngModel)]="imageInput" placeholder="data:image/jpeg;base64,... hoặc URL" name="promoImageInput">
+                            <label class="upload-icon-btn" title="Tải hình lên từ thiết bị">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <input type="file" (change)="onFileUpload($event)" hidden accept="image/*">
+                            </label>
+                            <button type="button" class="add-image-btn" (click)="addImage()" [disabled]="!imageInput" title="Thêm vào danh sách">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="image-gallery-grid" *ngIf="currentPromotion.images && currentPromotion.images.length > 0">
+                            <div class="gallery-item" *ngFor="let img of currentPromotion.images; let i = index">
+                                <img [src]="img" alt="Gallery image">
+                                <span class="delete-img-btn" (click)="removeImage(i)" title="Xoá hình này">
+                                    <i class="bi bi-x"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label" style="font-weight: 600; color: #475569;">Cấu hình vị trí Banner (typeBanner)</label>
+                        <div class="display-options-card">
+                            <div class="form-check-group" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+                                <div class="form-check" *ngFor="let slot of bannerSlots" 
+                                     (click)="selectBannerSlot(slot.id)"
+                                     [style.border-color]="isBannerSlotSelected(slot.id) ? 'var(--color-primary)' : '#e2e8f0'"
+                                     [style.background]="isBannerSlotSelected(slot.id) ? 'var(--color-primary-bg)' : 'white'">
+                                    <input type="radio" name="bannerSlot" [checked]="isBannerSlotSelected(slot.id)" (click)="$event.stopPropagation()">
+                                    <label class="form-check-label" [style.color]="isBannerSlotSelected(slot.id) ? 'var(--color-primary)' : 'inherit'">{{ slot.name }}</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">

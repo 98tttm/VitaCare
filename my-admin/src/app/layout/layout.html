@@ -82,6 +82,11 @@
                                 Tư vấn sản phẩm
                             </a>
                         </li>
+                        <li>
+                            <a routerLink="/admin/consultation-disease" routerLinkActive="active" class="submenu-link">
+                                Tư vấn bệnh
+                            </a>
+                        </li>
                     </ul>
                     <!-- Floating submenu when sidebar collapsed (shown on hover) -->
                     <div class="consultation-float-menu" *ngIf="isSidebarCollapsed">
@@ -96,6 +101,12 @@
                                 <a routerLink="/admin/consultation-product" routerLinkActive="active"
                                     class="submenu-link">
                                     Tư vấn sản phẩm
+                                </a>
+                            </li>
+                            <li>
+                                <a routerLink="/admin/consultation-disease" routerLinkActive="active"
+                                    class="submenu-link">
+                                    Tư vấn bệnh
                                 </a>
                             </li>
                         </ul>
@@ -115,7 +126,8 @@
             <!-- Left Side: Toggle Button Only (Logo moved to sidebar) -->
             <div class="header-left">
                 <button class="menu-toggle" (click)="toggleSidebar()">
-                    <img src="assets/icon/menu_447096.png" alt="Menu">
+                    <i class="bi" [ngClass]="isSidebarCollapsed ? 'bi-chevron-right' : 'bi-chevron-left'" 
+                       style="font-size: 1.5rem; color: white;"></i>
                 </button>
             </div>
 
