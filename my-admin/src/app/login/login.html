@@ -184,6 +184,23 @@
     </div>
 </div>
 
+<!-- Login Success Full-screen Loading -->
+<div class="success-overlay" *ngIf="isLoginSuccess">
+    <div class="success-content">
+        <div class="success-logo">
+            <img src="assets/favicon/Favicon.png" alt="VitaCare Logo">
+        </div>
+        <div class="loading-container">
+            <div class="mascot-shipping">
+                <img src="assets/images/mascot/shipping.png" alt="Shipping Mascot">
+            </div>
+            <div class="loading-bar-container">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Custom Popup -->
 <div class="popup-overlay" *ngIf="popupMessage">
     <div class="popup-content">

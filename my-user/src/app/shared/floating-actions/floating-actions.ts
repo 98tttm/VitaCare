@@ -11,7 +11,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ChatService, type ChatTurn } from '../../core/services/chat.service';
+import { ReminderBadgeService } from '../../core/services/reminder-badge.service';
 
 @Component({
   selector: 'app-floating-actions',
@@ -23,6 +25,8 @@ import { ChatService, type ChatTurn } from '../../core/services/chat.service';
 export class FloatingActionsComponent implements AfterViewInit, OnDestroy {
   private chatService = inject(ChatService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+  readonly reminderBadge = inject(ReminderBadgeService);
 
   showScroll = signal(false);
   chatOpen = signal(false);
@@ -44,6 +48,11 @@ export class FloatingActionsComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     window.addEventListener('scroll', this.scrollHandler, { passive: true });
     this.scrollHandler();
+    this.reminderBadge.initPopupAckedFromSession();
+  }
+
+  goToReminder(): void {
+    this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
   }
 
   ngOnDestroy(): void {

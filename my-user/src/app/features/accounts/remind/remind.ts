@@ -188,9 +188,15 @@ export class Remind implements OnInit {
         this.loading.set(false);
         this.loadError.set(null);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.loadError.set('Không tải được lời nhắc.');
+        const status = err?.status ?? err?.statusCode;
+        const isConnectionError = status === 0 || err?.message?.includes('Http failure');
+        this.loadError.set(
+          isConnectionError
+            ? 'Không kết nối được máy chủ. Vui lòng chạy backend: cd backend && npm start'
+            : 'Không tải được lời nhắc.'
+        );
       },
     });
   }
@@ -371,20 +377,44 @@ export class Remind implements OnInit {
     item: { reminder: Reminder; time: string; completed: boolean },
     dateOverride?: string
   ): void {
-    if (!item.reminder._id) return;
+    const reminderId = item.reminder._id != null ? String(item.reminder._id) : '';
+    if (!reminderId) return;
     if (item.completed) return;
     const dk = dateOverride ?? this.dateKey();
+    // Optimistic update: hiển thị tick ngay, không cần load lại trang
+    this.reminders.update((list) =>
+      list.map((r) => {
+        if (String(r._id) !== reminderId) return r;
+        const log = r.completion_log || [];
+        if (log.some((c) => c.date === dk && c.time === item.time)) return r;
+        return {
+          ...r,
+          completion_log: [...log, { date: dk, time: item.time }],
+        };
+      })
+    );
     this.reminderApi
-      .markComplete(item.reminder._id, dk, item.time)
+      .markComplete(reminderId, dk, item.time)
       .subscribe({
         next: (res) => {
           if (res.success && res.reminder) {
             this.reminders.update((list) =>
-              list.map((r) => (r._id === item.reminder._id ? res.reminder! : r))
+              list.map((r) => (String(r._id) === reminderId ? res.reminder! : r))
             );
           }
         },
-        error: () => { },
+        error: () => {
+          // Revert optimistic update khi API lỗi
+          this.reminders.update((list) =>
+            list.map((r) => {
+              if (String(r._id) !== reminderId) return r;
+              const log = (r.completion_log || []).filter(
+                (c) => !(c.date === dk && c.time === item.time)
+              );
+              return { ...r, completion_log: log };
+            })
+          );
+        },
       });
   }
 

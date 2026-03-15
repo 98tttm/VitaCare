@@ -1,11 +1,12 @@
 /* Notice - Thông báo tài khoản | Đồng bộ với Orders (padding, header, tab, session) */
 
-/* ===== CONTAINER - cùng padding với orders ===== */
+/* ===== CONTAINER - cùng padding với orders (override vc_container 15px) ===== */
 .notice-container {
   width: 100%;
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 40px;
+  padding-left: 40px !important;
+  padding-right: 40px !important;
   font-family: var(--font-family-base);
   color: var(--color-text-primary);
 }
@@ -59,7 +60,7 @@
 
 /* ===== TAB NAVIGATION - giống orders ===== */
 .notice-container .tab-navigation {
-  margin-bottom: 12px;
+  margin-bottom: 20px;
   position: relative;
   display: flex;
   align-items: center;
@@ -143,15 +144,11 @@
   line-height: 1;
 }
 
-/* ===== SESSION - nền xám nhạt, chiều rộng bằng thanh tab ===== */
+/* ===== SESSION - giống orders-content-wrapper (overflow, scrollbar) ===== */
 .notice-content-wrapper {
-  background: var(--color-neutral-20);
-  border-radius: 16px;
-  padding: 12px 0 32px 0;
-  box-shadow: var(--shadow-sm);
-  min-height: 400px;
   overflow-y: auto;
   max-height: calc(100vh - 300px);
+  min-height: 400px;
 }
 
 .notice-content-wrapper::-webkit-scrollbar {
@@ -159,7 +156,7 @@
 }
 
 .notice-content-wrapper::-webkit-scrollbar-track {
-  background: var(--color-neutral-30);
+  background: var(--color-neutral-20);
   border-radius: 4px;
 }
 
@@ -190,12 +187,13 @@
 .notice-item-wrapper {
   width: 100%;
   margin-bottom: 24px;
-  background: var(--color-neutral-10);
-  border-radius: 15px 15px 0 0;
+  background: white;
+  border-radius: 15px 0 0 0;
+  padding: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  min-height: 140px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -205,7 +203,7 @@
 
 .notice-item-wrapper:hover {
   box-shadow: 0 6px 20px rgba(0, 88, 159, 0.15);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 /* Thanh trạng thái (Chưa đọc / Đã đọc) giống order-status-card */
@@ -214,12 +212,15 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 16px;
+  border-radius: 15px 0 0 0;
   font-size: 13px;
   font-weight: 500;
+  margin-bottom: 0;
+  width: 100%;
+  min-width: 200px;
   font-family: var(--font-family-base);
   border: none;
-  min-width: 200px;
 }
 
 .notice-status-left,
@@ -254,14 +255,14 @@
   color: var(--color-success);
 }
 
-/* Nội dung thông báo (phần dưới status bar) - padding text thu gọn */
+/* Nội dung thông báo (phần dưới status bar) - giống order-card */
 .notice-card {
   display: flex;
   gap: var(--spacing-3);
   align-items: flex-start;
-  padding: 16px 16px;
+  padding: 16px;
   min-height: 100px;
-  background: var(--color-neutral-10);
+  background: white;
   border: none;
   border-top: 1px solid var(--color-neutral-30);
   border-radius: 0;
@@ -275,7 +276,7 @@
 }
 
 .notice-card.is-read {
-  background: var(--color-neutral-10);
+  background: white;
 }
 
 .notice-card.is-read .notice-card-title {
@@ -378,11 +379,11 @@
   font-size: 0.875rem;
 }
 
-/* ===== EMPTY STATE (trong session) ===== */
+/* ===== EMPTY STATE (trong session) - giống orders empty-state ===== */
 .notice-empty {
   text-align: center;
   padding: var(--spacing-12) var(--spacing-6);
-  background: var(--color-neutral-10);
+  background: white;
   border-radius: var(--radius-lg);
   border: 1px dashed var(--color-neutral-40);
 }
@@ -423,7 +424,8 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .notice-container {
-    padding: 0 16px;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
 
   .notice-title {

@@ -499,3 +499,105 @@ a {
     color: var(--color-primary);
     margin-right: 5px;
 }
+
+/* --- Login Success Full-screen Overlay --- */
+.success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f8f9fa; /* Trắng xám */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.success-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+}
+
+.success-logo {
+    margin-bottom: 40px;
+}
+
+.success-logo img {
+    height: 100px;
+    width: auto;
+    animation: logoBounce 2s infinite ease-in-out;
+}
+
+.success-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+    letter-spacing: 0.3px;
+}
+
+.loading-container {
+    width: 100%;
+    position: relative;
+    padding-top: 50px; /* Space for mascot */
+}
+
+.mascot-shipping {
+    position: absolute;
+    bottom: 10px; /* Adjust based on mascot height */
+    left: 0;
+    width: 60px;
+    z-index: 2;
+    transform: translateX(-50%);
+    animation: mascotRun 2s forwards cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mascot-shipping img {
+    width: 100%;
+    height: auto;
+}
+
+.loading-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--color-neutral-20);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.loading-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #A5B4FC, #C4B5FD);
+    border-radius: 10px;
+    animation: loadingScale 2s forwards cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes logoBounce {
+    0%, 100% { transform: translateY(0) scale(1.0); }
+    50% { transform: translateY(-10px) scale(1.05); }
+}
+
+@keyframes loadingScale {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+@keyframes mascotRun {
+    0% { left: 0%; }
+    100% { left: 100%; }
+}

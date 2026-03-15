@@ -1,4 +1,12 @@
 <div class="floating-actions">
+  <!-- Icon viên thuốc + số thông báo nhắc lịch (chỉ hiện sau khi popup nhắc đã đóng) -->
+  @if (reminderBadge.showReminderBadge()) {
+  <button type="button" class="fab fab-reminder" aria-label="Lịch nhắc uống thuốc"
+    (click)="goToReminder()">
+    <i class="bi bi-capsule" aria-hidden="true"></i>
+    <span class="fab-reminder-count">{{ reminderBadge.reminderDueCount() }}</span>
+  </button>
+  }
   <!-- Nút mở/đóng chat (phía trên) -->
   <button type="button" class="fab fab-chat" [attr.aria-label]="chatOpen() ? 'Đóng chat' : 'Mở chat'"
     (click)="chatOpen() ? closeChat() : openChat()">

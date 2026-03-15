@@ -9,6 +9,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { HealthTestService } from '../../../core/services/health-test.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { BlogService } from '../../../core/services/blog.service';
+import { BlogPopupService } from '../../../core/services/blog-popup.service';
 
 interface Product {
   id?: number | string;
@@ -123,7 +124,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private healthTestService: HealthTestService,
     private categoryService: CategoryService,
-    private blogService: BlogService
+    private blogService: BlogService,
+    private blogPopupService: BlogPopupService
   ) {
     // Nếu muốn autoplay thì bật:
     // this.startAutoplay();
@@ -137,6 +139,9 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     // fetch blogs for 'Góc sức khỏe'
     // Một request limit lớn hơn → đủ bài cho Góc SK + random popup, chờ API một lần
     this.blogPopupPageEnterMs = typeof Date !== 'undefined' ? Date.now() : 0;
+    // Lên lịch popup ngay bằng pool fallback — đảm bảo luôn hiện sau 4s; khi API trả về sẽ cập nhật nội dung nếu cần
+    this.prepareBlogPopupFromPool(this.getBlogPopupFallbackPool());
+    this.scheduleBlogPopupReveal();
     this.loadBlogs(6, 24);
     this.loadQuizItems();
     this.loadCategorySlugsFromApi();
@@ -502,13 +507,40 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   // "Có thể bạn chưa biết?" popup
   popupBlog: { title: string; image?: string; excerpt?: string; link?: string } | null = null;
   showBlogPopup = false;
-  /** Thời điểm vào Home — popup chỉ mở sau 3s kể từ đây */
+  /** Thời điểm vào Home — popup chỉ mở sau 4s kể từ đây */
   private blogPopupPageEnterMs = 0;
   private blogPopupRevealTimer: number | null = null;
-  readonly blogPopupDelayMs = 3000;
+  readonly blogPopupDelayMs = 4000;
   /** Tự đóng sau lâu (ms) — tăng thời gian để người dùng kịp đọc */
   private blogPopupAutoCloseTimer: number | null = null;
   readonly blogPopupAutoCloseMs = 5 * 60 * 1000;
+
+  /** Pool fallback cho popup khi chưa có API — dùng ngay khi vào trang để popup luôn hiện sau 4s */
+  private getBlogPopupFallbackPool(): Array<{ title: string; image?: string; excerpt?: string; slug?: string; link?: string }> {
+    return [
+      {
+        title: '5 thói quen giúp ngủ ngon hơn',
+        image: 'assets/images/homepage/blogs/ngu_ngon.jpg',
+        excerpt: 'Tổng hợp 5 thói quen dễ thực hiện giúp cải thiện giấc ngủ...',
+        slug: 'ngu-nguon',
+        link: '/bai-viet/ngu-nguon',
+      },
+      {
+        title: 'Ăn gì để tăng sức đề kháng?',
+        image: 'assets/images/homepage/blogs/an_gi.jpg',
+        excerpt: 'Các thực phẩm giàu vitamin và khoáng chất cho hệ miễn dịch...',
+        slug: 'tang-suc-de-khang',
+        link: '/bai-viet/tang-suc-de-khang',
+      },
+      {
+        title: 'Cách xử trí khi bị cảm lạnh',
+        image: 'assets/images/homepage/blogs/cam_cum.webp',
+        excerpt: 'Mẹo chăm sóc tại nhà và khi nên gặp bác sĩ...',
+        slug: 'xu-tri-cam-lanh',
+        link: '/bai-viet/xu-tri-cam-lanh',
+      },
+    ];
+  }
 
   // featured products loading state
   isLoadingFeaturedProducts = false;
@@ -897,6 +929,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
               categoryName: 'Sức khỏe',
             },
           ];
+          this.prepareBlogPopupFromPool(this.blogs);
+          this.scheduleBlogPopupReveal();
         }
       }, 1000);
     }
@@ -1202,7 +1236,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     return result;
   }
 
-  /** Chỉ gán popupBlog — không mở popup (mở sau 3s + khi đã có data) */
+  /** Chỉ gán popupBlog — không mở popup (mở sau 4s + khi đã có data) */
   private prepareBlogPopupFromPool(
     pool: Array<{ title: string; image?: string; excerpt?: string; slug?: string; link?: string }>
   ): void {
@@ -1227,7 +1261,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  /** Sau đủ 3s từ lúc vào Home mới hiện popup; nếu API trả sau 3s thì hiện ngay khi có data */
+  /** Sau đủ 4s từ lúc vào Home mới hiện popup; nếu API trả sau 4s thì hiện ngay khi có data */
   private scheduleBlogPopupReveal(): void {
     if (typeof window === 'undefined' || !this.popupBlog) return;
     if (this.blogPopupRevealTimer !== null) {
@@ -1253,6 +1287,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     this.blogPopupAutoCloseTimer = window.setTimeout(() => {
       this.showBlogPopup = false;
       this.blogPopupAutoCloseTimer = null;
+      this.blogPopupService.setDismissed();
       this.cdr.detectChanges();
     }, this.blogPopupAutoCloseMs);
   }
@@ -1263,6 +1298,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
       window.clearTimeout(this.blogPopupAutoCloseTimer);
       this.blogPopupAutoCloseTimer = null;
     }
+    this.blogPopupService.setDismissed();
   }
 
   goToBlogPopup(): void {

@@ -1,5 +1,5 @@
 <div class="page-container">
-  <div class="vc_container pt-2">
+  <div class="vc_container pt-2" *ngIf="activeMenu !== 'notifications' && activeMenu !== 'reviews'">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb-vc">
         <li class="breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
