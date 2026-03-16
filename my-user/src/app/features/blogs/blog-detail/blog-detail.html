@@ -1,21 +1,19 @@
 <main class="bd-page">
   <div class="vc_container pt-2 pb-5">
     <!-- Breadcrumb -->
-    <nav class="vc_breadcrumb" aria-label="Breadcrumb" style="--vc-breadcrumb-sep: '/';">
-      <ol class="vc_breadcrumb_list" style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; font-size: 14px; gap: 8px; align-items: center;">
-        <ng-container *ngFor="let bc of breadcrumbs; let last = last">
-          <li class="vc_breadcrumb_item" [class.current]="last" [attr.aria-current]="last ? 'page' : null">
-            <a *ngIf="!last" [routerLink]="bc.link" style="color: var(--vc-primary-color); text-decoration: none;">{{ bc.name }}</a>
-            <span *ngIf="last" style="color: #6c757d;">{{ bc.name }}</span>
-          </li>
-          <li *ngIf="!last" class="vc_breadcrumb_sep" style="color: #6c757d;">/</li>
-        </ng-container>
+    <nav class="vc_breadcrumb mb-3" aria-label="breadcrumb">
+      <ol class="vc_breadcrumb_list">
+        <li class="vc_breadcrumb_item" *ngFor="let bc of breadcrumbs; let last = last">
+          <a *ngIf="!last" [routerLink]="bc.link">{{ bc.name }}</a>
+          <span *ngIf="last">{{ bc.name }}</span>
+        </li>
       </ol>
     </nav>
 
     <!-- Loading -->
     <div *ngIf="loading" class="bd-loading">
-      <p>Đang tải bài viết...</p>
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2">Đang tải bài viết...</p>
     </div>
 
     <!-- Not found -->
@@ -24,82 +22,156 @@
       <a routerLink="/bai-viet" class="bd-btn-link">← Quay lại danh sách bài viết</a>
     </div>
 
-    <!-- Article content: title, meta, shortDescription, descriptionHtml từ data -->
-    <article *ngIf="blog && !loading" class="bd-article" [class.bd-font-large]="fontSize === 'large'">
-      <h1 class="bd-title">{{ blog.title }}</h1>
+    <!-- Article Wrapper -->
+    <div *ngIf="blog && !loading" class="bd-content-card">
+      <article class="bd-article" [class.bd-font-large]="fontSize === 'large'">
+        <h1 class="bd-title">{{ blog.title }}</h1>
 
-      <div class="bd-meta">
-        <span class="bd-meta-item"><strong>{{ authorName }}</strong></span>
-        <span class="bd-meta-sep">|</span>
-        <span class="bd-meta-item">{{ publishedDate }}</span>
-        <div class="bd-font-size">
-          <span class="bd-font-size-label">Kích thước chữ:</span>
-          <button type="button" class="bd-font-btn" [class.active]="fontSize === 'default'"
-            (click)="setFontSize('default')">Mặc định</button>
-          <button type="button" class="bd-font-btn" [class.active]="fontSize === 'large'"
-            (click)="setFontSize('large')">Lớn hơn</button>
+        <div class="bd-meta">
+          <span class="bd-meta-item"><strong>{{ authorName }}</strong></span>
+          <span class="bd-meta-sep">|</span>
+          <span class="bd-meta-item">{{ publishedDate }}</span>
+          <div class="bd-font-size">
+            <span class="bd-font-size-label">Kích thước chữ:</span>
+            <button type="button" class="bd-font-btn" [class.active]="fontSize === 'default'"
+              (click)="setFontSize('default')">Mặc định</button>
+            <button type="button" class="bd-font-btn" [class.active]="fontSize === 'large'"
+              (click)="setFontSize('large')">Lớn hơn</button>
+          </div>
+          <div class="bd-share">
+            <span class="bd-share-label">Chia sẻ:</span>
+            <a [href]="facebookShareUrl" target="_blank" rel="noopener noreferrer" class="bd-share-btn"
+              title="Chia sẻ lên Facebook" aria-label="Chia sẻ Facebook"><i class="bi bi-facebook"></i></a>
+            <a [href]="messengerShareUrl" target="_blank" rel="noopener noreferrer" class="bd-share-btn"
+              title="Gửi qua Messenger" aria-label="Chia sẻ Messenger"><i class="bi bi-messenger"></i></a>
+          </div>
         </div>
-        <div class="bd-share">
-          <span class="bd-share-label">Chia sẻ:</span>
-          <a [href]="facebookShareUrl" target="_blank" rel="noopener noreferrer" class="bd-share-btn"
-            title="Chia sẻ lên Facebook" aria-label="Chia sẻ Facebook"><i class="bi bi-facebook"></i></a>
-          <a [href]="messengerShareUrl" target="_blank" rel="noopener noreferrer" class="bd-share-btn"
-            title="Gửi qua Messenger" aria-label="Chia sẻ Messenger"><i class="bi bi-messenger"></i></a>
+
+        <!-- Tóm tắt bài viết - Intro Quote -->
+        <div *ngIf="introText" class="bd-intro">
+          <div class="bd-intro-inner">
+            <i class="bi bi-quote bd-intro-icon"></i>
+            <p class="bd-intro-text">{{ introText }}</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Tóm tắt bài viết - Intro Quote -->
-      <div *ngIf="introText" class="bd-intro">
-        <div class="bd-intro-inner">
-          <i class="bi bi-quote bd-intro-icon"></i>
-          <p class="bd-intro-text">{{ introText }}</p>
+        <!-- Nội dung chính từ descriptionHtml (hoặc content/body/description) -->
+        <div *ngIf="bodyHtml" #bodyContainer class="bd-body" [innerHTML]="bodyHtml"></div>
+        <div *ngIf="!bodyHtml && introText" class="bd-body">
+          <p>{{ introText }}</p>
         </div>
-      </div>
 
-      <!-- Nội dung chính từ descriptionHtml (hoặc content/body/description) -->
-      <div *ngIf="bodyHtml" #bodyContainer class="bd-body" [innerHTML]="bodyHtml"></div>
-      <div *ngIf="!bodyHtml && introText" class="bd-body">
-        <p>{{ introText }}</p>
-      </div>
+        <!-- Đánh giá độ hữu ích -->
+        <section class="bd-feedback">
+          <p class="bd-feedback-question">Đánh giá độ hữu ích của bài viết</p>
+          <div class="bd-reactions">
+            <button type="button" class="bd-reaction-btn" [class.active]="userReaction === 1" (click)="setReaction(1)"
+              title="Thất vọng"><span class="bd-reaction-emoji">😞</span><span class="bd-reaction-label">Thất
+                vọng</span></button>
+            <button type="button" class="bd-reaction-btn" [class.active]="userReaction === 2" (click)="setReaction(2)"
+              title="Không hữu ích"><span class="bd-reaction-emoji">😕</span><span class="bd-reaction-label">Không hữu
+                ích</span></button>
+            <button type="button" class="bd-reaction-btn" [class.active]="userReaction === 3" (click)="setReaction(3)"
+              title="Bình thường"><span class="bd-reaction-emoji">😐</span><span class="bd-reaction-label">Bình
+                thường</span></button>
+            <button type="button" class="bd-reaction-btn" [class.active]="userReaction === 4" (click)="setReaction(4)"
+              title="Hữu ích"><span class="bd-reaction-emoji">🙂</span><span class="bd-reaction-label">Hữu
+                ích</span></button>
+            <button type="button" class="bd-reaction-btn" [class.active]="userReaction === 5" (click)="setReaction(5)"
+              title="Rất hữu ích"><span class="bd-reaction-emoji">😊</span><span class="bd-reaction-label">Rất hữu
+                ích</span></button>
+          </div>
+        </section>
 
-      <!-- Đánh giá độ hữu ích -->
-      <section class="bd-feedback">
-        <p class="bd-feedback-question">Đánh giá độ hữu ích của bài viết</p>
-        <div class="bd-reactions">
-          <button type="button" class="bd-reaction-btn" [class.active]="helpfulReaction === 1" (click)="setReaction(1)"
-            title="Thất vọng"><span class="bd-reaction-emoji">😞</span><span class="bd-reaction-label">Thất
-              vọng</span></button>
-          <button type="button" class="bd-reaction-btn" [class.active]="helpfulReaction === 2" (click)="setReaction(2)"
-            title="Không hữu ích"><span class="bd-reaction-emoji">😕</span><span class="bd-reaction-label">Không hữu
-              ích</span></button>
-          <button type="button" class="bd-reaction-btn" [class.active]="helpfulReaction === 3" (click)="setReaction(3)"
-            title="Bình thường"><span class="bd-reaction-emoji">😐</span><span class="bd-reaction-label">Bình
-              thường</span></button>
-          <button type="button" class="bd-reaction-btn" [class.active]="helpfulReaction === 4" (click)="setReaction(4)"
-            title="Hữu ích"><span class="bd-reaction-emoji">🙂</span><span class="bd-reaction-label">Hữu
-              ích</span></button>
-          <button type="button" class="bd-reaction-btn" [class.active]="helpfulReaction === 5" (click)="setReaction(5)"
-            title="Rất hữu ích"><span class="bd-reaction-emoji">😊</span><span class="bd-reaction-label">Rất hữu
-              ích</span></button>
+        <!-- Tác giả & Kiểm duyệt -->
+        <div class="author-approver-box" *ngIf="blog.author || blog.approver">
+          <div class="profile-item" *ngIf="blog.author">
+            <div class="profile-avatar">
+              <img [src]="blog.author.avatar?.url || 'assets/images/banner/team.png'" alt="Author">
+            </div>
+            <div class="profile-info">
+              <span class="profile-label">Dược sĩ</span>
+              <h4 class="profile-name">{{ blog.author.fullName || blog.author.name || authorName }}</h4>
+            </div>
+          </div>
+          <div class="profile-divider" *ngIf="blog.author && blog.approver"></div>
+          <div class="profile-item" *ngIf="blog.approver">
+            <div class="profile-avatar">
+              <img [src]="blog.approver.avatar?.url || 'assets/images/banner/team.png'" alt="Approver">
+            </div>
+            <div class="profile-info">
+              <span class="profile-label">Tham vấn y khoa</span>
+              <h4 class="profile-name">{{ blog.approver.fullName || blog.approver.name || 'DS. Nguyễn Thị Hồng' }}</h4>
+            </div>
+          </div>
         </div>
-      </section>
 
-      <!-- Thông tin tham khảo -->
-      <div class="bd-disclaimer">
-        <p>Thông tin và sản phẩm gợi ý trong bài viết chỉ mang tính chất tham khảo, vui lòng liên hệ với Bác sĩ, Dược sĩ
-          hoặc chuyên viên y tế để được tư vấn cụ thể. <a routerLink="/chinh-sach/chinh-sach-noi-dung"
-            class="bd-disclaimer-link">Xem thêm</a></p>
-      </div>
+        <!-- Tag badges -->
+        <div class="blog-tags" *ngIf="blog.tags?.length">
+          <span class="tags-title">Chủ đề:</span>
+          <div class="tags-list">
+            <a *ngFor="let tag of blog.tags" [routerLink]="['/chuyen-de', tag.slug || tag]" class="tag-badge">
+              {{ tag.title || tag.name || tag }}
+            </a>
+          </div>
+        </div>
 
-      <!-- Có thể bạn quan tâm -->
-      <section *ngIf="relatedBlogs.length" class="bd-related">
-        <h2 class="bd-related-title">Có thể bạn quan tâm</h2>
-        <ul class="bd-related-list">
-          <li *ngFor="let r of relatedBlogs">
-            <a [routerLink]="r.link || '/bai-viet'">{{ r.title }}</a>
-          </li>
-        </ul>
-      </section>
-    </article>
+        <!-- Sản phẩm liên quan (Carousel) -->
+        <div class="related-products-section" *ngIf="relatedProducts.length > 0">
+          <div class="rp-header">
+            <div class="rp-title">
+              <i class="bi bi-lightbulb-fill"></i>
+              <h3>Có thể bạn quan tâm</h3>
+            </div>
+          </div>
+
+          <div class="rp-carousel-wrapper">
+            <button class="rp-nav prev" (click)="scrollProductPrev()" aria-label="Previous">‹</button>
+
+            <div class="rp-slider" #productSlider>
+              <div class="product-card" *ngFor="let p of relatedProducts" (click)="goToProductDetail(p)">
+                <div class="p-img-wrap">
+                  <img [src]="p.image || p.imageUrl || 'assets/images/products/placeholder.jpg'" [alt]="p.name">
+                </div>
+                <div class="p-content">
+                  <h4 class="p-name">{{ p.name }}</h4>
+                  <div class="p-price-row">
+                    <span class="p-price">{{ (p.displayPrice || 0) | number:'1.0-0' }}đ <small class="p-unit">/ {{
+                        p.displayUnit || 'Hộp' }}</small></span>
+                  </div>
+                  <div class="p-actions">
+                    <button class="btn-cart" (click)="addToCart(p, $event)">Thêm vào giỏ</button>
+                    <button class="btn-buy" (click)="buyNow(p); $event.stopPropagation()">Mua ngay</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="rp-nav next" (click)="scrollProductNext()" aria-label="Next">›</button>
+          </div>
+        </div>
+
+        <!-- Thông tin tham khảo -->
+        <div class="bd-disclaimer">
+          <p>Thông tin và sản phẩm gợi ý trong bài viết chỉ mang tính chất tham khảo, vui lòng liên hệ với Bác sĩ, Dược
+            sĩ hoặc chuyên viên y tế để được tư vấn cụ thể. <a routerLink="/chinh-sach/chinh-sach-noi-dung"
+              class="bd-disclaimer-link">Xem thêm</a></p>
+        </div>
+
+        <!-- Bài viết liên quan (Grid 2 cột) -->
+        <div class="related-section" *ngIf="relatedBlogs.length > 0">
+          <h3 class="related-title">
+            <i class="bi bi-plus-circle-fill"></i>
+            Các bài viết liên quan
+          </h3>
+          <div class="related-grid">
+            <a *ngFor="let item of relatedBlogs" [routerLink]="[item.link]" class="related-item">
+              <i class="bi bi-dot"></i>
+              <span>{{ item.title }}</span>
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
   </div>
 </main>

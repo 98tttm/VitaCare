@@ -1,36 +1,26 @@
 <main class="bv-subcategory-page">
     <!-- Breadcrumb Section -->
-    <div class="bv-breadcrumb-container">
-        <div class="bv-container">
-            <nav class="bv-breadcrumb">
-                <a routerLink="/" class="bv-breadcrumb-item">Trang chủ</a>
-                <span class="bv-breadcrumb-separator">/</span>
-                <a routerLink="/bai-viet" class="bv-breadcrumb-item">Góc sức khoẻ</a>
-                <span class="bv-breadcrumb-separator">/</span>
-                <a [routerLink]="['/bai-viet/danh-muc', categorySlug]" class="bv-breadcrumb-item">{{ categoryName }}</a>
-                <span class="bv-breadcrumb-separator">/</span>
-                <span class="bv-breadcrumb-item active">{{ subcategoryName }}</span>
-            </nav>
-        </div>
+    <div class="bv-container">
+        <nav class="breadcrumb-vc">
+            <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
+            <div class="breadcrumb-item"><a routerLink="/bai-viet">Góc sức khoẻ</a></div>
+            <div class="breadcrumb-item"><a [routerLink]="['/bai-viet/danh-muc', categorySlug]">{{ categoryName }}</a>
+            </div>
+            <div class="breadcrumb-item active">{{ subcategoryName }}</div>
+        </nav>
     </div>
 
-    <!-- Hero Header Section -->
     <section class="bv-hero-section">
-        <div class="bv-hero-overlay"></div>
-        <div class="bv-container d-flex justify-content-center align-items-center h-100">
-            <div class="bv-hero-title-box">
-                <h1 class="bv-hero-title">{{ subcategoryName }}</h1>
-            </div>
+        <div class="bv-hero-title-box">
+            <h1 class="bv-title">{{ subcategoryName }}</h1>
         </div>
     </section>
 
     <!-- Content Section -->
     <div class="bv-container mt-5">
-        <div class="bv-section-header mb-4">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-book-half bv-section-icon me-2"></i>
-                <h2 class="bv-section-title mb-0">Các bài viết liên quan</h2>
-            </div>
+        <div class="bv-section-header mb-3">
+            <i class="bi bi-book-half bv-section-icon me-2"></i>
+            <span class="bv-section-title fw-bold">Các bài viết liên quan</span>
         </div>
 
         <!-- Loading state -->
@@ -65,7 +55,8 @@
         <!-- Pagination -->
         <div *ngIf="remainingCount > 0" class="text-center mb-5 pb-5">
             <button class="bv-load-more-btn" (click)="loadMore()">
-                Xem thêm {{ remainingCount }} bài viết
+                <i class="bi bi-chevron-double-down"></i>
+                <span>Xem thêm {{ remainingCount }} bài viết</span>
             </button>
         </div>
     </div>

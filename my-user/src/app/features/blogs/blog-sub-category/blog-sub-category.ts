@@ -188,14 +188,25 @@ export class BlogSubCategory implements OnInit {
         this.displayedBlogs = [...this.blogs];
     }
 
+    private normalizeSlug(raw: string): string {
+        if (!raw || typeof raw !== 'string') return '';
+        let s = raw.trim().replace(/^\/+/, '');
+        if (s.toLowerCase().startsWith('bai-viet/')) s = s.slice(9);
+        return s;
+    }
+
     private normalizeBlog(b: any): BlogItem {
-        const slug = b.slug || b._id;
+        const slugRaw = (b.slug || (b as any).slug)?.trim();
+        const idStr = b._id != null ? String(b._id) : '';
+        const slug = this.normalizeSlug(slugRaw || '') || idStr;
+        const link = slug ? `/bai-viet/${slug}` : '/bai-viet';
+
         return {
-            title: b.title || 'Bài viết sức khỏe',
-            image: b.primaryImage?.url || b.image || 'assets/placeholder/blog-thumb.jpg',
+            title: b.title || b.name || 'Bài viết sức khỏe',
+            image: b.primaryImage?.url || b.image || b.imageUrl || 'assets/placeholder/blog-thumb.jpg',
             excerpt: b.shortDescription || b.excerpt || '',
-            link: `/bai-viet/${slug}`,
-            slug: slug,
+            link,
+            slug: slug || undefined,
             categoryName: this.subcategoryName
         };
     }

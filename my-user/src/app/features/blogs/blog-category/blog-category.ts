@@ -112,10 +112,10 @@ export class BlogCategory implements OnInit {
       slug: 'me-va-be',
       keywords: ['chăm sóc mẹ và bé', 'mẹ và bé', 'mẹ & bé', 'mang thai', 'sinh con', 'trẻ'],
       subcategories: [
-        { name: 'Kế hoạch mang thai', slug: 'ke-hoach-mang-thai', icon: 'assets/icon/health-test.png', count: 0, countKeywords: ['kế hoạch mang thai', 'chuẩn bị mang thai', 'thụ thai', 'sinh con'] },
-        { name: 'Mang thai', slug: 'mang-thai', icon: 'assets/icon/medical_16660084.png', count: 0, countKeywords: ['mang thai', 'thai kỳ', 'bà bầu', 'thai nhi'] },
-        { name: 'Sinh con', slug: 'sinh-con', icon: 'assets/icon/blood (1).png', count: 0, countKeywords: ['sinh con', 'đẻ mổ', 'đẻ thường', 'chuyển dạ'] },
-        { name: 'Chăm sóc bé', slug: 'cham-soc-be', icon: 'assets/icon/chamsoccanhan/chamsocrangmieng.png', count: 0, countKeywords: ['chăm sóc bé', 'trẻ sơ sinh', 'em bé', 'nuôi con'] }
+        { name: 'Kế hoạch mang thai', slug: 'ke-hoach-mang-thai', icon: 'assets/images/homepage/blogs/ke_hoach_thai.webp', count: 0, countKeywords: ['kế hoạch mang thai', 'chuẩn bị mang thai', 'thụ thai', 'sinh con'] },
+        { name: 'Mang thai', slug: 'mang-thai', icon: 'assets/images/homepage/blogs/thai.webp', count: 0, countKeywords: ['mang thai', 'thai kỳ', 'bà bầu', 'thai nhi'] },
+        { name: 'Sinh con', slug: 'sinh-con', icon: 'assets/images/homepage/blogs/sinh.webp', count: 0, countKeywords: ['sinh con', 'đẻ mổ', 'đẻ thường', 'chuyển dạ'] },
+        { name: 'Chăm sóc bé', slug: 'cham-soc-be', icon: 'assets/images/homepage/blogs/cham_be.webp', count: 0, countKeywords: ['chăm sóc bé', 'trẻ sơ sinh', 'em bé', 'nuôi con'] }
       ]
     },
     {

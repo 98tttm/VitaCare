@@ -1,0 +1,63 @@
+<main class="tc-page">
+    <div class="tc-container">
+        <div class="tc-content-wrapper">
+            <!-- Main Content -->
+            <div class="tc-main">
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb-vc">
+                    <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
+                    <div class="breadcrumb-item"><a routerLink="/chuyen-de">Chuyên đề</a></div>
+                    <div class="breadcrumb-item active">{{ tagName }}</div>
+                </nav>
+
+                <header class="tc-header">
+                    <h1 class="tc-title">Bài viết {{ tagName }}</h1>
+                    <div class="tc-stats" *ngIf="total > 0">
+                        <span>{{ total }} bài viết</span>
+                    </div>
+                </header>
+
+                <!-- Loading State -->
+                <div *ngIf="loading && blogs.length === 0" class="tc-loading">
+                    <div class="tc-spinner"></div>
+                    <p>Đang tải bài viết...</p>
+                </div>
+
+                <!-- Articles List -->
+                <div class="tc-list" *ngIf="blogs.length > 0">
+                    <div *ngFor="let blog of blogs" class="tc-card">
+                        <a [routerLink]="blog.link" class="tc-card-img-link">
+                            <img [src]="blog.image" [alt]="blog.title" class="tc-card-img">
+                        </a>
+                        <div class="tc-card-body">
+                            <div class="tc-card-badge">{{ blog.categoryName }}</div>
+                            <h2 class="tc-card-title">
+                                <a [routerLink]="blog.link">{{ blog.title }}</a>
+                            </h2>
+                            <p class="tc-card-excerpt">{{ blog.excerpt }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="!loading && blogs.length === 0" class="tc-empty">
+                    <i class="bi bi-journal-x"></i>
+                    <p>Chưa có bài viết nào cho chủ đề này.</p>
+                </div>
+
+                <!-- Load More -->
+                <div class="tc-load-more" *ngIf="remainingCount > 0">
+                    <button (click)="loadMore()" class="tc-load-more-btn" [disabled]="loading">
+                        <span *ngIf="!loading">Xem thêm {{ remainingCount }} bài viết</span>
+                        <span *ngIf="loading">Đang tải...</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar (Optional, could be added later for better UX) -->
+            <aside class="tc-sidebar">
+                <!-- You could add featured products or related topics here -->
+            </aside>
+        </div>
+    </div>
+</main>

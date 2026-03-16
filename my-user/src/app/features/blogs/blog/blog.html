@@ -42,7 +42,9 @@
               <img [src]="b.image || 'assets/placeholder/blog-thumb.jpg'" [alt]="b.title" loading="lazy" />
               <div class="bv-blog-side-content">
                 <span class="bv-badge-sm">{{ b.categoryName || 'Góc sức khoẻ' }}</span>
-                <h4 class="bv-blog-side-title" style="font-size: 14px; font-weight: 500; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--vc-text-primary);">{{ b.title }}</h4>
+                <h4 class="bv-blog-side-title"
+                  style="font-size: 14px; font-weight: 500; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--vc-text-primary);">
+                  {{ b.title }}</h4>
               </div>
             </a>
           </div>
@@ -359,7 +361,7 @@
                   </a>
                 </ng-container>
               </div>
-              <a routerLink="/topic" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+              <a routerLink="/chuyen-de" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
             </div>
             <div class="bv-expert-team-box">
               <h3 class="bv-et-title">Đội ngũ chuyên môn</h3>

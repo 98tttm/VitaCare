@@ -1,5 +1,5 @@
 .bv-subcategory-page {
-    background-color: #ffffff;
+    background-color: #f0f7ff;
     min-height: 100vh;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -10,102 +10,84 @@
     padding: 0 1rem;
 }
 
-/* Breadcrumb */
-.bv-breadcrumb-container {
-    background-color: #f8f9fa;
-    padding: 0.75rem 0;
-}
-
-.bv-breadcrumb {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    font-size: 0.85rem;
-    color: #637381;
-}
-
-.bv-breadcrumb-item {
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.bv-breadcrumb-item:hover {
-    color: #007bff;
-}
-
-.bv-breadcrumb-item.active {
-    color: #212b36;
-    font-weight: 500;
-}
-
-.bv-breadcrumb-separator {
-    margin: 0 0.5rem;
-}
-
-/* Hero Section */
+/* Header / Hero */
 .bv-hero-section {
-    position: relative;
-    height: 180px;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    background-image: url('https://nhathuoclongchau.com.vn/estore-images/blog/bg-blog-list.png');
-    /* Placeholder for reference */
+    height: 320px;
+    background-image: url('/assets/images/banner/blog_sub_cate.png');
     background-size: cover;
     background-position: center;
-    overflow: hidden;
+    position: relative;
+    margin-bottom: 60px;
 }
 
 .bv-hero-title-box {
-    background-color: #ffffff;
-    padding: 1rem 3rem;
-    border-radius: 50px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    z-index: 2;
+    background: #fff;
+    padding: 24px 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    width: min(1000px, calc(100% - 40px));
+    text-align: center;
+    z-index: 10;
 }
 
-.bv-hero-title {
-    margin: 0;
-    font-size: 1.75rem;
+.bv-title {
+    font-size: 32px;
     font-weight: 700;
     color: #1e3a8a;
+    margin: 0;
     text-transform: uppercase;
 }
 
 /* Section Header */
 .bv-section-header {
-    border-bottom: 2px solid #f4f6f8;
-    padding-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #00589f;
+    /* Màu xanh Vitacare */
+    margin-top: 20px;
 }
 
 .bv-section-icon {
-    font-size: 1.5rem;
-    color: #1e3a8a;
+    font-size: 24px;
+    color: #00589f !important;
 }
 
 .bv-section-title {
-    font-size: 1.25rem;
+    font-size: 18px;
     font-weight: 700;
-    color: #212b36;
+    color: #00589f;
+    margin: 0;
 }
 
 /* Blog Card */
 .bv-blog-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
     text-decoration: none;
     color: inherit;
     height: 100%;
-    transition: transform 0.3s ease;
+    background: #fff;
+    padding: 12px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
 .bv-blog-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .bv-blog-img-wrapper {
     aspect-ratio: 16/9;
     border-radius: 12px;
     overflow: hidden;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .bv-blog-img {
@@ -120,15 +102,18 @@
 }
 
 .bv-blog-content {
-    padding: 0.25rem 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .bv-blog-title {
     font-size: 1rem;
     font-weight: 600;
-    line-height: 1.4;
-    color: #212b36;
-    margin-bottom: 0.5rem;
+    line-height: 1.5;
+    color: #1a1d20;
+    margin: 0;
+    padding: 4px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     line-clamp: 3;
@@ -138,24 +123,27 @@
 }
 
 .bv-blog-card:hover .bv-blog-title {
-    color: #007bff;
+    color: #00589f;
 }
 
 /* Load More Button */
 .bv-load-more-btn {
     background: transparent;
-    border: 1px solid #dfe3e8;
-    border-radius: 30px;
-    padding: 0.75rem 2.5rem;
+    border: none;
+    color: #00589f;
+    /* Màu xanh Vitacare */
     font-weight: 600;
-    color: #212b36;
-    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+    padding: 8px 24px;
+    transition: all 0.2s;
+    cursor: pointer;
 }
 
 .bv-load-more-btn:hover {
-    background-color: #F1ECFA;
-    border-color: #d8c5f5;
-    color: #673ab7;
+    color: #3182ce;
 }
 
 /* Responsive */

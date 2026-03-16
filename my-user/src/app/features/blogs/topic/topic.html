@@ -1,37 +1,50 @@
 <main class="cd-page">
     <div class="cd-container">
         <!-- Breadcrumb -->
-        <nav class="cd-breadcrumb">
-            <a routerLink="/">Trang chủ</a>
-            <span class="cd-sep">/</span>
-            <a routerLink="/bai-viet">Góc sức khỏe</a>
-            <span class="cd-sep">/</span>
-            <span class="cd-current">Chuyên đề</span>
+        <nav class="breadcrumb-vc">
+            <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
+            <div class="breadcrumb-item"><a routerLink="/bai-viet">Góc sức khỏe</a></div>
+            <div class="breadcrumb-item active">Chuyên đề</div>
         </nav>
 
         <header class="cd-header">
-            <h1 class="cd-title">Chuyên đề nổi bật</h1>
-            <p class="cd-subtitle">Tổng hợp các chủ đề sức khỏe hữu ích được quan tâm nhất tại VitaCare.</p>
+            <h1 class="cd-title">Chuyên đề</h1>
         </header>
 
-        <!-- Loading State -->
-        <div *ngIf="loading" class="cd-loading">
-            <div class="cd-spinner"></div>
-            <p>Đang tải danh sách chuyên đề...</p>
+        <div class="cd-section-header mb-3">
+            <i class="bi bi-book-half cd-section-icon me-2"></i>
+            <span class="cd-section-title fw-bold">Chuyên đề nổi bật</span>
         </div>
 
-        <!-- Topics Grid -->
-        <div *ngIf="!loading" class="cd-grid">
-            <a *ngFor="let item of featuredTopicCategories" [routerLink]="['/bai-viet/danh-muc', item.slug]"
-                class="cd-card">
-                <div class="cd-card-content">
-                    <span class="cd-card-tag"># {{ item.name }}</span>
-                    <div class="cd-card-footer">
-                        <span class="cd-card-count">{{ item.count }} bài viết</span>
-                        <i class="bi bi-arrow-right"></i>
+        <section class="cd-section">
+
+            <!-- Loading State -->
+            <div *ngIf="loading" class="cd-loading">
+                <div class="cd-spinner"></div>
+                <p>Đang tải danh sách chuyên đề...</p>
+            </div>
+
+            <!-- Topics Grid -->
+            <div *ngIf="!loading" class="cd-grid">
+                <a *ngFor="let item of featuredTopicCategories" [routerLink]="['/chuyen-de', item.slug]"
+                    class="cd-card">
+                    <div class="cd-card-content">
+                        <span class="cd-card-name">{{ item.name }}</span>
+                        <div class="cd-card-footer">
+                            <span class="cd-card-link">Xem {{ item.count }} bài viết</span>
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+
+            <!-- Load More Button -->
+            <div *ngIf="!loading && remainingCount > 0" class="cd-load-more-container">
+                <button (click)="loadMore()" class="cd-load-more-btn">
+                    <i class="bi bi-chevron-double-down"></i>
+                    <span>Xem thêm {{ remainingCount }} chuyên đề</span>
+                </button>
+            </div>
+        </section>
     </div>
 </main>

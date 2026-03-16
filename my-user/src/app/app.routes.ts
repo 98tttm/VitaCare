@@ -151,15 +151,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/blogs/blog-sub-category/blog-sub-category').then(m => m.BlogSubCategory),
   },
   {
-    path: 'bai-viet/topic/:specialtySlug',
-    loadComponent: () => import('./features/blogs/blog-category/blog-category').then(m => m.BlogCategory),
+    path: 'chuyen-de/:specialtySlug',
+    loadComponent: () => import('./features/blogs/topic-category/topic-category').then(m => m.TopicCategory),
   },
   {
     path: 'bai-viet/danh-muc/:categorySlug',
     loadComponent: () => import('./features/blogs/blog-category/blog-category').then(m => m.BlogCategory),
   },
   {
-    path: 'topic',
+    path: 'chuyen-de',
     loadComponent: () => import('./features/blogs/topic/topic').then(m => m.Topic),
   },
   {
