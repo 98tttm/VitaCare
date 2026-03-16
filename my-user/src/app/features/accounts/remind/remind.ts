@@ -14,6 +14,7 @@ import {
   Reminder,
   ReminderCreate,
 } from '../../../core/services/reminder.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 const DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
 const TIME_SECTIONS: { key: string; label: string; min: number; max: number }[] = [
@@ -67,6 +68,7 @@ function reminderAppliesOnDate(r: Reminder, dateObj: Date): boolean {
 export class Remind implements OnInit {
   private auth = inject(AuthService);
   private reminderApi = inject(ReminderService);
+  private toast = inject(ToastService);
 
   reminders = signal<Reminder[]>([]);
   loading = signal(true);
@@ -318,7 +320,7 @@ export class Remind implements OnInit {
           next: (res) => {
             if (res.success && res.reminder) {
               this.reminders.update((list) => list.map((r) => (r._id === editingId ? res.reminder! : r)));
-              alert('Cập nhật lời nhắc thành công.');
+              this.toast.showSuccess('Cập nhật lời nhắc thành công.');
             }
             this.closeCreate();
           },
@@ -350,7 +352,7 @@ export class Remind implements OnInit {
         next: (res) => {
           if (res.success && res.reminder) {
             this.reminders.update((list) => [...list, res.reminder!]);
-            alert('Tạo lời nhắc mới thành công.');
+            this.toast.showSuccess('Tạo lời nhắc mới thành công.');
           }
           this.closeCreate();
         },

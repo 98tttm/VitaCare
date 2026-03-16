@@ -49,12 +49,12 @@ export class ProductService {
       map((res) => {
         const products = Array.isArray(res?.products)
           ? res.products.map((p: any) => ({
-              ...p,
-              image: this.normalizeMediaUrl(p.image) || p.image,
-              gallery: Array.isArray(p.gallery)
-                ? p.gallery.map((g: string) => this.normalizeMediaUrl(g) || g)
-                : p.gallery,
-            }))
+            ...p,
+            image: this.normalizeMediaUrl(p.image) || p.image,
+            gallery: Array.isArray(p.gallery)
+              ? p.gallery.map((g: string) => this.normalizeMediaUrl(g) || g)
+              : p.gallery,
+          }))
           : [];
         return { ...res, products };
       })
@@ -97,9 +97,9 @@ export class ProductService {
       map((list) =>
         Array.isArray(list)
           ? list.map((p: any) => ({
-              ...p,
-              image: this.normalizeMediaUrl(p.image) || p.image,
-            }))
+            ...p,
+            image: this.normalizeMediaUrl(p.image) || p.image,
+          }))
           : []
       )
     );
@@ -139,5 +139,20 @@ export class ProductService {
 
   getProductFaqs(productId: string): Observable<any[]> {
     return this.http.get<any[]>(`http://localhost:3000/api/product-faqs/${productId}`);
+  }
+
+  getFavorites(userId: string): Observable<any> {
+    return this.http.get(`http://localhost:3000/api/favorites?user_id=${userId}`);
+  }
+
+  addToFavorites(userId: string, video: any): Observable<any> {
+    return this.http.post('http://localhost:3000/api/favorites', { user_id: userId, video });
+  }
+
+  removeFromFavorites(userId: string, videoId: string): Observable<any> {
+    // Backend expects videoId in body for DELETE (as per my implementation)
+    return this.http.request('delete', 'http://localhost:3000/api/favorites', {
+      body: { user_id: userId, videoId }
+    });
   }
 }

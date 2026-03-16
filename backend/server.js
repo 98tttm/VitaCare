@@ -3400,6 +3400,96 @@ app.delete('/api/addresses/:id', async (req, res) => {
   }
 });
 
+// ========= USER FAVORITES (Health Handbook) =========
+// GET /api/favorites?user_id=...
+app.get('/api/favorites', async (req, res) => {
+  try {
+    const user_id = String(req.query.user_id || '').trim();
+    if (!user_id) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+
+    const user = await usersCollection().findOne({ user_id });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng.' });
+    }
+
+    const favorites = Array.isArray(user.favorites) ? user.favorites : [];
+    res.json({ success: true, favorites });
+  } catch (err) {
+    console.error('[GET /api/favorites] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy danh sách yêu thích.' });
+  }
+});
+
+// POST /api/favorites - Thêm video vào danh sách yêu thích
+app.post('/api/favorites', async (req, res) => {
+  try {
+    const { user_id, video } = req.body || {};
+    const uid = String(user_id || '').trim();
+    const videoData = video || {};
+    const vid = videoData.id || videoData._id || (videoData._id && videoData._id.$oid ? videoData._id.$oid : videoData._id);
+
+    if (!uid) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+    if (!vid) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin video (id).' });
+    }
+
+    // Đảm bảo video object có trường id để đồng bộ
+    const videoToSave = { ...videoData, id: String(vid) };
+
+    // Sử dụng $addToSet để tránh trùng lặp nếu video.id đã tồn tại
+    // Tuy nhiên $addToSet so khớp toàn bộ object. Ta nên kiểm tra id trước hoặc dùng logic khác.
+    const user = await usersCollection().findOne({ user_id: uid });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng.' });
+    }
+
+    const favorites = Array.isArray(user.favorites) ? user.favorites : [];
+    const exists = favorites.some(v => String(v.id) === String(vid));
+
+    if (!exists) {
+      await usersCollection().updateOne(
+        { user_id: uid },
+        { $push: { favorites: videoToSave } }
+      );
+    }
+
+    const updatedUser = await usersCollection().findOne({ user_id: uid });
+    res.json({ success: true, favorites: updatedUser.favorites || [] });
+  } catch (err) {
+    console.error('[POST /api/favorites] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi thêm vào yêu thích.' });
+  }
+});
+
+// DELETE /api/favorites - Xóa video khỏi danh sách yêu thích
+app.delete('/api/favorites', async (req, res) => {
+  try {
+    const { user_id, videoId } = req.body || {};
+    const uid = String(user_id || '').trim();
+    const vid = String(videoId || '').trim();
+
+    if (!uid || !vid) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id hoặc videoId.' });
+    }
+
+    // Xóa dựa trên trường id
+    await usersCollection().updateOne(
+      { user_id: uid },
+      { $pull: { favorites: { id: vid } } }
+    );
+
+    const updatedUser = await usersCollection().findOne({ user_id: uid });
+    res.json({ success: true, favorites: updatedUser.favorites || [] });
+  } catch (err) {
+    console.error('[DELETE /api/favorites] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa khỏi yêu thích.' });
+  }
+});
+
 // ========= DISEASES (Tra cứu bệnh) - đọc từ MongoDB collection benh / disease_groups =========
 // Helper: chọn collection bệnh phù hợp (ưu tiên collection có trường bodyPart nếu có)
 async function resolveDiseaseCollection(db) {

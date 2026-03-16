@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { OrderDetailAcc } from '../order-detail-acc/order-detail-acc';
 import { CartService, CartItem } from '../../../core/services/cart.service';
 import { CartSidebarService } from '../../../core/services/cart-sidebar.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 interface OrderProduct {
   id: string;
@@ -72,6 +73,7 @@ export class Orders implements OnInit, OnChanges {
   private authService = inject(AuthService); // Kept for other needs if any
   private cartService = inject(CartService);
   private cartSidebar = inject(CartSidebarService);
+  private toast = inject(ToastService);
 
   @Input() userId: string | undefined;
 
@@ -530,7 +532,7 @@ export class Orders implements OnInit, OnChanges {
         console.error('Cancel order API error:', err);
         this.closeCancelOrderModal();
         this.cdr.detectChanges();
-        alert('Hủy đơn hàng không thành công. Vui lòng thử lại sau hoặc kiểm tra lại trạng thái đơn.');
+        this.toast.showError('Hủy đơn hàng không thành công. Vui lòng thử lại sau hoặc kiểm tra lại trạng thái đơn.');
       },
     });
   }

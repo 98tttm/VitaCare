@@ -140,6 +140,13 @@ h6 {
   font-size: 22px;
 }
 
+.logout-warning-toast {
+  background: #fdf2f2 !important;
+  color: #c62828 !important;
+  border: 1px solid #f8b4b4;
+  box-shadow: 0 4px 20px rgba(198, 40, 40, 0.2) !important;
+}
+
 @keyframes logout-toast-in {
   from {
     opacity: 0;

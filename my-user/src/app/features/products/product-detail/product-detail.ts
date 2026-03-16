@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, effect, inject, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -12,6 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ProductGallery } from '../product-gallery/product-gallery';
 import { ProductInfoSummary } from '../product-info-summary/product-info-summary';
 import { ProductTabsContent } from '../product-tabs-content/product-tabs-content';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -72,9 +73,16 @@ export class ProductDetail implements OnInit {
     private cartAnimation: CartAnimationService,
     private buyNowService: BuyNowService,
     readonly authService: AuthService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
-  ) { }
+  ) {
+    // Reload favorites when user logs in/out
+    effect(() => {
+      const user = this.authService.currentUser();
+      this.loadFavorites();
+    }, { allowSignalWrites: true });
+  }
 
   openVideoDetail(video: any, event?: Event) {
     if (event) {
@@ -153,18 +161,57 @@ export class ProductDetail implements OnInit {
   }
 
   loadFavorites() {
-    const stored = localStorage.getItem('favoriteVideos');
-    try {
-      this.favorites = stored ? JSON.parse(stored) : [];
-      if (!Array.isArray(this.favorites)) this.favorites = [];
-    } catch (e) {
+    const user = this.authService.currentUser();
+    if (!user) {
       this.favorites = [];
+      this.groupFavorites();
+      return;
     }
-    this.groupFavorites();
+
+    const uid = user.user_id;
+
+    // Load from local fallback first for instant UI response
+    const localFavs = this.loadFavoritesFromLocal(uid);
+    if (localFavs.length > 0) {
+      this.favorites = localFavs;
+      this.groupFavorites();
+    }
+
+    this.productService.getFavorites(uid).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.favorites = res.favorites || [];
+          this.saveFavoritesToLocal(uid, this.favorites);
+          this.groupFavorites();
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {
+        console.warn('Could not load favorites from API, using local storage.');
+      }
+    });
+  }
+
+  private saveFavoritesToLocal(uid: string, favs: any[]) {
+    localStorage.setItem(`favorites_${uid}`, JSON.stringify(favs));
+  }
+
+  private loadFavoritesFromLocal(uid: string): any[] {
+    try {
+      const raw = localStorage.getItem(`favorites_${uid}`);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
   }
 
   isFavorite(video: any): boolean {
-    return this.favorites.some(fav => fav.url === video.url);
+    if (!video) return false;
+    const vid = video.id || video._id?.$oid || video._id;
+    return this.favorites.some(fav =>
+      (fav.url && video.url && fav.url === video.url) ||
+      (fav.id && vid && String(fav.id) === String(vid))
+    );
   }
 
   toggleFavorite(video: any, event?: Event) {
@@ -172,24 +219,61 @@ export class ProductDetail implements OnInit {
       event.preventDefault();
       event.stopPropagation();
     }
-    const idx = this.favorites.findIndex(fav => fav.url === video.url);
-    if (idx > -1) {
-      this.favorites.splice(idx, 1);
+
+    const user = this.authService.currentUser();
+    if (!user) {
+      // Guest cannot add to favorites
+      this.authService.showHeaderSuccess('Vui lòng đăng nhập để lưu vào cẩm nang');
+      this.authService.openAuthModal();
+      return;
+    }
+
+    const uid = user.user_id;
+    const isFav = this.isFavorite(video);
+
+    if (isFav) {
+      // Remove
+      this.productService.removeFromFavorites(uid, video.id).subscribe({
+        next: (res: any) => {
+          if (res.success) {
+            this.favorites = res.favorites || [];
+            this.saveFavoritesToLocal(uid, this.favorites);
+            this.groupFavorites();
+            this.authService.showHeaderSuccess('Đã xóa khỏi cẩm nang');
+          }
+        }
+      });
+      // Optimistic local update
+      this.favorites = this.favorites.filter(v => v.id !== video.id);
+      this.saveFavoritesToLocal(uid, this.favorites);
+      this.groupFavorites();
     } else {
-      // Add category info when saving (Level 2 preference)
+      // Add
       let categoryName = 'Sức khỏe chung';
       if (this.categoryPath.length >= 2) {
         categoryName = this.categoryPath[1].name;
       } else if (this.categoryPath.length > 0) {
-        // Fallback to Level 1
         categoryName = this.categoryPath[0].name;
       }
 
       const videoToSave = { ...video, categoryName: categoryName };
-      this.favorites.push(videoToSave);
+      this.productService.addToFavorites(uid, videoToSave).subscribe({
+        next: (res: any) => {
+          if (res.success) {
+            this.favorites = res.favorites || [];
+            this.saveFavoritesToLocal(uid, this.favorites);
+            this.groupFavorites();
+            this.authService.showHeaderSuccess('Đã lưu vào cẩm nang');
+          }
+        }
+      });
+      // Optimistic local update
+      if (!this.favorites.some(v => v.id === videoToSave.id)) {
+        this.favorites = [...this.favorites, videoToSave];
+        this.saveFavoritesToLocal(uid, this.favorites);
+        this.groupFavorites();
+      }
     }
-    localStorage.setItem('favoriteVideos', JSON.stringify(this.favorites));
-    this.groupFavorites();
   }
 
   favoriteGroups: { category: string, videos: any[] }[] = [];
@@ -385,8 +469,10 @@ export class ProductDetail implements OnInit {
   processVideos(videos: any[]) {
     this.healthVideos = (videos || []).map(v => {
       const videoId = this.extractYoutubeId(v.url);
+      const id = v._id?.$oid || v._id || videoId || v.id;
       return {
         ...v,
+        id: id,
         thumbnail: videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'assets/images/banner/About_us_Hero.png'
       };
     });
@@ -671,7 +757,7 @@ export class ProductDetail implements OnInit {
 
   submitReplyConsultation(question: any) {
     if (!this.consultationReplyContent.trim()) {
-      alert('Vui lòng nhập nội dung trả lời');
+      this.toastService.showError('Vui lòng nhập nội dung trả lời');
       return;
     }
 
@@ -685,7 +771,7 @@ export class ProductDetail implements OnInit {
 
     this.productService.replyToConsultation(payload).subscribe({
       next: (data: any) => {
-        alert('Đã gửi phản hồi thành công!');
+        this.toastService.showSuccess('Đã gửi phản hồi thành công!');
         this.consultationsData = data;
         this.replyingToQuestionId = null;
         this.consultationReplyContent = '';
@@ -693,7 +779,7 @@ export class ProductDetail implements OnInit {
       },
       error: (err: any) => {
         console.error('Reply consultation error:', err);
-        alert('Lỗi gửi phản hồi. Vui lòng thử lại.');
+        this.toastService.showError('Lỗi gửi phản hồi. Vui lòng thử lại.');
       }
     });
   }
@@ -712,11 +798,23 @@ export class ProductDetail implements OnInit {
   guestDisplayName = '';
 
   openReviewModal(mode: 'review' | 'question' = 'review') {
+    if (mode === 'review' && !this.authService.currentUser()) {
+      this.authService.showHeaderSuccess('Vui lòng đăng nhập để đánh giá sản phẩm');
+      this.authService.openAuthModal();
+      return;
+    }
     this.isQuestionMode = mode === 'question';
     this.showReviewModal = true;
     this.userRating = 5; // Reset to default
     this.userReviewContent = '';
-    this.guestDisplayName = '';
+
+    if (this.isQuestionMode && !this.authService.currentUser()) {
+      const randomCode = Math.floor(1000 + Math.random() * 9000);
+      this.guestDisplayName = `Khách vãng lai ${randomCode}`;
+    } else {
+      this.guestDisplayName = '';
+    }
+
     document.body.style.overflow = 'hidden';
   }
 
@@ -742,13 +840,13 @@ export class ProductDetail implements OnInit {
 
   submitReview() {
     if (!this.product || !this.product.sku) {
-      alert('Không tìm thấy thông tin sản phẩm (SKU)');
+      this.toastService.showError('Không tìm thấy thông tin sản phẩm (SKU)');
       return;
     }
     const user = this.authService.currentUser();
     const fullname = user ? (user.full_name as string || user.phone as string || '') : (this.guestDisplayName?.trim() || '');
     if (!user?.user_id && !fullname) {
-      alert('Vui lòng nhập họ tên để gửi đánh giá.');
+      this.toastService.showError('Vui lòng nhập họ tên để gửi đánh giá.');
       return;
     }
 
@@ -761,26 +859,26 @@ export class ProductDetail implements OnInit {
 
     this.productService.submitReview(reviewData).subscribe({
       next: (res: any) => {
-        alert('Cảm ơn bạn đã đánh giá sản phẩm!');
+        this.toastService.showSuccess('Cảm ơn bạn đã đánh giá sản phẩm!');
         this.closeReviewModal();
         this.fetchReviews(this.product.sku); // Refresh list
       },
       error: (err: any) => {
         console.error('Submit review error:', err);
-        alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại.');
+        this.toastService.showError('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại.');
       }
     });
   }
 
   submitQuestion() {
     if (!this.userReviewContent.trim()) {
-      alert('Vui lòng nhập nội dung câu hỏi');
+      this.toastService.showError('Vui lòng nhập nội dung câu hỏi');
       return;
     }
     const user = this.authService.currentUser();
     const fullName = user ? (user.full_name as string || user.phone as string || '') : (this.guestDisplayName?.trim() || '');
     if (!user?.user_id && !fullName) {
-      alert('Vui lòng nhập họ tên để gửi câu hỏi.');
+      this.toastService.showError('Vui lòng nhập họ tên để gửi câu hỏi.');
       return;
     }
 
@@ -801,7 +899,7 @@ export class ProductDetail implements OnInit {
       },
       error: (err: any) => {
         console.error('Submit question error:', err);
-        alert('Có lỗi xảy ra khi gửi câu hỏi. Vui lòng thử lại.');
+        this.toastService.showError('Có lỗi xảy ra khi gửi câu hỏi. Vui lòng thử lại.');
       }
     });
   }
@@ -821,7 +919,7 @@ export class ProductDetail implements OnInit {
 
   submitReply(review: any) {
     if (!this.replyContent.trim()) {
-      alert('Vui lòng nhập nội dung trả lời');
+      this.toastService.showError('Vui lòng nhập nội dung trả lời');
       return;
     }
 
@@ -835,14 +933,14 @@ export class ProductDetail implements OnInit {
 
     this.productService.replyToReview(payload).subscribe({
       next: (res: any) => {
-        alert('Đã gửi phản hồi thành công!');
+        this.toastService.showSuccess('Đã gửi phản hồi thành công!');
         this.replyingToReviewId = null;
         this.replyContent = '';
         this.fetchReviews(this.product.sku); // Refresh
       },
       error: (err: any) => {
         console.error('Reply error:', err);
-        alert('Lỗi gửi phản hồi. Vui lòng thử lại.');
+        this.toastService.showError('Lỗi gửi phản hồi. Vui lòng thử lại.');
       }
     });
   }

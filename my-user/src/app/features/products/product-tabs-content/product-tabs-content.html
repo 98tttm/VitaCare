@@ -34,7 +34,7 @@
                     </div>
 
                     <section id="mo-ta" class="mb-4">
-                        <h3 class="h5 fw-bold mb-3">Mô tả sản phẩm</h3>
+                        <b class="d-block h5 fw-bold mb-3">Mô tả sản phẩm</b>
                         <div class="vc_html_content">
                             <div class="mb-3"
                                 [innerHTML]="transformInternalLinks(product.description || 'Đang cập nhật mô tả...')">
@@ -44,7 +44,7 @@
                     </section>
 
                     <section id="thanh-phan" class="mb-4">
-                        <h3 class="h5 fw-bold mb-3">Thành phần của {{ product.name }}</h3>
+                        <b class="d-block h5 fw-bold mb-3">Thành phần của {{ product.name }}</b>
                         <div class="ingredients-wrapper">
                             <table class="table ingredients-table" *ngIf="getIngredientsList().length > 0">
                                 <thead>
@@ -65,12 +65,12 @@
                     </section>
 
                     <section id="cong-dung" class="mb-4">
-                        <h3 class="h5 fw-bold mb-3">Công dụng của {{ product.name }}</h3>
+                        <b class="d-block h5 fw-bold mb-3">Công dụng của {{ product.name }}</b>
                         <div class="vc_html_content" [innerHTML]="transformInternalLinks(product.usage)"></div>
                     </section>
 
                     <section id="cach-dung" class="mb-4">
-                        <h3 class="h5 fw-bold mb-3">Cách dùng {{ product.name }}</h3>
+                        <b class="d-block h5 fw-bold mb-3">Cách dùng {{ product.name }}</b>
                         <div class="vc_html_content">
                             <p>Sử dụng theo hướng dẫn của bác sĩ hoặc bao bì sản phẩm.</p>
                             <!-- Fallback content if usage is short -->
@@ -78,21 +78,21 @@
                     </section>
 
                     <section id="tac-dung-phu" class="mb-4">
-                        <h3 class="h5 fw-bold mb-3">Tác dụng phụ</h3>
+                        <b class="d-block h5 fw-bold mb-3">Tác dụng phụ</b>
                         <p>Chưa có thông tin về tác dụng phụ của sản phẩm.</p>
                     </section>
 
                     <section id="luu-y" class="mb-4">
                         <div class="warning-box">
-                            <h3 class="h5 fw-bold mb-3">
+                            <b class="d-block h5 fw-bold mb-3">
                                 <i class="bi bi-exclamation-triangle-fill"></i> Lưu ý
-                            </h3>
+                            </b>
                             <div class="vc_html_content" [innerHTML]="transformInternalLinks(product.warnings)"></div>
                         </div>
                     </section>
 
                     <section id="bao-quan" class="mb-3">
-                        <h3 class="h5 fw-bold mb-3">Bảo quản</h3>
+                        <b class="d-block h5 fw-bold mb-3">Bảo quản</b>
                         <p>Nơi khô ráo, thoáng mát, tránh ánh nắng trực tiếp.</p>
                     </section>
                 </div>

@@ -80,7 +80,14 @@ export class ProductTabsContent {
       return newLink;
     });
 
-    return this.sanitizer.bypassSecurityTrustHtml(transformedHtml);
+    // Replace h3 and h4 tags with b tags to keep them smaller
+    const headingTransformedHtml = transformedHtml
+      .replace(/<h3([^>]*)>/gi, '<b class="d-block mt-3 mb-2" $1>')
+      .replace(/<\/h3>/gi, '</b>')
+      .replace(/<h4([^>]*)>/gi, '<b class="d-block mt-3 mb-2" $1>')
+      .replace(/<\/h4>/gi, '</b>');
+
+    return this.sanitizer.bypassSecurityTrustHtml(headingTransformedHtml);
   }
 
   getIngredientsList(): any[] {

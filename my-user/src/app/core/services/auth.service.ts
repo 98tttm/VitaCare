@@ -31,17 +31,29 @@ export class AuthService {
   private restoreUserFromStorage(): void {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      console.log('[AuthService] Restoring from storage, raw:', raw);
       if (!raw) return;
-      const user = JSON.parse(raw) as LoggedUser;
-      if (user && typeof user.user_id === 'string') {
-        this.currentUser.set(user);
+      const user = JSON.parse(raw);
+      console.log('[AuthService] Parsed user:', user);
+      // Robust check: user_id can be string or number, or exist as 'id'
+      const uid = user?.user_id || user?.id;
+      if (uid !== undefined && uid !== null) {
+        // Ensure user_id exists as a string for consistency
+        if (!user.user_id) user.user_id = String(uid);
+        console.log('[AuthService] Setting currentUser:', user);
+        this.currentUser.set(user as LoggedUser);
+      } else {
+        console.warn('[AuthService] Invalid user data found in storage, removing.');
+        localStorage.removeItem(STORAGE_KEY);
       }
-    } catch {
+    } catch (e) {
+      console.error('[AuthService] Error restoring user:', e);
       localStorage.removeItem(STORAGE_KEY);
     }
   }
 
   private saveUserToStorage(user: LoggedUser | null): void {
+    console.log('[AuthService] Saving user to storage:', user);
     if (user) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     } else {

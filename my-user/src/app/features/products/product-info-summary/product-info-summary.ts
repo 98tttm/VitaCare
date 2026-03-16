@@ -5,12 +5,12 @@ import { CartAnimationService } from '../../../core/services/cart-animation.serv
 import { BuyNowService } from '../../../core/services/buy-now.service';
 import { QuickViewService } from '../../../core/services/quick-view.service';
 import { inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-product-info-summary',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule],
   templateUrl: './product-info-summary.html',
   styleUrl: './product-info-summary.css'
 })

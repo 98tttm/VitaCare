@@ -71,6 +71,15 @@
     /* Reduced margin */
 }
 
+:host ::ng-deep .vc_html_content b,
+:host ::ng-deep .vc_html_content strong {
+    font-weight: 770 !important;
+    font-size: 17px !important;
+    display: inline-block;
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
 /* ... headers ... */
 .vc_html_content h1,
 .vc_html_content h2,
