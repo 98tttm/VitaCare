@@ -44,6 +44,7 @@
 }
 
 .bv-cat-title {
+    text-align: center;
     font-size: 2.25rem;
     font-weight: 800;
     color: #1a1d20;
@@ -124,10 +125,15 @@
     transform: scale(1.05);
 }
 
+.bv-cat-featured-card .hover-zoom {
+    border-radius: inherit;
+}
+
 /* Truncate text */
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -135,6 +141,7 @@
 .excerpt {
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.6;

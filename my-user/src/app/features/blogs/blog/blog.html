@@ -42,7 +42,9 @@
               <img [src]="b.image || 'assets/placeholder/blog-thumb.jpg'" [alt]="b.title" loading="lazy" />
               <div class="bv-blog-side-content">
                 <span class="bv-badge-sm">{{ b.categoryName || 'Góc sức khoẻ' }}</span>
-                <h4 class="bv-blog-side-title" style="font-size: 14px; font-weight: 500; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--vc-text-primary);">{{ b.title }}</h4>
+                <h4 class="bv-blog-side-title"
+                  style="font-size: 14px; font-weight: 500; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--vc-text-primary);">
+                  {{ b.title }}</h4>
               </div>
             </a>
           </div>
@@ -353,13 +355,13 @@
               <div class="bv-ft-list">
                 <ng-container *ngFor="let item of featuredTopicCategories">
                   <a *ngIf="item.name.toLowerCase().indexOf('khuyến mãi') === -1 && item.name.toLowerCase().indexOf('phân loại') === -1 && item.name.toLowerCase().indexOf('truyền thông') === -1"
-                    [routerLink]="['/bai-viet', item.slug]" class="bv-ft-item" [attr.data-category]="item.name">
+                    [routerLink]="['/chuyen-de', item.slug]" class="bv-ft-item" [attr.data-category]="item.name">
                     <span class="bv-ft-name"># {{ item.name }}</span>
                     <span class="bv-ft-count">{{ item.count }} bài viết</span>
                   </a>
                 </ng-container>
               </div>
-              <a routerLink="/topic" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+              <a routerLink="/chuyen-de" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
             </div>
             <div class="bv-expert-team-box">
               <h3 class="bv-et-title">Đội ngũ chuyên môn</h3>

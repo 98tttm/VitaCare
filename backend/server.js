@@ -2445,10 +2445,13 @@ const HEALTH_INDICATOR_KEYWORDS = {
   pregnancy: ['thai kỳ', 'mẹ bầu', 'bà bầu', 'mang thai'],
 };
 
-// GET /api/blogs/category-counts - Thống kê số lượng bài viết theo danh mục
-app.get('/api/blogs/category-counts', async (req, res) => {
+// GET /api/blogs/topic-counts - Thống kê số lượng bài viết theo tags (Chuyên đề)
+app.get('/api/blogs/topic-counts', async (req, res) => {
   try {
     const db = mongoose.connection.db;
+    const limit = Math.min(Math.max(1, parseInt(req.query.limit, 10) || 12), 100);
+    const skip = Math.max(0, parseInt(req.query.skip, 10) || 0);
+
     const blogCount = await db.collection('blog').countDocuments().catch(() => 0);
     const collName = blogCount > 0 ? 'blog' : 'blogs';
     const blogsCol = db.collection(collName);
@@ -2465,35 +2468,62 @@ app.get('/api/blogs/category-counts', async (req, res) => {
       ]
     };
 
-    const stats = await blogsCol.aggregate([
+    // Filter logic for unwanted tags
+    const excludeMatch = {
+      $match: {
+        "name": {
+          $nin: [
+            /khuyến mãi/i,
+            /phân loại/i,
+            /truyền thông/i
+          ],
+          $exists: true,
+          $ne: ""
+        }
+      }
+    };
+
+    const results = await blogsCol.aggregate([
       { $match: filter },
+      { $unwind: "$tags" },
       {
-        $project: {
-          categories: {
-            $setUnion: [
-              { $ifNull: ["$categories.category.name", []] },
-              { $ifNull: ["$categories.name", []] },
-              { $cond: [{ $eq: [{ $type: "$category.name" }, "string"] }, ["$category.name"], []] },
-              { $cond: [{ $eq: [{ $type: "$categoryName" }, "string"] }, ["$categoryName"], []] }
-            ]
-          }
+        $group: {
+          _id: {
+            title: "$tags.title",
+            slug: "$tags.slug"
+          },
+          count: { $sum: 1 }
         }
       },
-      { $unwind: "$categories" },
-      { $group: { _id: "$categories", count: { $sum: 1 } } }
+      {
+        $project: {
+          _id: 0,
+          name: "$_id.title",
+          slug: "$_id.slug",
+          count: 1
+        }
+      },
+      excludeMatch,
+      { $sort: { count: -1 } },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [{ $skip: skip }, { $limit: limit }]
+        }
+      }
     ]).toArray();
 
-    const counts = {};
-    stats.forEach(s => {
-      if (s._id) counts[s._id] = s.count;
-    });
+    const counts = results[0]?.data || [];
+    const total = results[0]?.metadata[0]?.total || 0;
 
-    res.json({ success: true, counts });
+    res.json({ success: true, counts, total });
   } catch (err) {
-    console.error('[GET /api/blogs/category-counts] Error:', err);
+    console.error('[GET /api/blogs/topic-counts] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi server', error: err.message });
   }
 });
+
+// GET /api/blogs/category-counts - Thống kê số lượng bài viết theo danh mục
 
 // GET /api/blogs - danh sách bài viết sức khỏe (từ MongoDB collection blog/blogs)
 app.get('/api/blogs', async (req, res) => {
@@ -2502,6 +2532,7 @@ app.get('/api/blogs', async (req, res) => {
     const healthIndicator = String(req.query.healthIndicator || '').trim();
     const category = String(req.query.category || '').trim();
     const subcategory = String(req.query.subcategory || '').trim();
+    const tagSlug = String(req.query.tagSlug || '').trim();
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(Math.max(1, parseInt(req.query.limit, 10) || 10), 1000);
     const hasSkip = req.query.skip !== undefined;
@@ -2557,6 +2588,23 @@ app.get('/api/blogs', async (req, res) => {
           { 'categories.1.name': { $regex: subcategory, $options: 'i' } },
           { 'categories.category.name': { $regex: subcategory, $options: 'i' } },
           { 'category.name': { $regex: subcategory, $options: 'i' } }
+        ]
+      });
+    }
+
+    if (tagSlug) {
+      const cleanSlug = tagSlug.replace(/^chuyen-de\//i, '').replace(/^\/+/, '');
+      const possibleSlugs = [cleanSlug, `chuyen-de/${cleanSlug}`];
+
+      // Regular expression for title matching (relaxed for hyphens/spaces)
+      const tagRegex = new RegExp('^' + escapeRegExp(cleanSlug).replace(/-/g, '[\\s-]') + '$', 'i');
+
+      filter.$and.push({
+        $or: [
+          { "tags.slug": { $in: possibleSlugs } },
+          { "tags.title": { $regex: tagRegex } },
+          // Special case for common tags if the regex isn't enough
+          { "tags.title": { $regex: new RegExp('^' + cleanSlug.replace(/-/g, '.*') + '$', 'i') } }
         ]
       });
     }

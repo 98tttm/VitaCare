@@ -78,7 +78,7 @@ export class Blog implements OnInit {
             .map(cat => ({
               name: cat.name,
               count: countsMap[cat.name] || 0,
-              slug: cat.slug
+              slug: this.normalizeTopicSlug(cat.slug)
             }))
             .filter(c => {
               const lower = c.name.toLowerCase();
@@ -351,4 +351,8 @@ export class Blog implements OnInit {
 
   /** Sub-categories cho thẻ "Tin tức sức khoẻ" (nav ngang) */
   healthNewsSubCategories = ['Tin y dược', 'Dịch bệnh', 'Bệnh viện'];
+  private normalizeTopicSlug(slug: string): string {
+    if (!slug) return '';
+    return slug.replace(/^chuyen-de\//i, '').replace(/^\/+/, '');
+  }
 }

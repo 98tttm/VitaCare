@@ -1,18 +1,16 @@
 <main class="bv-category-page">
     <div class="vc_container pt-2">
         <!-- Breadcrumb -->
-        <nav class="bv-cat-breadcrumb">
-            <a routerLink="/" class="text-secondary"><i class="bi bi-house-door"></i> Trang chủ</a>
-            <i class="bi bi-chevron-right separator"></i>
-            <a routerLink="/bai-viet" class="text-secondary">Bài viết</a>
-            <i class="bi bi-chevron-right separator"></i>
+        <nav class="breadcrumb-vc">
+            <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
+            <div class="breadcrumb-item"><a routerLink="/bai-viet">Góc sức khoẻ</a></div>
             <ng-container *ngIf="subcat">
-                <a [routerLink]="['/bai-viet/danh-muc', categorySlug]" class="text-secondary">{{ categoryName }}</a>
-                <i class="bi bi-chevron-right separator"></i>
-                <span class="current">{{ subcat }}</span>
+                <div class="breadcrumb-item"><a [routerLink]="['/bai-viet/danh-muc', categorySlug]">{{ categoryName
+                        }}</a></div>
+                <div class="breadcrumb-item active">{{ subcat }}</div>
             </ng-container>
             <ng-container *ngIf="!subcat">
-                <span class="current">{{ categoryName }}</span>
+                <div class="breadcrumb-item active">{{ categoryName }}</div>
             </ng-container>
         </nav>
 
@@ -65,15 +63,15 @@
 
                 <!-- Main Featured Article (First item) -->
                 <a [routerLink]="displayedBlogs[0].link"
-                    class="bv-cat-featured-card card mb-4 border-0 shadow-sm rounded-4 overflow-hidden text-decoration-none">
-                    <div class="row g-0 align-items-center">
+                    class="bv-cat-featured-card card mb-4 border-0 shadow-sm rounded-4 overflow-hidden text-decoration-none hover-lift">
+                    <div class="row align-items-center">
                         <div class="col-md-7">
-                            <div class="overflow-hidden">
+                            <div class="overflow-hidden rounded-start-4">
                                 <img [src]="displayedBlogs[0].image" [alt]="displayedBlogs[0].title"
                                     class="img-fluid w-100 object-fit-cover hover-zoom" style="height: 380px;">
                             </div>
                         </div>
-                        <div class="col-md-5 p-0 pt-3 pt-lg-4">
+                        <div class="col-md-5 ps-md-4 pt-3 pt-lg-4">
                             <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">{{
                                 displayedBlogs[0].categoryName || categoryName }}</span>
                             <h2 class="card-title fw-bold text-dark mb-3">{{ displayedBlogs[0].title }}</h2>
