@@ -3454,7 +3454,18 @@ app.get('/api/disease-groups', async (req, res) => {
 // Mapping này dựa trên quy tắc y khoa + file README, KHÔNG dùng data/benh.json lúc runtime.
 // Mapping trực tiếp từ tên bộ phận trên body map -> các slug nhóm bệnh liên quan
 // Cấu trúc này giúp 1 nhóm có thể nằm ở nhiều bộ phận và loại bỏ các bệnh toàn thân khỏi body map (vd: Ung thư -> Đầu)
+// Mapping từ slug bộ phận (dau, co...) hoặc tên (Đầu, Cổ...) -> các slug nhóm bệnh liên quan
 const BODY_PART_TO_GROUPS = {
+  // Slug keys
+  'dau': ['than-kinh-tinh-than', 'tai-mui-hong', 'mat', 'rang-ham-mat', 'tam-than'],
+  'co': ['tai-mui-hong', 'noi-tiet-chuyen-hoa', 'ho-hap'],
+  'nguc': ['tim-mach', 'ho-hap'],
+  'bung': ['tieu-hoa', 'than-tiet-nieu'],
+  'sinh-duc': ['suc-khoe-sinh-san', 'suc-khoe-gioi-tinh'],
+  'tu-chi': ['co-xuong-khop'],
+  'da': ['da-toc-mong', 'di-ung'],
+
+  // Backward compatibility for display names
   'Đầu': ['than-kinh-tinh-than', 'tai-mui-hong', 'mat', 'rang-ham-mat', 'tam-than'],
   'Cổ': ['tai-mui-hong', 'noi-tiet-chuyen-hoa'],
   'Ngực': ['tim-mach', 'ho-hap'],
@@ -3479,8 +3490,16 @@ function loadLocalDiseases() {
   return LOCAL_DISEASES_CACHE;
 }
 
-function getGroupSlugsForBodyPart(bodyPartLabel) {
-  return BODY_PART_TO_GROUPS[bodyPartLabel] || [];
+function getGroupSlugsForBodyPart(bodyPart) {
+  if (!bodyPart) return [];
+  // Thử tìm theo key chính xác (slug hoặc name có dấu)
+  if (BODY_PART_TO_GROUPS[bodyPart]) return BODY_PART_TO_GROUPS[bodyPart];
+
+  // Thử normalize/lowercase nếu gửi slug linh hoạt
+  const key = bodyPart.toLowerCase().trim();
+  if (BODY_PART_TO_GROUPS[key]) return BODY_PART_TO_GROUPS[key];
+
+  return [];
 }
 
 app.get('/api/diseases', async (req, res) => {
@@ -3496,20 +3515,15 @@ app.get('/api/diseases', async (req, res) => {
     // Body Map: ánh xạ bộ phận cơ thể -> các slug nhóm bệnh (nhom-benh)
     // rồi filter theo categories.fullPathSlug trong MongoDB.
     if (bodyPart) {
-      const groupSlugs = getGroupSlugsForBodyPart(bodyPart);
-      if (groupSlugs.length > 0) {
-        filter.$or = [
-          // Nếu sau này DB có trường bodyPart thì vẫn tận dụng
-          { bodyPart: escapeRegExp(bodyPart) },
-          // Hoặc thuộc một trong các nhóm bệnh đã map cho bộ phận này
-          ...groupSlugs.map((slug) => ({
-            'categories.fullPathSlug': { $regex: `benh/nhom-benh/${escapeRegExp(slug)}`, $options: 'i' },
-          })),
-        ];
-      } else {
-        // Fallback an toàn: chỉ dùng field bodyPart nếu có
-        filter.bodyPart = escapeRegExp(bodyPart);
-      }
+      // Chuẩn hóa slug từ bodyPart (để khớp với pattern benh/xem-theo-bo-phan-co-the/slug)
+      const bodySlug = bodyPart.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-").trim();
+
+      // Chỉ lấy các bài viết được gán nhãn đúng bộ phận này trong mảng categories
+      filter['categories.fullPathSlug'] = `benh/xem-theo-bo-phan-co-the/${bodySlug}`;
     }
     if (groupSlug) {
       const slugLower = groupSlug.toLowerCase();
@@ -5526,4 +5540,6 @@ app.post('/api/admin/change-password', async (req, res) => {
     res.json({ success: true, message: 'Đổi mật khẩu thành công', admin: updated });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
+
+
 
