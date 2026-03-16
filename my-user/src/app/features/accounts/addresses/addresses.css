@@ -614,6 +614,8 @@
     background: var(--color-primary-hover);
 }
 
+/* ---------- Popup xác nhận xoá địa chỉ ---------- */
+
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
     .address-header {

@@ -41,15 +41,27 @@
             </div>
             <div class="order-address-card">
               <div class="order-address-card-inner">
-                <div class="order-address-line1">
-                  <input type="text" class="order-address-input" placeholder="Tên người nhận - SĐT người nhận"
-                    [(ngModel)]="recipientNamePhone" autocomplete="shipping name" name="recipient_name" />
-                  <span class="order-addr-tag" *ngIf="isDefaultAddress">Địa chỉ mặc định</span>
-                </div>
-                <div class="order-address-line2">
-                  <input type="text" class="order-address-input" placeholder="Địa chỉ người nhận hàng"
-                    [(ngModel)]="recipientAddress" autocomplete="shipping street-address" name="recipient_address" />
-                </div>
+                <!-- Nếu đã có thông tin người nhận: hiển thị dạng read-only -->
+                <ng-container *ngIf="recipientNamePhone && recipientAddress; else emptyRecipient">
+                  <div class="order-address-line1">
+                    <span class="order-address-text">{{ recipientNamePhone }}</span>
+                    <span class="order-addr-tag" *ngIf="isDefaultAddress">Địa chỉ mặc định</span>
+                  </div>
+                  <div class="order-address-line2">
+                    <span class="order-address-text">{{ recipientAddress }}</span>
+                  </div>
+                </ng-container>
+                <!-- Nếu chưa có thông tin: chỉ hiển thị placeholder, người dùng thao tác qua "Danh sách địa chỉ" -->
+                <ng-template #emptyRecipient>
+                  <div class="order-address-empty">
+                    <div class="order-address-line1">
+                      <span class="order-address-placeholder">Chưa có thông tin người nhận</span>
+                    </div>
+                    <div class="order-address-line2">
+                      <span class="order-address-placeholder">Vui lòng thêm tại mục "Danh sách địa chỉ"</span>
+                    </div>
+                  </div>
+                </ng-template>
               </div>
             </div>
           </div>
@@ -81,7 +93,11 @@
               </div>
               <div class="order-pharmacy-info-box">
                 <span>Đơn vị hành chính đã thay đổi theo quy định.</span>
-                <a href="#" target="_blank" rel="noopener">Tra cứu địa chỉ trước và sau sáp nhập</a>
+                <a class="order-info-link"
+                  href="https://thuvienphapluat.vn/ma-so-thue/tra-cuu-thong-tin-sap-nhap-tinh"
+                  target="_blank" rel="noopener">
+                  Tra cứu địa chỉ trước và sau sáp nhập
+                </a>
               </div>
               <div class="order-pharmacy-selects" style="grid-template-columns: 1fr 1fr 1fr;">
                 <select class="order-pharmacy-select" [(ngModel)]="pharmacyProvince" name="pharmacy_province"
@@ -127,19 +143,15 @@
 
                 <div *ngIf="availableStores.length > 0"
                   style="display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 300px; overflow-y: auto;">
-                  <div *ngFor="let store of availableStores" class="store-card"
-                    [class.selected]="selectedStore?._id === store._id" (click)="selectStore(store)"
-                    style="padding: 14px; border: 1.5px solid #E2E8F0; border-radius: 12px; cursor: pointer; transition: all 0.2s; display: flex; align-items: flex-start; gap: 12px; background: white;"
-                    [style.borderColor]="selectedStore?._id === store._id ? 'var(--vc-main)' : '#E2E8F0'"
-                    [style.backgroundColor]="selectedStore?._id === store._id ? '#F0F9FF' : 'white'">
+                  <div *ngFor="let store of availableStores"
+                    class="store-card"
+                    [class.selected]="selectedStore?._id === store._id"
+                    (click)="selectStore(store)">
 
                     <!-- Radio indicator -->
-                    <div style="margin-top: 2px;">
-                      <div
-                        style="width: 18px; height: 18px; border-radius: 50%; border: 2px solid; display: flex; align-items: center; justify-content: center;"
-                        [style.borderColor]="selectedStore?._id === store._id ? 'var(--vc-main)' : '#CBD5E1'">
-                        <div *ngIf="selectedStore?._id === store._id"
-                          style="width: 10px; height: 10px; border-radius: 50%; background: var(--vc-main);"></div>
+                    <div class="store-card-radio">
+                      <div class="store-card-radio-outer">
+                        <div *ngIf="selectedStore?._id === store._id" class="store-card-radio-inner"></div>
                       </div>
                     </div>
 
@@ -276,15 +288,15 @@
             <div class="order-sidebar-title">Chi tiết thanh toán</div>
             <div class="order-summary-row order-summary-row-total">
               <span>Tổng tiền</span>
-              <strong class="order-summary-value-total">{{ totalPrice | number:'1.0-0' }}₫</strong>
+              <strong class="order-summary-value-total">{{ cartSubtotal || totalPrice | number:'1.0-0' }}₫</strong>
             </div>
             <div class="order-summary-row">
               <span>Giảm giá trực tiếp</span>
-              <strong class="order-summary-value-discount">0₫</strong>
+              <strong class="order-summary-value-discount">{{ cartDirectDiscount | number:'1.0-0' }}₫</strong>
             </div>
             <div class="order-summary-row order-summary-row-last">
               <span>Giảm giá voucher</span>
-              <strong class="order-summary-value-discount">0₫</strong>
+              <strong class="order-summary-value-discount">{{ cartVoucherDiscount | number:'1.0-0' }}₫</strong>
             </div>
             <div class="order-summary-row">
               <span>Phí vận chuyển</span>
@@ -308,7 +320,7 @@
 
           <p class="order-terms">
             Bằng việc tiến hành đặt mua hàng, bạn đồng ý với
-            <a href="#">Điều khoản dịch vụ</a> của nhà thuốc VitaCare
+            <a [routerLink]="'/chinh-sach/quy-che-hoat-dong'">Điều khoản dịch vụ</a> của nhà thuốc VitaCare
           </p>
         </section>
       </aside>

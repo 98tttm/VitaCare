@@ -7,6 +7,7 @@ import { CartService, Cart, CartItem } from '../../../core/services/cart.service
 import { BuyNowService } from '../../../core/services/buy-now.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 import { StoreService, StoreFilter } from '../../../core/services/store.service';
 import { Store } from '../../../core/models/store.model';
@@ -66,6 +67,10 @@ export class Order implements OnInit, OnDestroy {
   cart: Cart | null = null;
   cartLoading = true;
   totalPrice = 0;
+  /** Các thông tin tổng tiền/giảm giá lấy từ giỏ hàng (cart sidebar) */
+  cartSubtotal = 0;
+  cartDirectDiscount = 0;
+  cartVoucherDiscount = 0;
   isBuyNow = false;
   deliveryTab: 'home' | 'pharmacy' = 'home';
   paymentMethod = '';
@@ -91,6 +96,8 @@ export class Order implements OnInit, OnDestroy {
   };
   addressFormPhoneError = '';
   orderNote = '';
+
+  private confirmService = inject(ConfirmService);
 
   payerName = '';
   payerPhone = '';
@@ -301,10 +308,28 @@ export class Order implements OnInit, OnDestroy {
         itemCount: items.length,
         totalQuantity: items.reduce((s, i) => s + (i.quantity || 1), 0),
       };
-      this.totalPrice = items.reduce(
-        (s, i) => s + ((i.price || 0) - (i.discount || 0)) * (i.quantity || 1),
-        0
-      );
+      const summary = this.buyNowService.getSummary();
+      if (summary) {
+        this.cartSubtotal = summary.subtotal || 0;
+        this.cartDirectDiscount = summary.directDiscount || 0;
+        this.cartVoucherDiscount = summary.voucherDiscount || 0;
+        this.totalPrice = Math.max(
+          0,
+          (this.cartSubtotal || 0) - (this.cartDirectDiscount || 0) - (this.cartVoucherDiscount || 0),
+        );
+      } else {
+        // Fallback: tính toán lại nếu không có summary (trường hợp vào /order trực tiếp)
+        this.cartSubtotal = items.reduce(
+          (s, i) => s + ((i.price || 0) + (i.discount || 0)) * (i.quantity || 1),
+          0,
+        );
+        this.cartDirectDiscount = items.reduce(
+          (s, i) => s + (i.discount || 0) * (i.quantity || 1),
+          0,
+        );
+        this.cartVoucherDiscount = 0;
+        this.totalPrice = this.cartSubtotal - this.cartDirectDiscount;
+      }
       this.cartLoading = false;
       return;
     }
@@ -752,16 +777,21 @@ export class Order implements OnInit, OnDestroy {
   deleteAddress(addr: AddressItem, e: Event): void {
     e.preventDefault();
     e.stopPropagation();
-    if (!confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) return;
-    this.http.delete(`/api/addresses/${addr._id}`).subscribe({
-      next: () => {
-        this.addressList = this.addressList.filter(a => a._id !== addr._id);
-        this.toastService.showSuccess('Đã xóa địa chỉ.');
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.toastService.showError('Không thể xóa địa chỉ.');
-      },
+    this.confirmService.open('Bạn có chắc chắn muốn xóa địa chỉ này?', () => {
+      this.http.delete(`/api/addresses/${addr._id}`).subscribe({
+        next: () => {
+          this.addressList = this.addressList.filter(a => a._id !== addr._id);
+          this.toastService.showSuccess('Đã xóa địa chỉ.');
+          if (this.selectedAddressId === addr._id) {
+            this.selectedAddressId = null;
+          }
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.toastService.showError('Không thể xóa địa chỉ.');
+          this.cdr.detectChanges();
+        },
+      });
     });
   }
 
@@ -839,7 +869,9 @@ export class Order implements OnInit, OnDestroy {
       pharmacyAddress: this.deliveryTab === 'pharmacy' && this.selectedStore
         ? `${this.selectedStore.ten_cua_hang} - ${this.selectedStore.dia_chi?.dia_chi_day_du}, ${this.selectedStore.dia_chi?.phuong_xa}, ${this.selectedStore.dia_chi?.quan_huyen}, ${this.selectedStore.dia_chi?.tinh_thanh}`
         : '',
-      subtotal: this.totalPrice,
+      subtotal: this.cartSubtotal, // Original price of all items
+      directDiscount: this.cartDirectDiscount,
+      voucherDiscount: this.cartVoucherDiscount,
       shippingFee: this.shippingFee,
       shippingDiscount: this.shippingFee === 0 ? Order.DEFAULT_SHIPPING_FEE : 0,
       totalAmount: this.orderTotal,

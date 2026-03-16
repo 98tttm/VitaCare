@@ -28,12 +28,12 @@
     }
 }
 
-/* Modal Container - Scaled down from 1400px to 1200px */
+/* Modal Container */
 .modal-container {
     background-color: var(--color-neutral-10);
     border-radius: var(--radius-xl);
     width: 90%;
-    max-width: 1200px;
+    max-width: 1000px;
     height: 85vh;
     max-height: 850px;
     display: flex;
@@ -103,9 +103,9 @@
     min-height: 0;
 }
 
-/* Left Column: Orders List (1/3) */
+/* Left Column: Orders List  */
 .orders-list-column {
-    flex: 0 0 33.333%;
+    flex: 0 0 30%;
     display: flex;
     flex-direction: column;
     border-right: 1px solid var(--color-neutral-40);
@@ -341,9 +341,9 @@
     font-family: 'Inter', sans-serif;
 }
 
-/* Right Column: Order Detail (2/3) */
+/* Right Column: Order Detail */
 .order-detail-column {
-    flex: 0 0 66.666%;
+    flex: 0 0 70%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -385,8 +385,6 @@
     font-family: 'Inter', sans-serif;
     color: var(--color-primary) !important;
     margin: 0 0 var(--spacing-3) 0;
-    padding-bottom: var(--spacing-2);
-    border-bottom: 2px solid var(--color-neutral-40);
 }
 
 .detail-row {
@@ -576,28 +574,35 @@
 .summary-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: var(--font-size-sm);
-    font-family: 'Inter', sans-serif;
-    color: var(--color-text-secondary);
+    padding: var(--spacing-2) 0;
+    font-size: var(--font-size-md);
+    color: var(--color-neutral-80);
 }
 
 .summary-row.discount {
-    color: var(--color-success);
+    color: var(--color-neutral-70);
 }
 
-.total-row {
+.c-accent-negative {
+    color: #e56a4b; /* Original mockup color or var(--color-error) */
+    font-weight: var(--font-weight-medium);
+}
+
+.summary-divider {
+    border: none;
+    border-top: 1px solid var(--color-neutral-40);
+    margin: var(--spacing-3) 0;
+}
+
+.summary-row.total-row {
     padding-top: var(--spacing-3);
-    border-top: 2px solid var(--color-neutral-40);
-    margin-top: var(--spacing-1);
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    font-family: 'Inter', sans-serif;
-    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-neutral-100);
 }
 
 .total-amount {
-    color: var(--color-danger);
+    color: var(--color-primary);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
 }

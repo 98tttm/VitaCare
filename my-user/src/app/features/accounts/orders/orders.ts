@@ -42,8 +42,11 @@ interface Order {
   | 'reviewed'
   | 'processing_return'
   | 'returning'
-  | 'returned';
   totalAmount: number;
+  subtotal?: number;
+  directDiscount?: number;
+  voucherDiscount?: number;
+  shippingFee?: number;
   products: OrderProduct[];
   isReviewed?: boolean;
   isReturned?: boolean;
@@ -233,12 +236,32 @@ export class Orders implements OnInit, OnChanges {
       status = 'pending'; // Fallback
     }
 
+    // Tự động tính toán các trường bị thiếu đối với đơn cũ
+    let subtotal = backendOrder.subtotal;
+    let directDiscount = backendOrder.directDiscount || 0;
+    let voucherDiscount = backendOrder.voucherDiscount || 0;
+    let shippingFee = backendOrder.shippingFee !== undefined ? backendOrder.shippingFee : 30000;
+
+    // Nếu đơn cũ chưa lưu subtotal, tự tính từ tổng giá trị sản phẩm
+    if (!subtotal || subtotal === 0) {
+      subtotal = products.reduce((acc, p) => acc + (p.price * p.quantity), 0);
+      // Ước tính discount dựa trên tổng tiền
+      const calculatedDiscount = subtotal + shippingFee - backendOrder.totalAmount;
+      if (calculatedDiscount > 0) {
+        directDiscount = calculatedDiscount;
+      }
+    }
+
     return {
       id: backendOrder._id || backendOrder.order_id,
       orderNumber: backendOrder.order_id,
       orderDate: orderDate,
       status: status,
       totalAmount: backendOrder.totalAmount,
+      subtotal,
+      directDiscount,
+      voucherDiscount,
+      shippingFee,
       products: products,
       isReviewed: false, // Default
       isReturned: false // Default

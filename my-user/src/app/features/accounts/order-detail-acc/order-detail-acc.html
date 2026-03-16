@@ -169,29 +169,31 @@
                         <h3 class="section-title">Tổng kết đơn hàng</h3>
                         <div class="order-summary">
                             <div class="summary-row">
-                                <span>Tổng tiền hàng (Đã gồm VAT)</span>
-                                <span>{{ formatCurrency(getSubtotalWithVAT()) }}</span>
+                                <span>Tổng tiền</span>
+                                <span>{{ formatCurrency(selectedOrder.subtotal || getSubtotalWithVAT()) }}</span>
                             </div>
 
-                            <div class="summary-row" *ngIf="selectedOrder.shippingFee && selectedOrder.shippingFee > 0">
-                                <span>Chi phí vận chuyển</span>
-                                <span>{{ formatCurrency(selectedOrder.shippingFee) }}</span>
+                            <div class="summary-row discount" *ngIf="selectedOrder.directDiscount">
+                                <span>Giảm giá trực tiếp</span>
+                                <span class="c-accent-negative">-{{ formatCurrency(selectedOrder.directDiscount) }}</span>
                             </div>
 
-                            <div class="summary-row discount" *ngIf="isFreeShipping()">
-                                <span>Miễn phí vận chuyển</span>
-                                <span>-{{ formatCurrency(getBaseShippingFee()) }}</span>
+                            <div class="summary-row discount" *ngIf="selectedOrder.voucherDiscount">
+                                <span>Giảm giá voucher</span>
+                                <span class="c-accent-negative">-{{ formatCurrency(selectedOrder.voucherDiscount) }}</span>
                             </div>
 
-                            <div class="summary-row discount"
-                                *ngIf="selectedOrder.discount && selectedOrder.discount > 0">
-                                <span>Giảm giá sản phẩm</span>
-                                <span>-{{ formatCurrency(selectedOrder.discount) }}</span>
+                            <div class="summary-row" *ngIf="selectedOrder.shippingFee !== undefined">
+                                <span>Phí vận chuyển</span>
+                                <span *ngIf="selectedOrder.shippingFee === 0">Miễn phí</span>
+                                <span *ngIf="selectedOrder.shippingFee > 0">{{ formatCurrency(selectedOrder.shippingFee) }}</span>
                             </div>
+
+                            <hr class="summary-divider">
+
                             <div class="summary-row total-row">
-                                <span>Tổng cộng</span>
+                                <span>Thành tiền</span>
                                 <span class="total-amount">{{ formatCurrency(selectedOrder.totalAmount) }}</span>
-                            </div>
                         </div>
                     </div>
                 </div>

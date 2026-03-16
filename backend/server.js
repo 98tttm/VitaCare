@@ -7,6 +7,7 @@ const { connectDB, mongoose } = require('./db');
 const { Schema } = mongoose;
 const multer = require('multer');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcryptjs');
 
 // Email Transporter (Gmail)
 const transporter = nodemailer.createTransport({
@@ -729,7 +730,7 @@ app.post('/api/orders', async (req, res) => {
   try {
     const {
       user_id, paymentMethod, statusPayment, atPharmacy, pharmacyAddress,
-      subtotal, shippingFee, shippingDiscount, totalAmount,
+      subtotal, directDiscount, voucherDiscount, shippingFee, shippingDiscount, totalAmount,
       note, requestInvoice, hideProductInfo, item, shippingInfo,
     } = req.body || {};
 
@@ -767,6 +768,8 @@ app.post('/api/orders', async (req, res) => {
       atPharmacy: Boolean(atPharmacy),
       pharmacyAddress: pharmacyAddress || '',
       subtotal: Number(subtotal) || 0,
+      directDiscount: Number(directDiscount) || 0,
+      voucherDiscount: Number(voucherDiscount) || 0,
       promotion: [],
       shippingFee: Number(shippingFee) || 0,
       shippingDiscount: Number(shippingDiscount) || 0,
@@ -3812,10 +3815,21 @@ app.post('/api/auth/login', async (req, res) => {
       $or: [{ phone: p }, { phone: phone }]
     });
 
-    if (!user) {
+    if (!user || !user.password) {
       return res.status(401).json({ success: false, message: 'Số điện thoại hoặc mật khẩu không đúng.' });
     }
-    if (user.password !== password) {
+
+    // Hỗ trợ cả mật khẩu đã mã hóa (bcrypt) và mật khẩu cũ dạng plain-text để tránh lỗi với dữ liệu cũ.
+    let isMatch = false;
+    if (typeof user.password === 'string' && user.password.startsWith('$2')) {
+      // bcrypt hash
+      isMatch = await bcrypt.compare(password, user.password);
+    } else {
+      // Dữ liệu cũ chưa hash
+      isMatch = user.password === password;
+    }
+
+    if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Số điện thoại hoặc mật khẩu không đúng.' });
     }
 
@@ -3887,12 +3901,14 @@ app.post('/api/auth/register', async (req, res) => {
     }
     const user_id = 'CUS' + String(nextNum).padStart(6, '0');
 
+    const passwordHash = await bcrypt.hash(password, 10);
+
     const newUser = {
       user_id,
       avatar: null,
       full_name: '',
       email: '',
-      password,
+      password: passwordHash,
       phone: p,
       birthday: null,
       gender: 'Other',
@@ -4006,9 +4022,11 @@ app.post('/api/auth/reset-password', async (req, res) => {
       return res.status(400).json({ success: false, message: PASSWORD_RULE_MSG });
     }
 
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
     const result = await usersCollection().updateOne(
       { $or: [{ phone: p }, { phone: phone }] },
-      { $set: { password: newPassword } }
+      { $set: { password: passwordHash } }
     );
     if (result.matchedCount === 0) {
       return res.status(404).json({ success: false, message: 'Người dùng không tồn tại.' });

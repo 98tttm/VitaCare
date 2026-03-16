@@ -65,6 +65,9 @@ interface Order {
   | 'returning'
   | 'returned';
   totalAmount: number;
+  subtotal?: number;
+  directDiscount?: number;
+  voucherDiscount?: number;
   products: OrderProduct[];
   shippingInfo?: ShippingInfo;
   shippingFee?: number;

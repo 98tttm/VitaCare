@@ -7,8 +7,9 @@
 
 .account-wrapper {
   display: flex;
+  align-items: stretch;
   gap: 24px;
-  padding: 10px 0;
+  padding: 10px 0 0 0;
   max-width: 1200px;
   margin: 0 auto;
   font-family: 'Inter', sans-serif;
@@ -16,7 +17,7 @@
 
 /* Sidebar - nền gradient VitaCare (Primary #00589F) */
 .account-sidebar {
-  width: 280px;
+  width: 300px;
   min-width: 280px;
   flex-shrink: 0;
   background: linear-gradient(180deg, #00589F 0%, #2B3E66 100%);
@@ -24,7 +25,9 @@
   padding: 20px 16px;
   color: #fff;
   box-shadow: 0 4px 20px rgba(0, 88, 159, 0.35);
-  position: relative;
+  position: sticky;
+  top: 140px;
+  align-self: flex-start;
   z-index: 10;
 }
 
@@ -211,10 +214,13 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Content Area */
+/* Content Area - cùng chiều cao với sidebar */
 .account-content {
   flex: 1;
   min-width: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Khi xem Sổ sức khỏe: ẩn sidebar, content full width */

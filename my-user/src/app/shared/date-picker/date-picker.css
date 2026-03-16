@@ -1,0 +1,166 @@
+.vc-datepicker {
+  position: relative;
+  width: 100%;
+}
+
+.vc-datepicker-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.vc-datepicker-input {
+  width: 100%;
+  padding: 10px 40px 10px 14px;
+  border: 1px solid var(--color-neutral-40);
+  border-radius: 10px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-neutral-10);
+  font-family: 'Inter', sans-serif;
+}
+
+.vc-datepicker-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.vc-datepicker-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(39, 90, 171, 0.12);
+}
+
+.vc-datepicker-icon {
+  position: absolute;
+  right: 12px;
+  color: var(--color-primary);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.vc-datepicker-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 88, 159, 0.25);
+  border: 1px solid var(--color-primary-bg, #DAECFF);
+  padding: 16px 18px 18px;
+  min-width: 280px;
+}
+
+.vc-datepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.vc-datepicker-nav {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--color-primary-light, #43A2E6);
+  background: var(--color-neutral-10);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.vc-datepicker-nav:hover {
+  background: var(--color-primary-bg, #DAECFF);
+}
+
+.vc-datepicker-month {
+  font-size: 16px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.vc-datepicker-month:hover {
+  border-color: var(--color-primary-light, #43A2E6);
+  background: var(--color-primary-bg, #DAECFF);
+}
+
+.vc-datepicker-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.vc-datepicker-grid--month {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.vc-datepicker-grid--year {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.vc-datepicker-weekday {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.vc-datepicker-day {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+}
+
+.vc-datepicker-day--empty {
+  cursor: default;
+  color: transparent;
+}
+
+.vc-datepicker-day:not(.vc-datepicker-day--empty):hover {
+  background: var(--color-primary-bg, #DAECFF);
+}
+
+.vc-datepicker-day--selected {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.vc-datepicker-month-item,
+.vc-datepicker-year-item {
+  width: 72px;
+  height: 32px;
+  margin: 0 auto;
+  border-radius: 999px;
+  border: 1px solid var(--color-primary-light, #43A2E6);
+  background: var(--color-neutral-10);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.vc-datepicker-month-item:hover,
+.vc-datepicker-year-item:hover {
+  background: var(--color-primary-bg, #DAECFF);
+}
+

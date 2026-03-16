@@ -212,8 +212,11 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="birthDate" class="form-label">Ngày sinh</label>
-                        <input type="date" class="form-control" id="birthDate" [(ngModel)]="birthDate" name="birthDate"
-                            placeholder="mm / dd / yyyy">
+                        <app-date-picker
+                          [value]="birthDate || null"
+                          (valueChange)="birthDate = $event || ''"
+                          placeholder="dd/mm/yyyy">
+                        </app-date-picker>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -264,21 +267,11 @@
                 </div>
             </div>
 
-            <!-- Mật khẩu (chỉ hiển thị; đổi mật khẩu qua popup OTP) -->
-            <div class="form-group">
-                <label for="password" class="form-label">Mật khẩu:</label>
-                <div class="password-input-wrapper">
-                    <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password"
-                        [value]="passwordDisplay" name="password" placeholder="••••••••••••" readonly>
-                    <button type="button" class="password-toggle" (click)="togglePassword()" [attr.aria-label]="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'">
-                        <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword" class="toggle-icon"></i>
-                    </button>
-                </div>
-                <a href="#" class="change-password-link" (click)="changePassword($event)">Thay đổi mật khẩu</a>
-            </div>
-
-            <!-- Submit Button -->
+            <!-- Submit & Actions -->
             <div class="form-actions">
+                <button type="button" class="btn-change-password" (click)="changePassword($event)">
+                    Thay đổi mật khẩu
+                </button>
                 <button type="submit" class="btn-update">Cập nhật thông tin</button>
             </div>
         </form>
