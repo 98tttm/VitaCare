@@ -24,9 +24,9 @@
                 <div class="row g-5">
                     <!-- Left: Gallery -->
                     <div class="col-lg-5">
-                        <div class="vc_sticky_gallery_wrapper">
+                        <div class="vc_sticky_gallery_wrapper" [style.zIndex]="isGalleryModalOpen ? 100002 : 10">
                             <app-product-gallery [product]="product" [selectedImage]="selectedImage"
-                                (imageSelected)="selectedImage = $event">
+                                (imageSelected)="selectedImage = $event" (modalToggled)="isGalleryModalOpen = $event">
                             </app-product-gallery>
                         </div>
                     </div>

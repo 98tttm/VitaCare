@@ -34,6 +34,7 @@ export class ProductDetail implements OnInit {
   loading = true;
   selectedImage: string = '';
   quantity: number = 1;
+  isGalleryModalOpen: boolean = false;
   categories: any[] = [];
   categoryPath: any[] = [];
   healthVideos: any[] = [];
@@ -132,7 +133,6 @@ export class ProductDetail implements OnInit {
 
 
   ngOnInit(): void {
-    window.scrollTo(0, 0);
     this.loadFavorites();
 
     // 1. Lấy danh mục để xây dựng breadcrumbs
@@ -147,7 +147,6 @@ export class ProductDetail implements OnInit {
     this.route.paramMap.subscribe((params: any) => {
       const slug = params.get('slug');
       if (slug && slug !== 'undefined' && slug !== 'null') {
-        window.scrollTo(0, 0);
         this.fetchProduct(slug);
       }
     });

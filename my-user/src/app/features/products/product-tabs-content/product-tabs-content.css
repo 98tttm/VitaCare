@@ -22,18 +22,18 @@
 .nav-link.active {
     background-color: #f3f4f6;
     /* Gray background */
-    color: #1250dc !important;
-    /* Blue Basic Text (Xanh in đậm) */
+    color: #00589f !important;
+    /* VitaCare Primary Blue */
     font-weight: 700 !important;
     border-bottom: none;
     /* Hide border on active */
 }
 
 .nav-link:hover:not(.active) {
-    background-color: transparent;
-    /* No background on hover */
-    color: #000 !important;
-    /* Black text (Màu đen đậm) */
+    background-color: #f8faff;
+    /* Very light blue tint on hover */
+    color: #00589f !important;
+    /* VitaCare Primary Blue */
     font-weight: 700;
     /* Bold */
 }
@@ -103,9 +103,28 @@
 }
 
 /* ... links ... */
-.vc_html_content a {
+:host ::ng-deep .vc_html_content a,
+:host ::ng-deep .vc_html_content a:visited,
+:host ::ng-deep .vc_html_content a:active,
+:host ::ng-deep .vc_html_content a:focus {
     color: #00589f !important;
-    text-decoration: underline;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: color 0.2s ease;
+    outline: none !important;
+}
+
+/* Force nested spans/strongs inside links to use the link color */
+:host ::ng-deep .vc_html_content a * {
+    color: inherit !important;
+    font-weight: inherit !important;
+    text-decoration: none !important;
+}
+
+:host ::ng-deep .vc_html_content a:hover {
+    text-decoration: none !important;
+    color: #2b3e66 !important;
+    /* var(--color-primary-hover) */
 }
 
 /* ... */

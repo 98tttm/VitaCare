@@ -367,9 +367,16 @@
 }
 
 .vc_spec_value.text-primary,
-.vc_spec_value .text-primary {
+.vc_spec_value .text-primary,
+.vc_pd_summary .text-primary {
     color: #00589f !important;
     /* VitaCare Blue */
+    text-decoration: none !important;
+}
+
+.vc_pd_summary .text-primary:hover {
+    color: #2b3e66 !important;
+    text-decoration: none !important;
 }
 
 .vc_spec_grid_2 {

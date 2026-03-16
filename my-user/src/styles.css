@@ -100,11 +100,12 @@ a {
     color: var(--color-primary);
     text-decoration: none;
     transition: var(--transition-base);
+    outline: none !important;
 }
 
 a:hover {
     color: var(--color-primary-hover);
-    text-decoration: underline;
+    text-decoration: none !important;
 }
 
 /* Buttons - reset default styles */

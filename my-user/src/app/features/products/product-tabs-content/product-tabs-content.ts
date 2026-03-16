@@ -1,5 +1,6 @@
 import { Component, Input, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-product-tabs-content',
@@ -13,7 +14,74 @@ export class ProductTabsContent {
   activeSection: string = 'mo-ta';
   isExpanded: boolean = false;
 
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef, private sanitizer: DomSanitizer) { }
+
+  /**
+   * Chuyển đổi các link từ Long Châu sang link nội bộ VitaCare
+   */
+  transformInternalLinks(html: string): SafeHtml {
+    if (!html) return '';
+
+    // Regex to match links targeting nhathuoclongchau.com.vn
+    const regex = /href=\"https:\/\/nhathuoclongchau\.com\.vn([^\"]*)\"/g;
+
+    const transformedHtml = html.replace(regex, (match, path) => {
+      let newLink = match;
+
+      // Strip .html for cleaner processing, but keep track if it was a product link
+      const isProductLink = path.endsWith('.html') &&
+        !path.startsWith('/bai-viet/') &&
+        !path.startsWith('/benh/') &&
+        !path.startsWith('/thanh-phan/');
+
+      const cleanPath = path.replace(/\.html$/, '');
+
+      if (isProductLink) {
+        // Extract product slug: e.g. /thuc-pham-chuc-nang/phe-khang-hai-thuong-vuong-32700.html -> phe-khang-hai-thuong-vuong-32700
+        const segments = cleanPath.split('/');
+        let slug = segments[segments.length - 1];
+
+        // Normalization: Strip trailing numeric ID (common in Long Chau URLs)
+        // e.g. phe-khang-hai-thuong-vuong-3x10-32700 -> phe-khang-hai-thuong-vuong-3x10
+        const cleanSlug = slug.replace(/-\d+$/, '');
+
+        // If it's referring to the current product, use the current product's slug
+        if (this.product?.slug && (this.product.slug.includes(cleanSlug) || cleanSlug.includes(this.product.slug))) {
+          slug = this.product.slug;
+        } else {
+          slug = cleanSlug;
+        }
+
+        newLink = `href=\"/product/${slug}\"`;
+      } else if (path.startsWith('/bai-viet/')) {
+        const slug = cleanPath.replace('/bai-viet/', '');
+        newLink = `href=\"/bai-viet/${slug}\"`;
+      } else if (path.startsWith('/benh/')) {
+        const slug = cleanPath.replace('/benh/', '');
+        newLink = `href=\"/benh/${slug}\"`;
+      } else if (path.startsWith('/thuong-hieu/')) {
+        const slug = cleanPath.replace('/thuong-hieu/', '');
+        newLink = `href=\"/category?brand=${slug}\"`;
+      } else if (path.startsWith('/thanh-phan/')) {
+        const slug = cleanPath.replace('/thanh-phan/', '');
+        newLink = `href=\"/bai-viet/${slug}\"`;
+      } else if (
+        path.startsWith('/thuc-pham-chuc-nang') ||
+        path.startsWith('/duoc-my-pham') ||
+        path.startsWith('/thuoc') ||
+        path.startsWith('/cham-soc-ca-nhan') ||
+        path.startsWith('/thiet-bi-y-te')
+      ) {
+        newLink = `href=\"/category${cleanPath}\"`;
+      } else if (path === '' || path === '/') {
+        newLink = `href=\"/\"`;
+      }
+
+      return newLink;
+    });
+
+    return this.sanitizer.bypassSecurityTrustHtml(transformedHtml);
+  }
 
   getIngredientsList(): any[] {
     if (!this.product?.ingredients) return [];

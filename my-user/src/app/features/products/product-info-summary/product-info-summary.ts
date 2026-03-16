@@ -5,12 +5,12 @@ import { CartAnimationService } from '../../../core/services/cart-animation.serv
 import { BuyNowService } from '../../../core/services/buy-now.service';
 import { QuickViewService } from '../../../core/services/quick-view.service';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-product-info-summary',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './product-info-summary.html',
   styleUrl: './product-info-summary.css'
 })
@@ -74,9 +74,6 @@ export class ProductInfoSummary {
 
     // Close the quick view popup after clicking Buy Now
     this.quickViewService.close();
-
-    // Scroll to top for the order page
-    window.scrollTo(0, 0);
   }
 
   requestConsultation(): void {
@@ -93,9 +90,12 @@ export class ProductInfoSummary {
 
     // Chuyển hướng sang trang tư vấn
     this.router.navigate(['/consultation'], { queryParams });
+  }
 
-    // Cuộn lên đầu trang (tuỳ chọn)
-    window.scrollTo(0, 0);
+  viewBusinessLicense(): void {
+    // Đóng popup trước khi chuyển hướng
+    this.quickViewService.close();
+    this.router.navigate(['/chinh-sach/giay-phep-kinh-doanh']);
   }
 
   getCurrentPrice(): number {

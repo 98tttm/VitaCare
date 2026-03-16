@@ -18,9 +18,10 @@
             <div class="container-fluid">
                 <div class="row">
                     <!-- Left: Gallery (Sticky) -->
-                    <div class="col-lg-5 mb-4 mb-lg-0 vc_sticky_gallery">
+                    <div class="col-lg-5 mb-4 mb-lg-0 vc_sticky_gallery" [style.zIndex]="isGalleryModalOpen ? 101 : 5">
                         <app-product-gallery [product]="product" [selectedImage]="selectedImage"
-                            (imageSelected)="onImageSelected($event)"></app-product-gallery>
+                            (imageSelected)="onImageSelected($event)"
+                            (modalToggled)="isGalleryModalOpen = $event"></app-product-gallery>
                     </div>
 
                     <!-- Right: Info Summary -->

@@ -1699,7 +1699,9 @@ textarea.form-control:focus {
 :host ::ng-deep .dd-references-body a,
 :host ::ng-deep .dd-approver-bio a {
     color: #00589F !important;
-    text-decoration: underline;
+    text-decoration: none !important;
+    font-weight: 700 !important;
+    outline: none !important;
 }
 
 :host ::ng-deep .dd-faq-answer-inner a:hover,
@@ -1708,7 +1710,7 @@ textarea.form-control:focus {
 :host ::ng-deep .dd-references-body a:hover,
 :host ::ng-deep .dd-approver-bio a:hover {
     color: #004080 !important;
-    text-decoration: underline;
+    text-decoration: none !important;
 }
 
 /* Riêng phần "Xem thêm thông tin" của bác sĩ thì bỏ gạch chân */

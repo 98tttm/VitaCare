@@ -54,11 +54,11 @@
                 <i class="bi bi-chevron-left"></i>
             </button>
 
-            <div class="vc_pd_modal_img_wrapper">
-                <img [src]="allImages[modalActiveIndex]" class="modal-main-img">
-                <div class="img-zoom-hint">
-                    <i class="bi bi-search"></i>
-                </div>
+            <div class="vc_pd_modal_img_wrapper" (wheel)="onWheel($event)" (mousedown)="startDragging($event)"
+                (mousemove)="onDragging($event)" (mouseup)="stopDragging()" (mouseleave)="stopDragging()"
+                [style.cursor]="zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in'">
+                <img [src]="allImages[modalActiveIndex]" class="modal-main-img"
+                    [style.transform]="'scale(' + zoomLevel + ') translate(' + translateX/zoomLevel + 'px, ' + translateY/zoomLevel + 'px)'">
             </div>
 
             <button class="nav-btn next" (click)="nextImage($event)">
@@ -74,9 +74,12 @@
         <!-- Footer: Thumbnails Slider -->
         <div class="vc_pd_modal_footer">
             <div class="vc_pd_modal_thumbs">
-                <div class="modal-thumb-item" *ngFor="let img of allImages; let i = index"
-                    [class.active]="i === modalActiveIndex" (click)="selectModalImage(i)">
-                    <img [src]="img">
+                <div *ngFor="let thumb of galleryThumbnails; let i = index" class="modal-thumb-item"
+                    [class.active]="modalActiveIndex === thumb.index" (click)="selectModalImage(thumb.index)">
+                    <img [src]="thumb.url" alt="thumbnail">
+                    <div class="thumb-more-overlay" *ngIf="thumb.isMore">
+                        <span>Xem thêm {{thumb.moreCount}} ảnh</span>
+                    </div>
                 </div>
             </div>
         </div>

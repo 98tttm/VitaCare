@@ -36,8 +36,10 @@
                     <section id="mo-ta" class="mb-4">
                         <h3 class="h5 fw-bold mb-3">Mô tả sản phẩm</h3>
                         <div class="vc_html_content">
-                            <div class="mb-3" [innerHTML]="product.description || 'Đang cập nhật mô tả...'"></div>
-                            <div [innerHTML]="product.description_long"></div>
+                            <div class="mb-3"
+                                [innerHTML]="transformInternalLinks(product.description || 'Đang cập nhật mô tả...')">
+                            </div>
+                            <div [innerHTML]="transformInternalLinks(product.description_long)"></div>
                         </div>
                     </section>
 
@@ -64,7 +66,7 @@
 
                     <section id="cong-dung" class="mb-4">
                         <h3 class="h5 fw-bold mb-3">Công dụng của {{ product.name }}</h3>
-                        <div class="vc_html_content" [innerHTML]="product.usage"></div>
+                        <div class="vc_html_content" [innerHTML]="transformInternalLinks(product.usage)"></div>
                     </section>
 
                     <section id="cach-dung" class="mb-4">
@@ -85,7 +87,7 @@
                             <h3 class="h5 fw-bold mb-3">
                                 <i class="bi bi-exclamation-triangle-fill"></i> Lưu ý
                             </h3>
-                            <div class="vc_html_content" [innerHTML]="product.warnings"></div>
+                            <div class="vc_html_content" [innerHTML]="transformInternalLinks(product.warnings)"></div>
                         </div>
                     </section>
 

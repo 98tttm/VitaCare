@@ -19,14 +19,19 @@
 .vc_modal_container {
     background-color: #fff;
     width: 90%;
-    max-width: 840px;
-    /* Reduced from 900px */
+    max-width: 900px;
     max-height: 90vh;
     border-radius: 16px;
     overflow-y: auto;
     position: relative;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     animation: vc_slide_up 0.3s ease-out;
+    transition: max-width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.vc_modal_container.full-detail {
+    max-width: 1200px;
+    /* Wider for full info */
 }
 
 @keyframes vc_slide_up {
@@ -42,8 +47,7 @@
 }
 
 .vc_modal_header {
-    padding: 12px 24px;
-    /* Shorter header as requested */
+    padding: 15px 24px;
     border-bottom: 1px solid #f0f0f0;
     display: flex;
     justify-content: space-between;
@@ -51,17 +55,15 @@
     position: sticky;
     top: 0;
     background: #fff;
-    z-index: 10;
+    z-index: 100;
+    /* Higher than gallery */
 }
 
 .vc_modal_header h4 {
     margin: 0;
-    font-size: 15px;
-    /* Reduced from 18px */
+    font-size: 18px;
     font-weight: 700;
     color: #00589f;
-    text-transform: uppercase;
-    /* Uppercase as requested */
     letter-spacing: 0.5px;
 }
 
@@ -96,12 +98,15 @@
     line-height: 1.4;
 }
 
+.vc_modal_body.full-scroll {
+    overflow-y: visible;
+    /* Use container scroll */
+}
+
 /* Strictly Fixed Gallery Column - Ensuring No Movement */
 .vc_sticky_gallery {
     position: sticky;
-    /* Sticky within col-5 which is height of parent info */
-    top: 35px !important;
-    /* Increased from 20px to prevent badge clipping */
+    top: 20px !important;
     align-self: start;
     z-index: 5;
     height: fit-content;
@@ -110,8 +115,7 @@
 
 /* Fix: Clear overlap from sticky header */
 :host ::ng-deep .vc_brand_origin_box {
-    margin-top: 5px !important;
-    /* Adding small top margin instead of 0 for better breath */
+    margin-top: 0 !important;
     margin-bottom: 12px !important;
 }
 
@@ -142,8 +146,7 @@
 }
 
 :host ::ng-deep .product-gallery-main {
-    max-height: 350px !important;
-    /* Reduced to make room for thumbnails */
+    max-height: 400px !important;
     object-fit: contain !important;
 }
 
@@ -175,7 +178,6 @@
     align-items: center !important;
     gap: 6px !important;
     flex: 0 0 auto !important;
-    /* Prevent shrinking/growing */
     min-width: 0 !important;
 }
 
@@ -211,13 +213,10 @@
     color: #fff;
     font-weight: 700;
     text-decoration: none;
-    padding: 6px 12px;
-    /* Scale down button */
+    padding: 6px 16px;
     border-radius: 20px;
-    font-size: 12px;
-    /* Reduced from 14px */
+    font-size: 13px;
     background-color: #00589f;
-    /* VitaCare Blue */
     transition: all 0.2s;
     border: 1px solid #00589f;
     box-shadow: 0 2px 8px rgba(0, 88, 159, 0.2);
@@ -231,6 +230,32 @@
     box-shadow: 0 4px 12px rgba(0, 88, 159, 0.3);
 }
 
+/* Expanded Specific Sections */
+.vc_section_container {
+    background: #fff;
+    border-radius: 12px;
+}
+
+.vc_section_header h5 {
+    color: #00589f;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.vc_faq_question {
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.vc_faq_question:hover {
+    color: #00589f;
+}
+
+.vc_faq_answer {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
 /* Responsiveness for modal body */
 @media (max-width: 991px) {
     .vc_modal_container {
@@ -239,5 +264,9 @@
 
     .vc_modal_body {
         padding: 16px;
+    }
+
+    .vc_modal_container.full-detail {
+        max-width: 95%;
     }
 }
