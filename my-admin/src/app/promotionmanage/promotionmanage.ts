@@ -8,8 +8,8 @@ import { CustomerService } from '../services/customer.service';
 import { forkJoin } from 'rxjs';
 
 interface Promotion {
-  id?: string;
   _id?: string;
+  promotion_id?: string;
   code: string;
   name: string;
   description: string;
@@ -80,6 +80,8 @@ export class Promotionmanage implements OnInit {
   ];
   customerGroups: any[] = [];
   productGroups: any[] = [];
+  categories: any[] = [];
+  formattedCategories: any[] = [];
   imageInput: string = '';
 
   constructor(
@@ -102,6 +104,43 @@ export class Promotionmanage implements OnInit {
     this.productService.getGroups().subscribe({
       next: (res) => { if (res.success) this.productGroups = res.data; }
     });
+    this.productService.getCategories().subscribe({
+      next: (res) => { 
+        const cats = res.success ? res.data : (Array.isArray(res) ? res : []);
+        this.categories = cats;
+        this.formattedCategories = this.formatCategoryTree(cats);
+      }
+    });
+  }
+
+  formatCategoryTree(allCats: any[]): any[] {
+    const map = new Map();
+    allCats.forEach(cat => map.set(cat._id, { ...cat, children: [] }));
+    
+    const roots: any[] = [];
+    allCats.forEach(cat => {
+      const item = map.get(cat._id);
+      if (cat.parentId && map.has(cat.parentId)) {
+        map.get(cat.parentId).children.push(item);
+      } else {
+        roots.push(item);
+      }
+    });
+
+    const result: any[] = [];
+    const flatten = (nodes: any[], level: number) => {
+      nodes.forEach(node => {
+        result.push({
+          ...node,
+          displayName: '—'.repeat(level) + (level > 0 ? ' ' : '') + node.name
+        });
+        if (node.children && node.children.length > 0) {
+          flatten(node.children, level + 1);
+        }
+      });
+    };
+    flatten(roots, 0);
+    return result;
   }
 
 
@@ -169,13 +208,12 @@ export class Promotionmanage implements OnInit {
 
           return {
             ...p,
-            id: p._id || p.id,
             code: p.code || 'NO_CODE',
             name: p.name || 'Khuyến mãi không tên',
             status: statusStr,
             statusTitle: sTitle,
             statusClass: sClass,
-            type: (p.type || 'order').toLowerCase() === 'product' ? 'product' : 'customer',
+            type: (p.type || 'order').toLowerCase() === 'product' ? 'product' : (p.type === 'category' ? 'category' : 'customer'),
             scope: (p.scope || 'order').toLowerCase(),
             usage_count: usageMap[p.code] || 0, // Real usage from orders
             usage_limit: p.usage_limit || 0,
@@ -274,21 +312,23 @@ export class Promotionmanage implements OnInit {
 
   confirmDelete() {
     const selectedIds = this.filteredPromotions.filter(p => p.selected).map(p => p._id);
+    if (selectedIds.length === 0) return;
+    
     this.isLoading = true;
+    const requests = selectedIds.map(id => this.promotionService.deletePromotion(id!));
 
-    // Simple mock bulk delete
-    let completed = 0;
-    selectedIds.forEach(id => {
-      this.promotionService.deletePromotion(id!).subscribe({
-        next: () => {
-          completed++;
-          if (completed === selectedIds.length) {
-            this.showNotification('Đã xóa thành công');
-            this.fetchData();
-            this.isDeleteConfirmModalOpen = false;
-          }
-        }
-      });
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.showNotification('Đã xóa thành công');
+        this.fetchData();
+        this.isDeleteConfirmModalOpen = false;
+        // Selection state will be reset in fetchData map
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.showNotification('Lỗi khi xóa khuyến mãi', 'error');
+        console.error('Delete error:', err);
+      }
     });
   }
 
@@ -323,9 +363,24 @@ export class Promotionmanage implements OnInit {
       return;
     }
     this.isLoading = true;
+    if (!this.currentPromotion.promotion_id) {
+      this.currentPromotion.promotion_id = 'PRM-' + Date.now().toString().slice(-8);
+    }
+
+    // Clean up UI/Calculated fields before saving to DB
+    const dataToSave = { ...this.currentPromotion };
+    delete dataToSave.id;
+    delete (dataToSave as any).selected;
+    delete (dataToSave as any).status;
+    delete (dataToSave as any).statusClass;
+    delete (dataToSave as any).statusTitle;
+    delete (dataToSave as any).targets;
+    delete (dataToSave as any).usages;
+    delete (dataToSave as any).usage_count;
+
     const action = this.isEditMode
-      ? this.promotionService.updatePromotion(this.currentPromotion._id, this.currentPromotion)
-      : this.promotionService.createPromotion(this.currentPromotion);
+      ? this.promotionService.updatePromotion(this.currentPromotion._id, dataToSave)
+      : this.promotionService.createPromotion(dataToSave);
 
     action.subscribe({
       next: () => {
@@ -342,6 +397,7 @@ export class Promotionmanage implements OnInit {
 
   resetForm() {
     this.currentPromotion = {
+      promotion_id: '',
       code: '', name: '', description: '', type: 'customer', scope: 'order',
       discount_type: 'percent', discount_value: 0, min_order_value: 0,
       max_discount_value: 0, start_date: '', end_date: '', usage_limit: 0,

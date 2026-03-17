@@ -415,6 +415,7 @@ export class Productmanage implements OnInit {
     }
 
     const newGroup = {
+      group_id: 'PG-' + Date.now().toString().slice(-6),
       name: this.groupName,
       productIds: Array.from(this.selectedIds),
       count: this.selectedIds.size,

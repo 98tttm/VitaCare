@@ -211,6 +211,11 @@
                             placeholder="Nhập tên khuyến mãi">
                     </div>
 
+                    <div class="form-group" *ngIf="currentPromotion.promotion_id">
+                        <label class="form-label">ID Khuyến mãi</label>
+                        <input type="text" class="form-control" [ngModel]="currentPromotion.promotion_id" disabled>
+                    </div>
+
                     <div class="form-group full-width">
                         <label class="form-label">Mô tả</label>
                         <textarea class="form-control" [(ngModel)]="currentPromotion.description" rows="3"
@@ -221,6 +226,7 @@
                         <label class="form-label">Loại khuyến mãi*</label>
                         <select class="form-control" [(ngModel)]="currentPromotion.type">
                             <option value="customer">Khách hàng (Customer)</option>
+                            <option value="category">Danh mục (Category)</option>
                             <option value="product">Sản phẩm (Product)</option>
                         </select>
                     </div>
@@ -231,6 +237,15 @@
                         <select class="form-control" [(ngModel)]="currentPromotion.customer_group_id">
                             <option value="">Tất cả khách hàng</option>
                             <option *ngFor="let g of customerGroups" [value]="g._id">{{ g.name }}</option>
+                        </select>
+                    </div>
+
+                    <!-- Target Category (for Category type) -->
+                    <div class="form-group" *ngIf="currentPromotion.type === 'category'">
+                        <label class="form-label">Danh mục áp dụng</label>
+                        <select class="form-control" [(ngModel)]="currentPromotion.target_category_id">
+                            <option value="">Chọn danh mục</option>
+                            <option *ngFor="let c of formattedCategories" [value]="c._id">{{ c.displayName }}</option>
                         </select>
                     </div>
 

@@ -285,6 +285,7 @@ export class Customermanage implements OnInit {
     const selectedIds = selectedCustomers.map(c => c._id || c.user_id);
 
     const newGroup = {
+      group_id: 'CG-' + Date.now().toString().slice(-6),
       name: this.groupName,
       customerIds: selectedIds,
       count: selectedCustomers.length,

@@ -176,7 +176,7 @@
 }
 
 .stat-icon-bg.orange {
-    background-color: var(--color-bg-secondary);7ed;
+    background-color: var(--color-bg-secondary);
     color: #f59e0b;
 }
 
@@ -454,7 +454,7 @@
 
     .dashboard-container {
         padding: 0 !important;
-        background-color: var(--color-bg-secondary); !important;
+        background-color: var(--color-bg-secondary) !important;
     }
 
     .main-dashboard-grid,

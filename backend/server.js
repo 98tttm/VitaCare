@@ -48,7 +48,7 @@ const OrderModel = mongoose.model('admin_orders', genericSchema, 'orders');
 const BlogModel = mongoose.model('admin_blogs', genericSchema, 'blog'); // Sửa 'blogs' thành 'blog'
 const PromotionModel = mongoose.model('promotions', genericSchema, 'promotion_promotions'); // Sửa 'promotions' thành 'promotion_promotions'
 const PromotionUsage = mongoose.model('promotion_usage', genericSchema, 'promotion_usage');
-const PromotionTarget = mongoose.model('promotion_target', genericSchema, 'promotion_target');
+const PromotionTarget = mongoose.model('promotion_target', genericSchema, 'promotion_promotion_target');
 const CustomerGroup = mongoose.model('customer_groups', genericSchema, 'customer_groups');
 const ProductGroup = mongoose.model('product_groups', genericSchema, 'product_groups');
 const Pharmacist = mongoose.model('pharmacists', genericSchema, 'pharmacists');
@@ -4578,6 +4578,10 @@ async function seedBenhIfEmpty() {
 async function ensureBlogSlugIndex() {
   try {
     const db = mongoose.connection.db;
+    if (!db) {
+      console.warn('ensureBlogSlugIndex: Database not ready yet');
+      return;
+    }
     for (const name of ['blog', 'blogs']) {
       try {
         await db.collection(name).createIndex({ slug: 1 }, { background: true });
@@ -4598,6 +4602,11 @@ const start = async () => {
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 VitaCare API: http://localhost:${PORT}`);
     });
+
+    // Wait for the connection to be fully "open" to ensure .db is available
+    if (mongoose.connection.readyState !== 1) {
+      await new Promise((resolve) => mongoose.connection.once('open', resolve));
+    }
 
     // Run seeding/indexing in background
     (async () => {
@@ -5070,33 +5079,132 @@ app.get('/api/admin/promotions', async (req, res) => {
       const code = p.code;
       const usageData = usages.filter(u => (pid && u.promotion_id === pid) || (code && u.code === code));
       const targetData = targets.filter(t => (pid && t.promotion_id === pid) || (code && t.code === code));
-      return { ...p, usages: usageData, targets: targetData };
+      
+      const clean = { ...p };
+      delete clean.id;
+      delete clean.selected;
+      delete clean.status;
+      delete clean.statusClass;
+      delete clean.statusTitle;
+      delete clean.usages;
+      delete clean.targets;
+      delete clean.usage_count;
+
+      return { ...clean, usages: usageData, targets: targetData };
     });
     const sortedData = data.sort((a, b) => new Date(b.start_date || 0) - new Date(a.start_date || 0));
     res.json({ success: true, data: sortedData });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
 
+const sanitizePromotion = (p) => {
+  const clean = { ...p };
+  delete clean.id;
+  delete clean.selected;
+  delete clean.status;
+  delete clean.statusClass;
+  delete clean.statusTitle;
+  delete clean.usages;
+  delete clean.targets;
+  delete clean.usage_count;
+  return clean;
+};
+
 app.post('/api/admin/promotions', async (req, res) => {
   try {
-    const item = new PromotionModel(req.body);
+    const cleanBody = sanitizePromotion(req.body);
+    const item = new PromotionModel(cleanBody);
     const data = await item.save();
+
+    let targetRef = '';
+    const type = data.type || 'customer';
+    if (type === 'category') targetRef = data.target_category_id;
+    else if (type === 'product') targetRef = data.product_group_id;
+    else if (type === 'customer') targetRef = data.customer_group_id;
+
+    const targetData = {
+      promotion_oid: data._id.toString(),
+      promotion_id: data.promotion_id || '',
+      target_type: [type],
+      target_ref: targetRef || '',
+      code: data.code || '',
+      name: data.name || '',
+      status: data.status || 'active'
+    };
+    
+    await PromotionTarget.create(targetData);
     res.status(201).json({ success: true, data });
-  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  } catch (error) { 
+    res.status(500).json({ success: false, message: error.message }); 
+  }
 });
 
 app.put('/api/admin/promotions/:id', async (req, res) => {
   try {
-    const data = await PromotionModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const id = req.params.id;
+    const targetId = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
+    
+    const updateData = sanitizePromotion(req.body);
+    delete updateData._id;
+
+    const unsetFields = {
+      id: 1,
+      selected: 1,
+      status: 1,
+      statusClass: 1,
+      statusTitle: 1,
+      usages: 1,
+      targets: 1,
+      usage_count: 1
+    };
+
+    const data = await PromotionModel.findOneAndUpdate(
+      { _id: targetId }, 
+      { $set: updateData, $unset: unsetFields }, 
+      { new: true }
+    );
+    
+    if (data) {
+      let targetRef = '';
+      const type = data.type || 'customer';
+      if (type === 'category') targetRef = data.target_category_id;
+      else if (type === 'product') targetRef = data.product_group_id;
+      else if (type === 'customer') targetRef = data.customer_group_id;
+
+      const targetUpdate = {
+        promotion_id: data.promotion_id || '',
+        target_type: [type],
+        target_ref: targetRef || '',
+        code: data.code || '',
+        name: data.name || '',
+        status: data.status || 'active'
+      };
+
+      await PromotionTarget.findOneAndUpdate(
+        { promotion_oid: id },
+        { $set: targetUpdate },
+        { upsert: true }
+      );
+    }
+    
     res.json({ success: true, data });
-  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  } catch (error) { 
+    res.status(500).json({ success: false, message: error.message }); 
+  }
 });
 
 app.delete('/api/admin/promotions/:id', async (req, res) => {
   try {
-    await PromotionModel.findByIdAndDelete(req.params.id);
+    const id = req.params.id;
+    const targetId = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
+    
+    await PromotionModel.deleteOne({ _id: targetId });
+    await PromotionTarget.deleteMany({ promotion_oid: id });
+    
     res.json({ success: true });
-  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  } catch (error) { 
+    res.status(500).json({ success: false, message: error.message }); 
+  }
 });
 
 app.get('/api/admin/reviews', async (req, res) => {
@@ -5661,6 +5769,5 @@ app.post('/api/admin/change-password', async (req, res) => {
     res.json({ success: true, message: 'Đổi mật khẩu thành công', admin: updated });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
-
 
 
