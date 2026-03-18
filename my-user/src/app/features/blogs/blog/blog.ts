@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@an
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 export interface BlogItem {
   title: string;
@@ -15,7 +16,7 @@ export interface BlogItem {
 @Component({
   selector: 'app-bai-viet-blog',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LoadingShippingComponent],
   templateUrl: './blog.html',
   styleUrl: './blog.css',
 })

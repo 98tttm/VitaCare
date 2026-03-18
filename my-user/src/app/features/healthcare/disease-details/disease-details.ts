@@ -7,11 +7,12 @@ import { DiseaseService } from '../../../core/services/disease.service';
 import { ProductService } from '../../../core/services/product.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 @Component({
   selector: 'app-disease-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, LoadingShippingComponent],
   templateUrl: './disease-details.html',
   styleUrl: './disease-details.css',
 })

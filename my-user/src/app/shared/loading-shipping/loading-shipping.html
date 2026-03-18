@@ -1,0 +1,18 @@
+<div class="loading-shipping-container">
+    <div class="loading-text">{{ text }}</div>
+
+    <div class="progress-wrapper">
+        <!-- Moving Mascot -->
+        <div class="mascot-track" [style.left.%]="displayProgress">
+            <img src="assets/images/mascot/shipping.png" alt="Shipping Mascot" class="shipping-mascot">
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-fill" [style.width.%]="displayProgress"></div>
+            <div class="progress-stripes"></div>
+        </div>
+
+        <div class="progress-percentage">{{ displayProgress | number:'1.0-0' }}%</div>
+    </div>
+</div>

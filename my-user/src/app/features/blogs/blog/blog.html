@@ -8,9 +8,8 @@
     </nav>
 
     <!-- Loading: hiển thị khi đang tải, ẩn khi đã có data -->
-    <div *ngIf="loading" class="bv-loading">
-      <div class="bv-loading-spinner"></div>
-      <p>Đang tải bài viết...</p>
+    <div *ngIf="loading" class="bv-loading-new">
+      <app-loading-shipping text="Đang xử lý..."></app-loading-shipping>
     </div>
 
     <!-- Nội dung bài viết: chỉ hiển thị sau khi load xong -->

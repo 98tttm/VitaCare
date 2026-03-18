@@ -15,9 +15,8 @@
                 </header>
 
                 <!-- Loading State -->
-                <div *ngIf="loading && blogs.length === 0" class="tc-loading">
-                    <div class="tc-spinner"></div>
-                    <p>Đang tải bài viết...</p>
+                <div *ngIf="loading && blogs.length === 0" class="tc-loading-new">
+                    <app-loading-shipping text="Đang xử lý..."></app-loading-shipping>
                 </div>
 
                 <!-- Articles List -->

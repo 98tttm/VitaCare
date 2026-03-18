@@ -23,16 +23,16 @@
     <!-- ========== HERO / BANNER SLIDER (mobile: vuốt trái/phải đổi banner) ========== -->
     <section class="vc-hero" (touchstart)="onBannerTouchStart($event)" (touchend)="onBannerTouchEnd($event)">
         <div class="vc-hero-main">
-            <img src="assets/images/banner/Banner Homepage  (2).png" alt="Hero banner" />
+            <img [src]="subBanner1" alt="Hero banner" />
         </div>
         <div class="vc-hero-side">
-            <img src="assets/images/banner/Banner Homepage  (1).png" />
-            <img src="assets/images/banner/Banner Homepage .png" />
+            <img [src]="subBanner3" alt="Banner Top" />
+            <img [src]="subBanner2" alt="Banner Bottom" />
         </div>
     </section>
 
     <!-- ========== QUICK ACTIONS ========== -->
-    <section class="vc-quick-actions">
+    <section class="vc-quick-actions scroll-reveal from-bottom">
         <div class="qa-item" *ngFor="let qa of quickActions" (click)="onQuickActionClick(qa)" role="button"
             tabindex="0">
             <div class="qa-icon">
@@ -43,7 +43,7 @@
     </section>
 
     <!-- ========== FLASH SALE (giống thiết kế: gradient, mascot, badge, tabs, thẻ SP) ========== -->
-    <section class="vc-flash-sale-container">
+    <section class="vc-flash-sale-container scroll-reveal from-left">
         <div class="vc-flash-sale-header">
             <div class="fs-mascot-wrap">
                 <img src="assets/images/mascot/shipping.png" class="fs-mascot"
@@ -136,15 +136,15 @@
     </section>
 
     <!-- ========== CATEGORIES ========== -->
-    <section class="vc-title">
+    <section class="vc-title scroll-reveal from-bottom">
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/1.webp" alt="Danh mục" />
             <h2>Danh mục sản phẩm</h2>
         </div>
 
-        <div class="category-grid">
-            <div class="category-item" *ngFor="let c of homepageCategories" (click)="onCategoryClick(c)" role="button"
-                tabindex="0">
+        <div class="category-grid" #categoryGrid>
+            <div class="category-item vc_reveal_element" *ngFor="let c of homepageCategories"
+                (click)="onCategoryClick(c)" role="button" tabindex="0">
                 <img [src]="c.icon" [alt]="c.name" />
                 <span>{{ c.name }}</span>
             </div>
@@ -152,7 +152,7 @@
     </section>
 
     <!-- ========== FAVORITE BRANDS (căn lề + nút giống Sản phẩm nổi bật) ========== -->
-    <section class="vc-title vc-favorite-brands">
+    <section class="vc-title vc-favorite-brands scroll-reveal from-right">
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/2.webp" alt="Thương hiệu" />
             <h2>Thương hiệu yêu thích</h2>
@@ -160,8 +160,8 @@
         <div class="brand-slider-nav">
             <button class="brand-nav prev" (click)="scrollBrandPrev()" aria-label="Prev brand">‹</button>
             <div class="brand-slider" #brandSlider>
-                <div class="brand-item" *ngFor="let b of favBrands" (click)="onBrandClick(b)" role="button"
-                    tabindex="0">
+                <div class="brand-item vc_reveal_element" *ngFor="let b of favBrands" (click)="onBrandClick(b)"
+                    role="button" tabindex="0">
                     <div class="brand-card">
                         <img [src]="b.img" [alt]="b.label" />
                     </div>
@@ -176,7 +176,7 @@
     </section>
 
     <!-- ========== FEATURED PRODUCTS ========== -->
-    <section class="vc-title vc-featured-products">
+    <section class="vc-title vc-featured-products scroll-reveal from-bottom">
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/3.webp" alt="Nổi bật" />
             <h2>Sản phẩm nổi bật hôm nay</h2>
@@ -194,7 +194,7 @@
 
                 <!-- Actual products -->
                 <ng-container *ngIf="!isLoadingFeaturedProducts && !isFeaturedProductsError">
-                    <div class="product-card" [class.is-out-of-stock]="product.stock === 0"
+                    <div class="product-card vc_reveal_element" [class.is-out-of-stock]="product.stock === 0"
                         *ngFor="let product of products" (click)="goToProductDetail(product)" role="button"
                         tabindex="0">
                         <!-- Out of Stock Badge -->
@@ -245,7 +245,7 @@
     </section>
 
     <!-- ========== KIỂM TRA SỨC KHỎE (Health Quiz) – Chữ trên, thẻ + ảnh dưới ========== -->
-    <section class="vc-health-quiz-wrap">
+    <section class="vc-health-quiz-wrap scroll-reveal from-left">
         <div class="quiz-banner">
             <div class="quiz-banner-top">
                 <h2 class="quiz-banner-title">Kiểm tra sức khỏe</h2>
@@ -277,7 +277,7 @@
     </section>
 
     <!-- ========== HEALTH BLOG (Góc sức khoẻ) ========== -->
-    <section class="vc-blogs">
+    <section class="vc-blogs scroll-reveal from-right">
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/4.webp" alt="Blog" />
             <h2>Góc sức khỏe <span class="section-sep">|</span><a [routerLink]="['/bai-viet']"
@@ -322,7 +322,7 @@
     </section>
 
     <!-- ========== DISEASE BY GROUP ========== -->
-    <section class="vc-diseases">
+    <section class="vc-diseases scroll-reveal from-bottom">
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/5.webp" alt="Bệnh" />
             <h2>Bệnh <span class="section-sep">|</span><a [routerLink]="['/disease']" class="section-view-all">Xem tất

@@ -2,11 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 @Component({
     selector: 'app-topic',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, LoadingShippingComponent],
     templateUrl: './topic.html',
     styleUrl: './topic.css'
 })

@@ -21,6 +21,8 @@ export interface Promotion {
   start_date?: string;
   end_date?: string;
   status?: string;
+  typeBanner?: string;
+  images?: string[];
 }
 
 export interface PromotionTarget {
@@ -94,7 +96,7 @@ export class PromotionService {
       const result: string[] = [];
       const strCat = String(cat).trim();
       let currentId = nameToId.get(strCat.toLowerCase()) || strCat;
-      
+
       const visited = new Set<string>();
       while (currentId && !visited.has(currentId)) {
         visited.add(currentId);
