@@ -167,14 +167,77 @@
     border-color: #00589f !important;
 }
 
+.reply-item-user {
+    border-left: 6px solid #ffc107 !important;
+    background-color: #fff9e6 !important;
+}
+
+.badge-vc-user {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+    border: 1px solid #ffeeba !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 12px !important;
+    border-radius: 50px !important;
+}
+
+.badge-vc-guest {
+    background-color: #f1f5f9 !important;
+    /* Light Grayish Blue */
+    color: #64748b !important;
+    /* Muted Slate */
+    border: 1px solid #e2e8f0 !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 12px !important;
+    border-radius: 50px !important;
+}
+
 .badge-vc-pharmacist {
-    background-color: #00589f !important;
+    background-color: #00509a !important;
+    /* Dark Blue */
     color: #ffffff !important;
     border: none !important;
-    font-size: 0.7rem;
-    font-weight: 500;
-    padding: 2px 8px !important;
-    border-radius: 4px !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 12px !important;
+    border-radius: 50px !important;
+}
+
+.badge-vc-admin {
+    background-color: #003a6c !important;
+    /* Darker Blue/Gray */
+    color: #ffffff !important;
+    border: none !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 12px !important;
+    border-radius: 50px !important;
+}
+
+.reply-actions {
+    margin-left: auto;
+}
+
+.reply-actions .btn-link {
+    font-weight: 500 !important;
+}
+
+.avatar-vc-pharmacist {
+    background-color: #00589f !important;
+    color: white !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-vc-admin {
+    background-color: #1e293b !important;
+    color: white !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .text-vc-primary {
@@ -274,6 +337,48 @@
     font-size: 1rem;
     /* Số lượt tim to bằng trái tim */
     font-weight: 500;
+}
+
+/* Custom Delete Modal */
+.vc_delete_modal_overlay {
+    z-index: 2500;
+    /* Higher than other modals */
+}
+
+.vc_delete_modal_container {
+    max-width: 280px;
+    border-radius: 12px;
+    animation: vcFadeIn 0.2s ease-out;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.vc_delete_modal_container .vc_modal_body {
+    padding: 1.25rem !important;
+}
+
+.vc_delete_modal_container h5 {
+    font-size: 1.1rem;
+}
+
+.vc_delete_modal_container p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.delete-icon-wrapper i {
+    font-size: 2.5rem !important;
+}
+
+@keyframes vcFadeInUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
 }
 
 .vc_view_details {
@@ -427,6 +532,11 @@
     z-index: 10;
 }
 
+/* Ensure gallery modal is above everything when open */
+.vc_sticky_gallery_wrapper[style*="zIndex: 100002"] {
+    z-index: 2000 !important;
+}
+
 @media (max-width: 991.98px) {
     .vc_sticky_gallery_wrapper {
         position: static;
@@ -538,24 +648,31 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 1200;
+    /* Standard base z-index for modals */
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
 }
 
+.vc_review_modal_overlay {
+    z-index: 1250;
+    /* Slightly higher if needed, but consistent */
+}
+
 .vc_modal_container {
     background: white;
-    width: 100%;
-    max-width: 1050px;
+    width: 95%;
+    max-width: 980px;
     max-height: 85vh;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    min-height: 500px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 88, 159, 0.15);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: modalSlideDown 0.3s ease-out;
+    animation: modalSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes modalSlideDown {
@@ -571,34 +688,42 @@
 }
 
 .vc_modal_header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #00589f;
-    background: #00589f;
-    /* Basic Blue */
+    padding: 8px 24px;
+    background: linear-gradient(135deg, #00589f 0%, #007bff 100%);
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
+    border-bottom: none;
 }
 
 .vc_modal_header h4 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     color: white;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .vc_close_btn {
-    background: none;
+    background: rgba(255, 255, 255, 0.15);
     border: none;
-    font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.8);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    color: white;
     cursor: pointer;
-    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
 }
 
 .vc_close_btn:hover {
-    color: white;
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
 }
 
 .vc_modal_body {
@@ -617,7 +742,7 @@
 .vc_fav_grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 12px;
 }
 
 @media (min-width: 576px) {
@@ -626,29 +751,29 @@
     }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 850px) {
     .vc_fav_grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
 .vc_fav_item {
     display: flex;
     flex-direction: column;
-    gap: 0;
     padding: 0;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    border: 1px solid #edf2f7;
+    border-radius: 14px;
     background: white;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     overflow: hidden;
     height: 100%;
 }
 
 .vc_fav_item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    border-color: #ddd;
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 88, 159, 0.12);
+    border-color: #00589f;
 }
 
 .vc_fav_thumb {
@@ -671,28 +796,31 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 44px;
-    height: 44px;
-    background: rgba(0, 0, 0, 0.6);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 22px;
-    transition: background 0.2s, transform 0.2s;
+    font-size: 18px;
+    transition: all 0.3s ease;
 }
 
 .vc_fav_item:hover .vc_fav_play {
     background: #00589f;
+    border-color: #00589f;
     transform: translate(-50%, -50%) scale(1.1);
 }
 
 .vc_fav_info {
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     flex: 1;
 }
 
@@ -709,7 +837,7 @@
     color: #333;
     text-decoration: none;
     line-height: 1.4;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -775,73 +903,73 @@
 
 /* ================= Video Detail Modal (Quick View) ================= */
 .vc_vd_overlay {
-    z-index: 1100;
-    /* Higher than favorites modal */
+    z-index: 1300;
+    /* Higher than review/favorites modal */
 }
 
 .vc_video_detail_modal {
     background: white;
     width: 95%;
-    max-width: 800px;
+    max-width: 780px;
     max-height: 90vh;
-    border-radius: 16px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    /* Slightly smaller than Handbook modal (92vh) */
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     position: relative;
-    animation: modalSlideUp 0.3s ease-out;
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes modalSlideUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(40px) scale(0.95);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
 .vc_modal_close_edge {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    background: rgba(0, 0, 0, 0.1);
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    background: #f1f5f9;
     border: none;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #444;
+    color: #64748b;
     cursor: pointer;
-    z-index: 10;
-    transition: all 0.2s;
+    z-index: 100;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .vc_modal_close_edge:hover {
-    background: #dc3545;
-    color: white;
+    background: #e2e8f0;
+    color: #1e293b;
+    transform: rotate(90deg);
 }
 
 .vc_vd_header {
-    padding: 15px 50px 15px 20px;
-    background: #E5EEF8;
-    border-bottom: 1px solid #e9ecef;
+    padding: 12px 60px 12px 25px;
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .vc_vd_header h4 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: #00589f;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.4;
 }
 
 .vc_vd_body {
@@ -849,23 +977,26 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    background: #fff;
 }
 
+/* Sidebar Custom Scrollbar */
 .vc_vd_body::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 .vc_vd_body::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #f8fafc;
 }
 
 .vc_vd_body::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: #cbd5e1;
     border-radius: 10px;
+    border: 2px solid #f8fafc;
 }
 
 .vc_vd_body::-webkit-scrollbar-thumb:hover {
-    background: #00589f;
+    background: #94a3b8;
 }
 
 .vc_vd_player_container {
@@ -886,11 +1017,9 @@
 
 .vc_vd_grid_container {
     display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 20px;
-    /* Reduced from 30px */
-    padding: 18px 20px;
-    /* Reduced from 25px */
+    grid-template-columns: 1.6fr 1fr;
+    gap: 25px;
+    padding: 25px;
     background: white;
     align-items: start;
 }
@@ -908,16 +1037,24 @@
 }
 
 .vc_vd_section_title {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #333;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border-bottom: 2px solid #00589f;
-    padding-bottom: 5px;
-    width: fit-content;
+    margin-bottom: 15px;
+    position: relative;
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.vc_vd_section_title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #00589f;
+    border-radius: 2px;
 }
 
 .vc_vd_long_desc {
@@ -945,11 +1082,10 @@
 }
 
 .vc_vd_info_card {
-    background: #E5EEF8;
+    background: #f0f7ff;
     border-radius: 12px;
-    padding: 15px;
-    /* Reduced from 18px */
-    border: 1px solid #D6E4F5;
+    padding: 20px;
+    border: 1px solid #e0f2fe;
 }
 
 .vc_vd_info_card h6 {
@@ -962,19 +1098,21 @@
 .vc_vd_info_item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
+    gap: 2px;
+    margin-bottom: 15px;
 }
 
 .vc_vd_info_item .label {
     font-size: 0.8rem;
-    color: #888;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .vc_vd_info_item .value {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #333;
+    font-size: 0.95rem;
+    color: #0c4a6e;
+    font-weight: 700;
 }
 
 .vc_vd_tag_list {
@@ -1171,4 +1309,51 @@
     /* Darker grey */
     font-size: 0.95rem;
     font-weight: 500;
+}
+
+/* ================= Custom Delete Modal ================= */
+.vc_delete_modal_overlay {
+    z-index: 1060 !important;
+}
+
+.vc_delete_modal_container {
+    max-width: 330px !important;
+    border-radius: 12px;
+    animation: vcFadeIn 0.2s ease-out;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.vc-liked-active {
+    color: #ffc107 !important;
+    /* Vibrant Yellow */
+    font-weight: 500;
+}
+
+.vc_delete_modal_container .vc_modal_body {
+    padding: 1.25rem !important;
+}
+
+.vc_delete_modal_container h5 {
+    font-size: 1.1rem;
+}
+
+.vc_delete_modal_container p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.delete-icon-wrapper i {
+    font-size: 2.5rem !important;
+}
+
+@keyframes vcFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

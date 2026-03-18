@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import type { NoticeItem } from '../../features/accounts/notice/notice';
 
 export interface NoticeApiResponse {
@@ -13,6 +13,12 @@ export interface NoticeApiResponse {
 })
 export class NoticeService {
   private apiUrl = 'http://localhost:3000/api/notices';
+  private refreshSubject = new Subject<void>();
+  refresh$ = this.refreshSubject.asObservable();
+
+  triggerRefresh(): void {
+    this.refreshSubject.next();
+  }
 
   constructor(private http: HttpClient) { }
 

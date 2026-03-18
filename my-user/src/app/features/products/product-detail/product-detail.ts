@@ -12,7 +12,9 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ProductGallery } from '../product-gallery/product-gallery';
 import { ProductInfoSummary } from '../product-info-summary/product-info-summary';
 import { ProductTabsContent } from '../product-tabs-content/product-tabs-content';
+import { RecentlyViewedProducts } from '../recently-viewed-products/recently-viewed-products';
 import { ToastService } from '../../../core/services/toast.service';
+import { NoticeService } from '../../../core/services/notice.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -23,7 +25,8 @@ import { ToastService } from '../../../core/services/toast.service';
     FormsModule,
     ProductGallery,
     ProductInfoSummary,
-    ProductTabsContent
+    ProductTabsContent,
+    RecentlyViewedProducts
   ],
   templateUrl: './product-detail.html',
   styleUrls: ['./product-detail.css', './product-detail-reviews.css'],
@@ -41,6 +44,7 @@ export class ProductDetail implements OnInit {
   healthVideos: any[] = [];
   relatedProducts: any[] = [];
   favorites: any[] = [];
+  recentlyViewedProducts: any[] = [];
 
   // Reviews State
   reviewsData: any = { sku: '', reviews: [] };
@@ -58,6 +62,34 @@ export class ProductDetail implements OnInit {
   selectedConsultationSort: string = 'newest'; // newest, oldest, helpful
   replyingToQuestionId: string | null = null;
   consultationReplyContent: string = '';
+  editingQuestionId: string | null = null;
+  editQuestionContent: string = '';
+
+  // Consultation Reply Edit State
+  editingReplyId: string | null = null;
+  editReplyContent: string = '';
+
+  // Review Edit State
+  editingReviewId: string | null = null;
+  editReviewContent: string = '';
+  editReviewRating: number = 5;
+
+  // Review Reply Edit State
+  editingReviewReplyId: string | null = null;
+  editReviewReplyContent: string = '';
+
+  // Review Reply Add State
+  replyingToReviewId: string | null = null;
+  replyContent: string = '';
+
+  // Custom Delete Modal State
+  showDeleteConfirmModal = false;
+  itemToDelete: any = null;
+  deleteType: 'review' | 'question' | 'reply' | 'review_reply' | null = null;
+  targetQuestionId: string | null = null; // for reply deletion
+
+  // Guest Identification
+  guestId: string = '';
 
   // Video Detail Modal State
   showVideoDetailModal = false;
@@ -74,6 +106,7 @@ export class ProductDetail implements OnInit {
     private buyNowService: BuyNowService,
     readonly authService: AuthService,
     private toastService: ToastService,
+    private noticeService: NoticeService,
     private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
   ) {
@@ -94,7 +127,30 @@ export class ProductDetail implements OnInit {
     this.selectedVideo = video;
     this.showVideoDetailModal = true;
 
-    // 1. Filter related videos safely
+    // Data Hydration: If video from favorites lacks URL or description, fetch full data
+    const vid = video.id || video._id?.$oid || video._id;
+    if (vid && (!video.url || !video.long_description)) {
+      this.productService.getHealthVideoById(String(vid)).subscribe({
+        next: (fullVideo: any) => {
+          if (fullVideo) {
+            // Merge full data into selectedVideo, ensuring we don't lose existing fields
+            this.selectedVideo = { ...this.selectedVideo, ...fullVideo };
+            console.log('[ProductDetail] Hydrated video:', this.selectedVideo.title);
+            this.prepareVideoPlayer(this.selectedVideo);
+          } else {
+            this.prepareVideoPlayer(this.selectedVideo);
+          }
+        },
+        error: (err) => {
+          console.error('[ProductDetail] Hydration error (maybe invalid ID?):', err);
+          this.prepareVideoPlayer(this.selectedVideo);
+        }
+      });
+    } else {
+      this.prepareVideoPlayer(this.selectedVideo);
+    }
+
+    // Filter related videos safely
     const currentPlaylist = video?.classification?.playlist;
     this.modalRelatedVideos = (this.healthVideos || [])
       .filter(v => v && v.url !== video.url)
@@ -107,8 +163,12 @@ export class ProductDetail implements OnInit {
         .slice(0, 5 - this.modalRelatedVideos.length);
       this.modalRelatedVideos = [...this.modalRelatedVideos, ...more];
     }
+  }
 
-    // 2. Generate standard YouTube URL
+  private prepareVideoPlayer(video: any) {
+    if (!video) return;
+
+    // Generate standard YouTube URL
     const videoId = this.extractYoutubeId(video.url);
     if (videoId) {
       const origin = window.location.origin;
@@ -118,10 +178,9 @@ export class ProductDetail implements OnInit {
       this.safeVideoUrl = null;
     }
 
-    document.body.style.overflow = 'hidden';
     this.cdr.detectChanges();
 
-    // Scroll modal body to top when changing video
+    // Scroll modal body to top
     setTimeout(() => {
       const modalBody = document.querySelector('.vc_vd_body');
       if (modalBody) {
@@ -135,6 +194,19 @@ export class ProductDetail implements OnInit {
     this.selectedVideo = null;
     this.safeVideoUrl = null;
     document.body.style.overflow = 'auto'; // Unlock scroll
+  }
+
+  extractYoutubeId(url: string): string | null {
+    if (!url) return null;
+    // Enhanced regex to support shorts and other variety of links
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      return match[2];
+    }
+    // Fallback for direct 11-char ID if URL is just ID or simple path
+    if (url.length === 11) return url;
+    return null;
   }
 
 
@@ -151,6 +223,8 @@ export class ProductDetail implements OnInit {
       }
     });
 
+    this.loadRecentlyViewed();
+
     // 2. Theo dõi tham số URL
     this.route.paramMap.subscribe((params: any) => {
       const slug = params.get('slug');
@@ -158,6 +232,35 @@ export class ProductDetail implements OnInit {
         this.fetchProduct(slug);
       }
     });
+
+    this.guestId = this.getOrCreateGuestId();
+  }
+
+  getOrCreateGuestId(): string {
+    let id = localStorage.getItem('vc_guest_id');
+    if (!id) {
+      id = 'guest_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('vc_guest_id', id);
+    }
+    return id;
+  }
+
+  getCurrentUserIdOrGuest(): string {
+    return this.authService.currentUser()?.user_id || this.guestId;
+  }
+
+  getGenericId(item: any): string {
+    if (!item) return '';
+    const id = item._id || item.id;
+    if (id && typeof id === 'object' && id.$oid) return id.$oid;
+    return String(id || '');
+  }
+
+  /** Helper to safely extract a string ID from a value (string or {$oid: ...}) */
+  private getStringId(val: any): string {
+    if (!val) return '';
+    if (typeof val === 'object' && val.$oid) return String(val.$oid);
+    return String(val);
   }
 
   loadFavorites() {
@@ -207,11 +310,12 @@ export class ProductDetail implements OnInit {
 
   isFavorite(video: any): boolean {
     if (!video) return false;
-    const vid = video.id || video._id?.$oid || video._id;
-    return this.favorites.some(fav =>
-      (fav.url && video.url && fav.url === video.url) ||
-      (fav.id && vid && String(fav.id) === String(vid))
-    );
+    const vid = String(video.id || video._id?.$oid || video._id || '');
+    if (!vid) return false;
+    return this.favorites.some(fav => {
+      const favId = String(fav.id || fav._id?.$oid || fav._id || '');
+      return (fav.url && video.url && fav.url === video.url) || (favId && vid && favId === vid);
+    });
   }
 
   toggleFavorite(video: any, event?: Event) {
@@ -244,19 +348,47 @@ export class ProductDetail implements OnInit {
         }
       });
       // Optimistic local update
-      this.favorites = this.favorites.filter(v => v.id !== video.id);
+      this.favorites = this.favorites.filter(v => {
+        const tid = String(v.id || v._id?.$oid || v._id || '');
+        const vid = String(video.id || video._id?.$oid || video._id || '');
+        return tid !== vid;
+      });
       this.saveFavoritesToLocal(uid, this.favorites);
       this.groupFavorites();
     } else {
       // Add
+      // Trích đoạn logic trong toggleFavorite()
       let categoryName = 'Sức khỏe chung';
-      if (this.categoryPath.length >= 2) {
+      let categorySlug = 'suc-khoe-chung';
+
+      // Priority 1: Danh mục Cấp 2
+      if (this.categoryPath && this.categoryPath.length >= 2) {
         categoryName = this.categoryPath[1].name;
-      } else if (this.categoryPath.length > 0) {
+        categorySlug = this.categoryPath[1].slug || categorySlug;
+      }
+      // Priority 2: Danh mục Cấp 1
+      else if (this.categoryPath && this.categoryPath.length > 0) {
         categoryName = this.categoryPath[0].name;
+        categorySlug = this.categoryPath[0].slug || categorySlug;
+      }
+      // Priority 3: Backend join fallback
+      else if (this.product && this.product.categoryName) {
+        categoryName = this.product.categoryName;
+        categorySlug = this.product.categorySlug || categorySlug;
       }
 
-      const videoToSave = { ...video, categoryName: categoryName };
+      const videoToSave = {
+        id: String(video.id || video._id?.$oid || video._id || ''),
+        title: video.title || '',
+        thumbnail: video.thumbnail || '',
+        url: video.url || '', // Critical: Ensure URL is saved for playback from favorites
+        category: categoryName, // Sync with backend 'category' field
+        categoryName: categoryName,
+        categorySlug: categorySlug,
+        duration: video.duration || '',
+        date: video.date || new Date().toISOString()
+      };
+
       this.productService.addToFavorites(uid, videoToSave).subscribe({
         next: (res: any) => {
           if (res.success) {
@@ -280,15 +412,23 @@ export class ProductDetail implements OnInit {
 
   groupFavorites() {
     const groups: { [key: string]: any[] } = {};
-
     this.favorites.forEach(video => {
+      // Logic gom nhóm: Dựa hoàn toàn vào categoryName đã lưu
       const cat = video.categoryName || 'Sức khỏe chung';
       if (!groups[cat]) {
         groups[cat] = [];
       }
+
+      // Fix broken/missing thumbnails: generate from YouTube URL if needed
+      if (!video.thumbnail || video.thumbnail.includes('About_us_Hero.png')) {
+        const videoId = this.extractYoutubeId(video.url);
+        if (videoId) {
+          video.thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        }
+      }
+
       groups[cat].push(video);
     });
-
     this.favoriteGroups = Object.keys(groups).map(cat => ({
       category: cat,
       videos: groups[cat]
@@ -313,6 +453,7 @@ export class ProductDetail implements OnInit {
         if (res && (res._id || res.id)) {
           this.product = res;
           this.selectedImage = this.product.image;
+          this.trackRecentlyViewed(this.product);
 
           if (this.categories.length > 0) {
             this.buildCategoryPath(this.product.categoryId);
@@ -334,8 +475,6 @@ export class ProductDetail implements OnInit {
           // Fetch FAQs
           this.fetchProductFaqs(pId);
 
-          // Track recently viewed in localStorage (Silent)
-          this.trackRecentlyViewed(this.product);
         }
         this.loading = false;
         this.cdr.detectChanges();
@@ -348,15 +487,6 @@ export class ProductDetail implements OnInit {
     });
   }
 
-  trackRecentlyViewed(product: any) {
-    if (!product) return;
-    let viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-    const pId = product._id?.$oid || product._id;
-    viewed = viewed.filter((p: any) => (p._id?.$oid || p._id) !== pId);
-    viewed.unshift(product);
-    viewed = viewed.slice(0, 6);
-    localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
-  }
 
   fetchRelatedProducts(productId: string) {
     this.productService.getRelatedProducts(productId).subscribe({
@@ -450,6 +580,10 @@ export class ProductDetail implements OnInit {
       keyword = [...new Set([...foundTerms, ...nameWords.slice(0, 2)])].join(' ');
     }
 
+    if (!keyword && categoryName) {
+      keyword = categoryName; // Fallback to category if no keyword found
+    }
+
     console.log('[ProductDetail] Matching v5 (Vàng). Category:', categoryName, 'Keyword:', keyword);
 
     this.productService.getHealthVideos({
@@ -532,12 +666,6 @@ export class ProductDetail implements OnInit {
     return !this.showAllVideos && (this.currVideoIdx > 0);
   }
 
-  extractYoutubeId(url: string): string | null {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  }
 
   getLikeCount(video: any): string {
     if (!video) return '0';
@@ -583,6 +711,14 @@ export class ProductDetail implements OnInit {
 
   canGoPrevRelated(): boolean {
     return (this.relatedProdIdx > 0);
+  }
+
+
+  scrollToSection(sectionId: string) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   buyNowRelated(product: any): void {
@@ -727,30 +863,64 @@ export class ProductDetail implements OnInit {
   }
 
   isConsultationLiked(question: any): boolean {
-    const userId = this.getOrCreateUserId();
-    return question.likes && question.likes.includes(userId);
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId || !question || !Array.isArray(question.likes)) return false;
+    return question.likes.some((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
   }
 
   likeConsultation(question: any) {
-    const userId = this.getOrCreateUserId();
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId) {
+      this.authService.openAuthModal();
+      return;
+    }
+    const qId = this.getGenericId(question);
+    if (!qId) return;
+
+    // Optimistic Update
+    if (!Array.isArray(question.likes)) question.likes = [];
+    const idx = question.likes.findIndex((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+
+    if (idx > -1) {
+      question.likes.splice(idx, 1);
+    } else {
+      question.likes.push(userId);
+    }
+    this.cdr.detectChanges();
+
     this.productService.likeConsultation({
       sku: this.product.sku,
-      questionId: question.id,
+      questionId: qId,
       userId: userId
     }).subscribe({
       next: (data: any) => {
-        this.consultationsData = data;
-        this.cdr.detectChanges();
+        if (data && data.questions) {
+          const updatedQ = data.questions.find((q: any) => this.getGenericId(q) === qId);
+          if (updatedQ) {
+            question.likes = updatedQ.likes;
+            this.cdr.detectChanges();
+          }
+        }
       },
-      error: (err: any) => console.error('Like consultation error', err)
+      error: (err: any) => {
+        console.error('Like consultation error', err);
+        // Revert on error could be added here if needed
+      }
     });
   }
 
   toggleReplyConsultation(question: any) {
-    if (this.replyingToQuestionId === question.id) {
+    const qid = this.getGenericId(question);
+    if (this.replyingToQuestionId === qid) {
       this.replyingToQuestionId = null;
     } else {
-      this.replyingToQuestionId = question.id;
+      this.replyingToQuestionId = qid;
       this.consultationReplyContent = '';
     }
   }
@@ -761,13 +931,21 @@ export class ProductDetail implements OnInit {
       return;
     }
 
+    const user = this.authService.currentUser();
+    const fullname = user ? (user.full_name as string || user.phone as string || '') : 'Khách';
+    const avatar = user ? (user.avatar as string || '') : '';
+
     const payload = {
       sku: this.product.sku,
-      questionId: question.id,
+      questionId: this.getGenericId(question),
       content: this.consultationReplyContent,
-      fullname: '', // Backend will generate guest name
-      isAdmin: false
+      fullname: fullname,
+      user_id: user?.user_id || this.getCurrentUserIdOrGuest(),
+      avatar: avatar,
+      isAdmin: !!user?.['isAdmin']
     };
+
+    console.log('[DEBUG] Submitting consultation reply payload:', payload);
 
     this.productService.replyToConsultation(payload).subscribe({
       next: (data: any) => {
@@ -779,7 +957,167 @@ export class ProductDetail implements OnInit {
       },
       error: (err: any) => {
         console.error('Reply consultation error:', err);
-        this.toastService.showError('Lỗi gửi phản hồi. Vui lòng thử lại.');
+        const msg = err.error?.message || 'Lỗi gửi phản hồi. Vui lòng thử lại.';
+        this.toastService.showError(msg);
+      }
+    });
+  }
+
+  // Reply Edit/Delete Methods
+  startEditReply(question: any, reply: any) {
+    this.editingReplyId = reply._id;
+    this.editReplyContent = reply.content;
+    this.replyingToQuestionId = null; // Close any open reply inputs
+  }
+
+  cancelEditReply() {
+    this.editingReplyId = null;
+    this.editReplyContent = '';
+  }
+
+  updateReply(question: any, reply: any) {
+    if (!this.editReplyContent.trim()) {
+      this.toastService.showError('Vui lòng nhập nội dung phản hồi');
+      return;
+    }
+
+    const payload = {
+      sku: this.product.sku,
+      questionId: this.getGenericId(question),
+      replyId: reply._id,
+      content: this.editReplyContent,
+      userId: this.getCurrentUserIdOrGuest()
+    };
+
+    this.productService.updateConsultationReply(payload).subscribe({
+      next: (data: any) => {
+        this.toastService.showSuccess('Đã cập nhật phản hồi');
+        this.consultationsData = data;
+        this.cancelEditReply();
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Update reply error:', err);
+        this.toastService.showError('Lỗi cập nhật phản hồi');
+      }
+    });
+  }
+
+  isExpertAnswerLiked(question: any): boolean {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId || !question || !Array.isArray(question.answerLikes)) return false;
+    return question.answerLikes.some((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+  }
+
+  likeExpertAnswer(question: any) {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId) {
+      this.authService.openAuthModal();
+      return;
+    }
+
+    const qId = this.getGenericId(question);
+    if (!qId) return;
+
+    // Optimistic Update
+    if (!Array.isArray(question.answerLikes)) question.answerLikes = [];
+    const idx = question.answerLikes.findIndex((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+
+    if (idx > -1) {
+      question.answerLikes.splice(idx, 1);
+    } else {
+      question.answerLikes.push(userId);
+    }
+    this.cdr.detectChanges();
+
+    this.productService.likeConsultationExpertAnswer({
+      sku: this.product.sku,
+      questionId: qId,
+      userId: userId
+    }).subscribe({
+      next: (updatedDoc: any) => {
+        if (updatedDoc && updatedDoc.questions) {
+          const q = updatedDoc.questions.find((item: any) => this.getGenericId(item) === qId);
+          if (q) {
+            question.answerLikes = q.answerLikes;
+            this.cdr.detectChanges();
+          }
+        }
+      },
+      error: (err: any) => {
+        console.error('Like expert answer error:', err);
+      }
+    });
+  }
+
+  confirmDeleteReply(question: any, reply: any) {
+    this.itemToDelete = reply;
+    this.targetQuestionId = this.getGenericId(question);
+    this.deleteType = 'reply';
+    this.showDeleteConfirmModal = true;
+  }
+
+  isReplyLiked(reply: any): boolean {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId || !reply || !Array.isArray(reply.likes)) return false;
+    return reply.likes.some((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+  }
+
+  likeReply(question: any, reply: any) {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId) {
+      this.authService.openAuthModal();
+      return;
+    }
+
+    const qId = this.getGenericId(question);
+    const rId = reply._id;
+    if (!qId || !rId) return;
+
+    // Optimistic Update
+    if (!Array.isArray(reply.likes)) reply.likes = [];
+    const idx = reply.likes.findIndex((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+
+    if (idx > -1) {
+      reply.likes.splice(idx, 1);
+    } else {
+      reply.likes.push(userId);
+    }
+    this.cdr.detectChanges();
+
+    this.productService.likeConsultationReply({
+      sku: this.product.sku,
+      questionId: qId,
+      replyId: rId,
+      userId: userId
+    }).subscribe({
+      next: (updatedDoc: any) => {
+        // Sync with server state if needed, though local sync is often enough for simple Toggles
+        if (updatedDoc && updatedDoc.questions) {
+          const q = updatedDoc.questions.find((item: any) => this.getGenericId(item) === qId);
+          if (q && q.replies) {
+            const r = q.replies.find((item: any) => item._id === rId);
+            if (r) {
+              reply.likes = r.likes;
+              this.cdr.detectChanges();
+            }
+          }
+        }
+      },
+      error: (err: any) => {
+        console.error('Like reply error:', err);
       }
     });
   }
@@ -854,7 +1192,9 @@ export class ProductDetail implements OnInit {
       sku: this.product.sku,
       rating: this.userRating,
       content: this.userReviewContent,
-      fullname
+      fullname,
+      avatar: user?.avatar || '',
+      customer_id: user?.user_id || this.guestId
     };
 
     this.productService.submitReview(reviewData).subscribe({
@@ -862,6 +1202,9 @@ export class ProductDetail implements OnInit {
         this.toastService.showSuccess('Cảm ơn bạn đã đánh giá sản phẩm!');
         this.closeReviewModal();
         this.fetchReviews(this.product.sku); // Refresh list
+        setTimeout(() => {
+          this.noticeService.triggerRefresh(); // Refresh header bell
+        }, 800);
       },
       error: (err: any) => {
         console.error('Submit review error:', err);
@@ -886,6 +1229,7 @@ export class ProductDetail implements OnInit {
       sku: this.product.sku,
       question: this.userReviewContent,
       full_name: fullName,
+      avatar: user?.avatar || ''
     };
     if (user?.user_id) {
       payload['user_id'] = user.user_id;
@@ -896,6 +1240,9 @@ export class ProductDetail implements OnInit {
         this.authService.showHeaderSuccess('Câu hỏi của bạn đã được gửi thành công! VitaCare sẽ phản hồi sớm nhất có thể.');
         this.closeReviewModal();
         this.fetchConsultations(this.product.sku); // Refresh list
+        setTimeout(() => {
+          this.noticeService.triggerRefresh(); // Refresh header bell
+        }, 800);
       },
       error: (err: any) => {
         console.error('Submit question error:', err);
@@ -905,14 +1252,17 @@ export class ProductDetail implements OnInit {
   }
 
   // Reply Handling
-  replyingToReviewId: string | null = null;
-  replyContent: string = '';
-
   toggleReply(review: any) {
-    if (this.replyingToReviewId === review._id) {
+    if (!this.authService.currentUser()) {
+      this.toastService.showError('Vui lòng đăng nhập để phản hồi đánh giá');
+      this.authService.openAuthModal();
+      return;
+    }
+    const rId = this.getGenericId(review);
+    if (this.replyingToReviewId === rId) {
       this.replyingToReviewId = null;
     } else {
-      this.replyingToReviewId = review._id;
+      this.replyingToReviewId = rId;
       this.replyContent = '';
     }
   }
@@ -923,13 +1273,21 @@ export class ProductDetail implements OnInit {
       return;
     }
 
+    const user = this.authService.currentUser();
+    const fullname = user ? (user.full_name as string || user.phone as string || '') : 'Khách';
+    const avatar = user ? (user.avatar as string || '') : '';
+
     const payload = {
       sku: this.product.sku,
-      reviewId: review._id,
+      reviewId: this.getGenericId(review),
       content: this.replyContent,
-      fullname: 'Khách', // Default for now
-      isAdmin: false
+      fullname: fullname,
+      avatar: avatar,
+      isAdmin: !!user?.['isAdmin'],
+      userId: this.getCurrentUserIdOrGuest() // Ensure correct ID extraction
     };
+
+    console.log('[DEBUG] Submitting review reply payload:', payload);
 
     this.productService.replyToReview(payload).subscribe({
       next: (res: any) => {
@@ -940,7 +1298,8 @@ export class ProductDetail implements OnInit {
       },
       error: (err: any) => {
         console.error('Reply error:', err);
-        this.toastService.showError('Lỗi gửi phản hồi. Vui lòng thử lại.');
+        const msg = err.error?.message || 'Lỗi gửi phản hồi. Vui lòng thử lại.';
+        this.toastService.showError(msg);
       }
     });
   }
@@ -966,62 +1325,492 @@ export class ProductDetail implements OnInit {
 
   getProductSlug(product: any): string {
     if (!product) return '';
-    // Ưu tiên _id để điều hướng đáng tin cậy (backend tìm theo ObjectId)
-    if (product._id) {
-      if (typeof product._id === 'string') return product._id;
-      if (product._id.$oid) return product._id.$oid;
-      if (typeof product._id.toString === 'function') return product._id.toString();
-    }
-    if (product.slug && product.slug.trim() !== '') return product.slug;
-    return '';
+    const id = product._id?.$oid || product._id || product.id || '';
+    return product.slug || String(id);
   }
 
-  getOrCreateUserId(): string {
-    let userId = localStorage.getItem('guest_user_id');
-    if (!userId) {
-      userId = `GUEST_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      localStorage.setItem('guest_user_id', userId);
+  getAvatarUrl(item: any): string | null {
+    if (!item || !item.avatar) return null;
+    return item.avatar;
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'K';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     }
-    return userId;
+    return name.substring(0, 2).toUpperCase();
+  }
+
+  isPharmacist(data: any): boolean {
+    if (!data) return false;
+    // Strictly check for the is_admin flag. 
+    // Do NOT check for answeredBy here, as that exists on questions too.
+    return !!data.is_admin;
+  }
+
+  isMember(data: any): boolean {
+    if (!data) return false;
+    const uid = data.user_id || data.userId || '';
+    if (!uid) return false;
+    return !String(uid).startsWith('guest_');
+  }
+
+  isGuest(data: any): boolean {
+    if (!data) return true;
+    const uid = data.user_id || data.userId || '';
+    if (!uid) return true;
+    return String(uid).startsWith('guest_');
+  }
+
+  isAdminRole(reply: any): boolean {
+    // This is now redundant as all officials are Pharmacists, but keeping for structure
+    return false;
+  }
+
+  getOfficialName(data: any): string {
+    if (this.isPharmacist(data)) return 'VitaCare';
+    const name = data.fullname || data.full_name;
+    if (name) return name;
+    if (this.isMember(data)) return 'Thành viên';
+    return 'Khách vãng lai';
+  }
+
+  scrollToTab(tabId: string) {
+    // 1. Switch to the correct tab if necessary (this logic depends on ProductTabsContent implementation)
+    // For now, we assume scrolling to the element is enough or the component handles tab switching via route/fragment
+    const element = document.getElementById(tabId) || document.querySelector(`[data-tab-id="${tabId}"]`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   isLiked(review: any): boolean {
-    const userId = this.getOrCreateUserId();
-    return review.likes && review.likes.includes(userId);
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId || !review || !Array.isArray(review.likes)) return false;
+    return review.likes.some((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
   }
 
   likeReview(review: any) {
-    const userId = this.getOrCreateUserId();
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId) {
+      this.authService.openAuthModal();
+      return;
+    }
+
+    const docId = this.getGenericId(review);
+    if (!docId) return;
+
+    // Optimistic cache update
+    if (!Array.isArray(review.likes)) review.likes = [];
+    const idx = review.likes.findIndex((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+
+    if (idx > -1) {
+      review.likes.splice(idx, 1);
+    } else {
+      review.likes.push(userId);
+    }
+    this.cdr.detectChanges();
 
     this.productService.likeReview({
       sku: this.product.sku,
-      reviewId: review._id,
+      reviewId: docId,
       userId: userId
     }).subscribe({
       next: (updatedDoc: any) => {
-        // Since backend returns the whole updated DOC
         if (updatedDoc && updatedDoc.reviews) {
-          const updatedReview = updatedDoc.reviews.find((r: any) => r._id === review._id);
-          if (updatedReview) {
-            // Update specific review in our local list to trigger UI change
-            const index = this.reviewsData.reviews.findIndex((r: any) => r._id === review._id);
-            if (index !== -1) {
-              this.reviewsData.reviews[index] = updatedReview;
-              // Re-filter if necessary, or just force update
-              this.calculateReviewStats(); // re-calc stats if needed
-              this.cdr.detectChanges();
-            }
+          const remoteRev = updatedDoc.reviews.find((r: any) => this.getGenericId(r) === docId);
+          if (remoteRev && remoteRev.likes) {
+            review.likes = remoteRev.likes;
+            this.cdr.detectChanges();
+          }
+        }
+      },
+      error: (err: any) => console.error('Lỗi khi like đánh giá:', err)
+    });
+  }
 
-            // Also update filteredReviews if it's being displayed there
-            const fIndex = this.filteredReviews.findIndex((r: any) => r._id === review._id);
-            if (fIndex !== -1) {
-              this.filteredReviews[fIndex] = updatedReview;
+  isReviewReplyLiked(reply: any): boolean {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId || !reply || !Array.isArray(reply.likes)) return false;
+    return reply.likes.some((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+  }
+
+  likeReviewReply(review: any, reply: any) {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId) {
+      this.authService.openAuthModal();
+      return;
+    }
+
+    const rId = this.getGenericId(review);
+    const repId = reply._id;
+    if (!rId || !repId) return;
+
+    // Optimistic Update
+    if (!Array.isArray(reply.likes)) reply.likes = [];
+    const idx = reply.likes.findIndex((id: any) => {
+      const idStr = (id && typeof id === 'object' && id.$oid) ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+
+    if (idx > -1) {
+      reply.likes.splice(idx, 1);
+    } else {
+      reply.likes.push(userId);
+    }
+    this.cdr.detectChanges();
+
+    this.productService.likeReviewReply({
+      sku: this.product.sku,
+      reviewId: rId,
+      replyId: repId,
+      userId: userId
+    }).subscribe({
+      next: (updatedDoc: any) => {
+        if (updatedDoc && updatedDoc.reviews) {
+          const r = updatedDoc.reviews.find((item: any) => this.getGenericId(item) === rId);
+          if (r && r.replies) {
+            const rep = r.replies.find((item: any) => item._id === repId);
+            if (rep) {
+              reply.likes = rep.likes;
+              this.cdr.detectChanges();
             }
           }
         }
       },
-      error: (err: any) => console.error('Like error', err)
+      error: (err: any) => {
+        console.error('Like review reply error:', err);
+      }
     });
+  }
+
+  // --- OWNERSHIP CHECKS ---
+  canManageReview(review: any): boolean {
+    const currentUid = this.getCurrentUserIdOrGuest();
+    if (!currentUid || !review) return false;
+    const rUid = this.getStringId(review.customer_id || review.user_id);
+    const isOwner = !!(rUid && currentUid && String(rUid).toLowerCase() === String(currentUid).toLowerCase());
+
+    if (!isOwner && (review.customer_id || review.user_id)) {
+      (review as any)._debugOwnership = { currentUid, rUid };
+    }
+    return isOwner;
+  }
+
+  canManageReviewReply(review: any, reply: any): boolean {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser || !reply) return false;
+
+    const currentUid = currentUser.user_id;
+    const currentName = currentUser.full_name;
+
+    // Check by ID first
+    const repUid = this.getStringId(reply.user_id || reply.userId);
+    if (repUid && currentUid && String(repUid).toLowerCase() === String(currentUid).toLowerCase()) {
+      return true;
+    }
+
+    // Fallback: check by name if ID is missing (common for new replies pending server restart)
+    if (!repUid || repUid === 'null' || repUid === 'undefined') {
+      if (reply.fullname && currentName && reply.fullname === currentName) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // --- REVIEW EDIT/DELETE ---
+
+  startEditReview(review: any) {
+    this.editingReviewId = this.getGenericId(review);
+    this.editReviewContent = review.content;
+    this.editReviewRating = review.rating || 5;
+  }
+
+  cancelEditReview() {
+    this.editingReviewId = null;
+    this.editReviewContent = '';
+  }
+
+  updateReview(review: any) {
+    if (!this.editReviewContent.trim()) {
+      this.toastService.showError('Nội dung đánh giá không được để trống');
+      return;
+    }
+
+    const payload = {
+      sku: this.product.sku,
+      reviewId: this.getGenericId(review),
+      content: this.editReviewContent,
+      rating: this.editReviewRating
+    };
+
+    this.productService.updateReview(payload).subscribe({
+      next: (res: any) => {
+        this.toastService.showSuccess('Cập nhật đánh giá thành công!');
+        this.editingReviewId = null;
+        this.fetchReviews(this.product.sku);
+      },
+      error: (err: any) => {
+        console.error('Update review error:', err);
+        this.toastService.showError('Lỗi cập nhật đánh giá');
+      }
+    });
+  }
+
+  deleteReview(review: any) {
+    this.itemToDelete = review;
+    this.deleteType = 'review';
+    this.showDeleteConfirmModal = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  // --- REVIEW REPLY EDIT/DELETE ---
+  startEditReviewReply(reply: any) {
+    this.editingReviewReplyId = reply._id;
+    this.editReviewReplyContent = reply.content;
+  }
+
+  cancelEditReviewReply() {
+    this.editingReviewReplyId = null;
+    this.editReviewReplyContent = '';
+  }
+
+  updateReviewReply(review: any, reply: any) {
+    if (!this.editReviewReplyContent.trim()) {
+      this.toastService.showError('Nội dung phản hồi không được để trống');
+      return;
+    }
+
+    const payload = {
+      sku: this.product.sku,
+      reviewId: this.getGenericId(review),
+      replyId: reply._id,
+      content: this.editReviewReplyContent,
+      userId: this.getCurrentUserIdOrGuest()
+    };
+
+    this.productService.updateReviewReply(payload).subscribe({
+      next: (res: any) => {
+        this.toastService.showSuccess('Cập nhật phản hồi thành công!');
+        this.editingReviewReplyId = null;
+        this.fetchReviews(this.product.sku);
+      },
+      error: (err: any) => {
+        console.error('Update reply error:', err);
+        const msg = err.error?.message || 'Lỗi cập nhật phản hồi';
+        this.toastService.showError(msg);
+      }
+    });
+  }
+
+  deleteReviewReply(review: any, reply: any) {
+    this.itemToDelete = { review, reply };
+    this.deleteType = 'review_reply';
+    this.showDeleteConfirmModal = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  // --- CONSULTATION EDIT/DELETE ---
+  startEditQuestion(question: any) {
+    this.editingQuestionId = this.getGenericId(question);
+    this.editQuestionContent = question.question;
+  }
+
+  cancelEditQuestion() {
+    this.editingQuestionId = null;
+    this.editQuestionContent = '';
+  }
+
+  updateQuestion(question: any) {
+    if (!this.editQuestionContent.trim()) {
+      this.toastService.showError('Nội dung câu hỏi không được để trống');
+      return;
+    }
+
+    const payload = {
+      sku: this.product.sku,
+      questionId: this.getGenericId(question),
+      question: this.editQuestionContent
+    };
+
+    this.productService.updateConsultation(payload).subscribe({
+      next: (res: any) => {
+        this.toastService.showSuccess('Cập nhật câu hỏi thành công!');
+        this.editingQuestionId = null;
+        this.fetchConsultations(this.product.sku);
+      },
+      error: (err: any) => {
+        console.error('Update question error:', err);
+        this.toastService.showError('Lỗi cập nhật câu hỏi');
+      }
+    });
+  }
+
+  deleteQuestion(question: any) {
+    this.itemToDelete = question;
+    this.deleteType = 'question';
+    this.showDeleteConfirmModal = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  // --- CUSTOM DELETE CONFIRMATION ---
+  closeDeleteModal() {
+    this.showDeleteConfirmModal = false;
+    this.itemToDelete = null;
+    this.deleteType = null;
+    document.body.style.overflow = '';
+  }
+
+  confirmDelete() {
+    if (!this.itemToDelete || !this.deleteType) return;
+    const itemId = this.getGenericId(this.itemToDelete);
+
+    if (this.deleteType === 'review') {
+      this.productService.deleteReview(this.product.sku, itemId).subscribe({
+        next: (res: any) => {
+          this.toastService.showSuccess('Đã xóa đánh giá');
+          this.fetchReviews(this.product.sku);
+          this.closeDeleteModal();
+        },
+        error: (err: any) => {
+          console.error('Delete review error:', err);
+          this.toastService.showError('Lỗi khi xóa đánh giá');
+        }
+      });
+    } else if (this.deleteType === 'question') {
+      this.productService.deleteConsultation(this.product.sku, itemId).subscribe({
+        next: (res: any) => {
+          this.toastService.showSuccess('Đã xóa câu hỏi');
+          this.fetchConsultations(this.product.sku);
+          this.closeDeleteModal();
+        },
+        error: (err: any) => {
+          console.error('Delete question error:', err);
+          this.toastService.showError('Lỗi khi xóa câu hỏi');
+        }
+      });
+    } else if (this.deleteType === 'reply' && this.targetQuestionId) {
+      const userId = String(this.getCurrentUserIdOrGuest() || '');
+      this.productService.deleteConsultationReply(this.product.sku, this.targetQuestionId, itemId, userId).subscribe({
+        next: (res: any) => {
+          this.toastService.showSuccess('Đã xóa phản hồi');
+          this.consultationsData = res;
+          this.closeDeleteModal();
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          console.error('Delete reply error:', err);
+          this.toastService.showError('Lỗi khi xóa phản hồi');
+        }
+      });
+    } else if (this.deleteType === 'review_reply') {
+      const { review, reply } = this.itemToDelete;
+      this.productService.deleteReviewReply(
+        this.product.sku,
+        this.getGenericId(review),
+        reply._id,
+        this.getCurrentUserIdOrGuest()
+      ).subscribe({
+        next: () => {
+          this.toastService.showSuccess('Đã xóa phản hồi');
+          this.fetchReviews(this.product.sku);
+          this.closeDeleteModal();
+        },
+        error: (err: any) => {
+          console.error('Delete reply error:', err);
+          const msg = err.error?.message || 'Lỗi khi xóa phản hồi';
+          this.toastService.showError(msg);
+        }
+      });
+    }
+  }
+
+  trackRecentlyViewed(product: any) {
+    if (!product) return;
+    const user = this.authService.currentUser();
+
+    // Prepare minimal product object as requested
+    const minimalProduct = {
+      id: (product._id?.$oid || product._id || product.id)?.toString(),
+      name: product.name,
+      image: product.image,
+      price: product.price,
+      discount: product.discount,
+      slug: this.getProductSlug(product)
+    };
+
+    if (user) {
+      this.productService.trackProductView(user.user_id, minimalProduct).subscribe({
+        next: () => this.loadRecentlyViewed(),
+        error: (err) => console.error('[ProductDetail] Track view error:', err)
+      });
+    }
+
+    let viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    viewed = viewed.filter((p: any) => (p._id?.$oid || p._id || p.id)?.toString() !== minimalProduct.id);
+    viewed.unshift(product); // Still keep full product in localStorage for guest hydration
+    viewed = viewed.slice(0, 20);
+    localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
+    if (!user) this.loadRecentlyViewed();
+  }
+
+  loadRecentlyViewed() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.productService.getRecentlyViewed(user.user_id).subscribe({
+        next: (res: any) => {
+          this.recentlyViewedProducts = (res?.recentlyViewed || []).slice(0, 6);
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('[ProductDetail] Load recently viewed error:', err)
+      });
+    } else {
+      const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+      this.recentlyViewedProducts = viewed.slice(0, 6);
+    }
+  }
+
+  clearRecentlyViewedHistory() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.productService.clearRecentlyViewedHistory(user.user_id).subscribe({
+        next: () => this.loadRecentlyViewed(),
+        error: (err) => console.error('[ProductDetail] Clear error:', err)
+      });
+    }
+    localStorage.removeItem('recentlyViewed');
+    if (!user) this.loadRecentlyViewed();
+  }
+
+  removeRecentlyViewedProduct(product: any) {
+    if (!product) return;
+    const user = this.authService.currentUser();
+    const productId = (product._id?.$oid || product._id || product.id)?.toString();
+
+    if (user) {
+      this.productService.deleteRecentlyViewedProduct(user.user_id, productId).subscribe({
+        next: () => this.loadRecentlyViewed(),
+        error: (err) => console.error('[ProductDetail] Remove error:', err)
+      });
+    }
+
+    let viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    viewed = viewed.filter((p: any) => (p._id?.$oid || p._id || p.id)?.toString() !== productId);
+    localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
+    if (!user) this.loadRecentlyViewed();
   }
 
 }

@@ -18,7 +18,10 @@ export class ProductInfoSummary {
   @Input() product: any;
   @Input() categoryPath: any[] = [];
   @Input() quantity: number = 1;
+  @Input() reviewStats: any = { average: 0, total: 0 };
+  @Input() consultationsData: any = { questions: [] };
   @Output() quantityChange = new EventEmitter<number>();
+  @Output() tabScroll = new EventEmitter<string>();
 
   constructor(
     private cartService: CartService,
@@ -96,6 +99,11 @@ export class ProductInfoSummary {
     // Đóng popup trước khi chuyển hướng
     this.quickViewService.close();
     this.router.navigate(['/chinh-sach/giay-phep-kinh-doanh']);
+  }
+
+  onTabScroll(tabId: string, event: Event): void {
+    event.preventDefault();
+    this.tabScroll.emit(tabId);
   }
 
   getCurrentPrice(): number {

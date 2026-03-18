@@ -55,7 +55,8 @@ export class BuyNowService {
 
         this.items = [item];
         // Tính toán tạm subtotal/giảm giá cho luồng Mua ngay
-        const subtotal = (item.price + item.discount) * item.quantity;
+        // item.price là giá gốc, item.discount là số tiền giảm
+        const subtotal = item.price * item.quantity;
         const directDiscount = item.discount * item.quantity;
         const voucherDiscount = 0;
         this.summary = {
@@ -96,8 +97,9 @@ export class BuyNowService {
         if (summary) {
             this.summary = summary;
         } else {
+            // p.price là giá gốc, p.discount là số tiền giảm
             const subtotal = mapped.reduce(
-                (s, i) => s + (i.price + i.discount) * i.quantity,
+                (s, i) => s + i.price * i.quantity,
                 0,
             );
             const directDiscount = mapped.reduce(

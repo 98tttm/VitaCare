@@ -1,0 +1,52 @@
+[{
+  "_id": {
+    "$oid": "690b1361ca42a26c89d2e87a"
+  },
+  "promotion_id": "PROMO_WELCOME",
+  "user_id": [
+    "CUS000001",
+    "CUS000003"
+  ],
+  "order_id": [],
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "690b1361ca42a26c89d2e87b"
+  },
+  "promotion_id": "PROMO_NY2026",
+  "user_id": [
+    "CUS000002",
+    "CUS000001",
+    "CUS000024"
+  ],
+  "order_id": [
+    "ORD0004",
+    "ORD0005"
+  ],
+  "isActive": true
+},
+{
+  "_id": "usage_77323",
+  "promotion_id": "PROMO_SHIPFREE",
+  "user_id": [
+    "CUS000013"
+  ],
+  "order_id": [
+    "ORD0001"
+  ],
+  "isActive": true
+},
+{
+  "_id": "usage_64009",
+  "promotion_id": "PROMO_FLASH",
+  "user_id": [
+    "CUS000021",
+    "CUS000015"
+  ],
+  "order_id": [
+    "ORD0002",
+    "ORD0003"
+  ],
+  "isActive": true
+}]

@@ -13,7 +13,8 @@
     padding: 0 12px;
     border-radius: 4px;
     width: fit-content;
-    margin-top: -40px;
+    margin-top: -30px;
+    /* Adjusted from -40px to prevent overflow */
     margin-bottom: 12px;
     height: 26px;
     line-height: 1;

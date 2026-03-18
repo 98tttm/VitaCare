@@ -39,7 +39,7 @@
     font-family: 'Be Vietnam Pro', 'Nunito', sans-serif;
     background: var(--color-bg-light);
     min-height: 100vh;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
     padding-bottom: 40px;
 }
 
@@ -97,31 +97,7 @@
     line-height: 1.6;
 }
 
-/* BREADCRUMB */
-.ht-breadcrumb {
-    background: var(--vc-neutral-10);
-    border-bottom: 1px solid var(--vc-neutral-30);
-    padding: 12px 24px;
-    font-size: 13px;
-    color: var(--vc-neutral-70);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.ht-breadcrumb span {
-    color: var(--vc-neutral-50);
-}
-
-.ht-breadcrumb a {
-    color: var(--vc-main);
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.ht-breadcrumb a:hover {
-    text-decoration: underline;
-}
+/* BREADCRUMB - Uses shared .breadcrumb-vc classes */
 
 /* QUIZ LIST */
 .ht-list-container {
@@ -147,14 +123,14 @@
 
 .ht-list-intro p {
     font-size: 14px;
-    color: var(--vc-neutral-80);
+    color: var(--vc-main);
     line-height: 1.7;
     margin-bottom: 8px;
 }
 
 .ht-disclaimer {
     font-size: 13px;
-    color: var(--vc-neutral-80);
+    color: var(--vc-main);
     font-style: italic;
     padding: 12px 16px;
     background: var(--vc-main-bg);
@@ -216,16 +192,36 @@
     margin-bottom: 6px;
 }
 
+.ht-card-history {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    color: var(--vc-neutral-60);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.ht-card-history:hover {
+    color: var(--vc-main);
+    background: var(--vc-main-bg);
+}
+
 .ht-card-title {
     font-size: 14px;
     font-weight: 700;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
     line-height: 1.4;
 }
 
 .ht-card-meta {
     font-size: 12px;
-    color: var(--vc-neutral-60);
+    color: var(--vc-main);
     margin-top: 6px;
 }
 
@@ -260,7 +256,7 @@
 .ht-quiz-header h2 {
     font-size: 22px;
     font-weight: 800;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
     margin-bottom: 4px;
 }
 
@@ -288,7 +284,7 @@
 
 .ht-progress-label {
     font-size: 13px;
-    color: var(--vc-neutral-80);
+    color: var(--vc-main);
     text-align: right;
     margin-bottom: 24px;
 }
@@ -328,7 +324,7 @@
 .ht-question-text {
     font-size: 17px;
     font-weight: 600;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
     line-height: 1.5;
     margin-bottom: 20px;
 }
@@ -345,7 +341,7 @@
     border: 2px solid var(--vc-neutral-30);
     cursor: pointer;
     font-size: 15px;
-    color: var(--vc-neutral-90);
+    color: var(--vc-main);
     background: var(--vc-neutral-10);
     transition: all 0.15s ease;
     text-align: left;
@@ -386,7 +382,7 @@
 .ht-btn-outline {
     background: var(--vc-neutral-10);
     border: 2px solid var(--vc-neutral-30);
-    color: var(--vc-neutral-80);
+    color: var(--vc-main);
 }
 
 .ht-btn-outline:hover {
@@ -426,7 +422,7 @@
 
 .ht-result-header h2 {
     font-size: 16px;
-    color: var(--vc-neutral-70);
+    color: var(--vc-main);
     margin-bottom: 8px;
 }
 
@@ -476,7 +472,7 @@
 .ht-result-box h3 {
     font-size: 16px;
     font-weight: 700;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -485,14 +481,14 @@
 
 .ht-result-box p {
     font-size: 14px;
-    color: var(--vc-neutral-80);
+    color: var(--vc-main);
     line-height: 1.7;
     margin-bottom: 8px;
 }
 
 .ht-result-note {
     font-size: 13px;
-    color: var(--vc-neutral-80);
+    color: var(--vc-main);
     font-style: italic;
     margin-top: 16px;
     padding: 12px;
@@ -503,7 +499,7 @@
 /* HIGHLIGHTS in description */
 .highlight-disease {
     font-weight: 700;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
 }
 
 .highlight-risk {
@@ -578,7 +574,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 24px;
     font-weight: 800;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
 }
 
 .kw-wrap {
@@ -593,7 +589,7 @@
     border-radius: 10px;
     font-family: 'Arimo', sans-serif;
     font-size: 14px;
-    color: var(--vc-neutral-100);
+    color: var(--vc-main);
     outline: none;
     background: var(--vc-neutral-20);
     transition: border-color .2s, box-shadow .2s;

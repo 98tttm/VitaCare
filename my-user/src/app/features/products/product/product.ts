@@ -12,6 +12,7 @@ import { ProductFilter } from '../product-filter/product-filter';
 import { FeatureCategories } from '../feature-categories/feature-categories';
 import { ProductList } from '../product-list/product-list';
 import { getLocalIcon } from '../../../shared/header/header-icons';
+import { AuthService } from '../../../core/services/auth.service';
 import { RecentlyViewedProducts } from '../recently-viewed-products/recently-viewed-products';
 import { RecentlyViewedBlogs } from '../../blogs/recently-viewed-blogs/recently-viewed-blogs';
 import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
@@ -110,7 +111,8 @@ export class Product implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private cdr: ChangeDetectorRef,
-        private ngZone: NgZone
+        private ngZone: NgZone,
+        readonly authService: AuthService
     ) {
         const nav = this.router.getCurrentNavigation();
         if (nav && nav.trigger === 'popstate') {
@@ -610,24 +612,50 @@ export class Product implements OnInit, OnDestroy {
 
     trackRecentlyViewed(product: any) {
         if (!product) return;
-        let viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+        const user = this.authService.currentUser();
+        const productId = (product._id?.$oid || product._id || product.id)?.toString();
 
-        // So khớp ID chắc chắn
-        const productId = (product._id?.$oid || product._id)?.toString();
+        if (user) {
+            const minimalProduct = {
+                id: productId,
+                name: product.name,
+                image: product.image,
+                price: product.price,
+                discount: product.discount,
+                slug: product.slug || productId
+            };
+            this.productService.trackProductView(user.user_id, minimalProduct).subscribe({
+                next: () => this.loadRecentlyViewed(),
+                error: (err) => console.error('[Product] Track view error:', err)
+            });
+        }
+
+        let viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
         viewed = viewed.filter((p: any) => {
-            const pid = (p._id?.$oid || p._id)?.toString();
+            const pid = (p._id?.$oid || p._id || p.id)?.toString();
             return pid !== productId;
         });
 
         viewed.unshift(product);
-        viewed = viewed.slice(0, 20); // Lưu tối đa 20 sản phẩm
+        viewed = viewed.slice(0, 20);
         localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
-        this.loadRecentlyViewed();
+        if (!user) this.loadRecentlyViewed();
     }
 
     loadRecentlyViewed() {
-        const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-        this.recentlyViewedProducts = viewed.slice(0, 6); // Only show 6
+        const user = this.authService.currentUser();
+        if (user) {
+            this.productService.getRecentlyViewed(user.user_id).subscribe({
+                next: (res: any) => {
+                    this.recentlyViewedProducts = (res?.recentlyViewed || []).slice(0, 6);
+                    this.cdr.detectChanges();
+                },
+                error: (err) => console.error('[Product] Load recently viewed error:', err)
+            });
+        } else {
+            const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+            this.recentlyViewedProducts = viewed.slice(0, 6);
+        }
     }
 
     loadRecentlyViewedBlogs() {
@@ -670,20 +698,37 @@ export class Product implements OnInit, OnDestroy {
 
     clearRecentlyViewed(e?: Event) {
         if (e) e.stopPropagation();
+        const user = this.authService.currentUser();
+        if (user) {
+            this.productService.clearRecentlyViewedHistory(user.user_id).subscribe({
+                next: () => this.loadRecentlyViewed(),
+                error: (err) => console.error('[Product] Clear recently viewed error:', err)
+            });
+        }
         localStorage.removeItem('recentlyViewed');
-        this.loadRecentlyViewed();
+        if (!user) this.loadRecentlyViewed();
     }
 
     removeRecentlyViewedProduct(product: any) {
         if (!product) return;
+        const user = this.authService.currentUser();
+        const productId = (product._id?.$oid || product._id || product.id)?.toString();
+
+        if (user) {
+            this.productService.deleteRecentlyViewedProduct(user.user_id, productId).subscribe({
+                next: () => this.loadRecentlyViewed(),
+                error: (err) => console.error('[Product] Remove recently viewed error:', err)
+            });
+        }
+
+        // Always update localStorage for guest/session consistency
         let viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-        const productId = (product._id?.$oid || product._id)?.toString();
         viewed = viewed.filter((p: any) => {
-            const pid = (p._id?.$oid || p._id)?.toString();
+            const pid = (p._id?.$oid || p._id || p.id)?.toString();
             return pid !== productId;
         });
         localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
-        this.loadRecentlyViewed();
+        if (!user) this.loadRecentlyViewed();
     }
 
     loadMore() {

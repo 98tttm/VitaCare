@@ -91,51 +91,51 @@ export const routes: Routes = [
     loadComponent: () => import('./features/pages/store-system/store-system').then(m => m.StoreSystemComponent),
   },
   {
-    path: 'chinh-sach/gioi-thieu',
+    path: 'policy/gioi-thieu',
     loadComponent: () => import('./features/policies/policy/policy').then(m => m.Policy),
   },
   {
-    path: 'chinh-sach/giay-phep-kinh-doanh',
+    path: 'policy/giay-phep-kinh-doanh',
     loadComponent: () => import('./features/policies/business-license/business-license').then(m => m.BusinessLicense),
   },
   {
-    path: 'chinh-sach/quy-che-hoat-dong',
+    path: 'policy/quy-che-hoat-dong',
     loadComponent: () => import('./features/policies/regulation/regulation').then(m => m.Regulation),
   },
   {
-    path: 'chinh-sach/chinh-sach-dat-coc',
+    path: 'policy/chinh-sach-dat-coc',
     loadComponent: () => import('./features/policies/deposit-policy/deposit-policy').then(m => m.DepositPolicy),
   },
   {
-    path: 'chinh-sach/chinh-sach-noi-dung',
+    path: 'policy/chinh-sach-noi-dung',
     loadComponent: () => import('./features/policies/content-policy/content-policy').then(m => m.ContentPolicy),
   },
   {
-    path: 'chinh-sach/chinh-sach-doi-tra',
+    path: 'policy/chinh-sach-doi-tra',
     loadComponent: () => import('./features/policies/return-policy/return-policy').then(m => m.ReturnPolicy),
   },
   {
-    path: 'chinh-sach/chinh-sach-giao-hang',
+    path: 'policy/chinh-sach-giao-hang',
     loadComponent: () => import('./features/policies/delivery-policy/delivery-policy').then(m => m.DeliveryPolicy),
   },
   {
-    path: 'chinh-sach/chinh-sach-bao-mat',
+    path: 'policy/chinh-sach-bao-mat',
     loadComponent: () => import('./features/policies/privacy-policy/privacy-policy').then(m => m.PrivacyPolicy),
   },
   {
-    path: 'chinh-sach/chinh-sach-thanh-toan',
+    path: 'policy/chinh-sach-thanh-toan',
     loadComponent: () => import('./features/policies/payment-policy/payment-policy').then(m => m.PaymentPolicy),
   },
   {
-    path: 'chinh-sach/chinh-sach-bao-mat-du-lieu',
+    path: 'policy/chinh-sach-bao-mat-du-lieu',
     loadComponent: () => import('./features/policies/data-privacy-policy/data-privacy-policy').then(m => m.DataPrivacyPolicy),
   },
   {
-    path: 'chinh-sach/thong-tin-trung-tam-bao-hanh',
+    path: 'policy/thong-tin-trung-tam-bao-hanh',
     loadComponent: () => import('./features/policies/warranty-centers/warranty-centers').then(m => m.WarrantyCenters),
   },
   {
-    path: 'chinh-sach/dieu-khoan-su-dung',
+    path: 'policy/dieu-khoan-su-dung',
     loadComponent: () => import('./features/policies/terms-of-use/terms-of-use').then(m => m.TermsOfUse),
   },
   {
@@ -143,27 +143,27 @@ export const routes: Routes = [
     loadComponent: () => import('./features/pages/about/about').then(m => m.About),
   },
   {
-    path: 'bai-viet/danh-muc/:categorySlug/:subcategorySlug',
+    path: 'blog/danh-muc/:categorySlug/:subcategorySlug',
     loadComponent: () => import('./features/blogs/blog-sub-category/blog-sub-category').then(m => m.BlogSubCategory),
   },
   {
-    path: 'chuyen-de/:specialtySlug',
+    path: 'blog/chuyen-de/:specialtySlug',
     loadComponent: () => import('./features/blogs/topic-category/topic-category').then(m => m.TopicCategory),
   },
   {
-    path: 'bai-viet/danh-muc/:categorySlug',
+    path: 'blog/danh-muc/:categorySlug',
     loadComponent: () => import('./features/blogs/blog-category/blog-category').then(m => m.BlogCategory),
   },
   {
-    path: 'chuyen-de',
+    path: 'topic',
     loadComponent: () => import('./features/blogs/topic/topic').then(m => m.Topic),
   },
   {
-    path: 'bai-viet/:slug',
+    path: 'blog/:slug',
     loadComponent: () => import('./features/blogs/blog-detail/blog-detail').then(m => m.BlogDetail),
   },
   {
-    path: 'bai-viet',
+    path: 'blog',
     loadComponent: () => import('./features/blogs/blog/blog').then(m => m.Blog),
   },
   {
@@ -172,7 +172,7 @@ export const routes: Routes = [
   },
   {
     // Chi tiết bệnh: nhận cả id hoặc slug (backend hỗ trợ cả hai)
-    path: 'benh/:id',
+    path: 'disease/:id',
     loadComponent: () => import('./features/healthcare/disease-details/disease-details').then(m => m.DiseaseDetails),
   },
   { path: '**', redirectTo: '' },

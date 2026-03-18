@@ -18,12 +18,16 @@
         <span class="vc_meta_item">{{ product.sku || '00039497' }}</span>
         <span class="vc_meta_divider"></span>
         <span class="vc_meta_item text-warning fw-bold">
-            {{ product.rating || '4.9' }} <i class="bi bi-star-fill small"></i>
+            {{ (reviewStats.total > 0 ? reviewStats.average : 0) }} <i class="bi bi-star-fill small"></i>
         </span>
         <span class="vc_meta_divider"></span>
-        <a href="#" class="vc_meta_link">107 đánh giá</a>
+        <a href="#" class="vc_meta_link" (click)="onTabScroll('reviews', $event)">
+            {{ reviewStats.total > 0 ? reviewStats.total + ' đánh giá' : 'Chưa có đánh giá' }}
+        </a>
         <span class="vc_meta_divider"></span>
-        <a href="#" class="vc_meta_link">263 bình luận</a>
+        <a href="#" class="vc_meta_link" (click)="onTabScroll('questions', $event)">
+            {{ consultationsData.questions?.length || 0 }} bình luận
+        </a>
     </div>
 
     <!-- Price -->
@@ -115,8 +119,16 @@
         </div>
         <div class="vc_spec_row">
             <div class="vc_spec_label">Danh mục</div>
-            <div class="vc_spec_value text-primary fw-bold">{{ categoryPath[categoryPath.length-1]?.name || 'Vitamin &
-                Khoáng chất' }}</div>
+            <div class="vc_spec_value">
+                <a *ngIf="categoryPath && categoryPath.length > 0; else noCategory"
+                    [routerLink]="['/category', categoryPath[categoryPath.length-1].slug]"
+                    class="text-primary fw-bold text-decoration-none">
+                    {{ categoryPath[categoryPath.length-1].name }}
+                </a>
+                <ng-template #noCategory>
+                    <span class="text-primary fw-bold">Vitamin & Khoáng chất</span>
+                </ng-template>
+            </div>
         </div>
         <div class="vc_spec_row">
             <div class="vc_spec_label">Số đăng ký</div>

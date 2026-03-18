@@ -1,10 +1,128 @@
-[
-    {
-        "_id": "690b1361ca42a26c89d2e86a",
-        "promotion_id": "PROMO_CAT20",
-        "target_type": "Category",
-        "target_ref": [
-            "2fa507577edaa8f29eac706d"
-        ]
-    }
-]
+[{
+  "_id": "690b1361ca42a26c89d2e86a",
+  "promotion_id": "PROMO_CAT20",
+  "target_type": "Category",
+  "target_ref": [
+    "2fa507577edaa8f29eac706d"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b8fc7d9cd884bfc1abac04"
+  },
+  "promotion_id": "69b65e360f2548ff269bf201",
+  "__v": 0,
+  "code": "TRN-DXS",
+  "createdAt": {
+    "$date": "2026-03-17T07:02:21.233Z"
+  },
+  "name": "Tết Rạng Ngời - Đón Xuân Sang",
+  "status": "ongoing",
+  "target_ref": "",
+  "target_type": [
+    "customer"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-17T07:13:40.577Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b8fcac9cd884bfc1abac0b"
+  },
+  "promotion_id": "69b65ff20f2548ff269bf207",
+  "__v": 0,
+  "code": "YEAR2026",
+  "createdAt": {
+    "$date": "2026-03-17T07:03:08.304Z"
+  },
+  "name": "Năm Mã bứt phá - Sức khỏe Thăng hoa",
+  "status": "ongoing",
+  "target_ref": "",
+  "target_type": [
+    "product"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-17T07:03:08.304Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b8ff9b9cd884bfc1abac45"
+  },
+  "promotion_id": "69b661c80f2548ff269bf29e",
+  "__v": 0,
+  "code": "VALENTINE",
+  "createdAt": {
+    "$date": "2026-03-17T07:15:39.059Z"
+  },
+  "name": "Tỏ tình ngay - Ngàn Deal Mê Say",
+  "status": "active",
+  "target_ref": "0c1ee2406efb77aba808c9a8",
+  "target_type": [
+    "category"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-17T07:16:40.456Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b8ffb59cd884bfc1abac4c"
+  },
+  "promotion_id": "69b663690f2548ff269bf2b3",
+  "__v": 0,
+  "code": "DEAL002",
+  "createdAt": {
+    "$date": "2026-03-17T07:16:05.249Z"
+  },
+  "name": "Yêu là phải nói - Deal là phải săn",
+  "status": "active",
+  "target_ref": "69b6615d0f2548ff269bf294",
+  "target_type": [
+    "product"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-17T07:16:22.102Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b8fff79cd884bfc1abac61"
+  },
+  "promotion_id": "69b663c90f2548ff269bf2b9",
+  "__v": 0,
+  "code": "TA_001",
+  "createdAt": {
+    "$date": "2026-03-17T07:17:11.877Z"
+  },
+  "name": "Tri ân khách hàng",
+  "status": "active",
+  "target_ref": "",
+  "target_type": [
+    "customer"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-17T07:17:11.877Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b8fffd9cd884bfc1abac68"
+  },
+  "promotion_id": "69b662bb0f2548ff269bf2ad",
+  "__v": 0,
+  "code": "HEALTH",
+  "createdAt": {
+    "$date": "2026-03-17T07:17:17.793Z"
+  },
+  "name": "Quà sức khỏe cho ba mẹ",
+  "status": "active",
+  "target_ref": "",
+  "target_type": [
+    "customer"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-17T07:17:17.793Z"
+  }
+}]

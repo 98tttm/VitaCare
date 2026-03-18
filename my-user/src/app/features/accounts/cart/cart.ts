@@ -41,6 +41,7 @@ export class Cart implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private categoryService = inject(CategoryService);
   private cartUpdatedSub?: Subscription;
+  private lastFocusNonce: number | null = null;
 
   cart = signal<CartModel | null>(null);
   cartSelectedIds = signal<Set<string>>(new Set());
@@ -110,18 +111,41 @@ export class Cart implements OnInit, OnDestroy {
     return Math.max(0, this.selectedTotalPrice() - this.voucherDiscount());
   });
 
+  /** Tránh gọi API giỏ hàng lặp lại khi sidebar đã mở và user không đổi. */
+  private lastOpenState = false;
+  private lastUserId: string | null = null;
+
   constructor() {
     effect(() => {
       const open = this.cartSidebar.isOpen();
       const user = this.authService.currentUser();
-      if (open && user && (user as any).user_id) {
-        this.loadCart((user as any).user_id as string);
-      } else if (open && !user?.user_id) {
-        this.loadGuestCart();
-      } else if (!open) {
+      const userId = user && (user as any).user_id ? String((user as any).user_id) : null;
+
+      // Chỉ load khi chuyển từ đóng → mở hoặc khi userId thay đổi.
+      if (open && !this.lastOpenState) {
+        if (userId) {
+          this.loadCart(userId);
+        } else {
+          this.loadGuestCart();
+        }
+      } else if (open && userId && userId !== this.lastUserId) {
+        this.loadCart(userId);
+      } else if (!open && this.lastOpenState) {
         this.cart.set(null);
         this.cartSelectedIds.set(new Set());
       }
+
+      this.lastOpenState = open;
+      this.lastUserId = userId;
+    });
+
+    effect(() => {
+      const open = this.cartSidebar.isOpen();
+      const req = this.cartSidebar.focusRequest();
+      if (!open || !req?.itemId) return;
+      if (this.lastFocusNonce === req.nonce) return;
+      this.lastFocusNonce = req.nonce;
+      this.focusCartItem(req.itemId);
     });
   }
 
@@ -165,6 +189,41 @@ export class Cart implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.cartUpdatedSub?.unsubscribe();
+  }
+
+  private focusCartItem(itemId: string): void {
+    const id = String(itemId || '').trim();
+    if (!id) return;
+
+    // Tick đúng item đó ngay lập tức (thay vì "chọn tất cả" mặc định).
+    this.cartSelectedIds.set(new Set([id]));
+    this.cdr.markForCheck();
+
+    // Đợi render xong rồi scroll tới item (có retry vì cart có thể load async).
+    const safeAttr = this.escapeAttrValue(id);
+    const selector = `.cart-sidebar-panel [data-cart-item-id="${safeAttr}"]`;
+    let tries = 0;
+    const tryScroll = () => {
+      tries += 1;
+      const el = document.querySelector(selector) as HTMLElement | null;
+      if (el) {
+        try {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch {
+          el.scrollIntoView();
+        }
+        return;
+      }
+      if (tries < 8) {
+        setTimeout(tryScroll, 60);
+      }
+    };
+    requestAnimationFrame(() => setTimeout(tryScroll, 0));
+  }
+
+  private escapeAttrValue(v: string): string {
+    // tối thiểu để nhét vào CSS attribute selector trong dấu "
+    return v.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   }
 
   close(): void {

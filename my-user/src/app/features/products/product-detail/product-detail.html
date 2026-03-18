@@ -35,7 +35,9 @@
                     <div class="col-lg-7">
                         <div class="h-100">
                             <app-product-info-summary [product]="product" [categoryPath]="categoryPath"
-                                [quantity]="quantity" (quantityChange)="quantity = $event">
+                                [quantity]="quantity" [reviewStats]="reviewStats"
+                                [consultationsData]="consultationsData" (quantityChange)="quantity = $event"
+                                (tabScroll)="scrollToTab($event)">
                             </app-product-info-summary>
                         </div>
                     </div>
@@ -106,7 +108,7 @@
                     <button class="btn btn-outline-danger fw-bold" style="border-radius: 2px;"
                         (click)="openFavoritesModal()">
                         <i class="bi bi-heart-fill me-1"></i>
-                        Cẩm nang hữu ích ({{ favorites.length }})
+                        Cẩm nang ({{ favorites.length }})
                     </button>
                 </div>
             </div>
@@ -146,17 +148,34 @@
                                 </div>
                                 <h6 class="product-name" [title]="item.name">{{ item.name }}</h6>
                                 <div class="price-section">
-                                    <div class="current-price">{{ (item.price - (item.discount || 0)) | number:'1.0-0'
-                                        }}đ
-                                    </div>
-                                    <div class="old-price" *ngIf="item.discount > 0">{{ item.price | number:'1.0-0' }}đ
-                                    </div>
+                                    <ng-container *ngIf="item.price > 0">
+                                        <div class="discount-badge" *ngIf="item.discount > 0">
+                                            -{{ (item.discount / item.price * 100) | number:'1.0-0' }}%
+                                        </div>
+                                        <div class="current-price">{{ (item.price - (item.discount || 0)) |
+                                            number:'1.0-0' }}đ
+                                        </div>
+                                        <div class="old-price" *ngIf="item.discount > 0">{{ item.price | number:'1.0-0'
+                                            }}đ
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="item.price === 0">
+                                        <div class="current-price text-muted" style="font-size: 0.9rem;">Cần tư vấn
+                                            từ dược sĩ</div>
+                                    </ng-container>
                                 </div>
                             </a>
                             <div class="button-group">
-                                <button class="btn-cart" (click)="addRelatedToCart(item, $event)"><i
-                                        class="bi bi-cart-plus-fill"></i></button>
-                                <button class="btn-buy" (click)="buyNowRelated(item)">Mua ngay</button>
+                                <ng-container *ngIf="item.price > 0">
+                                    <button class="btn-cart" (click)="addRelatedToCart(item, $event)"><i
+                                            class="bi bi-cart-plus-fill"></i></button>
+                                    <button class="btn-buy" (click)="buyNowRelated(item)">Mua ngay</button>
+                                </ng-container>
+                                <ng-container *ngIf="item.price === 0">
+                                    <button class="btn-buy w-100 fw-bold border-0 text-white"
+                                        style="background-color: #00589f;" routerLink="/consultation">Tư vấn
+                                        ngay</button>
+                                </ng-container>
                             </div>
                         </div>
                     </div>
@@ -191,7 +210,7 @@
     </div>
 
     <!-- Review Section -->
-    <div *ngIf="!loading && product" class="review-section mt-0 mb-3">
+    <div *ngIf="!loading && product" id="reviews" class="review-section mt-0 mb-3">
         <div class="container">
             <div class="card border-0 shadow-sm px-4 pt-4 pb-2 rounded-4">
                 <h4 class="fw-bold mb-4">Đánh giá sản phẩm ({{ reviewStats.total }} đánh giá)</h4>
@@ -241,8 +260,10 @@
                     <div class="review-item mb-3 pb-2" *ngFor="let review of filteredReviews">
                         <div class="d-flex align-items-start gap-3">
                             <div class="avatar rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold"
-                                style="width: 45px; height: 45px; min-width: 45px;">
-                                {{ review.fullname.substring(0, 2).toUpperCase() }}
+                                style="width: 45px; height: 45px; min-width: 45px; overflow: hidden;">
+                                <img *ngIf="getAvatarUrl(review)" [src]="getAvatarUrl(review)"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                <span *ngIf="!getAvatarUrl(review)">{{ getInitials(review.fullname) }}</span>
                             </div>
                             <div class="flex-grow-1">
                                 <h6 class="fw-bold mb-1">{{ review.fullname }}</h6>
@@ -258,9 +279,48 @@
 
                                 <!-- Interaction -->
                                 <div class="d-flex gap-3 align-items-center mb-3">
+                                    <button
+                                        class="btn btn-link btn-sm text-decoration-none p-0 d-flex align-items-center gap-1"
+                                        [class.vc-liked-active]="isLiked(review)" [class.text-muted]="!isLiked(review)"
+                                        (click)="likeReview(review)">
+                                        <i class="bi" [class.bi-hand-thumbs-up-fill]="isLiked(review)"
+                                            [class.bi-hand-thumbs-up]="!isLiked(review)"></i>
+                                        <span>Hữu ích {{ review.likes?.length > 0 ? '(' + review.likes.length + ')' : ''
+                                            }}</span>
+                                    </button>
                                     <button class="btn btn-link btn-sm text-decoration-none p-0 text-primary fw-medium"
-                                        (click)="toggleReply(review)">Trả
-                                        lời</button>
+                                        (click)="toggleReply(review)">Trả lời</button>
+
+                                    <ng-container *ngIf="canManageReview(review)">
+                                        <button
+                                            class="btn btn-link btn-sm text-decoration-none p-0 text-vc-primary fw-medium"
+                                            (click)="startEditReview(review)">Chỉnh sửa</button>
+                                        <button
+                                            class="btn btn-link btn-sm text-decoration-none p-0 text-vc-primary fw-medium opacity-75"
+                                            (click)="deleteReview(review)">Xóa</button>
+                                    </ng-container>
+                                </div>
+
+                                <!-- Review Edit Section -->
+                                <div *ngIf="editingReviewId === getGenericId(review)"
+                                    class="mt-2 mb-3 p-3 bg-light rounded-3 shadow-sm">
+                                    <div class="stars mb-2 d-flex gap-1">
+                                        <i *ngFor="let s of [1,2,3,4,5]" class="bi fs-5 cursor-pointer"
+                                            [class.bi-star-fill]="s <= editReviewRating"
+                                            [class.bi-star]="s > editReviewRating"
+                                            [class.text-warning]="s <= editReviewRating"
+                                            [class.text-secondary]="s > editReviewRating" (click)="editReviewRating = s"
+                                            style="cursor: pointer;"></i>
+                                    </div>
+                                    <textarea class="form-control mb-2 border-vc-primary shadow-none"
+                                        [(ngModel)]="editReviewContent" rows="3"
+                                        style="font-size: 0.95rem; border-radius: 8px;"></textarea>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-vc-basic btn-sm px-3 fw-bold"
+                                            (click)="updateReview(review)">Cập nhật</button>
+                                        <button class="btn btn-vc-outline-basic btn-sm px-3"
+                                            (click)="cancelEditReview()">Hủy</button>
+                                    </div>
                                 </div>
 
                                 <!-- Reply Input Section -->
@@ -291,20 +351,77 @@
                                         style="border-left: 6px solid #00589f !important; background-color: #f1f3f7 !important;"
                                         *ngFor="let reply of review.replies">
                                         <div class="d-flex align-items-center gap-2 mb-2">
-                                            <img [src]="reply.avatar" class="rounded-circle" width="24" height="24">
+                                            <!-- Official Pharmacist/Admin Avatar -->
+                                            <div *ngIf="isPharmacist(reply)" class="avatar-sm rounded-circle shadow-sm"
+                                                style="width: 25px; height: 25px; min-width: 25px; overflow: hidden; background: #fff; border: 1px solid #eee;">
+                                                <img src="assets/logo/logo_avatar.png"
+                                                    style="width: 100%; height: 100%; object-fit: contain;">
+                                            </div>
+
+                                            <!-- Regular User Avatar -->
+                                            <div *ngIf="!isPharmacist(reply)"
+                                                class="avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold"
+                                                style="width: 24px; height: 24px; min-width: 24px; overflow: hidden; font-size: 0.7rem;">
+                                                <img *ngIf="getAvatarUrl(reply)" [src]="getAvatarUrl(reply)"
+                                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                                <span *ngIf="!getAvatarUrl(reply)">{{ getInitials(reply.fullname)
+                                                    }}</span>
+                                            </div>
+
                                             <span class="fw-bold"
-                                                [style.color]="reply.is_admin ? '#00589f' : 'inherit'">{{
-                                                reply.fullname }}</span>
-                                            <span class="badge"
-                                                style="background-color: #00589f !important; color: white !important; border: none !important; font-size: 0.7rem; font-weight: 500;"
-                                                *ngIf="reply.is_admin">Dược sĩ</span>
+                                                [style.color]="isPharmacist(reply) ? '#00589f' : 'inherit'">
+                                                {{ getOfficialName(reply) }}
+                                            </span>
+
+                                            <span class="badge badge-vc-pharmacist" *ngIf="isPharmacist(reply)">Dược
+                                                sĩ</span>
+                                            <span class="text-muted small ms-2">• {{ formatDate(reply.time) }}</span>
                                         </div>
-                                        <p class="reply-content mb-1 text-secondary">{{ reply.content }}</p>
+                                        <p class="reply-content mb-1 text-secondary"
+                                            *ngIf="editingReviewReplyId !== reply._id">{{ reply.content }}</p>
+
+                                        <!-- Edit Reply Form -->
+                                        <div *ngIf="editingReviewReplyId === reply._id" class="mt-2 mb-2">
+                                            <textarea class="form-control mb-2 border-vc-primary shadow-none"
+                                                [(ngModel)]="editReviewReplyContent" rows="2"
+                                                style="font-size: 0.9rem; border-radius: 8px;"></textarea>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-vc-basic btn-sm px-2 py-0 fw-bold"
+                                                    style="font-size: 0.8rem;"
+                                                    (click)="updateReviewReply(review, reply)">Cập nhật</button>
+                                                <button class="btn btn-vc-outline-basic btn-sm px-2 py-0"
+                                                    style="font-size: 0.8rem;"
+                                                    (click)="cancelEditReviewReply()">Hủy</button>
+                                            </div>
+                                        </div>
+
                                         <div class="reply-meta d-flex align-items-center gap-3">
-                                            <span class="text-muted small">{{ formatDate(reply.time) }}</span>
-                                            <button
-                                                class="btn btn-link btn-sm text-decoration-none p-0 text-primary">Trả
-                                                lời</button>
+                                            <!-- Reply Like -->
+                                            <div class="reply-like-actions d-flex align-items-center gap-1">
+                                                <button
+                                                    class="btn btn-sm btn-link p-0 text-decoration-none d-flex align-items-center gap-1"
+                                                    [ngClass]="isReviewReplyLiked(reply) ? 'vc-liked-active' : 'text-muted'"
+                                                    (click)="likeReviewReply(review, reply)"
+                                                    style="font-size: 0.85rem;">
+                                                    <i class="bi"
+                                                        [ngClass]="isReviewReplyLiked(reply) ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+                                                    <span>Hữu ích</span>
+                                                    <span *ngIf="reply.likes?.length > 0">({{ reply.likes.length
+                                                        }})</span>
+                                                </button>
+                                            </div>
+                                            <!-- Manage Reply Buttons -->
+                                            <div class="reply-actions d-flex align-items-center gap-3 ms-2"
+                                                *ngIf="canManageReviewReply(review, reply)">
+                                                <button
+                                                    class="btn btn-sm btn-link text-vc-primary p-0 text-decoration-none fw-medium"
+                                                    (click)="startEditReviewReply(reply)"
+                                                    style="font-size: 0.85rem;">Chỉnh sửa</button>
+                                                <button
+                                                    class="btn btn-sm btn-link text-vc-primary p-0 text-decoration-none fw-medium opacity-75"
+                                                    (click)="deleteReviewReply(review, reply)"
+                                                    style="font-size: 0.85rem;">Xóa</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -334,7 +451,7 @@
     </div>
 
     <!-- Consultation Section -->
-    <div *ngIf="!loading && product" class="consultation-section mt-1 mb-0">
+    <div *ngIf="!loading && product" id="questions" class="consultation-section mt-1 mb-0">
         <div class="container">
             <div class="card border-0 shadow-sm px-4 pt-4 pb-2 rounded-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -368,29 +485,64 @@
                     <div class="consultation-item mb-3 pb-2" *ngFor="let q of filteredConsultations">
                         <div class="d-flex align-items-start gap-3">
                             <div class="avatar rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold"
-                                style="width: 45px; height: 45px; min-width: 45px;">
-                                {{ q.full_name?.substring(0, 2).toUpperCase() || 'K' }}
+                                style="width: 45px; height: 45px; min-width: 45px; overflow: hidden;">
+                                <img *ngIf="getAvatarUrl(q)" [src]="getAvatarUrl(q)"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                <span *ngIf="!getAvatarUrl(q)">{{ getInitials(q.full_name) }}</span>
                             </div>
                             <div class="flex-grow-1">
-                                <h6 class="fw-bold mb-1">{{ q.full_name || 'Khách vãng lai' }}</h6>
+                                <h6 class="fw-bold mb-1">
+                                    {{ getOfficialName(q) }}
+                                    <span class="badge ms-1"
+                                        [ngClass]="isMember(q) ? 'badge-vc-user' : 'badge-vc-guest'"
+                                        *ngIf="!isPharmacist(q)">
+                                        {{ isMember(q) ? 'Thành viên' : 'Khách vãng lai' }}
+                                    </span>
+                                </h6>
                                 <p class="question-content text-dark mb-2">{{ q.question }}</p>
 
                                 <div class="interaction d-flex gap-3 align-items-center mb-3">
                                     <span class="text-muted small">{{ formatDate(q.createdAt) }}</span>
                                     <button
                                         class="btn btn-link btn-sm text-decoration-none p-0 d-flex align-items-center gap-1"
-                                        [class.text-warning]="isConsultationLiked(q)"
-                                        [class.text-muted]="!isConsultationLiked(q)" (click)="likeConsultation(q)">
+                                        [class.vc-liked-active]="isConsultationLiked(q)"
+                                        [class.text-muted]="!isConsultationLiked(q)"
+                                        [style.color]="isConsultationLiked(q) ? '#ffc107' : ''"
+                                        (click)="likeConsultation(q)">
                                         <i class="bi" [class.bi-hand-thumbs-up-fill]="isConsultationLiked(q)"
-                                            [class.bi-hand-thumbs-up]="!isConsultationLiked(q)"></i>
-                                        <span>Hữu ích {{ q.likes?.length > 0 ? '(' + q.likes.length + ')' : '' }}</span>
+                                            [class.bi-hand-thumbs-up]="!isConsultationLiked(q)"
+                                            [style.color]="isConsultationLiked(q) ? '#ffc107' : ''"></i>
+                                        <span [style.color]="isConsultationLiked(q) ? '#ffc107' : ''">Hữu ích {{
+                                            q.likes?.length > 0 ? '(' + q.likes.length + ')' : '' }}</span>
                                     </button>
                                     <button class="btn btn-link btn-sm text-decoration-none p-0 text-primary fw-medium"
                                         (click)="toggleReplyConsultation(q)">Trả lời</button>
+                                    <ng-container *ngIf="q.user_id && authService.currentUser()?.user_id === q.user_id">
+                                        <button
+                                            class="btn btn-link btn-sm text-decoration-none p-0 text-vc-primary fw-medium"
+                                            (click)="startEditQuestion(q)">Chỉnh sửa</button>
+                                        <button
+                                            class="btn btn-link btn-sm text-decoration-none p-0 text-vc-primary fw-medium opacity-75"
+                                            (click)="deleteQuestion(q)">Xóa</button>
+                                    </ng-container>
+                                </div>
+
+                                <!-- Question Edit Section -->
+                                <div *ngIf="editingQuestionId === getGenericId(q)"
+                                    class="mt-2 mb-3 p-3 bg-light rounded-3 shadow-sm">
+                                    <textarea class="form-control mb-2 border-vc-primary shadow-none"
+                                        [(ngModel)]="editQuestionContent" rows="3"
+                                        style="font-size: 0.95rem; border-radius: 8px;"></textarea>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-vc-basic btn-sm px-3 fw-bold"
+                                            (click)="updateQuestion(q)">Cập nhật</button>
+                                        <button class="btn btn-vc-outline-basic btn-sm px-3"
+                                            (click)="cancelEditQuestion()">Hủy</button>
+                                    </div>
                                 </div>
 
                                 <!-- Consultation Reply Input -->
-                                <div *ngIf="replyingToQuestionId === q.id"
+                                <div *ngIf="replyingToQuestionId === getGenericId(q)"
                                     class="mt-2 ps-3 border-start border-vc-primary">
                                     <div class="d-flex align-items-center p-2 border bg-white shadow-sm"
                                         style="border-radius: 20px;">
@@ -408,51 +560,121 @@
                                     </div>
                                 </div>
 
-                                <!-- Replies List -->
-                                <div class="replies mt-3" *ngIf="q.replies?.length > 0">
-                                    <div class="reply-item bg-light p-3 rounded-3 mb-2"
-                                        style="border-left: 6px solid #00589f !important; background-color: #f1f3f7 !important;"
-                                        *ngFor="let rep of q.replies">
+                                <!-- Replies & Answers -->
+                                <div class="replies mt-3" *ngIf="q.replies?.length > 0 || q.answer">
+                                    <!-- Regular Replies -->
+                                    <div *ngFor="let rep of q.replies" class="p-3 rounded-3 mb-2"
+                                        [ngClass]="isPharmacist(rep) ? 'reply-item' : 'reply-item-user'">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div *ngIf="isPharmacist(rep)"
+                                                    class="avatar-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; min-width: 32px; overflow: hidden; background: #fff; border: 1px solid #eee; display: grid !important; place-items: center !important;">
+                                                    <img src="assets/logo/logo_avatar.png"
+                                                        style="width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; margin: 0 !important;">
+                                                </div>
+                                                <div *ngIf="!isPharmacist(rep)"
+                                                    class="avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold"
+                                                    style="width: 24px; height: 24px; min-width: 24px; overflow: hidden; font-size: 0.7rem;">
+                                                    <img *ngIf="getAvatarUrl(rep)" [src]="getAvatarUrl(rep)"
+                                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <span *ngIf="!getAvatarUrl(rep)">{{ getInitials(rep.fullname)
+                                                        }}</span>
+                                                </div>
+                                                <span class="fw-bold"
+                                                    [style.color]="isPharmacist(rep) ? '#00589f' : 'inherit'">{{
+                                                    getOfficialName(rep) }}</span>
+                                                <span class="badge"
+                                                    [ngClass]="isPharmacist(rep) ? 'badge-vc-pharmacist' : (isMember(rep) ? 'badge-vc-user' : 'badge-vc-guest')">{{
+                                                    isPharmacist(rep) ? 'Dược sĩ' : (isMember(rep) ? 'Thành viên' :
+                                                    'Khách vãng lai') }}</span>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Reply Content / Edit Mode -->
+                                        <div *ngIf="editingReplyId !== rep._id">
+                                            <p class="reply-content mb-1 text-secondary" style="font-size: 0.9rem;">{{
+                                                rep.content }}</p>
+                                            <div class="reply-meta d-flex align-items-center gap-3">
+                                                <span class="text-muted small">{{ formatDate(rep.time) }}</span>
+
+                                                <!-- Reply Like -->
+                                                <div class="reply-like-actions d-flex align-items-center gap-1">
+                                                    <button
+                                                        class="btn btn-sm btn-link p-0 text-decoration-none d-flex align-items-center gap-1"
+                                                        [ngClass]="isReplyLiked(rep) ? 'vc-liked-active' : 'text-muted'"
+                                                        (click)="likeReply(q, rep)" style="font-size: 0.85rem;">
+                                                        <i class="bi"
+                                                            [ngClass]="isReplyLiked(rep) ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+                                                        <span>Hữu ích</span>
+                                                        <span *ngIf="rep.likes?.length > 0">({{ rep.likes.length
+                                                            }})</span>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Reply Management (Same line) -->
+                                                <div class="reply-actions d-flex align-items-center gap-3"
+                                                    *ngIf="authService.currentUser()?.user_id === rep.user_id">
+                                                    <button
+                                                        class="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-medium"
+                                                        (click)="startEditReply(q, rep)"
+                                                        style="font-size: 0.85rem;">Chỉnh sửa</button>
+                                                    <button
+                                                        class="btn btn-sm btn-link text-danger p-0 text-decoration-none fw-medium"
+                                                        (click)="confirmDeleteReply(q, rep)"
+                                                        style="font-size: 0.85rem;">Xóa</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Edit Mode -->
+                                        <div *ngIf="editingReplyId === rep._id" class="edit-reply-box mt-2">
+                                            <textarea class="form-control mb-2" [(ngModel)]="editReplyContent" rows="3"
+                                                style="font-size: 0.9rem;"></textarea>
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <button class="btn btn-sm btn-outline-secondary"
+                                                    (click)="cancelEditReply()">Hủy</button>
+                                                <button class="btn btn-sm btn-primary"
+                                                    (click)="updateReply(q, rep)">Lưu</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Expert Answer (Vertical Stack) -->
+                                    <div class="reply-item bg-light p-3 rounded-3 mb-2" *ngIf="q.answer">
                                         <div class="d-flex align-items-center gap-2 mb-2">
-                                            <img [src]="rep.avatar" class="rounded-circle" width="24" height="24">
-                                            <span class="fw-bold"
-                                                [style.color]="rep.is_admin ? '#00589f' : 'inherit'">{{
-                                                rep.fullname }}</span>
-                                            <span class="badge"
-                                                style="background-color: #00589f !important; color: white !important; border: none !important; font-size: 0.7rem; font-weight: 500;"
-                                                *ngIf="rep.is_admin">Dược sĩ</span>
+                                            <div class="avatar-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                                style="width: 32px; height: 32px; min-width: 32px; overflow: hidden; background: #fff; border: 1px solid #eee; display: grid !important; place-items: center !important;">
+                                                <img src="assets/logo/logo_avatar.png"
+                                                    style="width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; margin: 0 !important;">
+                                            </div>
+                                            <span class="fw-bold" style="color: #00589f;">VitaCare</span>
+                                            <span class="badge badge-vc-pharmacist">Dược sĩ</span>
                                         </div>
                                         <p class="reply-content mb-1 text-secondary" style="font-size: 0.9rem;">{{
-                                            rep.content }}</p>
+                                            q.answer }}</p>
                                         <div class="reply-meta d-flex align-items-center gap-3">
-                                            <span class="text-muted small">{{ formatDate(rep.time) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                            <span class="text-muted small">{{ formatDate(q.answeredAt || q.createdAt)
+                                                }}</span>
 
-                                <!-- Answer from expert -->
-                                <div class="answer-item bg-light p-3 rounded-3 mb-2"
-                                    style="border-left: 6px solid #00589f !important; background-color: #f1f3f7 !important;"
-                                    *ngIf="q.answer">
-                                    <div class="d-flex align-items-center gap-2 mb-2">
-                                        <img src="https://res.cloudinary.com/dpjkzxjl2/image/upload/v1771155535/Artboard_7_c4h7h2.png"
-                                            class="rounded-circle border" width="30" height="30" alt="VitaCare Logo">
-                                        <span class="fw-bold text-vc-primary">VitaCare</span>
-                                        <span class="badge"
-                                            style="background-color: #00589f !important; color: white !important; border: none !important; font-size: 0.7rem; font-weight: 500;">
-                                            {{ q.answeredBy === 'Pharmacist' ? 'Dược sĩ' : 'Quản trị viên' }}
-                                        </span>
-                                    </div>
-                                    <p class="answer-content mb-1 text-secondary" style="font-size: 0.9rem;">{{ q.answer
-                                        }}
-                                    </p>
-                                    <div class="answer-meta d-flex align-items-center gap-3">
-                                        <span class="text-muted small">{{ formatDate(q.answeredAt) }}</span>
-                                        <button class="btn btn-link btn-sm text-decoration-none p-0 text-primary">Trả
-                                            lời</button>
+                                            <!-- Expert Answer Like -->
+                                            <button
+                                                class="btn btn-sm btn-link p-0 text-decoration-none d-flex align-items-center gap-1"
+                                                [ngClass]="isExpertAnswerLiked(q) ? 'vc-liked-active' : 'text-muted'"
+                                                (click)="likeExpertAnswer(q)" style="font-size: 0.85rem;">
+                                                <i class="bi"
+                                                    [ngClass]="isExpertAnswerLiked(q) ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+                                                <span>Hữu ích</span>
+                                                <span *ngIf="q.answerLikes?.length > 0">({{ q.answerLikes.length
+                                                    }})</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -485,10 +707,15 @@
             <button class="btn btn-primary rounded-pill px-4 mt-3" routerLink="/products">Quay lại danh sách</button>
         </div>
     </div>
+    <div *ngIf="recentlyViewedProducts && recentlyViewedProducts.length > 0" class="container mb-4">
+        <app-recently-viewed-products [products]="recentlyViewedProducts" (clearAll)="clearRecentlyViewedHistory()"
+            (productClick)="trackRecentlyViewed($event)" (removeProduct)="removeRecentlyViewedProduct($event)">
+        </app-recently-viewed-products>
+    </div>
 </div> <!-- End of vc_pd_page_wrapper -->
 
 <!-- Review Submission Modal -->
-<div class="vc_modal_overlay" *ngIf="showReviewModal" (click)="closeReviewModal()" style="z-index: 1200;">
+<div class="vc_modal_overlay vc_review_modal_overlay" *ngIf="showReviewModal" (click)="closeReviewModal()">
     <div class="vc_modal_container" style="max-width: 600px;" (click)="$event.stopPropagation()">
         <!-- Header -->
         <div class="vc_modal_header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
@@ -547,11 +774,31 @@
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div class="vc_modal_overlay vc_delete_modal_overlay" *ngIf="showDeleteConfirmModal" (click)="closeDeleteModal()">
+    <div class="vc_modal_container vc_delete_modal_container" (click)="$event.stopPropagation()">
+        <div class="vc_modal_body p-4 text-center">
+            <div class="delete-icon-wrapper mb-2">
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-1"></i>
+            </div>
+            <h5 class="fw-bold mb-2">Xác nhận xóa</h5>
+            <p class="text-muted mb-3 small">
+                {{ deleteType === 'review' ? 'Bạn có chắc chắn muốn xóa đánh giá này không?' : 'Bạn có chắc chắn muốn
+                xóa câu hỏi này không?' }}
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-vc-basic px-4 btn-sm" (click)="confirmDelete()">Xóa</button>
+                <button class="btn btn-vc-outline-basic px-4 btn-sm" (click)="closeDeleteModal()">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Favorites Modal -->
 <div class="vc_modal_overlay" *ngIf="showFavoritesModal" (click)="closeFavoritesModal()">
     <div class="vc_modal_container" (click)="$event.stopPropagation()">
         <div class="vc_modal_header">
-            <h4>Cẩm nang hữu ích của bạn</h4>
+            <h4>SỔ CẨM NANG</h4>
             <button class="vc_close_btn" (click)="closeFavoritesModal()">
                 <i class="bi bi-x-lg"></i>
             </button>

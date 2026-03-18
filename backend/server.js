@@ -132,9 +132,11 @@ const uploadBlogImage = multer({
 
 // Collections chính trong MongoDB (giữ lại cho seed & một số thao tác đặc biệt)
 const usersCollection = () => mongoose.connection.db.collection('users');
+const usersMemoryCollection = () => mongoose.connection.db.collection('users_memory');
 const productsCollection = () => mongoose.connection.db.collection('products');
 const categoriesCollection = () => mongoose.connection.db.collection('categories');
 const cartsCollection = () => mongoose.connection.db.collection('carts');
+const recentlyViewedCollection = () => mongoose.connection.db.collection('recently_viewed');
 const otpCodesCollection = () => mongoose.connection.db.collection('otp_codes');
 const addressesCollection = () => mongoose.connection.db.collection('addresses');
 const healthprofilesCollection = () => mongoose.connection.db.collection('healthprofiles');
@@ -625,6 +627,22 @@ app.get('/api/product/:slug', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
     }
 
+    // 4. Bổ sung thông tin categoryName và categorySlug (Join với categories)
+    if (product.categoryId) {
+      const cId = product.categoryId._id || product.categoryId;
+      const cat = await categoriesCollection().findOne({
+        $or: [
+          { _id: cId },
+          { _id: new mongoose.Types.ObjectId(String(cId)) },
+          { _id: String(cId) }
+        ]
+      });
+      if (cat) {
+        product.categoryName = cat.name;
+        product.categorySlug = cat.slug;
+      }
+    }
+
     res.json(product);
   } catch (err) {
     console.error('[GET /api/product/:slug] Error:', err);
@@ -706,6 +724,160 @@ app.get('/api/products/related/:id', async (req, res) => {
   } catch (err) {
     console.error('[GET /api/products/related/:id] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy sản phẩm liên quan.' });
+  }
+});
+
+// ================= STORE SYSTEM API =================
+
+// GET /api/store-locations/tree - Lấy cây địa điểm (Tỉnh -> Quận -> Phường)
+app.get('/api/store-locations/tree', async (req, res) => {
+  try {
+    const doc = await locationsCollection().findOne();
+    if (!doc) return res.json([]);
+
+    const tree = [];
+    // Loại bỏ các field meta của MongoDB như _id
+    const codes = Object.keys(doc).filter(key => !key.startsWith('_'));
+
+    for (const code of codes) {
+      const tinh = doc[code];
+      const provinceItem = {
+        tinh: tinh.name,
+        quans: []
+      };
+
+      if (tinh.quan_huyen) {
+        for (const qCode in tinh.quan_huyen) {
+          const quan = tinh.quan_huyen[qCode];
+          const quanItem = {
+            ten: quan.name,
+            phuongs: []
+          };
+
+          if (quan.phuong_xa) {
+            for (const pCode in quan.phuong_xa) {
+              quanItem.phuongs.push(quan.phuong_xa[pCode].name);
+            }
+          }
+          provinceItem.quans.push(quanItem);
+        }
+      }
+      tree.push(provinceItem);
+    }
+
+    res.json(tree);
+  } catch (err) {
+    console.error('[GET /api/store-locations/tree] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách địa điểm.' });
+  }
+});
+
+// GET /api/stores - Lấy danh sách cửa hàng (có phân trang & lọc)
+app.get('/api/stores', async (req, res) => {
+  try {
+    const { keyword, tinh_thanh, quan_huyen, phuong_xa, page = 1, limit = 8 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const query = {};
+
+    if (keyword) {
+      query.$or = [
+        { ten_cua_hang: { $regex: keyword, $options: 'i' } },
+        { dia_chi: { $regex: keyword, $options: 'i' } }
+      ];
+    }
+
+    if (tinh_thanh && tinh_thanh !== 'Tất cả') {
+      query['dia_chi'] = { $regex: tinh_thanh, $options: 'i' };
+    }
+    if (quan_huyen && quan_huyen !== 'Tất cả') {
+      query['dia_chi'] = { $regex: quan_huyen, $options: 'i' };
+    }
+    if (phuong_xa && phuong_xa !== 'Tất cả') {
+      query['dia_chi'] = { $regex: phuong_xa, $options: 'i' };
+    }
+
+    const col = storeSystemCollection();
+    const [items, total] = await Promise.all([
+      col.find(query).skip(skip).limit(parseInt(limit)).toArray(),
+      col.countDocuments(query)
+    ]);
+
+    // Map data to match frontend Model
+    const mappedData = items.map(s => {
+      // Handle dia_chi (string in DB -> object in Frontend)
+      const dia_chi_str = s.dia_chi || '';
+      const mappedDiaChi = (typeof dia_chi_str === 'string')
+        ? { dia_chi_day_du: dia_chi_str }
+        : dia_chi_str;
+
+      // Handle so_dien_thoai (string in DB -> array in Frontend)
+      const sdt = s.so_dien_thoai || s.phone || '';
+      const sdt_array = (typeof sdt === 'string' && sdt) ? [sdt] : (Array.isArray(sdt) ? sdt : []);
+
+      return {
+        ...s,
+        dia_chi: mappedDiaChi,
+        thong_tin_lien_he: {
+          ...s.thong_tin_lien_he,
+          so_dien_thoai: sdt_array
+        }
+      };
+    });
+
+    res.json({
+      success: true,
+      data: mappedData,
+      total,
+      totalPages: Math.ceil(total / parseInt(limit))
+    });
+  } catch (err) {
+    console.error('[GET /api/stores] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách cửa hàng.' });
+  }
+});
+
+// ================= HEALTH TEST API =================
+
+// GET /api/quizzes - Lấy danh sách bài kiểm tra sức khỏe
+app.get('/api/quizzes', async (req, res) => {
+  try {
+    const list = await quizCollection().find({}).toArray();
+    res.json(list);
+  } catch (err) {
+    console.error('[GET /api/quizzes] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách bài thi.' });
+  }
+});
+
+// POST /api/quiz-results - Lưu kết quả kiểm tra
+app.post('/api/quiz-results', async (req, res) => {
+  try {
+    const resultDoc = {
+      ...req.body,
+      createdAt: new Date().toISOString()
+    };
+    await resultsCollection().insertOne(resultDoc);
+    res.json({ success: true, message: 'Đã lưu kết quả thành công.' });
+  } catch (err) {
+    console.error('[POST /api/quiz-results] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi khi lưu kết quả.' });
+  }
+});
+
+// GET /api/quiz-history/:quiz_id - Lấy lịch sử kết quả của bài thi
+app.get('/api/quiz-history/:quiz_id', async (req, res) => {
+  try {
+    const { quiz_id } = req.params;
+    const history = await resultsCollection()
+      .find({ quiz_id })
+      .sort({ _id: -1 })
+      .limit(20)
+      .toArray();
+    res.json(history);
+  } catch (err) {
+    console.error('[GET /api/quiz-history] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi tải lịch sử.' });
   }
 });
 // GET /api/promotions - danh sách chương trình khuyến mãi
@@ -999,8 +1171,11 @@ async function buildDueReminderNoticeItems(user_id, now) {
 
 // GET /api/notices?user_id=...
 app.get('/api/notices', async (req, res) => {
+  const q_uid = String(req.query.user_id || '').trim();
+  console.log('[GET /api/notices] start. user_id:', q_uid);
   try {
-    const user_id = String(req.query.user_id || '').trim();
+    const user_id = q_uid;
+    console.log('[GET /api/notices] user_id:', user_id);
     if (!user_id) {
       return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
     }
@@ -1513,44 +1688,24 @@ app.get('/api/carts', async (req, res) => {
 
     const itemsArray = Array.isArray(cartDoc.items) ? cartDoc.items : [];
 
-    // Fetch latest images from products collection
+    /**
+     * Tối ưu hiệu năng:
+     * Trước đây mỗi lần mở giỏ hàng FE sẽ gọi GET /api/carts,
+     * route này lại join sang collection products để lấy ảnh mới nhất
+     * cho từng sản phẩm trong giỏ → tạo một truy vấn $or rất lớn,
+     * dễ làm request chậm khi giỏ hoặc bảng sản phẩm lớn.
+     *
+     * Để tránh lag khi mở giỏ, ta bỏ bước join nặng này
+     * và chỉ chuẩn hoá lại dữ liệu số ngay trên items hiện có.
+     * Ảnh sản phẩm đã được lưu trong cart khi thêm vào giỏ,
+     * FE vẫn có thể hiển thị bình thường.
+     */
     if (itemsArray.length > 0) {
-      const productIds = itemsArray.map(it => it._id?.$oid || String(it._id)).filter(Boolean);
-
-      // Build query to handle both string and ObjectId
-      const idFilters = productIds.map(id => {
-        const filters = [{ _id: id }];
-        if (mongoose.Types.ObjectId.isValid(id)) {
-          filters.push({ _id: new mongoose.Types.ObjectId(id) });
-        }
-        filters.push({ "_id.$oid": id });
-        return filters;
-      }).flat();
-
-      if (idFilters.length > 0) {
-        const products = await productsCollection().find({ $or: idFilters }, { projection: { _id: 1, image: 1, gallery: 1, images: 1, imageUrl: 1 } }).toArray();
-
-        const productMap = {};
-        products.forEach(p => {
-          const pid = p._id?.$oid || String(p._id);
-
-          // Ưu tiên: field image -> images[0] -> gallery[0] -> imageUrl (Giống logic danh mục sản phẩm)
-          const primaryImage = p.image ||
-            (Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '') ||
-            (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery[0] : '') ||
-            p.imageUrl || '';
-
-          productMap[pid] = primaryImage;
-        });
-
-        // Cập nhật lại mảng items
-        itemsArray.forEach(it => {
-          const itId = it._id?.$oid || String(it._id);
-          if (productMap[itId]) {
-            it.image = productMap[itId];
-          }
-        });
-      }
+      itemsArray.forEach((it) => {
+        it.quantity = Number(it.quantity) || 1;
+        it.price = Number(it.price) || 0;
+        it.discount = Number(it.discount) || 0;
+      });
     }
 
     const totalQuantity = itemsArray.reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
@@ -2990,6 +3145,33 @@ app.get('/api/health-videos', async (req, res) => {
   }
 });
 
+// GET /api/health-video/:id - Lấy chi tiết 1 video theo ID
+app.get('/api/health-video/:id', async (req, res) => {
+  try {
+    const idParam = String(req.params.id || '').trim();
+    if (!idParam) {
+      return res.status(400).json({ success: false, message: 'Thiếu videoId.' });
+    }
+
+    const col = mongoose.connection.db.collection('vinmec_playlists');
+    let video = await col.findOne({ _id: idParam });
+
+    // Fallback: Nếu ID là ObjectId hợp lệ
+    if (!video && mongoose.Types.ObjectId.isValid(idParam)) {
+      video = await col.findOne({ _id: new mongoose.Types.ObjectId(idParam) });
+    }
+
+    if (!video) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy video.' });
+    }
+
+    res.json(video);
+  } catch (err) {
+    console.error('[GET /api/health-video/:id] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy chi tiết video.' });
+  }
+});
+
 // ========= PRODUCT FAQS =========
 // GET /api/product-faqs/:productId - danh sách FAQ theo sản phẩm
 app.get('/api/product-faqs/:productId', async (req, res) => {
@@ -3040,7 +3222,9 @@ app.post('/api/reviews', async (req, res) => {
       order_id,
       images,
       time,
+      avatar,
     } = req.body || {};
+    console.log('[POST /api/reviews] body:', { sku, customer_id, fullname });
     const skuStr = String(sku || '').trim();
     if (!skuStr) {
       return res.status(400).json({ success: false, message: 'Thiếu sku.' });
@@ -3059,6 +3243,7 @@ app.post('/api/reviews', async (req, res) => {
       _id: new mongoose.Types.ObjectId().toString(),
       customer_id: customer_id ? String(customer_id).trim() : null,
       fullname: safeName,
+      avatar: avatar || '',
       content: content || '',
       rating: safeRating,
       time: time ? new Date(time) : new Date(),
@@ -3104,6 +3289,28 @@ app.post('/api/reviews', async (req, res) => {
       }
     }
 
+    // Tạo thông báo cho user khi đánh giá thành công
+    if (customer_id) {
+      try {
+        const pcol = mongoose.connection.db.collection('products');
+        const product = await pcol.findOne({ sku: skuStr });
+        const pName = product?.name || skuStr;
+        await noticesCollection().insertOne({
+          user_id: String(customer_id),
+          type: 'order_updated',
+          title: 'Đánh giá đã được gửi',
+          message: `Đánh giá của bạn về sản phẩm "${pName}" đã được gửi thành công.`,
+          createdAt: new Date().toISOString(),
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem đánh giá',
+          meta: skuStr,
+        });
+      } catch (e) {
+        console.warn('[POST /api/reviews] Cannot create notice:', e.message);
+      }
+    }
+
     const updated = await col.findOne({ sku: skuStr });
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -3115,7 +3322,7 @@ app.post('/api/reviews', async (req, res) => {
 // POST /api/reviews/reply - trả lời 1 đánh giá
 app.post('/api/reviews/reply', async (req, res) => {
   try {
-    const { sku, reviewId, content, fullname, isAdmin } = req.body || {};
+    const { sku, reviewId, content, fullname, isAdmin, avatar, userId } = req.body || {};
     const skuStr = String(sku || '').trim();
     const reviewIdStr = String(reviewId || '').trim();
     if (!skuStr || !reviewIdStr) {
@@ -3138,9 +3345,9 @@ app.post('/api/reviews/reply', async (req, res) => {
 
     const reply = {
       _id: new mongoose.Types.ObjectId().toString(),
-      user_id: null,
+      user_id: userId || null, // Capture user_id
       fullname: (fullname && String(fullname).trim()) || 'Khách',
-      avatar: '',
+      avatar: avatar || '',
       content: content,
       is_admin: !!isAdmin,
       time: new Date(),
@@ -3157,6 +3364,128 @@ app.post('/api/reviews/reply', async (req, res) => {
   } catch (err) {
     console.error('[POST /api/reviews/reply] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi trả lời đánh giá.' });
+  }
+});
+
+// PATCH /api/reviews/reply - chỉnh sửa 1 phản hồi đánh giá
+app.patch('/api/reviews/reply', async (req, res) => {
+  try {
+    const { sku, reviewId, replyId, content, userId } = req.body || {};
+    const skuStr = String(sku || '').trim();
+    const rId = String(reviewId || '').trim();
+    const repId = String(replyId || '').trim();
+    const uid = String(userId || '').trim();
+
+    if (!skuStr || !rId || !repId || !uid) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin bắt buộc.' });
+    }
+
+    const col = reviewsCollection();
+    const doc = await col.findOne({ sku: skuStr });
+    if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
+
+    const review = (doc.reviews || []).find(r => r._id === rId);
+    if (!review) return res.status(404).json({ success: false, message: 'Không tìm thấy đánh giá.' });
+
+    const reply = (review.replies || []).find(rep => rep._id === repId);
+    if (!reply) return res.status(404).json({ success: false, message: 'Không tìm thấy phản hồi.' });
+
+    // Ownership Check: Check by ID first, then fallback to fullname if ID is missing or null
+    let isOwner = false;
+    const repUid = String(reply.user_id || '').trim();
+
+    if (repUid && uid && repUid.toLowerCase() === uid.toLowerCase()) {
+      isOwner = true;
+    } else if (!repUid || repUid === 'null' || repUid === 'undefined') {
+      // Fallback: Nếu không có ID trong DB, kiểm tra xem fullname có khớp không
+      // Lấy fullname từ request body (cho PATCH) hoặc có thể cần lấy thêm từ DB nếu cần
+      // Tuy nhiên, frontend đã gửi fullname trong payload hoặc chúng ta có thể tin tưởng uid nếu nó khớp một cách nào đó.
+      // Ở đây, chúng ta sẽ kiểm tra xem reply.fullname có khớp với fullname của user hiện tại không.
+      // Nhưng backend PATCH /api/reviews/reply hiện tại không nhận fullname trong body.
+      // Ta sẽ nới lỏng: nếu reply.user_id là null VÀ (người dùng đang login có fullname khớp), cho phép.
+      // Để làm điều này triệt để, ta cần fetch User từ DB bằng uid.
+    }
+
+    // Simplified fallback for now: If IDs don't match, we check if the user exists and has the same name.
+    // Given the current structure, let's fetch the user to get their name.
+    const userDoc = await usersCollection().findOne({ $or: [{ user_id: uid }, { _id: uid }] });
+    const currentName = userDoc ? userDoc.full_name : null;
+
+    if (!isOwner) {
+      if ((!repUid || repUid === 'null' || repUid === 'undefined') && reply.fullname && currentName && reply.fullname === currentName) {
+        isOwner = true;
+      }
+    }
+
+    if (!isOwner) {
+      return res.status(403).json({ success: false, message: 'Bạn không có quyền chỉnh sửa phản hồi này.' });
+    }
+
+    await col.updateOne(
+      { sku: skuStr },
+      { $set: { 'reviews.$[r].replies.$[rep].content': content, 'reviews.$[r].replies.$[rep].updatedAt': new Date(), updatedAt: new Date() } },
+      { arrayFilters: [{ 'r._id': rId }, { 'rep._id': repId }] }
+    );
+
+    const updated = await col.findOne({ sku: skuStr });
+    res.json(updated);
+  } catch (err) {
+    console.error('[PATCH /api/reviews/reply] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi cập nhật phản hồi.' });
+  }
+});
+
+// DELETE /api/reviews/reply/:sku/:reviewId/:replyId/:userId - xóa 1 phản hồi đánh giá
+app.delete('/api/reviews/reply/:sku/:reviewId/:replyId/:userId', async (req, res) => {
+  try {
+    const { sku, reviewId, replyId, userId } = req.params;
+    const skuStr = String(sku || '').trim();
+    const rId = String(reviewId || '').trim();
+    const repId = String(replyId || '').trim();
+    const uid = String(userId || '').trim();
+
+    if (!skuStr || !rId || !repId || !uid) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin bắt buộc.' });
+    }
+
+    const col = reviewsCollection();
+    const doc = await col.findOne({ sku: skuStr });
+    if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
+
+    const review = (doc.reviews || []).find(r => r._id === rId);
+    if (!review) return res.status(404).json({ success: false, message: 'Không tìm thấy đánh giá.' });
+
+    const reply = (review.replies || []).find(rep => rep._id === repId);
+    if (!reply) return res.status(404).json({ success: false, message: 'Không tìm thấy phản hồi.' });
+
+    // Ownership Check: Check by ID first, then fallback to fullname if ID is missing or null
+    let isOwner = false;
+    const repUid = String(reply.user_id || '').trim();
+
+    if (repUid && uid && repUid.toLowerCase() === uid.toLowerCase()) {
+      isOwner = true;
+    } else if (!repUid || repUid === 'null' || repUid === 'undefined') {
+      const userDoc = await usersCollection().findOne({ $or: [{ user_id: uid }, { _id: uid }] });
+      const currentName = userDoc ? userDoc.full_name : null;
+      if (reply.fullname && currentName && reply.fullname === currentName) {
+        isOwner = true;
+      }
+    }
+
+    if (!isOwner) {
+      return res.status(403).json({ success: false, message: 'Bạn không có quyền xóa phản hồi này.' });
+    }
+
+    await col.updateOne(
+      { sku: skuStr, 'reviews._id': rId },
+      { $pull: { 'reviews.$.replies': { _id: repId } }, $set: { updatedAt: new Date() } }
+    );
+
+    const updated = await col.findOne({ sku: skuStr });
+    res.json(updated);
+  } catch (err) {
+    console.error('[DELETE /api/reviews/reply] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa phản hồi.' });
   }
 });
 
@@ -3203,6 +3532,125 @@ app.post('/api/reviews/like', async (req, res) => {
   }
 });
 
+// POST /api/reviews/reply/like - like / unlike 1 phản hồi đánh giá
+app.post('/api/reviews/reply/like', async (req, res) => {
+  try {
+    const { sku, reviewId, replyId, userId } = req.body || {};
+    const skuStr = String(sku || '').trim();
+    const reviewIdStr = String(reviewId || '').trim();
+    const replyIdStr = String(replyId || '').trim();
+    const userIdStr = String(userId || '').trim();
+
+    if (!skuStr || !reviewIdStr || !replyIdStr || !userIdStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin bắt buộc.' });
+    }
+
+    const col = reviewsCollection();
+    const doc = await col.findOne({ sku: skuStr });
+    if (!doc) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
+    }
+
+    const review = (doc.reviews || []).find(r => r._id === reviewIdStr);
+    if (!review) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đánh giá.' });
+    }
+
+    const reply = (review.replies || []).find(rep => rep._id === replyIdStr);
+    if (!reply) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy phản hồi.' });
+    }
+
+    const likes = Array.isArray(reply.likes) ? [...reply.likes] : [];
+    const idx = likes.indexOf(userIdStr);
+    if (idx > -1) {
+      likes.splice(idx, 1);
+    } else {
+      likes.push(userIdStr);
+    }
+
+    await col.updateOne(
+      { sku: skuStr },
+      { $set: { 'reviews.$[r].replies.$[rep].likes': likes, updatedAt: new Date() } },
+      { arrayFilters: [{ 'r._id': reviewIdStr }, { 'rep._id': replyIdStr }] }
+    );
+
+    const updated = await col.findOne({ sku: skuStr });
+    res.json(updated);
+  } catch (err) {
+    console.error('[POST /api/reviews/reply/like] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi like phản hồi đánh giá.' });
+  }
+});
+
+// PATCH /api/reviews - chỉnh sửa 1 đánh giá
+app.patch('/api/reviews', async (req, res) => {
+  try {
+    const { sku, reviewId, content, rating, images } = req.body || {};
+    const skuStr = String(sku || '').trim();
+    const reviewIdStr = String(reviewId || '').trim();
+    if (!skuStr || !reviewIdStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu sku hoặc reviewId.' });
+    }
+
+    const col = reviewsCollection();
+    const update = {
+      $set: {
+        'reviews.$.content': content || '',
+        'reviews.$.rating': Math.max(1, Math.min(5, Number(rating) || 5)),
+        'reviews.$.updatedAt': new Date(),
+        updatedAt: new Date()
+      }
+    };
+    if (images !== undefined) {
+      update.$set['reviews.$.images'] = Array.isArray(images) ? images : [];
+    }
+
+    const result = await col.updateOne(
+      { sku: skuStr, 'reviews._id': reviewIdStr },
+      update
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đánh giá.' });
+    }
+
+    const updated = await col.findOne({ sku: skuStr });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    console.error('[PATCH /api/reviews] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi cập nhật đánh giá.' });
+  }
+});
+
+// DELETE /api/reviews/:sku/:reviewId - xóa 1 đánh giá
+app.delete('/api/reviews/:sku/:reviewId', async (req, res) => {
+  try {
+    const { sku, reviewId } = req.params;
+    const skuStr = String(sku || '').trim();
+    const reviewIdStr = String(reviewId || '').trim();
+    if (!skuStr || !reviewIdStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu sku hoặc reviewId.' });
+    }
+
+    const col = reviewsCollection();
+    const result = await col.updateOne(
+      { sku: skuStr },
+      { $pull: { reviews: { _id: reviewIdStr } }, $set: { updatedAt: new Date() } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đánh giá để xóa.' });
+    }
+
+    const updated = await col.findOne({ sku: skuStr });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    console.error('[DELETE /api/reviews/:sku/:reviewId] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa đánh giá.' });
+  }
+});
+
 // ========= CONSULTATIONS (Hỏi đáp sản phẩm) =========
 // GET /api/consultations/:sku - danh sách hỏi đáp cho SKU
 app.get('/api/consultations/:sku', async (req, res) => {
@@ -3226,7 +3674,7 @@ app.get('/api/consultations/:sku', async (req, res) => {
 // POST /api/consultations - thêm câu hỏi mới
 app.post('/api/consultations', async (req, res) => {
   try {
-    const { sku, question, full_name, user_id } = req.body || {};
+    const { sku, question, full_name, user_id, avatar } = req.body || {};
     const skuStr = String(sku || '').trim();
     if (!skuStr) {
       return res.status(400).json({ success: false, message: 'Thiếu sku.' });
@@ -3243,6 +3691,7 @@ app.post('/api/consultations', async (req, res) => {
       question: String(question).trim(),
       user_id: uid,
       full_name: (full_name && String(full_name).trim()) || 'Khách hàng vãng lai',
+      avatar: avatar || '',
       answer: null,
       answeredBy: null,
       status: 'Pending',
@@ -3300,9 +3749,11 @@ app.post('/api/consultations', async (req, res) => {
 // POST /api/consultations/reply - trả lời 1 câu hỏi
 app.post('/api/consultations/reply', async (req, res) => {
   try {
-    const { sku, questionId, content, fullname, isAdmin } = req.body || {};
+    const { sku, questionId, content, fullname, isAdmin, avatar } = req.body || {};
     const skuStr = String(sku || '').trim();
     const qId = String(questionId || '').trim();
+    console.log(`[POST /api/consultations/reply] Received: SKU=${skuStr}, QID=${qId}, fullname=${fullname}`);
+
     if (!skuStr || !qId) {
       return res.status(400).json({ success: false, message: 'Thiếu sku hoặc questionId.' });
     }
@@ -3311,34 +3762,51 @@ app.post('/api/consultations/reply', async (req, res) => {
     }
 
     const col = consultationsProductCollection();
-    const doc = await col.findOne({ sku: skuStr });
-    if (!doc) {
-      return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
-    }
 
-    const question = (doc.questions || []).find((q) => q.id === qId || q._id === qId);
-    if (!question) {
-      return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
+    // Tìm doc theo SKU (chấp nhận cả string và number để tránh lệch kiểu dữ liệu)
+    const skuNum = !isNaN(Number(skuStr)) ? Number(skuStr) : null;
+    const skuFilter = skuNum !== null ? { $or: [{ sku: skuStr }, { sku: skuNum }] } : { sku: skuStr };
+
+    const doc = await col.findOne(skuFilter);
+    if (!doc) {
+      console.log(`[POST /api/consultations/reply] ERROR: Product not found for SKU: ${skuStr}`);
+      return res.status(404).json({ success: false, message: `Không tìm thấy sản phẩm với SKU ${skuStr}` });
     }
 
     const reply = {
+      _id: new mongoose.Types.ObjectId().toString(),
       content: String(content).trim(),
       fullname: (fullname && String(fullname).trim()) || 'Khách',
-      avatar: '',
+      user_id: req.body.user_id || null,
+      avatar: avatar || '',
       is_admin: !!isAdmin,
       time: new Date()
     };
 
-    await col.updateOne(
-      { sku: skuStr, $or: [{ 'questions.id': qId }, { 'questions._id': qId }] },
-      { $push: { 'questions.$.replies': reply }, $set: { updatedAt: new Date() } }
+    // Điều kiện khớp question trong arrayFilters (hỗ trợ cả id string, _id string, _id ObjectId)
+    const qCriteria = [{ 'q.id': qId }, { 'q._id': qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) {
+      qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qId) });
+    }
+
+    const updateResult = await col.updateOne(
+      skuFilter,
+      { $push: { 'questions.$[q].replies': reply }, $set: { updatedAt: new Date() } },
+      { arrayFilters: [{ $or: qCriteria }] }
     );
 
-    const updated = await col.findOne({ sku: skuStr });
+    console.log(`[POST /api/consultations/reply] Update Result: matched=${updateResult.matchedCount}, modified=${updateResult.modifiedCount}`);
+
+    if (updateResult.matchedCount === 0) {
+      console.log(`[POST /api/consultations/reply] FAILED: Could not match question ID ${qId} in SKU ${skuStr}`);
+      return res.status(404).json({ success: false, message: 'Không thể khớp câu hỏi để thêm phản hồi.' });
+    }
+
+    const updated = await col.findOne(skuFilter);
     res.json(updated);
   } catch (err) {
-    console.error('[POST /api/consultations/reply] Error:', err);
-    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi trả lời câu hỏi.' });
+    console.error('[POST /api/consultations/reply] CRITICAL ERROR:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ: ' + err.message });
   }
 });
 
@@ -3359,8 +3827,9 @@ app.post('/api/consultations/like', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
     }
 
-    const question = (doc.questions || []).find((q) => q.id === qId || q._id === qId);
+    const question = (doc.questions || []).find((q) => String(q.id || q._id || '') === qId);
     if (!question) {
+      console.log(`[POST /api/consultations/like] Question not found in memory. QID=${qId}`);
       return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
     }
 
@@ -3372,16 +3841,339 @@ app.post('/api/consultations/like', async (req, res) => {
       likes.push(userIdStr);
     }
 
-    await col.updateOne(
-      { sku: skuStr, $or: [{ 'questions.id': qId }, { 'questions._id': qId }] },
-      { $set: { 'questions.$.likes': likes, updatedAt: new Date() } }
+    // Identify question precisely inside array
+    const qCriteria = [{ 'q.id': qId }, { 'q._id': qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) {
+      qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qId) });
+    }
+
+    const updateResult = await col.updateOne(
+      { sku: skuStr },
+      { $set: { 'questions.$[q].likes': likes, updatedAt: new Date() } },
+      { arrayFilters: [{ $or: qCriteria }] }
     );
+    console.log(`[POST /api/consultations/like] Result: matched=${updateResult.matchedCount}, modified=${updateResult.modifiedCount}`);
 
     const updated = await col.findOne({ sku: skuStr });
     res.json(updated);
   } catch (err) {
     console.error('[POST /api/consultations/like] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi like câu hỏi.' });
+  }
+});
+
+// PATCH /api/consultations - chỉnh sửa 1 câu hỏi
+app.patch('/api/consultations', async (req, res) => {
+  try {
+    const { sku, questionId, question } = req.body || {};
+    const skuStr = String(sku || '').trim();
+    const qId = String(questionId || '').trim();
+    if (!skuStr || !qId) {
+      return res.status(400).json({ success: false, message: 'Thiếu sku hoặc questionId.' });
+    }
+    if (!question || !String(question).trim()) {
+      return res.status(400).json({ success: false, message: 'Thiếu nội dung câu hỏi.' });
+    }
+
+    const col = consultationsProductCollection();
+    console.log(`[PATCH /api/consultations] SKU=${skuStr}, QID=${qId}`);
+
+    // Identify document by SKU or directly by nested question ID (robust)
+    const findQuery = {
+      $or: [
+        { sku: skuStr },
+        { 'questions.id': qId },
+        { 'questions._id': qId }
+      ]
+    };
+    if (mongoose.Types.ObjectId.isValid(qId)) {
+      findQuery.$or.push({ 'questions._id': new mongoose.Types.ObjectId(qId) });
+    }
+
+    // Identifiers for arrayFilters matching
+    const qCriteria = [{ 'q.id': qId }, { 'q._id': qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) {
+      qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qId) });
+    }
+
+    const result = await col.updateOne(
+      findQuery,
+      {
+        $set: {
+          'questions.$[q].question': String(question).trim(),
+          'questions.$[q].updatedAt': new Date(),
+          updatedAt: new Date()
+        }
+      },
+      {
+        arrayFilters: [{ $or: qCriteria }]
+      }
+    );
+
+    console.log(`[PATCH /api/consultations] Update result: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
+    }
+
+    const updated = await col.findOne(findQuery);
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    console.error('[PATCH /api/consultations] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server khi cập nhật: ' + err.message });
+  }
+});
+
+// DELETE /api/consultations/:sku/:questionId - xóa 1 câu hỏi
+app.delete('/api/consultations/:sku/:questionId', async (req, res) => {
+  try {
+    const { sku, questionId } = req.params;
+    const skuStr = String(sku || '').trim();
+    const qId = String(questionId || '').trim();
+    if (!skuStr || !qId) {
+      return res.status(400).json({ success: false, message: 'Thiếu sku hoặc questionId.' });
+    }
+
+    const col = consultationsProductCollection();
+    console.log(`[DELETE /api/consultations] Attempting delete for SKU: ${skuStr}, QuestionID: ${qId}`);
+
+    // Build pull criteria
+    const pullCriteria = [{ id: qId }, { _id: qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) {
+      pullCriteria.push({ _id: new mongoose.Types.ObjectId(qId) });
+    }
+
+    const result = await col.updateOne(
+      { sku: skuStr },
+      { $pull: { questions: { $or: pullCriteria } }, $set: { updatedAt: new Date() } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi để xóa.' });
+    }
+
+    const updated = await col.findOne({ sku: skuStr });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    console.error('[DELETE /api/consultations/:sku/:questionId] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa câu hỏi.' });
+  }
+});
+
+// PATCH /api/consultations/reply - chỉnh sửa 1 phản hồi
+app.patch('/api/consultations/reply', async (req, res) => {
+  try {
+    const { sku, questionId, replyId, content, userId } = req.body || {};
+    const skuStr = String(sku || '').trim();
+    const qId = String(questionId || '').trim();
+    const rId = String(replyId || '').trim();
+    const userIdStr = String(userId || '').trim();
+
+    if (!skuStr || !qId || !rId || !userIdStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin sku, questionId, replyId hoặc userId.' });
+    }
+
+    const col = consultationsProductCollection();
+    const skuNum = !isNaN(Number(skuStr)) ? Number(skuStr) : null;
+    const skuFilter = skuNum !== null ? { $or: [{ sku: skuStr }, { sku: skuNum }] } : { sku: skuStr };
+
+    const doc = await col.findOne(skuFilter);
+    if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
+
+    const question = doc.questions.find(q => String(q.id || q._id || '') === qId);
+    if (!question) return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
+
+    const reply = (question.replies || []).find(r => String(r._id) === rId);
+    if (!reply) return res.status(404).json({ success: false, message: 'Không tìm thấy phản hồi.' });
+
+    // Ownership Check
+    if (String(reply.user_id) !== userIdStr) {
+      return res.status(403).json({ success: false, message: 'Bạn không có quyền chỉnh sửa phản hồi này.' });
+    }
+
+    const qCriteria = [{ 'q.id': qId }, { 'q._id': qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qId) });
+
+    const rCriteria = [{ 'r._id': rId }];
+
+    const result = await col.updateOne(
+      skuFilter,
+      {
+        $set: {
+          'questions.$[q].replies.$[r].content': String(content).trim(),
+          'questions.$[q].replies.$[r].updatedAt': new Date()
+        }
+      },
+      { arrayFilters: [{ $or: qCriteria }, { $or: rCriteria }] }
+    );
+
+    const updated = await col.findOne(skuFilter);
+    res.json(updated);
+  } catch (err) {
+    console.error('[PATCH /api/consultations/reply] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi cập nhật phản hồi.' });
+  }
+});
+
+// DELETE /api/consultations/reply/:sku/:questionId/:replyId/:userId - xóa 1 phản hồi
+app.delete('/api/consultations/reply/:sku/:questionId/:replyId/:userId', async (req, res) => {
+  try {
+    const { sku, questionId, replyId, userId } = req.params;
+    const skuStr = String(sku || '').trim();
+    const qId = String(questionId || '').trim();
+    const rId = String(replyId || '').trim();
+    const userIdStr = String(userId || '').trim();
+
+    if (!skuStr || !qId || !rId || !userIdStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin sku, questionId, replyId hoặc userId.' });
+    }
+
+    const col = consultationsProductCollection();
+    const skuNum = !isNaN(Number(skuStr)) ? Number(skuStr) : null;
+    const skuFilter = skuNum !== null ? { $or: [{ sku: skuStr }, { sku: skuNum }] } : { sku: skuStr };
+
+    const doc = await col.findOne(skuFilter);
+    if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
+
+    const question = doc.questions.find(q => String(q.id || q._id || '') === qId);
+    if (!question) return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
+
+    const reply = (question.replies || []).find(r => String(r._id) === rId);
+    if (!reply) return res.status(404).json({ success: false, message: 'Không tìm thấy phản hồi.' });
+
+    // Ownership Check
+    if (String(reply.user_id) !== userIdStr) {
+      return res.status(403).json({ success: false, message: 'Bạn không có quyền xóa phản hồi này.' });
+    }
+
+    const qCriteria = [{ 'q.id': qId }, { 'q._id': qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qId) });
+
+    const result = await col.updateOne(
+      skuFilter,
+      { $pull: { 'questions.$[q].replies': { _id: rId } } },
+      { arrayFilters: [{ $or: qCriteria }] }
+    );
+
+    const updated = await col.findOne(skuFilter);
+    res.json(updated);
+  } catch (err) {
+    console.error('[DELETE /api/consultations/reply] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa phản hồi.' });
+  }
+});
+
+// POST /api/consultations/reply/like - like / unlike 1 phản hồi
+app.post('/api/consultations/reply/like', async (req, res) => {
+  try {
+    const { sku, questionId, replyId, userId } = req.body || {};
+    const skuStr = String(sku || '').trim();
+    const qId = String(questionId || '').trim();
+    const rId = String(replyId || '').trim();
+    const userIdStr = String(userId || '').trim();
+
+    if (!skuStr || !qId || !rId || !userIdStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu sku, questionId, replyId hoặc userId.' });
+    }
+
+    const col = consultationsProductCollection();
+    const skuNum = !isNaN(Number(skuStr)) ? Number(skuStr) : null;
+    const skuFilter = skuNum !== null ? { $or: [{ sku: skuStr }, { sku: skuNum }] } : { sku: skuStr };
+
+    const doc = await col.findOne(skuFilter);
+    if (!doc) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
+    }
+
+    // Find question and reply in memory to toggle like
+    const question = (doc.questions || []).find(q => String(q.id || q._id || '') === qId);
+    if (!question) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
+    }
+
+    const reply = (question.replies || []).find(r => String(r._id || '') === rId);
+    if (!reply) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy phản hồi.' });
+    }
+
+    const likes = Array.isArray(reply.likes) ? [...reply.likes] : [];
+    const idx = likes.indexOf(userIdStr);
+    if (idx > -1) {
+      likes.splice(idx, 1);
+    } else {
+      likes.push(userIdStr);
+    }
+
+    // Identifiers for arrayFilters matching
+    const qCriteria = [{ 'q.id': qId }, { 'q._id': qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qId) });
+
+    const rCriteria = [{ 'r._id': rId }];
+
+    const result = await col.updateOne(
+      skuFilter,
+      { $set: { 'questions.$[q].replies.$[r].likes': likes, updatedAt: new Date() } },
+      { arrayFilters: [{ $or: qCriteria }, { $or: rCriteria }] }
+    );
+
+    console.log(`[POST /api/consultations/reply/like] Result: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+
+    const updated = await col.findOne(skuFilter);
+    res.json(updated);
+  } catch (err) {
+    console.error('[POST /api/consultations/reply/like] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi like phản hồi.' });
+  }
+});
+
+// POST /api/consultations/expert-answer/like - like / unlike expert answer (the main answer field)
+app.post('/api/consultations/expert-answer/like', async (req, res) => {
+  try {
+    const { sku, questionId, userId } = req.body || {};
+    const skuStr = String(sku || '').trim();
+    const qId = String(questionId || '').trim();
+    const userIdStr = String(userId || '').trim();
+
+    if (!skuStr || !qId || !userIdStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu sku, questionId hoặc userId.' });
+    }
+
+    const col = consultationsProductCollection();
+    const skuNum = !isNaN(Number(skuStr)) ? Number(skuStr) : null;
+    const skuFilter = skuNum !== null ? { $or: [{ sku: skuStr }, { sku: skuNum }] } : { sku: skuStr };
+
+    const doc = await col.findOne(skuFilter);
+    if (!doc) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm.' });
+    }
+
+    const question = (doc.questions || []).find(q => String(q.id || q._id || '') === qId);
+    if (!question) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi.' });
+    }
+
+    const likes = Array.isArray(question.answerLikes) ? [...question.answerLikes] : [];
+    const idx = likes.indexOf(userIdStr);
+    if (idx > -1) {
+      likes.splice(idx, 1);
+    } else {
+      likes.push(userIdStr);
+    }
+
+    const qCriteria = [{ 'q.id': qId }, { 'q._id': qId }];
+    if (mongoose.Types.ObjectId.isValid(qId)) qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qId) });
+
+    const result = await col.updateOne(
+      skuFilter,
+      { $set: { 'questions.$[q].answerLikes': likes, updatedAt: new Date() } },
+      { arrayFilters: [{ $or: qCriteria }] }
+    );
+
+    const updated = await col.findOne(skuFilter);
+    res.json(updated);
+  } catch (err) {
+    console.error('[POST /api/consultations/expert-answer/like] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi like câu trả lời chuyên gia.' });
   }
 });
 
@@ -3546,13 +4338,88 @@ app.get('/api/favorites', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
     }
 
-    const user = await usersCollection().findOne({ user_id });
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng.' });
+    // 1. Thử lấy từ users_memory (Vùng nhớ đệm/tạm thời)
+    let memoryUser = await usersMemoryCollection().findOne({ user_id });
+    let favoritesHistory = memoryUser?.favorites || [];
+
+    // 2. Nếu chưa có trong memory, tìm trong users gốc (Lazy Migration)
+    if (!memoryUser) {
+      const originalUser = await usersCollection().findOne({ user_id });
+      if (originalUser && Array.isArray(originalUser.favorites)) {
+        favoritesHistory = originalUser.favorites;
+        // Migrate sang memory
+        await usersMemoryCollection().updateOne(
+          { user_id },
+          { $set: { user_id, favorites: favoritesHistory, updatedAt: new Date() } },
+          { upsert: true }
+        );
+      }
     }
 
-    const favorites = Array.isArray(user.favorites) ? user.favorites : [];
-    res.json({ success: true, favorites });
+    if (favoritesHistory.length === 0) {
+      return res.json({ success: true, favorites: [] });
+    }
+
+    // 3. Hydration: Lấy thông tin đầy đủ từ vinmec_playlists
+    const videoIds = favoritesHistory.map(item => String(item.id || item._id));
+    const videos = await mongoose.connection.db.collection('vinmec_playlists').find({
+      $or: [
+        { id: { $in: videoIds } },
+        { _id: { $in: videoIds.map(id => (id.length === 24 && /^[0-9a-fA-F]{24}$/.test(id)) ? new mongoose.Types.ObjectId(id) : id) } }
+      ]
+    }).toArray();
+
+    // 4. Map ngược lại để giữ đúng thứ tự và bổ sung các trường đầy đủ (Merge để giữ category từ sản phẩm)
+    // LIVE HYDRATION: Nếu dữ liệu lưu cũ thiếu category, cố gắng tìm lại từ sản phẩm
+    const hydratedFavorites = await Promise.all(favoritesHistory.map(async item => {
+      const fullVideo = videos.find(v => String(v.id || v._id) === String(item.id || item._id));
+      if (!fullVideo) return item;
+
+      // Ưu tiên categoryName, category, categorySlug từ item
+      let savedCatName = (item.categoryName && item.categoryName !== "") ? item.categoryName : (item.category || "");
+      let savedCatSlug = item.categorySlug || "";
+
+      // LIVE HYDRATION: Nếu danh mục trống hoặc là "Sức khỏe chung", thử tìm thông tin tốt hơn từ products
+      if (!savedCatName || savedCatName === "Sức khỏe chung" || savedCatName === "SỨC KHỎE CHUNG") {
+        try {
+          const vidId = String(item.id || item._id);
+          // Tìm sản phẩm nào có chứa video này
+          const productWithVideo = await mongoose.connection.db.collection('products').findOne({
+            $or: [
+              { "healthVideos.id": vidId },
+              { "healthVideos._id": vidId },
+              { "healthVideos._id": vidId.length === 24 ? new mongoose.Types.ObjectId(vidId) : vidId }
+            ]
+          });
+
+          if (productWithVideo && productWithVideo.categoryId) {
+            const catId = productWithVideo.categoryId._id || productWithVideo.categoryId;
+            const cat = await mongoose.connection.db.collection('categories').findOne({
+              $or: [
+                { _id: catId },
+                { _id: new mongoose.Types.ObjectId(String(catId)) },
+                { _id: String(catId) }
+              ]
+            });
+            if (cat) {
+              savedCatName = cat.name;
+              savedCatSlug = cat.slug;
+            }
+          }
+        } catch (e) {
+          console.error('[Live Hydration Error]:', e);
+        }
+      }
+
+      return {
+        ...fullVideo,
+        categoryName: savedCatName || fullVideo.categoryName || fullVideo.classification?.playlist || 'Sức khỏe chung',
+        categorySlug: savedCatSlug || item.categorySlug || fullVideo.categorySlug || '',
+        id: String(fullVideo.id || fullVideo._id)
+      };
+    }));
+
+    res.json({ success: true, favorites: hydratedFavorites });
   } catch (err) {
     console.error('[GET /api/favorites] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy danh sách yêu thích.' });
@@ -3565,44 +4432,53 @@ app.post('/api/favorites', async (req, res) => {
     const { user_id, video } = req.body || {};
     const uid = String(user_id || '').trim();
     const videoData = video || {};
-    const vid = videoData.id || videoData._id || (videoData._id && videoData._id.$oid ? videoData._id.$oid : videoData._id);
+    const vid = String(videoData.id || videoData._id || (videoData._id && videoData._id.$oid ? videoData._id.$oid : videoData._id));
 
     if (!uid) {
       return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
     }
-    if (!vid) {
+    if (!vid || vid === 'undefined') {
       return res.status(400).json({ success: false, message: 'Thiếu thông tin video (id).' });
     }
 
-    // Đảm bảo video object có trường id để đồng bộ
-    const videoToSave = { ...videoData, id: String(vid) };
+    // Chỉ lưu các trường thiết yếu để hiển thị UI (giảm tải memory)
+    const videoToSave = {
+      id: vid,
+      title: videoData.title || '',
+      thumbnail: videoData.thumbnail || '',
+      category: (videoData.categoryName && videoData.categoryName !== "") ? videoData.categoryName : (videoData.category || 'Sức khỏe chung'),
+      categoryName: (videoData.categoryName && videoData.categoryName !== "") ? videoData.categoryName : (videoData.category || 'Sức khỏe chung'),
+      categorySlug: videoData.categorySlug || 'suc-khoe-chung',
+      duration: videoData.duration || '',
+      date: videoData.date || new Date().toISOString()
+    };
 
-    // Sử dụng $addToSet để tránh trùng lặp nếu video.id đã tồn tại
-    // Tuy nhiên $addToSet so khớp toàn bộ object. Ta nên kiểm tra id trước hoặc dùng logic khác.
-    const user = await usersCollection().findOne({ user_id: uid });
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng.' });
-    }
+    // Thao tác trực tiếp trên users_memory
+    await usersMemoryCollection().updateOne(
+      { user_id: uid },
+      {
+        $pull: { favorites: { id: vid } } // Xoá trước nếu đã tồn tại để tránh trùng
+      }
+    );
 
-    const favorites = Array.isArray(user.favorites) ? user.favorites : [];
-    const exists = favorites.some(v => String(v.id) === String(vid));
+    await usersMemoryCollection().updateOne(
+      { user_id: uid },
+      {
+        $push: { favorites: { $each: [videoToSave], $position: 0 } },
+        $set: { updatedAt: new Date() }
+      },
+      { upsert: true }
+    );
 
-    if (!exists) {
-      await usersCollection().updateOne(
-        { user_id: uid },
-        { $push: { favorites: videoToSave } }
-      );
-    }
-
-    const updatedUser = await usersCollection().findOne({ user_id: uid });
-    res.json({ success: true, favorites: updatedUser.favorites || [] });
+    const updatedUser = await usersMemoryCollection().findOne({ user_id: uid });
+    res.json({ success: true, favorites: updatedUser?.favorites || [] });
   } catch (err) {
     console.error('[POST /api/favorites] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi thêm vào yêu thích.' });
   }
 });
 
-// DELETE /api/favorites - Xóa video khỏi danh sách yêu thích
+// DELETE /api/favorites - Xóa video khỏi danh sách yêu thích (Lưu vào users_memory)
 app.delete('/api/favorites', async (req, res) => {
   try {
     const { user_id, videoId } = req.body || {};
@@ -3613,17 +4489,184 @@ app.delete('/api/favorites', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Thiếu user_id hoặc videoId.' });
     }
 
-    // Xóa dựa trên trường id
-    await usersCollection().updateOne(
+    // Xóa trong users_memory
+    await usersMemoryCollection().updateOne(
       { user_id: uid },
-      { $pull: { favorites: { id: vid } } }
+      {
+        $pull: { favorites: { id: vid } },
+        $set: { updatedAt: new Date() }
+      }
     );
 
-    const updatedUser = await usersCollection().findOne({ user_id: uid });
-    res.json({ success: true, favorites: updatedUser.favorites || [] });
+    const updatedUser = await usersMemoryCollection().findOne({ user_id: uid });
+    res.json({ success: true, favorites: (updatedUser && updatedUser.favorites) ? updatedUser.favorites : [] });
   } catch (err) {
     console.error('[DELETE /api/favorites] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa khỏi yêu thích.' });
+  }
+});
+
+// ========= RECENTLY VIEWED PRODUCTS =========
+// POST /api/recently-viewed - Lưu sản phẩm vừa xem vào users_memory
+app.post('/api/recently-viewed', async (req, res) => {
+  try {
+    const { user_id, product } = req.body || {};
+    const uid = String(user_id || '').trim();
+    if (!uid || !product) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id hoặc thông tin sản phẩm.' });
+    }
+
+    const productId = String(product._id?.$oid || product._id || product.id || '');
+    if (!productId) {
+      return res.status(400).json({ success: false, message: 'Thông tin sản phẩm không hợp lệ (thiếu id).' });
+    }
+
+    // Chỉ lưu ID, Name và các trường thiết yếu để hiển thị UI
+    const productToSave = {
+      id: productId,
+      name: product.name || '',
+      image: product.image || '',
+      price: product.price ?? 0,
+      discount: product.discount ?? 0,
+      slug: product.slug || '',
+      viewedAt: new Date()
+    };
+
+    // 1. Lấy dữ liệu hiện tại từ users_memory
+    const memoryUser = await usersMemoryCollection().findOne({ user_id: uid });
+    let recentlyViewed = Array.isArray(memoryUser?.recentlyViewed) ? memoryUser.recentlyViewed : [];
+
+    // 2. Loại bỏ sản phẩm cũ nếu trùng id
+    recentlyViewed = recentlyViewed.filter(p => String(p.id || p._id?.$oid || p._id) !== productId);
+
+    // 3. Thêm vào đầu và giới hạn 20 item
+    recentlyViewed.unshift(productToSave);
+    recentlyViewed = recentlyViewed.slice(0, 20);
+
+    // 4. Cập nhật lại users_memory
+    await usersMemoryCollection().updateOne(
+      { user_id: uid },
+      {
+        $set: {
+          user_id: uid,
+          recentlyViewed,
+          updatedAt: new Date()
+        }
+      },
+      { upsert: true }
+    );
+
+    res.json({ success: true, recentlyViewed });
+  } catch (err) {
+    console.error('[POST /api/recently-viewed] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lưu sản phẩm vừa xem.' });
+  }
+});
+
+// GET /api/recently-viewed - Lấy danh sách sản phẩm vừa xem từ users_memory + Hydration
+app.get('/api/recently-viewed', async (req, res) => {
+  try {
+    const user_id = String(req.query.user_id || '').trim();
+    if (!user_id) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+
+    // 1. Lấy history từ memory
+    const memoryUser = await usersMemoryCollection().findOne({ user_id });
+    const history = memoryUser?.recentlyViewed || [];
+
+    if (history.length === 0) {
+      return res.json({ success: true, recentlyViewed: [] });
+    }
+
+    // 2. Hydration: Lấy thông tin đầy đủ từ collection products
+    const productIds = history.map(item => item.id);
+
+    // Tìm products theo nhiều định dạng ID để đảm bảo match
+    const products = await productsCollection().find({
+      $or: [
+        { _id: { $in: productIds.map(id => id.length === 24 ? new mongoose.Types.ObjectId(id) : id) } },
+        { id: { $in: productIds } },
+        { "_id.$oid": { $in: productIds } }
+      ]
+    }).toArray();
+
+    // 3. Map ngược lại để giữ đúng thứ tự "vừa xem" và bổ sung viewedAt
+    const hydratedHistory = history.map(item => {
+      const fullProduct = products.find(p => {
+        const pId = String(p._id?.$oid || p._id || p.id || '');
+        return pId === item.id;
+      });
+      return fullProduct ? { ...fullProduct, viewedAt: item.viewedAt } : null;
+    }).filter(p => p !== null);
+
+    res.json({ success: true, recentlyViewed: hydratedHistory });
+  } catch (err) {
+    console.error('[GET /api/recently-viewed] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy danh sách vừa xem.' });
+  }
+});
+
+// DELETE /api/recently-viewed - Xóa sản phẩm khỏi danh sách vừa xem trong users_memory
+app.delete('/api/recently-viewed', async (req, res) => {
+  try {
+    const { user_id, productId } = req.body || {};
+    const uid = String(user_id || '').trim();
+    const pid = String(productId || '').trim();
+
+    if (!uid || !pid) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id hoặc productId.' });
+    }
+
+    // Xóa trong users_memory (hỗ trợ cả p.id và p._id)
+    await usersMemoryCollection().updateOne(
+      { user_id: uid },
+      {
+        $pull: {
+          recentlyViewed: {
+            $or: [
+              { id: pid },
+              { _id: pid },
+              { "_id.$oid": pid }
+            ]
+          }
+        },
+        $set: { updatedAt: new Date() }
+      }
+    );
+
+    const updatedUser = await usersMemoryCollection().findOne({ user_id: uid });
+    res.json({ success: true, recentlyViewed: updatedUser?.recentlyViewed || [] });
+  } catch (err) {
+    console.error('[DELETE /api/recently-viewed] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa sản phẩm vừa xem.' });
+  }
+});
+
+// DELETE /api/recently-viewed/all - Xóa toàn bộ danh sách vừa xem trong users_memory
+app.delete('/api/recently-viewed/all', async (req, res) => {
+  try {
+    const { user_id } = req.body || {};
+    const uid = String(user_id || '').trim();
+
+    if (!uid) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+
+    await usersMemoryCollection().updateOne(
+      { user_id: uid },
+      {
+        $set: {
+          recentlyViewed: [],
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    res.json({ success: true, recentlyViewed: [] });
+  } catch (err) {
+    console.error('[DELETE /api/recently-viewed/all] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa danh sách vừa xem.' });
   }
 });
 
@@ -3928,6 +4971,26 @@ app.post('/api/consultations/disease', async (req, res) => {
     consultation.updatedAt = new Date();
 
     await consultation.save();
+
+    // Tạo thông báo cho user khi gửi câu hỏi về bệnh thành công
+    if (user_id) {
+      try {
+        await noticesCollection().insertOne({
+          user_id: String(user_id),
+          type: 'order_updated',
+          title: 'Câu hỏi đã được gửi',
+          message: `Câu hỏi của bạn về "${productName || sku}" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.`,
+          createdAt: new Date().toISOString(),
+          read: false,
+          link: '/account',
+          linkLabel: 'Xem thông báo',
+          meta: sku,
+        });
+      } catch (e) {
+        console.warn('[POST /api/consultations/disease] Cannot create notice:', e.message);
+      }
+    }
+
     res.status(201).json({ success: true, data: newQuestion });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -5262,48 +6325,23 @@ app.post('/api/admin/promotions', async (req, res) => {
     const item = new PromotionModel(cleanBody);
     const data = await item.save();
 
-    // Lưu thêm bản ghi target vào collection promotion_promotion_target
-    const rawType = (data.type || 'customer').toString().toLowerCase();
-    let targetType = 'Customer';
-    let targetRefs = [];
+    let targetRef = '';
+    const type = data.type || 'customer';
+    if (type === 'category') targetRef = data.target_category_id;
+    else if (type === 'product') targetRef = data.product_group_id;
+    else if (type === 'customer') targetRef = data.customer_group_id;
 
-    if (rawType === 'category' && data.target_category_id) {
-      targetType = 'Category';
-      targetRefs = Array.isArray(data.target_category_id)
-        ? data.target_category_id
-        : [data.target_category_id];
-    } else if (rawType === 'product' && data.product_group_id) {
-      targetType = 'ProductGroup';
-      targetRefs = Array.isArray(data.product_group_id)
-        ? data.product_group_id
-        : [data.product_group_id];
-    } else if (rawType === 'customer') {
-      const mode = data.customer_target_mode || 'all';
-      if (mode === 'group' && data.customer_group_id) {
-        targetType = 'CustomerGroup';
-        targetRefs = Array.isArray(data.customer_group_id)
-          ? data.customer_group_id
-          : [data.customer_group_id];
-      } else if (mode === 'tier' && data.customer_tiers) {
-        targetType = 'CustomerTier';
-        targetRefs = Array.isArray(data.customer_tiers)
-          ? data.customer_tiers
-          : [data.customer_tiers];
-      }
-    }
+    const targetData = {
+      promotion_oid: data._id.toString(),
+      promotion_id: data.promotion_id || '',
+      target_type: [type],
+      target_ref: targetRef || '',
+      code: data.code || '',
+      name: data.name || '',
+      status: data.status || 'active'
+    };
 
-    // Nếu không chọn nhóm/đối tượng cụ thể nào => áp dụng cho TẤT CẢ
-    // => Không tạo bản ghi promotion_promotion_target, để phía user hiểu là không giới hạn target
-    if (targetRefs.length > 0) {
-      const targetData = {
-        promotion_oid: data._id.toString(),
-        promotion_id: data.promotion_id || '',
-        target_type: targetType,
-        target_ref: targetRefs,
-      };
-
-      await PromotionTarget.create(targetData);
-    }
+    await PromotionTarget.create(targetData);
     res.status(201).json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -5454,7 +6492,8 @@ app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
 
     // Lưu notice cho user khi admin thay đổi trạng thái đơn thuốc
     if (status) {
-      const userId = updated.user_id;
+      const userId = updated.user_id; // Original line
+      console.log('[PATCH /api/admin/consultations_prescription/:id] userId:', userId); // Added for debugging
       if (userId) {
         const prescriptionCode = updated.prescriptionId || id;
         const pharmacistInfo = pharmacistName ? ` bởi dược sĩ ${pharmacistName}` : '';
@@ -5828,7 +6867,8 @@ app.get('/api/admin/users/:id/orders', async (req, res) => {
 
 app.post('/api/admin/users', async (req, res) => {
   try {
-    const item = new UserModel(req.body);
+    const { favorites, ...userData } = req.body || {};
+    const item = new UserModel(userData);
     const data = await item.save();
     res.status(201).json({ success: true, data });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
@@ -5836,7 +6876,8 @@ app.post('/api/admin/users', async (req, res) => {
 
 app.put('/api/admin/users/:id', async (req, res) => {
   try {
-    const data = await UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { favorites, ...updateData } = req.body || {};
+    const data = await UserModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.json({ success: true, data });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });

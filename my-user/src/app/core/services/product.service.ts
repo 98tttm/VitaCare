@@ -62,9 +62,6 @@ export class ProductService {
   }
 
   getProductBySlug(slug: string): Observable<any> {
-    // Note: The backend endpoint is /api/product/:slug, whereas base apiUrl is /api/products
-    // So we need to construct the URL correctly.
-    // Assuming backend endpoint is http://localhost:3000/api/product/:slug
     return this.http.get<any>(`http://localhost:3000/api/product/${slug}`).pipe(
       map((p) => {
         if (!p) return p;
@@ -92,6 +89,10 @@ export class ProductService {
     return this.http.get<any[]>(`http://localhost:3000/api/health-videos${queryString ? '?' + queryString : ''}`);
   }
 
+  getHealthVideoById(id: string): Observable<any> {
+    return this.http.get<any>(`http://localhost:3000/api/health-video/${id}`);
+  }
+
   getRelatedProducts(productId: string): Observable<any[]> {
     return this.http.get<any[]>(`http://localhost:3000/api/products/related/${productId}`).pipe(
       map((list) =>
@@ -113,12 +114,32 @@ export class ProductService {
     return this.http.post('http://localhost:3000/api/reviews', reviewData);
   }
 
+  updateReview(reviewData: any): Observable<any> {
+    return this.http.patch('http://localhost:3000/api/reviews', reviewData);
+  }
+
+  deleteReview(sku: string, reviewId: string): Observable<any> {
+    return this.http.delete(`http://localhost:3000/api/reviews/${sku}/${reviewId}`);
+  }
+
   replyToReview(data: any): Observable<any> {
     return this.http.post('http://localhost:3000/api/reviews/reply', data);
   }
 
   likeReview(data: any): Observable<any> {
     return this.http.post('http://localhost:3000/api/reviews/like', data);
+  }
+
+  likeReviewReply(data: any): Observable<any> {
+    return this.http.post('http://localhost:3000/api/reviews/reply/like', data);
+  }
+
+  updateReviewReply(data: any): Observable<any> {
+    return this.http.patch('http://localhost:3000/api/reviews/reply', data);
+  }
+
+  deleteReviewReply(sku: string, reviewId: string, replyId: string, userId: string): Observable<any> {
+    return this.http.delete(`http://localhost:3000/api/reviews/reply/${sku}/${reviewId}/${replyId}/${userId}`);
   }
 
   getProductConsultations(sku: string): Observable<any> {
@@ -129,6 +150,14 @@ export class ProductService {
     return this.http.post('http://localhost:3000/api/consultations', data);
   }
 
+  updateConsultation(data: any): Observable<any> {
+    return this.http.patch('http://localhost:3000/api/consultations', data);
+  }
+
+  deleteConsultation(sku: string, questionId: string): Observable<any> {
+    return this.http.delete(`http://localhost:3000/api/consultations/${sku}/${questionId}`);
+  }
+
   likeConsultation(data: any): Observable<any> {
     return this.http.post('http://localhost:3000/api/consultations/like', data);
   }
@@ -137,12 +166,38 @@ export class ProductService {
     return this.http.post('http://localhost:3000/api/consultations/reply', data);
   }
 
+  updateConsultationReply(data: any): Observable<any> {
+    return this.http.patch('http://localhost:3000/api/consultations/reply', data);
+  }
+
+  deleteConsultationReply(sku: string, questionId: string, replyId: string, userId: string): Observable<any> {
+    return this.http.delete(`http://localhost:3000/api/consultations/reply/${sku}/${questionId}/${replyId}/${userId}`);
+  }
+
+  likeConsultationReply(data: any): Observable<any> {
+    return this.http.post('http://localhost:3000/api/consultations/reply/like', data);
+  }
+
+  likeConsultationExpertAnswer(data: any): Observable<any> {
+    return this.http.post('http://localhost:3000/api/consultations/expert-answer/like', data);
+  }
+
   getProductFaqs(productId: string): Observable<any[]> {
     return this.http.get<any[]>(`http://localhost:3000/api/product-faqs/${productId}`);
   }
 
   getFavorites(userId: string): Observable<any> {
-    return this.http.get(`http://localhost:3000/api/favorites?user_id=${userId}`);
+    return this.http.get(`http://localhost:3000/api/favorites?user_id=${userId}`).pipe(
+      map((res: any) => {
+        if (res && res.favorites) {
+          res.favorites = res.favorites.map((v: any) => ({
+            ...v,
+            thumbnail: this.normalizeMediaUrl(v.thumbnail) || v.thumbnail,
+          }));
+        }
+        return res;
+      })
+    );
   }
 
   addToFavorites(userId: string, video: any): Observable<any> {
@@ -150,9 +205,38 @@ export class ProductService {
   }
 
   removeFromFavorites(userId: string, videoId: string): Observable<any> {
-    // Backend expects videoId in body for DELETE (as per my implementation)
     return this.http.request('delete', 'http://localhost:3000/api/favorites', {
       body: { user_id: userId, videoId }
+    });
+  }
+
+  trackProductView(userId: string, product: any): Observable<any> {
+    return this.http.post('http://localhost:3000/api/recently-viewed', { user_id: userId, product });
+  }
+
+  getRecentlyViewed(userId: string): Observable<any> {
+    return this.http.get(`http://localhost:3000/api/recently-viewed?user_id=${userId}`).pipe(
+      map((res: any) => {
+        if (res && res.recentlyViewed) {
+          res.recentlyViewed = res.recentlyViewed.map((p: any) => ({
+            ...p,
+            image: this.normalizeMediaUrl(p.image) || p.image,
+          }));
+        }
+        return res;
+      })
+    );
+  }
+
+  deleteRecentlyViewedProduct(userId: string, productId: string): Observable<any> {
+    return this.http.request('delete', 'http://localhost:3000/api/recently-viewed', {
+      body: { user_id: userId, productId }
+    });
+  }
+
+  clearRecentlyViewedHistory(userId: string): Observable<any> {
+    return this.http.request('delete', 'http://localhost:3000/api/recently-viewed/all', {
+      body: { user_id: userId }
     });
   }
 }

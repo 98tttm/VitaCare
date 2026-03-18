@@ -43,52 +43,40 @@
   background-color: #fff;
   padding: 15px;
   font-weight: bold;
-  border-bottom: 2px solid #E0E0E0;
-  color: #0056b3;
+  border-bottom: 1px solid #E0E0E0;
+  color: #333;
 }
 
 .pc-menu {
   list-style: none;
-  padding: 0;
+  padding: 8px;
   margin: 0;
 }
 
 .pc-menu li {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: none;
+  margin-bottom: 4px;
 }
 
 .pc-menu li a {
   display: block;
-  padding: 12px 15px;
+  padding: 12px 16px;
   text-decoration: none;
-  color: #333;
-  transition: background 0.2s;
+  color: #000;
+  transition: all 0.2s ease;
   font-size: 14px;
+  font-weight: 700;
+  border-radius: 12px;
 }
 
 .pc-menu li a:hover {
-  background-color: #f9f9f9;
+  background-color: #f5f5f5;
 }
 
-.pc-menu li.active a {
-  background-color: #E8EAF6;
-  /* Light purple/blue active bg */
-  color: #000;
-  font-weight: 600;
-  border-left: 4px solid #000;
-  /* Assuming black accent from image */
-}
-
-/* Adjust active style to match image strictly */
-.pc-menu li.active {
-  background-color: #F3F0F5;
-  /* Very light purple */
-}
-
-.pc-menu li.active a {
-  font-weight: bold;
-  border-left: none;
-  /* Image doesn't show border-left clearly, let's stick to bg */
+.pc-menu li a.active {
+  background-color: #F0F2F5;
+  color: #00589F;
+  font-weight: 700;
 }
 
 /* Main Content */
@@ -98,6 +86,60 @@
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   TABLE STYLE
+   ========================= */
+
+.pc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+/* Header */
+.pc-content table thead {
+  background: #f1f3f5;
+}
+
+.pc-content table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Cell */
+.pc-content table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+/* Zebra rows (trắng - xám) */
+.pc-content table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.pc-content table tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
+/* Hover nhẹ để dễ đọc */
+.pc-content table tbody tr:hover {
+  background: #eef4ff;
+  transition: 0.2s;
+}
+
+/* Border tổng thể */
+.pc-content table {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .pc-title {
@@ -224,7 +266,7 @@
 
   /* Menu: biến thành danh sách gọn, bấm dễ */
   .pc-menu li {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: none;
   }
 
   .pc-menu li a {
@@ -232,14 +274,10 @@
     font-size: 14px;
   }
 
-  /* Active: rõ ràng nhưng nhẹ nhàng */
-  .pc-menu li.active {
-    background: #f3f6ff;
-  }
-
-  .pc-menu li.active a {
-    font-weight: 800;
-    color: #0b2b4b;
+  .pc-menu li a.active {
+    background: #F0F2F5;
+    color: #00589F;
+    font-weight: 700;
   }
 
   /* Content: padding nhỏ lại, bo góc lớn, shadow nhẹ */
@@ -356,13 +394,10 @@
     font-size: 14px;
   }
 
-  .pc-menu li.active {
-    background: #f3f6ff;
-  }
-
-  .pc-menu li.active a {
-    font-weight: 800;
-    color: #0b2b4b;
+  .pc-menu li a.active {
+    background: #F0F2F5;
+    color: #00589F;
+    font-weight: 700;
   }
 
   /* Content vừa phải */

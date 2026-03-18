@@ -2,23 +2,25 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HealthTestService, QuizResultReq } from '../../../core/services/health-test.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-health-test',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './health-test.html',
   styleUrls: ['./health-test.css']
 })
 export class HealthTestComponent implements OnInit {
-  screen: 'list' | 'quiz' | 'register' | 'result' = 'list';
+  screen: 'list' | 'intro' | 'quiz' | 'register' | 'result' | 'history' = 'list';
   quizzes: any[] = [];
   selectedQuiz: any = null;
   currentQ: number = 0;
   answers: { [key: number]: string } = {};
   result: any = null;
   isLoggedIn: boolean = false; // Mock auth
+  historyRecords: any[] = []; // Store history list
 
   tinhThanhList = [
     "An Giang", "Bà Rịa - Vũng Tàu", "Bạc Liêu", "Bắc Giang", "Bắc Kạn",
@@ -43,6 +45,7 @@ export class HealthTestComponent implements OnInit {
 
   constructor(
     private healthTestService: HealthTestService,
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
@@ -50,7 +53,7 @@ export class HealthTestComponent implements OnInit {
 
   ngOnInit(): void {
     // Check auth status
-    this.isLoggedIn = !!localStorage.getItem('vitacare_token'); // example
+    this.isLoggedIn = !!this.authService.currentUser();
 
     // Đồng nhất màu với trang chủ: một màu chủ đạo (vc-main + vc-main-bg)
     const unifiedColor = '#00589F';
@@ -90,6 +93,33 @@ export class HealthTestComponent implements OnInit {
     this.currentQ = 0;
     this.answers = {};
     this.result = null;
+    this.screen = 'intro';
+  }
+
+  viewHistory(quiz: any, event: Event) {
+    event.stopPropagation();
+    this.selectedQuiz = quiz;
+
+    // Check if user has mock auth
+    if (!this.isLoggedIn) {
+      alert("Vui lòng đăng nhập để xem lịch sử!");
+      return;
+    }
+
+    this.healthTestService.getQuizHistory(quiz.quiz_id).subscribe({
+      next: (data) => {
+        this.historyRecords = data;
+        this.screen = 'history';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load history', err);
+        alert("Lỗi khi tải lịch sử kiểm tra.");
+      }
+    });
+  }
+
+  beginQuiz() {
     this.screen = 'quiz';
   }
 
@@ -102,7 +132,11 @@ export class HealthTestComponent implements OnInit {
     if (this.currentQ < questions.length - 1) {
       this.currentQ++;
     } else {
-      this.finishQuiz();
+      if (this.isLoggedIn) {
+        this.finishQuiz();
+      } else {
+        this.screen = 'register';
+      }
     }
   }
 
@@ -178,6 +212,7 @@ export class HealthTestComponent implements OnInit {
     this.currentQ = 0;
     this.answers = {};
     this.result = null;
+    this.historyRecords = [];
     this.form = { name: '', province: '', phone: '', dob: '', gender: 'Nam', referralCode: '', agreed: true };
     this.formErrors = {};
   }
