@@ -281,7 +281,10 @@
             <div class="vc_cart_dropdown_header">Giỏ hàng</div>
             <ng-container *ngIf="cart?.items?.length; else hoverEmpty">
               <div class="vc_cart_dropdown_body">
-                <div class="vc_cart_dropdown_item" *ngFor="let item of limitedCartItems">
+                <div class="vc_cart_dropdown_item" *ngFor="let item of limitedCartItems"
+                  role="button" tabindex="0"
+                  (click)="onCartItemActivate($event, item)"
+                  (keydown.enter)="onCartItemActivate($event, item)">
                   <img [src]="item.image" [alt]="item.productName" class="vc_cart_dropdown_img">
                   <div class="vc_cart_dropdown_info">
                     <div class="vc_cart_dropdown_name">{{ item.productName }}</div>
