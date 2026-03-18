@@ -1489,44 +1489,24 @@ app.get('/api/carts', async (req, res) => {
 
     const itemsArray = Array.isArray(cartDoc.items) ? cartDoc.items : [];
 
-    // Fetch latest images from products collection
+    /**
+     * Tối ưu hiệu năng:
+     * Trước đây mỗi lần mở giỏ hàng FE sẽ gọi GET /api/carts,
+     * route này lại join sang collection products để lấy ảnh mới nhất
+     * cho từng sản phẩm trong giỏ → tạo một truy vấn $or rất lớn,
+     * dễ làm request chậm khi giỏ hoặc bảng sản phẩm lớn.
+     *
+     * Để tránh lag khi mở giỏ, ta bỏ bước join nặng này
+     * và chỉ chuẩn hoá lại dữ liệu số ngay trên items hiện có.
+     * Ảnh sản phẩm đã được lưu trong cart khi thêm vào giỏ,
+     * FE vẫn có thể hiển thị bình thường.
+     */
     if (itemsArray.length > 0) {
-      const productIds = itemsArray.map(it => it._id?.$oid || String(it._id)).filter(Boolean);
-
-      // Build query to handle both string and ObjectId
-      const idFilters = productIds.map(id => {
-        const filters = [{ _id: id }];
-        if (mongoose.Types.ObjectId.isValid(id)) {
-          filters.push({ _id: new mongoose.Types.ObjectId(id) });
-        }
-        filters.push({ "_id.$oid": id });
-        return filters;
-      }).flat();
-
-      if (idFilters.length > 0) {
-        const products = await productsCollection().find({ $or: idFilters }, { projection: { _id: 1, image: 1, gallery: 1, images: 1, imageUrl: 1 } }).toArray();
-
-        const productMap = {};
-        products.forEach(p => {
-          const pid = p._id?.$oid || String(p._id);
-
-          // Ưu tiên: field image -> images[0] -> gallery[0] -> imageUrl (Giống logic danh mục sản phẩm)
-          const primaryImage = p.image ||
-            (Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '') ||
-            (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery[0] : '') ||
-            p.imageUrl || '';
-
-          productMap[pid] = primaryImage;
-        });
-
-        // Cập nhật lại mảng items
-        itemsArray.forEach(it => {
-          const itId = it._id?.$oid || String(it._id);
-          if (productMap[itId]) {
-            it.image = productMap[itId];
-          }
-        });
-      }
+      itemsArray.forEach((it) => {
+        it.quantity = Number(it.quantity) || 1;
+        it.price = Number(it.price) || 0;
+        it.discount = Number(it.discount) || 0;
+      });
     }
 
     const totalQuantity = itemsArray.reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);

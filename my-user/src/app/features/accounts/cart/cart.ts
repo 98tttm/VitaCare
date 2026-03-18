@@ -110,18 +110,32 @@ export class Cart implements OnInit, OnDestroy {
     return Math.max(0, this.selectedTotalPrice() - this.voucherDiscount());
   });
 
+  /** Tránh gọi API giỏ hàng lặp lại khi sidebar đã mở và user không đổi. */
+  private lastOpenState = false;
+  private lastUserId: string | null = null;
+
   constructor() {
     effect(() => {
       const open = this.cartSidebar.isOpen();
       const user = this.authService.currentUser();
-      if (open && user && (user as any).user_id) {
-        this.loadCart((user as any).user_id as string);
-      } else if (open && !user?.user_id) {
-        this.loadGuestCart();
-      } else if (!open) {
+      const userId = user && (user as any).user_id ? String((user as any).user_id) : null;
+
+      // Chỉ load khi chuyển từ đóng → mở hoặc khi userId thay đổi.
+      if (open && !this.lastOpenState) {
+        if (userId) {
+          this.loadCart(userId);
+        } else {
+          this.loadGuestCart();
+        }
+      } else if (open && userId && userId !== this.lastUserId) {
+        this.loadCart(userId);
+      } else if (!open && this.lastOpenState) {
         this.cart.set(null);
         this.cartSelectedIds.set(new Set());
       }
+
+      this.lastOpenState = open;
+      this.lastUserId = userId;
     });
   }
 
