@@ -5,7 +5,7 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb-vc">
         <li class="breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
-        <li class="breadcrumb-item active">Hệ thống nhà thuốc VitaCare</li>
+        <li class="breadcrumb-item active">Hệ thống nhà thuốc</li>
       </ol>
     </nav>
     <h1 class="page-title">Hệ thống nhà thuốc VitaCare</h1>
@@ -229,12 +229,14 @@
 
         <!-- Map + Info row -->
         <div class="map-info-row">
-          <div class="map-placeholder" (click)="openMap(selectedStore)">
+          <div class="map-placeholder" *ngIf="getMapUrl(selectedStore)">
+            <iframe [src]="getMapUrl(selectedStore)" width="100%" height="100%" style="border:0;" allowfullscreen=""
+              loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+          <div class="map-placeholder" *ngIf="!getMapUrl(selectedStore)" (click)="openMap(selectedStore)">
             <span class="material-symbols-rounded">map</span>
-            <span>Xem bản đồ</span>
-            <span class="map-coords" *ngIf="selectedStore.toa_do">
-              {{ selectedStore.toa_do.lat | number:'1.4-4' }}, {{ selectedStore.toa_do.lng | number:'1.4-4' }}
-            </span>
+            <span>Chưa có bản đồ</span>
           </div>
 
           <div class="store-info-block">
@@ -306,7 +308,7 @@
         </div>
 
         <!-- Description -->
-        <div class="desc-section" *ngIf="selectedStore.mo_ta">
+        <div class="desc-section" *ngIf="selectedStore.mo_ta" style="font-weight: 500;">
           <p>{{ selectedStore.mo_ta }}</p>
         </div>
 

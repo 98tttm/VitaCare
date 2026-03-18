@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Store } from '../../../core/models/store.model';
 import { StoreService, StoreFilter, LocationItem } from '../../../core/services/store.service';
 import { Subject } from 'rxjs';
@@ -19,7 +21,7 @@ const TINH_THANH_LIST = [
 @Component({
     selector: 'app-store-system',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterLink],
     templateUrl: './store-system.html',
     styleUrl: './store-system.css',
 })
@@ -41,7 +43,7 @@ export class StoreSystemComponent implements OnInit, OnDestroy {
     currentPage = 1;
     totalPages = 1;
     totalStores = 0;
-    pageSize = 8;
+    pageSize = 3;
 
     tinhThanhList: string[] = ['Tất cả'];
     allLocations: any[] = [];
@@ -57,6 +59,7 @@ export class StoreSystemComponent implements OnInit, OnDestroy {
         private storeService: StoreService,
         private ngZone: NgZone,
         private cdr: ChangeDetectorRef,
+        private sanitizer: DomSanitizer
     ) { }
 
     ngOnInit(): void {
@@ -257,5 +260,11 @@ export class StoreSystemComponent implements OnInit, OnDestroy {
 
     callPhone(phone: string): void {
         window.open(`tel:${phone}`);
+    }
+
+    getMapUrl(store: Store): SafeResourceUrl | null {
+        if (!store.toa_do || !store.toa_do.lat || !store.toa_do.lng) return null;
+        const url = `https://maps.google.com/maps?q=${store.toa_do.lat},${store.toa_do.lng}&hl=vi&z=15&output=embed`;
+        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
 }

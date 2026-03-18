@@ -1312,6 +1312,20 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  onCartItemActivate(e: Event, item: CartItem): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = String((item as any)?._id ?? (item as any)?.id ?? '').trim();
+    if (!id) return;
+    if (this.authService.currentUser()) {
+      this.isCartHoverVisible = false;
+      this.cartSidebarService.openSidebarWithFocus(id);
+      this.cdr.markForCheck();
+    } else {
+      this.authService.openAuthModal();
+    }
+  }
+
   onRemoveFromCart(e: Event, item: any): void {
     e.preventDefault();
     e.stopPropagation();
