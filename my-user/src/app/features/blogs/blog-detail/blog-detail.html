@@ -11,9 +11,8 @@
     </nav>
 
     <!-- Loading -->
-    <div *ngIf="loading" class="bd-loading">
-      <div class="spinner-border text-primary" role="status"></div>
-      <p class="mt-2">Đang tải bài viết...</p>
+    <div *ngIf="loading" class="bd-loading-new">
+      <app-loading-shipping text="Đang tải bài viết..."></app-loading-shipping>
     </div>
 
     <!-- Not found -->

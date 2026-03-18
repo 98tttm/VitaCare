@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 export interface BlogItem {
   title: string;
@@ -27,7 +28,7 @@ export interface SubCategory {
 @Component({
   selector: 'app-blog-category',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LoadingShippingComponent],
   templateUrl: './blog-category.html',
   styleUrl: './blog-category.css',
 })
