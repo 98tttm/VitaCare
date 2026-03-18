@@ -43,8 +43,8 @@
   background-color: #fff;
   padding: 15px;
   font-weight: bold;
-  border-bottom: 2px solid #E0E0E0;
-  color: #0056b3;
+  border-bottom: 1px solid #E0E0E0;
+  color: #333;
 }
 
 .pc-menu {
@@ -61,34 +61,21 @@
   display: block;
   padding: 12px 15px;
   text-decoration: none;
-  color: #333;
+  color: #000;
   transition: background 0.2s;
   font-size: 14px;
+  font-weight: bold;
+  border-radius: 12px;
 }
 
 .pc-menu li a:hover {
   background-color: #f9f9f9;
 }
 
-.pc-menu li.active a {
-  background-color: #E8EAF6;
-  /* Light purple/blue active bg */
-  color: #000;
-  font-weight: 600;
-  border-left: 4px solid #000;
-  /* Assuming black accent from image */
-}
-
-/* Adjust active style to match image strictly */
-.pc-menu li.active {
-  background-color: #F3F0F5;
-  /* Very light purple */
-}
-
-.pc-menu li.active a {
+.pc-menu li a.active {
+  background-color: #F2F2F2;
+  color: #00589F;
   font-weight: bold;
-  border-left: none;
-  /* Image doesn't show border-left clearly, let's stick to bg */
 }
 
 /* Main Content */

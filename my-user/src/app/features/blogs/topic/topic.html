@@ -19,9 +19,8 @@
         <section class="cd-section">
 
             <!-- Loading State -->
-            <div *ngIf="loading" class="cd-loading">
-                <div class="cd-spinner"></div>
-                <p>Đang tải danh sách chuyên đề...</p>
+            <div *ngIf="loading" class="cd-loading-new">
+                <app-loading-shipping text="Đang tải danh sách chuyên đề..."></app-loading-shipping>
             </div>
 
             <!-- Topics Grid -->
