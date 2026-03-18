@@ -15,17 +15,6 @@
     </div>
   </div>
 
-  <!-- Day tabs (Sticky position outside scrollable content) -->
-  <div class="tab-navigation">
-    <div class="tab-list">
-      @for (day of DAYS; track day; let i = $index) {
-      <button type="button" class="tab-button" [class.active]="selectedDayIndex() === i" (click)="selectDay(i)">
-        <span class="tab-label">{{ day }}</span>
-      </button>
-      }
-    </div>
-  </div>
-
   <div class="orders-content-wrapper">
     <div class="orders-content orders-container-wrapper">
 
@@ -37,39 +26,44 @@
         <p>Đang tải lời nhắc...</p>
       </div>
       } @else {
-      <p class="remind-date-label">Ngày {{ formatDateForDisplay(selectedDate()) }}</p>
+      <p class="remind-date-label">Ngày {{ formatDateForDisplayFn(selectedDate()) }}</p>
 
-      <!-- Time sections -->
-      <div class="remind-sections">
-        @for (section of TIME_SECTIONS; track section.key) {
-        <section class="remind-section">
-          <h3 class="remind-section-title">{{ section.label }}</h3>
-          <div class="remind-section-cards">
-            @for (item of remindersForDateAndSection()[section.key]; track item.reminder._id + item.time) {
-            <article class="remind-card" (click)="openDetail(item.reminder)">
-              <div class="remind-card-image">
-                <i class="bi bi-capsule"></i>
-              </div>
-              <div class="remind-card-body">
-                <h4 class="remind-card-name">{{ item.reminder.med_name }}</h4>
-                <p class="remind-card-dosage">
-                  {{ item.reminder.dosage }} {{ item.reminder.unit ? 'x ' + item.reminder.unit : '' }}
-                </p>
-                <p class="remind-card-time">Thời gian uống: {{ item.time }}</p>
-              </div>
-              <button type="button" class="remind-checkbox" [class.remind-checkbox--checked]="item.completed"
-                [attr.aria-label]="item.completed ? 'Đã hoàn thành' : 'Đánh dấu hoàn thành'"
-                (click)="$event.stopPropagation(); toggleComplete(item)">
-                @if (item.completed) {
-                <i class="bi bi-check-lg"></i>
-                }
-              </button>
-            </article>
-            } @empty {
-            <p class="remind-section-empty">Chưa có lời nhắc</p>
+      <!-- Calendar month header -->
+      <div class="remind-month-header">
+        <button type="button" class="remind-month-nav" (click)="changeMonth(-1)">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <div class="remind-month-label">
+          {{ monthLabel | titlecase }}
+        </div>
+        <button type="button" class="remind-month-nav" (click)="changeMonth(1)">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Weekday header -->
+      <div class="remind-calendar-weekdays">
+        @for (w of WEEK_DAYS; track w) {
+        <div class="remind-calendar-weekday">{{ w }}</div>
+        }
+      </div>
+
+      <!-- Calendar grid -->
+      <div class="remind-calendar-grid">
+        @for (cell of calendarCells(); track cell.date.toISOString()) {
+        <div class="remind-calendar-cell" [class.remind-calendar-cell--other]="!cell.isCurrentMonth"
+          [class.remind-calendar-cell--today]="cell.isToday" (click)="selectDateCell(cell.date)">
+          <div class="remind-calendar-day-number">
+            {{ cell.date.getDate() }}
+          </div>
+          <div class="remind-calendar-tags">
+            @if (getRemindersForDate(cell.date).length > 0) {
+            <span class="remind-calendar-count">
+              {{ getRemindersForDate(cell.date).length }} lời nhắc
+            </span>
             }
           </div>
-        </section>
+        </div>
         }
       </div>
       }
@@ -250,7 +244,7 @@
       <button type="button" class="remind-btn remind-btn--danger" (click)="deleteReminder(reminder)">
         Xóa
       </button>
-      <button type="button" class="remind-btn remind-btn--primary" (click)="closeDetail()">
+      <button type="button" class="remind-btn remind-btn--primary" (click)="completeReminder(reminder)">
         Hoàn thành
       </button>
     </div>
@@ -293,17 +287,27 @@
         <p class="remind-diary-date-label">Ngày {{ formatDateKey(diarySelectedDate()) }}</p>
         <div class="remind-diary-items">
           @for (item of diaryRemindersForDate(); track item.reminder._id + item.time) {
-          <article class="remind-card remind-card--diary">
-            <div class="remind-card-image">
-              <i class="bi bi-capsule"></i>
+          <article class="remind-diary-item" (click)="openDetail(item.reminder)">
+            <div class="remind-diary-item-left">
+              <div class="remind-diary-pill-icon">
+                <i class="bi bi-capsule"></i>
+              </div>
             </div>
-            <div class="remind-card-body">
-              <h4 class="remind-card-name">{{ item.reminder.med_name }}</h4>
-              <p class="remind-card-dosage">{{ item.reminder.dosage }} x {{ item.reminder.unit || 'đơn vị' }}</p>
-              <p class="remind-card-time">Thời gian uống: {{ item.time }}</p>
+            <div class="remind-diary-item-main">
+              <div class="remind-diary-item-header">
+                <h4 class="remind-diary-name">{{ item.reminder.med_name }}</h4>
+                <span class="remind-diary-time">{{ item.time }}</span>
+              </div>
+              <p class="remind-diary-dosage">
+                {{ item.reminder.dosage }} {{ item.reminder.unit ? 'x ' + item.reminder.unit : '' }}
+              </p>
             </div>
-            <button type="button" class="remind-checkbox" [class.remind-checkbox--checked]="item.completed"
-              (click)="toggleComplete(item, diarySelectedDate())">
+            <button
+              type="button"
+              class="remind-diary-checkbox"
+              [class.remind-diary-checkbox--checked]="item.completed"
+              (click)="$event.stopPropagation(); toggleComplete(item, diarySelectedDate())"
+              aria-label="Đánh dấu hoàn thành">
               @if (item.completed) {
               <i class="bi bi-check-lg"></i>
               }
@@ -314,6 +318,24 @@
           }
         </div>
       </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Popup: Xác nhận xóa -->
+@if (showDeleteConfirm()) {
+<div class="remind-confirm-overlay" (click)="cancelDelete()">
+  <div class="remind-confirm-modal" (click)="$event.stopPropagation()" role="dialog"
+    aria-labelledby="remind-delete-title">
+    <h3 id="remind-delete-title" class="remind-confirm-title">Bạn có chắc chắn muốn xóa lời nhắc này?</h3>
+    <div class="remind-confirm-actions">
+      <button type="button" class="remind-confirm-btn remind-confirm-cancel" (click)="cancelDelete()">
+        Hủy
+      </button>
+      <button type="button" class="remind-confirm-btn remind-confirm-ok" (click)="confirmDelete()">
+        Xóa
+      </button>
     </div>
   </div>
 </div>

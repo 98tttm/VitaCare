@@ -10,7 +10,7 @@ export interface Promotion {
   name: string;
   description?: string;
   type: 'Order' | 'Product' | string;
-  scope: 'Order' | 'Product' | string;
+  scope: 'Order' | 'Product' | 'Shipping' | string;
   discount_type: 'percent' | 'amount' | string;
   discount_value: number;
   max_discount_value?: number;
@@ -21,6 +21,8 @@ export interface Promotion {
   start_date?: string;
   end_date?: string;
   status?: string;
+  typeBanner?: string;
+  images?: string[];
 }
 
 export interface PromotionTarget {
@@ -94,7 +96,7 @@ export class PromotionService {
       const result: string[] = [];
       const strCat = String(cat).trim();
       let currentId = nameToId.get(strCat.toLowerCase()) || strCat;
-      
+
       const visited = new Set<string>();
       while (currentId && !visited.has(currentId)) {
         visited.add(currentId);
@@ -150,7 +152,20 @@ export class PromotionService {
       const promoTargets = byPromotionId.get(promo.promotion_id) ?? [];
 
       if (isApplicable) {
-        if ((promo.type === 'Order' || promo.scope === 'Order') || promoTargets.length === 0) {
+        const scope = (promo.scope || promo.type || 'Order').toString().toLowerCase();
+
+        if (scope === 'shipping') {
+          // Giảm vào phí vận chuyển: chỉ áp dụng khi hiện đang có phí ship (>0)
+          const FREE_SHIPPING_THRESHOLD = 300_000;
+          const DEFAULT_SHIPPING_FEE = 30_000;
+          const shippingFee = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : DEFAULT_SHIPPING_FEE;
+          if (shippingFee <= 0) {
+            isApplicable = false;
+            reason = 'Đơn này đang được miễn phí vận chuyển';
+          } else {
+            eligibleSubtotal = shippingFee;
+          }
+        } else if ((promo.type === 'Order' || promo.scope === 'Order') || promoTargets.length === 0) {
           eligibleSubtotal = subtotal;
         } else {
           // Theo sản phẩm/danh mục
@@ -193,11 +208,11 @@ export class PromotionService {
       if (isApplicable) {
         if (promo.discount_type === 'percent') {
           discountAmount = (eligibleSubtotal * (promo.discount_value || 0)) / 100;
+          if (promo.max_discount_value && promo.max_discount_value > 0) {
+            discountAmount = Math.min(discountAmount, promo.max_discount_value);
+          }
         } else if (promo.discount_type === 'amount') {
           discountAmount = promo.discount_value || 0;
-        }
-        if (promo.max_discount_value && promo.max_discount_value > 0) {
-          discountAmount = Math.min(discountAmount, promo.max_discount_value);
         }
         if (discountAmount <= 0) {
           isApplicable = false;

@@ -134,7 +134,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let p of filteredPromotions" [class.selected]="p.selected">
+                <tr *ngFor="let p of filteredPromotions"
+                    [class.selected]="p.selected"
+                    (click)="onRowClick(p, $event)">
                     <td>
                         <input type="checkbox" [(ngModel)]="p.selected" (change)="onSelectChange()">
                     </td>
@@ -146,7 +148,7 @@
                     </td>
                     <td>{{ p.usage_count }} / {{ p.usage_limit }}</td>
                     <td>
-                        <div class="status-indicator">
+                        <div class="status-indicator" [ngClass]="p.statusClass">
                             <div class="status-dot" [ngClass]="p.statusClass"></div>
                             {{ p.statusTitle }}
                         </div>
@@ -200,13 +202,13 @@
             <div class="modal-body scrollable">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label">Mã khuyến mãi*</label>
+                        <label class="form-label">Mã khuyến mãi<span class="required-mark">*</span></label>
                         <input type="text" class="form-control" [(ngModel)]="currentPromotion.code"
                             placeholder="Nhập mã khuyến mãi">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Tên khuyến mãi*</label>
+                        <label class="form-label">Tên khuyến mãi<span class="required-mark">*</span></label>
                         <input type="text" class="form-control" [(ngModel)]="currentPromotion.name"
                             placeholder="Nhập tên khuyến mãi">
                     </div>
@@ -223,7 +225,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Loại khuyến mãi*</label>
+                        <label class="form-label">Loại khuyến mãi<span class="required-mark">*</span></label>
                         <select class="form-control" [(ngModel)]="currentPromotion.type">
                             <option value="customer">Khách hàng (Customer)</option>
                             <option value="category">Danh mục (Category)</option>
@@ -231,55 +233,247 @@
                         </select>
                     </div>
 
-                    <!-- Target Customer Group (for Customer type) -->
+                    <!-- Target Customer (for Customer type) -->
                     <div class="form-group" *ngIf="currentPromotion.type === 'customer'">
-                        <label class="form-label">Nhóm khách hàng áp dụng</label>
-                        <select class="form-control" [(ngModel)]="currentPromotion.customer_group_id">
-                            <option value="">Tất cả khách hàng</option>
-                            <option *ngFor="let g of customerGroups" [value]="g._id">{{ g.name }}</option>
-                        </select>
+                        <label class="form-label">Đối tượng khách hàng áp dụng</label>
+
+                        <!-- chọn mode -->
+                        <div class="customer-target-modes">
+                            <button type="button" class="chip-btn"
+                                    [class.active]="customerTargetMode === 'all'"
+                                    (click)="customerTargetMode = 'all'">
+                                Tất cả
+                            </button>
+                            <button type="button" class="chip-btn"
+                                    [class.active]="customerTargetMode === 'group'"
+                                    (click)="customerTargetMode = 'group'">
+                                Nhóm khách hàng
+                            </button>
+                            <button type="button" class="chip-btn"
+                                    [class.active]="customerTargetMode === 'tier'"
+                                    (click)="customerTargetMode = 'tier'">
+                                Hạng khách hàng (Tier)
+                            </button>
+                        </div>
+
+                        <div class="customer-target-select">
+                            <button type="button"
+                                    class="target-toggle form-control"
+                                    (click)="toggleTargetDropdown('customer')">
+                                <span class="target-selected-text">
+                                    {{ customerTargetMode === 'all'
+                                        ? 'Áp dụng cho TẤT CẢ khách hàng'
+                                        : customerTargetMode === 'group'
+                                          ? getSelectedTargetSummary('customer')
+                                          : (currentPromotion.customer_tiers?.join(', ') || 'Chọn hạng khách hàng') }}
+                                </span>
+                                <i class="bi" [ngClass]="{
+                                    'bi-chevron-up': showCustomerTargetDropdown,
+                                    'bi-chevron-down': !showCustomerTargetDropdown
+                                }"></i>
+                            </button>
+
+                            <div class="customer-target-popup"
+                                 *ngIf="showCustomerTargetDropdown"
+                                 (click)="$event.stopPropagation()">
+
+                                <!-- Mode: all -->
+                                <div class="popup-hint" *ngIf="customerTargetMode === 'all'">
+                                    Áp dụng cho <strong>tất cả khách hàng</strong>.
+                                </div>
+
+                                <!-- Mode: group -->
+                                <ng-container *ngIf="customerTargetMode === 'group'">
+                                    <div class="popup-title">Chọn nhóm khách hàng</div>
+                                    <div class="popup-actions">
+                                        <button type="button" class="chip-btn"
+                                                (click)="selectAllTargets('customer', true)">Chọn tất cả</button>
+                                        <button type="button" class="chip-btn secondary"
+                                                (click)="selectAllTargets('customer', false)">Bỏ chọn</button>
+                                    </div>
+                                    <div class="popup-list two-columns">
+                                        <label class="multi-select-item"
+                                               *ngFor="let g of customerGroups">
+                                            <input type="checkbox"
+                                                   [checked]="isTargetChecked('customer', g._id)"
+                                                   (change)="toggleTargetSelection('customer', g._id, $event.target.checked)">
+                                            <span>{{ g.name }}</span>
+                                        </label>
+                                    </div>
+                                </ng-container>
+
+                                <!-- Mode: tier -->
+                                <ng-container *ngIf="customerTargetMode === 'tier'">
+                                    <div class="popup-title">Chọn hạng khách hàng</div>
+                                    <div class="popup-list">
+                                        <label class="multi-select-item"
+                                               *ngFor="let tier of customerTierOptions">
+                                            <input type="checkbox"
+                                                   [checked]="isTierSelected(tier)"
+                                                   (change)="toggleTierSelection(tier, $event.target.checked)">
+                                            <span>{{ tier }}</span>
+                                        </label>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Target Category (for Category type) -->
                     <div class="form-group" *ngIf="currentPromotion.type === 'category'">
-                        <label class="form-label">Danh mục áp dụng</label>
-                        <select class="form-control" [(ngModel)]="currentPromotion.target_category_id">
-                            <option value="">Chọn danh mục</option>
-                            <option *ngFor="let c of formattedCategories" [value]="c._id">{{ c.displayName }}</option>
-                        </select>
+                        <label class="form-label">Danh mục sản phẩm áp dụng</label>
+
+                        <!-- 3 chip: Cấp 1 / 2 / 3 – cho phép bật nhiều -->
+                        <div class="customer-target-modes">
+                            <button type="button" class="chip-btn"
+                                    [class.active]="categoryLevels.level1"
+                                    (click)="setActiveCategoryLevel(1)">
+                                Cấp 1
+                            </button>
+                            <button type="button" class="chip-btn"
+                                    [class.active]="categoryLevels.level2"
+                                    (click)="setActiveCategoryLevel(2)">
+                                Cấp 2
+                            </button>
+                            <button type="button" class="chip-btn"
+                                    [class.active]="categoryLevels.level3"
+                                    (click)="setActiveCategoryLevel(3)">
+                                Cấp 3
+                            </button>
+                        </div>
+
+                        <!-- Ô tóm tắt chính -->
+                        <div class="customer-target-select" style="margin-bottom: 8px;">
+                            <button type="button"
+                                    class="target-toggle form-control"
+                                    (click)="toggleTargetDropdown('category')">
+                                <span class="target-selected-text">
+                                    {{ getSelectedCategorySummaryForPopup() }}
+                                </span>
+                                <i class="bi" [ngClass]="{
+                                    'bi-chevron-up': showCategoryTargetDropdown,
+                                    'bi-chevron-down': !showCategoryTargetDropdown
+                                }"></i>
+                            </button>
+
+                            <!-- Popup chọn danh mục theo level -->
+                            <div class="customer-target-popup"
+                                 *ngIf="showCategoryTargetDropdown"
+                                 (click)="$event.stopPropagation()">
+
+                                <!-- Level 1 -->
+                                <ng-container *ngIf="categoryLevels.level1">
+                                    <div class="popup-title">Danh mục cấp 1</div>
+                                    <div class="popup-list two-columns">
+                                        <label class="multi-select-item"
+                                               *ngFor="let c of promoCategoriesL1">
+                                            <input type="checkbox"
+                                                   [checked]="selectedCatLevel1.includes(c._id)"
+                                                   (change)="onToggleCatLevel(1, c._id, $event.target.checked)">
+                                            <span>{{ c.name }}</span>
+                                        </label>
+                                    </div>
+                                </ng-container>
+
+                                <!-- Level 2 -->
+                                <!-- Chỉ cho phép chọn cấp 2 khi đã có ít nhất 1 danh mục cấp 1 -->
+                                <ng-container *ngIf="categoryLevels.level2 && selectedCatLevel1.length">
+                                    <div class="popup-title" style="margin-top:8px;">Danh mục cấp 2</div>
+                                    <div class="popup-list two-columns">
+                                        <label class="multi-select-item"
+                                               *ngFor="let c of getLevel2CategoriesForPopup()">
+                                            <input type="checkbox"
+                                                   [checked]="selectedCatLevel2.includes(c._id)"
+                                                   (change)="onToggleCatLevel(2, c._id, $event.target.checked)">
+                                            <span>{{ c.name }}</span>
+                                        </label>
+                                    </div>
+                                </ng-container>
+
+                                <!-- Level 3 -->
+                                <!-- Chỉ cho phép chọn cấp 3 khi đã có ít nhất 1 danh mục cấp 2 -->
+                                <ng-container *ngIf="categoryLevels.level3 && selectedCatLevel2.length">
+                                    <div class="popup-title" style="margin-top:8px;">Danh mục cấp 3</div>
+                                    <div class="popup-list two-columns">
+                                        <label class="multi-select-item"
+                                               *ngFor="let c of getLevel3CategoriesForPopup()">
+                                            <input type="checkbox"
+                                                   [checked]="selectedCatLevel3.includes(c._id)"
+                                                   (change)="onToggleCatLevel(3, c._id, $event.target.checked)">
+                                            <span>{{ c.name }}</span>
+                                        </label>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Target Product Group (for Product type) -->
                     <ng-container *ngIf="currentPromotion.type === 'product'">
                         <div class="form-group">
                             <label class="form-label">Áp dụng cho Nhóm sản phẩm</label>
-                            <select class="form-control" [(ngModel)]="currentPromotion.product_group_id">
-                                <option value="">Không chọn nhóm</option>
-                                <option *ngFor="let g of productGroups" [value]="g._id">{{ g.name }}</option>
-                            </select>
+                            <div class="target-dropdown">
+                                <button type="button" class="target-toggle form-control"
+                                        (click)="toggleTargetDropdown('product')">
+                                    <span class="target-selected-text">
+                                        {{ getSelectedTargetSummary('product') }}
+                                    </span>
+                                    <i class="bi" [ngClass]="{
+                                        'bi-chevron-up': showProductTargetDropdown,
+                                        'bi-chevron-down': !showProductTargetDropdown
+                                    }"></i>
+                                </button>
+
+                                <div class="target-panel" *ngIf="showProductTargetDropdown">
+                                    <div class="target-panel-header">
+                                        <button type="button" class="chip-btn"
+                                                (click)="selectAllTargets('product', true)">
+                                            Chọn tất cả
+                                        </button>
+                                        <button type="button" class="chip-btn secondary"
+                                                (click)="selectAllTargets('product', false)">
+                                            Bỏ chọn
+                                        </button>
+                                    </div>
+                                    <div class="target-panel-body">
+                                        <label class="multi-select-item"
+                                               *ngFor="let g of productGroups">
+                                            <input type="checkbox"
+                                                   [checked]="isTargetChecked('product', g._id)"
+                                                   (change)="toggleTargetSelection('product', g._id, $event.target.checked)">
+                                            <span>{{ g.name }}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </ng-container>
 
                     <div class="form-group">
-                        <label class="form-label">Phạm vi áp dụng*</label>
+                        <label class="form-label">Phạm vi áp dụng<span class="required-mark">*</span></label>
                         <select class="form-control" [(ngModel)]="currentPromotion.scope">
-                            <option value="order">Đơn hàng (Order)</option>
-                            <option value="product">Sản phẩm (Product)</option>
+                            <option value="order">Đơn hàng (giảm vào tiền hàng)</option>
+                            <option value="shipping">Vận chuyển (giảm vào phí ship)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Loại giảm giá*</label>
+                        <label class="form-label">Loại giảm giá<span class="required-mark">*</span></label>
                         <select class="form-control" [(ngModel)]="currentPromotion.discount_type">
-                            <option value="percent">Phần trăm (%)</option>
                             <option value="amount">Số tiền</option>
+                            <option value="percent">Phần trăm (%)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Giá trị giảm*</label>
-                        <input type="number" class="form-control" [(ngModel)]="currentPromotion.discount_value"
-                            placeholder="0">
+                        <label class="form-label">
+                            {{ currentPromotion.discount_type === 'percent' ? 'Phần trăm giảm (%)' : 'Giá trị giảm (đ)' }}
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="number"
+                               class="form-control"
+                               [(ngModel)]="currentPromotion.discount_value"
+                               [placeholder]="currentPromotion.discount_type === 'percent' ? 'Nhập % giảm giá, ví dụ 10' : 'Nhập số tiền giảm, ví dụ 30000'">
                     </div>
 
                     <div class="form-group">
@@ -288,10 +482,12 @@
                             placeholder="0">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Giá trị tối đa (đ)</label>
-                        <input type="number" class="form-control" [(ngModel)]="currentPromotion.max_discount_value"
-                            placeholder="0">
+                    <div class="form-group" *ngIf="currentPromotion.discount_type === 'percent'">
+                        <label class="form-label">Giá trị giảm tối đa (đ)</label>
+                        <input type="number"
+                               class="form-control"
+                               [(ngModel)]="currentPromotion.max_discount_value"
+                               placeholder="0">
                     </div>
 
                     <div class="form-group full-width" style="border-top: 1px solid #eef2f7; padding-top: 15px; margin-top: 15px;">

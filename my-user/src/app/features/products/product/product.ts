@@ -15,6 +15,7 @@ import { getLocalIcon } from '../../../shared/header/header-icons';
 import { AuthService } from '../../../core/services/auth.service';
 import { RecentlyViewedProducts } from '../recently-viewed-products/recently-viewed-products';
 import { RecentlyViewedBlogs } from '../../blogs/recently-viewed-blogs/recently-viewed-blogs';
+import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 @Component({
     selector: 'app-product',
@@ -28,6 +29,7 @@ import { RecentlyViewedBlogs } from '../../blogs/recently-viewed-blogs/recently-
         ProductList,
         RecentlyViewedProducts,
         RecentlyViewedBlogs,
+        LoadingShippingComponent,
     ],
     templateUrl: './product.html',
     styleUrl: './product.css',

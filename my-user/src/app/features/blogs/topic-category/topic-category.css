@@ -32,13 +32,13 @@
 .tc-title {
     font-size: 28px;
     font-weight: 700;
-    color: #202124;
+    color: #0047ab;
     margin: 0 0 8px 0;
 }
 
 .tc-stats {
     font-size: 14px;
-    color: #5f6368;
+    color: #0047ab;
 }
 
 /* Articles List */
@@ -173,27 +173,89 @@
 }
 
 .tc-load-more-btn {
-    padding: 12px 32px;
-    border-radius: 25px;
-    border: 1px solid #dadce0;
-    background: #fff;
-    color: #202124;
+    background: transparent;
+    border: none;
+    color: #0047ab;
     font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+    padding: 8px 24px;
     transition: all 0.2s;
-    outline: none;
+    cursor: pointer;
 }
 
 .tc-load-more-btn:hover:not(:disabled) {
-    background: #f8f9fa;
-    border-color: #bdc1c6;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3);
+    color: #3182ce;
 }
 
-.tc-load-more-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.tc-load-more-btn i {
+    font-size: 20px;
+    color: inherit;
+}
+
+/* Sidebar Styles */
+.tc-sidebar-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 20px;
+}
+
+.tc-sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0047ab;
+    margin: 0 0 20px 0;
+}
+
+.tc-sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tc-sidebar-item {
+    text-decoration: none;
+    display: block;
+    transition: transform 0.2s;
+}
+
+.tc-sidebar-item:hover {
+    transform: translateX(4px);
+}
+
+.tc-sidebar-name {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 4px;
+}
+
+.tc-sidebar-count {
+    display: block;
+    font-size: 13px;
+    color: #0047ab;
+}
+
+.tc-sidebar-viewall {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0047ab;
+    text-decoration: none;
+}
+
+.tc-sidebar-viewall:hover {
+    text-decoration: underline;
+    color: #007BFF;
 }
 
 /* Responsive */

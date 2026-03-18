@@ -277,11 +277,15 @@
           <p class="order-product-empty" *ngIf="!cartLoading && !cart?.items?.length">Chưa có sản phẩm trong giỏ.</p>
         </section>
 
-        <div class="order-promo-box">
+        <button type="button" class="order-promo-box" (click)="openPromotionModal()">
           <i class="bi bi-ticket-perforated"></i>
-          <span class="order-promo-box-text">Áp dụng ưu đãi từ VitaCare để được giảm giá</span>
+          <span class="order-promo-box-text">
+            {{ cartVoucherDiscount > 0 && appliedPromotionName
+              ? ('Đang áp dụng: ' + appliedPromotionName + ' (giảm ' + (cartVoucherDiscount | number:'1.0-0') + '₫)')
+              : 'Áp dụng ưu đãi từ VitaCare để được giảm giá' }}
+          </span>
           <i class="bi bi-chevron-right"></i>
-        </div>
+        </button>
 
         <section class="order-checkout-section">
           <div class="order-summary">
@@ -325,6 +329,60 @@
         </section>
       </aside>
     </div>
+
+    <!-- Popup danh sách khuyến mãi (tái sử dụng layout giống giỏ hàng) -->
+    @if (showPromotionModal) {
+    <div class="cart-promo-overlay" (click)="closePromotionModal()">
+      <div class="cart-promo-modal" (click)="$event.stopPropagation()">
+        <div class="cart-promo-header">
+          <h3>Chọn mã giảm giá</h3>
+          <button type="button" class="cart-promo-close" (click)="closePromotionModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="cart-promo-body">
+          <div class="cart-promo-loading" *ngIf="promotionLoading">
+            Đang tải khuyến mãi...
+          </div>
+          <div *ngIf="!promotionLoading && !promotions.length" class="cart-promo-empty">
+            Hiện chưa có mã giảm giá phù hợp với đơn hàng của bạn.
+          </div>
+          <div *ngIf="!promotionLoading && promotions.length">
+            <div class="cart-promo-item" *ngFor="let p of promotions"
+              [class.is-selected]="selectedPromotionId === p._id" [class.is-disabled]="!p.isApplicable"
+              (click)="selectPromotion(p)">
+              <div class="cart-promo-main">
+                <div class="cart-promo-code">{{ p.code }}</div>
+                <div class="cart-promo-name">{{ p.name }}</div>
+                <div class="cart-promo-desc">{{ p.description }}</div>
+                <div class="cart-promo-meta">
+                  <span *ngIf="p.isApplicable">Giảm {{ p.discountAmount | number:'1.0-0' }}₫</span>
+                  <span *ngIf="p.min_order_value">ĐH tối thiểu {{ p.min_order_value | number:'1.0-0' }}₫</span>
+                  <span *ngIf="!p.isApplicable && p.reason">{{ p.reason }}</span>
+                </div>
+              </div>
+              <div class="cart-promo-radio">
+                <input type="radio" class="cart-promo-radio-input" name="order_promo_choice" [value]="p._id"
+                  [checked]="selectedPromotionId === p._id" [disabled]="!p.isApplicable"
+                  (change)="selectPromotion(p)" />
+                <span class="cart-promo-radio-outer">
+                  <span class="cart-promo-radio-inner"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cart-promo-footer">
+          <button type="button" class="cart-promo-btn cart-promo-btn-secondary" (click)="closePromotionModal()">
+            Hủy
+          </button>
+          <button type="button" class="cart-promo-btn cart-promo-btn-primary" (click)="applySelectedPromotion()">
+            Áp dụng
+          </button>
+        </div>
+      </div>
+    </div>
+    }
 
     <!-- Popup danh sách địa chỉ (style từ root) -->
     @if (showAddressModal) {

@@ -1,13 +1,25 @@
 <div class="page-container">
-  <div class="vc_container pt-2" *ngIf="activeMenu !== 'notifications' && activeMenu !== 'reviews'">
+  <!-- Breadcrumb: tuỳ chỉnh riêng cho Công cụ sức khoẻ -->
+  <div class="vc_container pt-2" *ngIf="activeMenu === 'health'; else accountBreadcrumb">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb-vc">
         <li class="breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
-        <li class="breadcrumb-item"><a routerLink="/account" [queryParams]="{ menu: 'info' }">Cá nhân</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{ breadcrumbLabel }}</li>
+        <li class="breadcrumb-item active" aria-current="page">Công cụ sức khỏe</li>
       </ol>
     </nav>
   </div>
+
+  <ng-template #accountBreadcrumb>
+    <div class="vc_container pt-2" *ngIf="activeMenu !== 'reviews'">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb-vc">
+          <li class="breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
+          <li class="breadcrumb-item"><a routerLink="/account" [queryParams]="{ menu: 'info' }">Cá nhân</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ breadcrumbLabel }}</li>
+        </ol>
+      </nav>
+    </div>
+  </ng-template>
   <div class="vc_container">
     <!-- Account Component - User Profile Sidebar -->
     <div class="account-wrapper" [class.account-wrapper--health-full]="activeMenu === 'health'">
@@ -15,6 +27,9 @@
       <div class="account-sidebar" *ngIf="activeMenu !== 'health'">
         <!-- User Avatar & Info -->
         <div class="user-profile-header">
+          <button type="button" class="logout-icon-btn" (click)="logout()" aria-label="Đăng xuất">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+          </button>
           <div class="user-avatar">
             <img *ngIf="!avatarError" [src]="userAvatar" alt="Avatar" class="avatar-img" (error)="avatarError = true">
             <i *ngIf="avatarError" class="bi bi-person-circle avatar-placeholder" aria-hidden="true"></i>
@@ -72,13 +87,6 @@
           </a>
         </nav>
 
-        <!-- Logout Button -->
-        <div class="logout-section">
-          <button type="button" class="btn-logout" (click)="logout()">
-            <i class="bi bi-box-arrow-right nav-icon" aria-hidden="true"></i>
-            <span>Đăng xuất</span>
-          </button>
-        </div>
       </div>
 
       <!-- Content Area -->

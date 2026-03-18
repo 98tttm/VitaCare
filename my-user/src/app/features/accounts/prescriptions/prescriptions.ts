@@ -1,7 +1,17 @@
-import { Component, inject, OnInit, Input, OnChanges, SimpleChanges, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectorRef,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { PrescriptionService, Prescription } from '../../../core/services/prescription.service';
 import { ConsultationCartService } from '../../../core/services/consultation-cart.service';
@@ -28,6 +38,7 @@ export class Prescriptions implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
   private toast = inject(ToastService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private consultationCartService = inject(ConsultationCartService);
 
   private readonly API = 'http://localhost:3000/api';
@@ -78,6 +89,23 @@ export class Prescriptions implements OnInit, OnChanges {
         if (res.success) {
           this.prescriptions = res.items;
           this.updateTabCounts();
+          const prescriptionId = this.route.snapshot.queryParams['prescriptionId'];
+          if (prescriptionId && this.prescriptions.length > 0) {
+            const prescription = this.prescriptions.find(
+              (p) =>
+                (p.prescriptionId || (p as any).prescription_id || (p as any)._id) ===
+                prescriptionId,
+            );
+            if (prescription) {
+              setTimeout(() => this.viewDetails(prescription), 50);
+              this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: { menu: 'prescriptions' },
+                queryParamsHandling: 'merge',
+                replaceUrl: true,
+              });
+            }
+          }
         }
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -86,7 +114,7 @@ export class Prescriptions implements OnInit, OnChanges {
         console.error('PrescriptionsComponent: Failed to fetch prescriptions', err);
         this.isLoading = false;
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
@@ -95,18 +123,19 @@ export class Prescriptions implements OnInit, OnChanges {
 
     // Filter by tab
     if (this.activeTab !== 'all') {
-      filtered = filtered.filter(p => p.status === this.activeTab);
+      filtered = filtered.filter((p) => p.status === this.activeTab);
     }
 
     // Filter by search query
     if (this.searchQuery.trim()) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(p =>
-        p.prescriptionId?.toLowerCase().includes(query) ||
-        p.medicines_requested?.some((m: any) => {
-          const name = typeof m === 'string' ? m : (m?.name ?? '');
-          return name.toLowerCase().includes(query);
-        })
+      filtered = filtered.filter(
+        (p) =>
+          p.prescriptionId?.toLowerCase().includes(query) ||
+          p.medicines_requested?.some((m: any) => {
+            const name = typeof m === 'string' ? m : (m?.name ?? '');
+            return name.toLowerCase().includes(query);
+          }),
       );
     }
 
@@ -119,11 +148,11 @@ export class Prescriptions implements OnInit, OnChanges {
 
   updateTabCounts(): void {
     const all = this.prescriptions;
-    this.tabs.forEach(tab => {
+    this.tabs.forEach((tab) => {
       if (tab.id === 'all') {
         tab.count = all.length;
       } else {
-        tab.count = all.filter(p => p.status === tab.id).length;
+        tab.count = all.filter((p) => p.status === tab.id).length;
       }
     });
   }
@@ -131,11 +160,11 @@ export class Prescriptions implements OnInit, OnChanges {
   // Status label mapping
   getStatusLabel(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'pending': 'CHỜ XỬ LÝ',
-      'waiting': 'CHỜ TƯ VẤN',
-      'advised': 'ĐÃ TƯ VẤN',
-      'unreachable': 'CHƯA THỂ LIÊN HỆ',
-      'cancelled': 'ĐÃ HỦY'
+      pending: 'CHỜ XỬ LÝ',
+      waiting: 'CHỜ TƯ VẤN',
+      advised: 'ĐÃ TƯ VẤN',
+      unreachable: 'CHƯA THỂ LIÊN HỆ',
+      cancelled: 'ĐÃ HỦY',
     };
     return statusMap[status] || status.toUpperCase();
   }
@@ -143,11 +172,11 @@ export class Prescriptions implements OnInit, OnChanges {
   // Status class mapping
   getStatusClass(status: string): string {
     const classMap: { [key: string]: string } = {
-      'pending': 'status-pending',
-      'waiting': 'status-waiting',
-      'advised': 'status-advised',
-      'unreachable': 'status-unreachable',
-      'cancelled': 'status-cancelled'
+      pending: 'status-pending',
+      waiting: 'status-waiting',
+      advised: 'status-advised',
+      unreachable: 'status-unreachable',
+      cancelled: 'status-cancelled',
     };
     return classMap[status] || 'status-pending';
   }
@@ -285,13 +314,14 @@ export class Prescriptions implements OnInit, OnChanges {
       return;
     }
 
-    this.detailFilteredPrescriptions = all.filter(p =>
-      p.prescriptionId?.toLowerCase().includes(query) ||
-      p.full_name?.toLowerCase().includes(query) ||
-      p.medicines_requested?.some((m: any) => {
-        const name = typeof m === 'string' ? m : (m?.name ?? '');
-        return name.toLowerCase().includes(query);
-      })
+    this.detailFilteredPrescriptions = all.filter(
+      (p) =>
+        p.prescriptionId?.toLowerCase().includes(query) ||
+        p.full_name?.toLowerCase().includes(query) ||
+        p.medicines_requested?.some((m: any) => {
+          const name = typeof m === 'string' ? m : (m?.name ?? '');
+          return name.toLowerCase().includes(query);
+        }),
     );
   }
 
@@ -323,7 +353,7 @@ export class Prescriptions implements OnInit, OnChanges {
   getMedicineImage(medicine: any): string | null {
     if (!medicine || typeof medicine === 'string') return null;
     const url = medicine.image ?? medicine.imageUrl ?? '';
-    return (url && typeof url === 'string' && url.trim()) ? url.trim() : null;
+    return url && typeof url === 'string' && url.trim() ? url.trim() : null;
   }
 
   /** Lấy số lượng thuốc (medicine có thể là string hoặc object) */

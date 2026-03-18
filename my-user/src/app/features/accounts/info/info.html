@@ -192,7 +192,22 @@
                         aria-label="Mở camera chụp ảnh đại diện"><i class="bi bi-camera"></i></span>
                 </div>
                 <div class="user-basic-info">
-                    <h4 class="name">{{ fullName }}</h4>
+                    <div class="name-row">
+                      <h4 class="name">{{ fullName }}</h4>
+                      @if (tiering) {
+                        <span class="info-tier-badge">
+                          {{
+                            tiering === 'gold'
+                              ? 'Vàng'
+                              : tiering === 'silver'
+                                ? 'Bạc'
+                                : tiering === 'bronze'
+                                  ? 'Đồng'
+                                  : tiering
+                          }}
+                        </span>
+                      }
+                    </div>
                     <p class="phone">{{ phone }}</p>
                 </div>
             </div>

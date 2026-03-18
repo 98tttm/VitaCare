@@ -10,6 +10,7 @@ import { HealthTestService } from '../../../core/services/health-test.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPopupService } from '../../../core/services/blog-popup.service';
+import { PromotionService } from '../../../core/services/promotion.service';
 
 interface Product {
   id?: number | string;
@@ -74,6 +75,11 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     '/assets/images/banner/Homepage_YOH.png',
   ];
 
+  // Sub-banners for vc-hero
+  subBanner1 = 'assets/images/banner/Banner Homepage  (2).png'; // Left large
+  subBanner2 = 'assets/images/banner/Banner Homepage .png';    // Right bottom (User input: sub_2 = ô bên phải nhỏ ở dưới)
+  subBanner3 = 'assets/images/banner/Banner Homepage  (1).png'; // Right top    (User input: sub_3 = ô bên phải nhỏ ở trên)
+
   currentBannerIndex = 0;
   activeFlashSlot: 0 | 1 = 0;
 
@@ -125,7 +131,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     private healthTestService: HealthTestService,
     private categoryService: CategoryService,
     private blogService: BlogService,
-    private blogPopupService: BlogPopupService
+    private blogPopupService: BlogPopupService,
+    private promotionService: PromotionService
   ) {
     // Nếu muốn autoplay thì bật:
     // this.startAutoplay();
@@ -156,12 +163,95 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     if (typeof window !== 'undefined' && window.matchMedia('(max-width: 576px)').matches) {
       this.showAllSeasonalDiseases = false;
     }
+    this.loadDynamicBanners();
   }
+
+  private loadDynamicBanners(): void {
+    this.promotionService.getPromotions().subscribe({
+      next: (promotions) => {
+        if (!promotions || promotions.length === 0) return;
+
+        // Lọc các promotion có typeBanner bắt đầu bằng "main_"
+        const bannerPromos = promotions
+          .filter(p => p.typeBanner && p.typeBanner.startsWith('main_'))
+          .sort((a, b) => (a.typeBanner || '').localeCompare(b.typeBanner || ''));
+
+        if (bannerPromos.length > 0) {
+          const newBanners = bannerPromos.map(p => {
+            // Lấy ảnh đầu tiên từ mảng images hoặc fallback
+            if (p.images && p.images.length > 0) {
+              return p.images[0];
+            }
+            return '/assets/images/banner/About_us_Hero.png';
+          });
+
+          this.banners = newBanners;
+          this.bgA = this.banners[0];
+          this.bgB = this.banners[0];
+          this.currentBannerIndex = 0;
+          this.cdr.markForCheck();
+        }
+
+        // Lọc các sub-banner (sub_1, sub_2, sub_3)
+        const sub1 = promotions.find(p => p.typeBanner === 'sub_1');
+        const sub2 = promotions.find(p => p.typeBanner === 'sub_2');
+        const sub3 = promotions.find(p => p.typeBanner === 'sub_3');
+
+        if (sub1?.images?.length) this.subBanner1 = sub1.images[0];
+        if (sub2?.images?.length) this.subBanner2 = sub2.images[0];
+        if (sub3?.images?.length) this.subBanner3 = sub3.images[0];
+
+        if (sub1 || sub2 || sub3) {
+          this.cdr.markForCheck();
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load dynamic banners', err);
+      }
+    });
+  }
+
+  private scrollRevealObserver: IntersectionObserver | null = null;
 
   ngAfterViewInit(): void {
     this.recomputeSliderSteps();
     this.resizeHandler = () => this.recomputeSliderSteps();
     window.addEventListener('resize', this.resizeHandler);
+    this.initScrollReveal();
+  }
+
+  private initScrollReveal(): void {
+    const elements = document.querySelectorAll('.scroll-reveal');
+    if (!elements.length) return;
+
+    this.scrollRevealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            // Unobserve after reveal so animation plays only once
+            this.scrollRevealObserver?.unobserve(entry.target);
+
+            // Stagger-reveal card children (vc_reveal_element) inside this section
+            const cards = entry.target.querySelectorAll('.vc_reveal_element:not(.active)');
+            cards.forEach((card, i) => {
+              const el = card as HTMLElement;
+              el.style.transitionDelay = `${i * 0.06}s`;
+              // Slight timeout to let the parent reveal first
+              setTimeout(() => {
+                el.classList.add('active');
+              }, 80 + i * 60);
+            });
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -60px 0px'
+      }
+    );
+
+    elements.forEach((el) => this.scrollRevealObserver!.observe(el));
   }
 
   ngOnDestroy(): void {
@@ -171,6 +261,11 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     if (this.resizeHandler) {
       window.removeEventListener('resize', this.resizeHandler);
       this.resizeHandler = null;
+    }
+
+    if (this.scrollRevealObserver) {
+      this.scrollRevealObserver.disconnect();
+      this.scrollRevealObserver = null;
     }
 
     // (nếu bạn đã làm flashsale realtime bằng setInterval)

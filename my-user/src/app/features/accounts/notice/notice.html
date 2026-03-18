@@ -1,90 +1,129 @@
 <div class="notice-container vc_container pt-2 pb-5">
-  <!-- Header: giống orders -->
-  <div class="notice-header">
-    <div>
-      <h1 class="notice-title">THÔNG BÁO</h1>
-      <p>Cập nhật đơn hàng, đơn thuốc và sổ sức khỏe của bạn</p>
-    </div>
-    <button type="button" class="notice-mark-all-btn" [disabled]="unreadCount === 0" (click)="markAllAsRead()">
-      Đọc tất cả
-    </button>
-  </div>
-
-  <!-- Tab bar: Tất cả / Chưa đọc -->
-  <div class="tab-navigation">
-    <div class="tab-list">
-      @for (tab of tabs; track tab.id) {
-      <button type="button" class="tab-button" [class.active]="activeTab === tab.id" (click)="setActiveTab(tab.id)">
-        <span class="tab-label">{{ tab.label }}</span>
-        <span class="tab-badge" *ngIf="getTabCount(tab.id) > 0 && tab.id === 'unread'">{{ getTabCount(tab.id) }}</span>
-      </button>
-      }
-    </div>
-  </div>
-
-  <!-- Session: danh sách thông báo trong khung trắng bo góc như orders -->
+  <!-- Session: giống Orders - header + tabs cố định, scroll chỉ ở danh sách -->
   <div class="notice-content-wrapper">
-    <div class="notice-content">
-      @if (loading) {
-      <div class="notice-empty">
-        <i class="bi bi-arrow-repeat notice-empty-icon notice-loading-spin" aria-hidden="true"></i>
-        <p class="notice-empty-title">Đang tải thông báo...</p>
+    <!-- Header: giống orders -->
+    <div class="notice-header">
+      <div>
+        <h1 class="notice-title">THÔNG BÁO</h1>
+        <p>Cập nhật đơn hàng, đơn thuốc và sổ sức khỏe của bạn</p>
       </div>
-      } @else if (loadError) {
-      <div class="notice-empty">
-        <i class="bi bi-exclamation-circle notice-empty-icon" aria-hidden="true"></i>
-        <p class="notice-empty-title">{{ loadError }}</p>
-      </div>
-      } @else if (getFilteredList().length === 0) {
-      <div class="notice-empty">
-        <i class="bi bi-bell-slash notice-empty-icon" aria-hidden="true"></i>
-        <p class="notice-empty-title">Chưa có thông báo</p>
-        <p class="notice-empty-desc">Các thông báo về đơn hàng, đơn thuốc và sổ sức khỏe sẽ hiển thị tại đây.</p>
-      </div>
-      } @else {
-      <ul class="notice-list">
-        @for (item of getFilteredList(); track item.id) {
-        <li class="notice-item-wrapper">
-          <!-- Thanh trạng thái giống order-status-card -->
-          <div class="notice-status-card" [class.notice-status-unread]="!item.read"
-            [class.notice-status-read]="item.read">
-            <div class="notice-status-left">
-              <span class="notice-status-text">{{ item.read ? 'Đã đọc' : 'Chưa đọc' }}</span>
-            </div>
-            <div class="notice-status-right">
-              <span class="notice-status-time">{{ item.time }}</span>
-              @if (item.meta) {
-              <span class="notice-status-sep">|</span>
-              <span class="notice-status-meta">{{ item.meta }}</span>
-              }
-            </div>
-          </div>
-          <!-- Nội dung thông báo -->
-          <div class="notice-card" [class.is-read]="item.read">
-            <div class="notice-card-icon" [ngClass]="getConfig(item.type).iconClass">
-              <i class="bi" [ngClass]="getConfig(item.type).icon" aria-hidden="true"></i>
-            </div>
-            <div class="notice-card-body">
-              <h3 class="notice-card-title">{{ item.title }}</h3>
-              <p class="notice-card-message">{{ item.message }}</p>
-              <div class="notice-card-meta">
-                <span class="notice-card-time">{{ item.time }}</span>
-                @if (item.meta) {
-                <span class="notice-card-meta-code">{{ item.meta }}</span>
-                }
-              </div>
-              @if (item.link && item.linkLabel) {
-              <button type="button" class="notice-card-link" (click)="goToLink(item)">
-                {{ item.linkLabel }}
-                <i class="bi bi-chevron-right"></i>
-              </button>
-              }
-            </div>
-          </div>
-        </li>
+      <button
+        type="button"
+        class="notice-mark-all-btn"
+        [disabled]="unreadCount === 0"
+        (click)="markAllAsRead()"
+      >
+        Đọc tất cả
+      </button>
+    </div>
+
+    <!-- Tab bar: Tất cả / Đơn hàng / Đơn thuốc / Lịch uống thuốc / Hỏi đáp -->
+    <div class="tab-navigation">
+      <div class="tab-list">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            class="tab-button"
+            [class.active]="activeTab === tab.id"
+            (click)="setActiveTab(tab.id)"
+          >
+            <span class="tab-label">{{ tab.label }}</span>
+            <span class="tab-badge" *ngIf="getTabCount(tab.id) > 0">{{ getTabCount(tab.id) }}</span>
+          </button>
         }
-      </ul>
-      }
+      </div>
+    </div>
+
+    <!-- Danh sách thông báo - chỉ phần này mới scroll -->
+    <div class="notice-scroll">
+      <div class="notice-content">
+        @if (loading) {
+          <div class="notice-empty">
+            <i
+              class="bi bi-arrow-repeat notice-empty-icon notice-loading-spin"
+              aria-hidden="true"
+            ></i>
+            <p class="notice-empty-title">Đang tải thông báo...</p>
+          </div>
+        } @else if (loadError) {
+          <div class="notice-empty">
+            <i class="bi bi-exclamation-circle notice-empty-icon" aria-hidden="true"></i>
+            <p class="notice-empty-title">{{ loadError }}</p>
+          </div>
+        } @else if (getFilteredList().length === 0) {
+          <div class="notice-empty">
+            <i class="bi bi-bell-slash notice-empty-icon" aria-hidden="true"></i>
+            <p class="notice-empty-title">Chưa có thông báo</p>
+            <p class="notice-empty-desc">
+              Các thông báo về đơn hàng, đơn thuốc và sổ sức khỏe sẽ hiển thị tại đây.
+            </p>
+          </div>
+        } @else {
+          <ul class="notice-list">
+            @for (item of getFilteredList(); track item.id) {
+              <li class="notice-item-wrapper">
+                <!-- Thanh trạng thái giống order-status-card -->
+                <div
+                  class="notice-status-card"
+                  [class.notice-status-unread]="!item.read"
+                  [class.notice-status-read]="item.read"
+                >
+                  <div class="notice-status-left">
+                    <span class="notice-status-text">{{ item.read ? 'Đã đọc' : 'Chưa đọc' }}</span>
+                  </div>
+                  <div class="notice-status-right">
+                    <span class="notice-status-time">{{ item.time }}</span>
+                    @if (item.meta) {
+                      <span class="notice-status-sep">|</span>
+                      <span class="notice-status-meta">{{ item.meta }}</span>
+                    }
+                  </div>
+                </div>
+                <!-- Nội dung thông báo -->
+                <div class="notice-card" [class.is-read]="item.read">
+                  <div class="notice-card-icon" [ngClass]="getConfig(item.type).iconClass">
+                    <i class="bi" [ngClass]="getConfig(item.type).icon" aria-hidden="true"></i>
+                  </div>
+                  <div class="notice-card-body">
+                    <h3 class="notice-card-title">{{ item.title }}</h3>
+                    <p class="notice-card-message">{{ item.message }}</p>
+                    <div class="notice-card-meta">
+                      <span class="notice-card-time">{{ item.time }}</span>
+                      @if (item.meta) {
+                        <span class="notice-card-meta-code">{{ item.meta }}</span>
+                      }
+                    </div>
+                    @if (
+                      (item.link || item.meta) &&
+                      (item.linkLabel ||
+                        isOrderNotice(item) ||
+                        isPrescriptionNotice(item) ||
+                        isReminderNotice(item) ||
+                        isQaNotice(item))
+                    ) {
+                      <button type="button" class="notice-card-link" (click)="goToLink(item)">
+                        {{
+                          item.linkLabel ||
+                            (isOrderNotice(item)
+                              ? 'Xem đơn hàng'
+                              : isPrescriptionNotice(item)
+                                ? 'Xem đơn thuốc'
+                                : isReminderNotice(item)
+                                  ? 'Mở lịch nhắc'
+                                  : isQaNotice(item)
+                                    ? 'Xem phản hồi'
+                                    : 'Xem chi tiết')
+                        }}
+                        <i class="bi bi-chevron-right"></i>
+                      </button>
+                    }
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
     </div>
   </div>
 </div>

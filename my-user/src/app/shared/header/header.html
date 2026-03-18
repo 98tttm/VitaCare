@@ -1,4 +1,8 @@
-<header class="vc_header" [class.vc_header_compact]="isHeaderCompact">
+<header
+  class="vc_header"
+  [class.vc_header_compact]="isHeaderCompact"
+  [class.vc_header_logged_in]="authService.currentUser()"
+>
   <!-- <img class="vc_mascot_left" src="assets/images/mascot/mascot_tet1.png" alt="mascot left" aria-hidden="true" />
   <img class="vc_mascot_right" src="assets/images/mascot/mascot_tet2.png" alt="mascot right" aria-hidden="true" /> -->
 
@@ -100,9 +104,7 @@
           <div class="vc_logo_mark" aria-hidden="true">
             <img class="vc_logo_img" src="/assets/images/logo/header_logo.png" alt="VitaCare logo">
           </div>
-          <div class="vc_logo_name">VitaCare</div>
         </div>
-        <div class="vc_logo_tagline">Chuẩn y khoa - Cho sức khỏe toàn diện</div>
       </a>
 
 
@@ -203,36 +205,57 @@
 
       <!-- Right actions -->
       <div class="vc_actions">
-        <div class="vc_login_wrapper" (mouseenter)="onAccountMouseEnter()" (mouseleave)="onAccountMouseLeave()">
+        <div
+          class="vc_login_wrapper"
+          (mouseenter)="onAccountMouseEnter()"
+          (mouseleave)="onAccountMouseLeave()"
+        >
           <a class="vc_action" href="javascript:void(0)" (click)="onLogin($event)">
             <span class="vc_action_icon" aria-hidden="true">
               <i class="bi bi-person-fill"></i>
             </span>
             <span class="vc_action_text" *ngIf="!authService.currentUser()">Đăng nhập</span>
-            <span class="vc_action_text" *ngIf="authService.currentUser()?.phone">{{ authService.currentUser()?.phone
-              }}</span>
-            <span class="vc_action_text" *ngIf="authService.currentUser() && !authService.currentUser()?.phone">Tài
-              khoản</span>
+            <span class="vc_action_text" *ngIf="authService.currentUser()?.phone">
+              {{ authService.currentUser()?.phone }}
+            </span>
+            <span class="vc_action_text" *ngIf="authService.currentUser() && !authService.currentUser()?.phone">
+              Tài khoản
+            </span>
+            <span
+              class="vc_action_text vc_action_tier"
+              *ngIf="authService.currentUser()?.tiering as tier"
+              [ngClass]="getTierClass(tier)"
+            >
+              {{
+                tier === 'gold'
+                  ? 'Vàng'
+                  : tier === 'silver'
+                    ? 'Bạc'
+                    : tier === 'bronze'
+                      ? 'Đồng'
+                      : tier
+              }}
+            </span>
           </a>
           <div class="vc_account_dropdown shadow-lg" *ngIf="authService.currentUser() && isAccountDropdownVisible">
             <div class="vc_dropdown_arrow"></div>
             <a class="vc_dropdown_item" routerLink="/account" [queryParams]="{menu: 'info'}">
-              <i class="bi bi-person"></i> Thông tin cá nhân
+              <i class="bi bi-info-circle"></i> Thông tin cá nhân
             </a>
             <a class="vc_dropdown_item" routerLink="/account" [queryParams]="{menu: 'orders'}">
               <i class="bi bi-box-seam"></i> Đơn hàng của tôi
             </a>
             <a class="vc_dropdown_item" routerLink="/account" [queryParams]="{menu: 'addresses'}">
-              <i class="bi bi-geo-alt"></i> Sổ địa chỉ nhận hàng
+              <i class="bi bi-geo-alt"></i> Quản lý số địa chỉ
             </a>
             <a class="vc_dropdown_item" routerLink="/account" [queryParams]="{menu: 'prescriptions'}">
-              <i class="bi bi-file-medical"></i> Đơn thuốc của tôi
+              <i class="bi bi-capsule"></i> Đơn thuốc của tôi
             </a>
             <a class="vc_dropdown_item" routerLink="/account" [queryParams]="{menu: 'health'}">
-              <i class="bi bi-heart-pulse"></i> Sổ sức khỏe
+              <i class="bi bi-heart-pulse"></i> Quản lý sổ sức khỏe
             </a>
             <a class="vc_dropdown_item" routerLink="/account" [queryParams]="{menu: 'reviews'}">
-              <i class="bi bi-star"></i> Đánh giá của tôi
+              <i class="bi bi-star"></i> Quản lý đánh giá
             </a>
             <a class="vc_dropdown_item" routerLink="/account" [queryParams]="{menu: 'returns'}">
               <i class="bi bi-arrow-return-left"></i> Quản lý đổi trả

@@ -16,21 +16,7 @@ import {
 } from '../../../core/services/reminder.service';
 import { ToastService } from '../../../core/services/toast.service';
 
-const DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
-const TIME_SECTIONS: { key: string; label: string; min: number; max: number }[] = [
-  { key: 'sang', label: 'Sáng', min: 5, max: 11 },
-  { key: 'trua', label: 'Trưa', min: 11, max: 14 },
-  { key: 'chieu', label: 'Chiều', min: 14, max: 18 },
-  { key: 'toi', label: 'Tối', min: 18, max: 22 },
-];
-
-function getTimeSection(timeStr: string): string {
-  const [h] = timeStr.split(':').map(Number);
-  for (const s of TIME_SECTIONS) {
-    if (h >= s.min && h < s.max) return s.key;
-  }
-  return 'toi';
-}
+const WEEK_DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
 
 function formatDateForDisplay(d: Date): string {
   const day = String(d.getDate()).padStart(2, '0');
@@ -74,24 +60,19 @@ export class Remind implements OnInit {
   loading = signal(true);
   loadError = signal<string | null>(null);
 
-  selectedDayIndex = signal(new Date().getDay() === 0 ? 6 : new Date().getDay() - 1);
-  selectedDate = computed(() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const base = new Date(today);
-    base.setDate(today.getDate() + mondayOffset);
-    const idx = this.selectedDayIndex();
-    const d = new Date(base);
-    d.setDate(base.getDate() + idx);
-    return d;
-  });
+  /** Ngày đang được chọn (dùng cho popup tạo / chi tiết) */
+  selectedDate = signal<Date>(new Date());
   dateKey = computed(() => toDateKey(this.selectedDate()));
+
+  /** Tháng đang hiển thị trên calendar (set về ngày 1 để dễ tính toán) */
+  currentMonth = signal<Date>(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
 
   showCreatePopup = signal(false);
   showDetailPopup = signal<Reminder | null>(null);
   showDiaryPopup = signal(false);
   diarySelectedDate = signal<string>(toDateKey(new Date()));
+  showDeleteConfirm = signal(false);
+  deleteTarget = signal<Reminder | null>(null);
   isEditMode = signal(false);
   editingId = signal<string | null>(null);
   uploadingImage = signal(false);
@@ -111,8 +92,12 @@ export class Remind implements OnInit {
     image_url: null,
   });
 
-  readonly DAYS = DAYS;
-  readonly TIME_SECTIONS = TIME_SECTIONS;
+  readonly WEEK_DAYS = WEEK_DAYS;
+
+  /** Dùng trong template để format ngày đang chọn */
+  formatDateForDisplayFn(d: Date): string {
+    return formatDateForDisplay(d);
+  }
 
   /** Cập nhật 1 field trong formModel (dùng cho ngModelChange) */
   updateFormField(key: string, value: unknown): void {
@@ -164,6 +149,66 @@ export class Remind implements OnInit {
     }
     this.initFormDates();
     this.loadReminders(userId);
+    this.selectedDate.set(new Date());
+  }
+
+  /** Các ô ngày trong calendar tháng (6 hàng x 7 cột) */
+  calendarCells = computed(() => {
+    const month = this.currentMonth();
+    const start = new Date(month.getFullYear(), month.getMonth(), 1);
+    const startDay = start.getDay() === 0 ? 7 : start.getDay(); // 1-7 (T2..CN)
+    const diffToMonday = startDay - 1;
+    const gridStart = new Date(start);
+    gridStart.setDate(start.getDate() - diffToMonday);
+
+    const todayKey = toDateKey(new Date());
+    const cells: { date: Date; isCurrentMonth: boolean; isToday: boolean }[] = [];
+
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(gridStart);
+      d.setDate(gridStart.getDate() + i);
+      cells.push({
+        date: d,
+        isCurrentMonth: d.getMonth() === month.getMonth(),
+        isToday: toDateKey(d) === todayKey,
+      });
+    }
+    return cells;
+  });
+
+  /** Nhãn tháng/năm cho header calendar */
+  get monthLabel(): string {
+    const m = this.currentMonth();
+    return m.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+  }
+
+  changeMonth(offset: number): void {
+    const cur = this.currentMonth();
+    const next = new Date(cur.getFullYear(), cur.getMonth() + offset, 1);
+    this.currentMonth.set(next);
+  }
+
+  selectDateCell(date: Date): void {
+    this.selectedDate.set(date);
+    this.diarySelectedDate.set(toDateKey(date));
+    this.showDiaryPopup.set(true);
+  }
+
+  /** Lấy các lời nhắc cho một ngày cụ thể (dùng trong mỗi ô calendar) */
+  getRemindersForDate(date: Date): { reminder: Reminder; time: string; completed: boolean }[] {
+    const list = this.reminders();
+    const dk = toDateKey(date);
+    const result: { reminder: Reminder; time: string; completed: boolean }[] = [];
+    for (const r of list) {
+      if (!reminderAppliesOnDate(r, date)) continue;
+      for (const t of r.reminder_times || []) {
+        const completed =
+          (r.completion_log || []).some((c) => c.date === dk && c.time === t) ?? false;
+        result.push({ reminder: r, time: t, completed });
+      }
+    }
+    result.sort((a, b) => a.time.localeCompare(b.time));
+    return result;
   }
 
   private initFormDates(): void {
@@ -203,35 +248,11 @@ export class Remind implements OnInit {
     });
   }
 
-  remindersForDateAndSection = computed(() => {
-    const list = this.reminders();
-    const dk = this.dateKey();
-    const dateObj = this.selectedDate();
-    const result: Record<string, { reminder: Reminder; time: string; completed: boolean }[]> = {
-      sang: [],
-      trua: [],
-      chieu: [],
-      toi: [],
-    };
-    for (const r of list) {
-      if (!reminderAppliesOnDate(r, dateObj)) continue;
-      for (const t of r.reminder_times || []) {
-        const section = getTimeSection(t);
-        const completed =
-          (r.completion_log || []).some(
-            (c) => c.date === dk && c.time === t
-          ) ?? false;
-        result[section].push({ reminder: r, time: t, completed });
-      }
-    }
-    for (const k of Object.keys(result)) {
-      result[k].sort((a, b) => a.time.localeCompare(b.time));
-    }
-    return result;
-  });
+  // remindersForDateAndSection no longer used in calendar layout
 
   openCreate(): void {
     this.initFormDates();
+    const baseDate = this.selectedDate();
     this.formModel.set({
       med_name: '',
       dosage: '',
@@ -240,8 +261,8 @@ export class Remind implements OnInit {
       instruction: '',
       reminder_times: ['08:00'],
       frequency: '',
-      start_date: toDateKey(new Date()),
-      end_date: toDateKey(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
+      start_date: toDateKey(baseDate),
+      end_date: toDateKey(new Date(baseDate.getTime() + 30 * 24 * 60 * 60 * 1000)),
       note: '',
       image_url: null,
     });
@@ -250,6 +271,8 @@ export class Remind implements OnInit {
   }
 
   openDetail(r: Reminder): void {
+    // Đảm bảo popup chi tiết luôn trên cùng: đóng nhật ký nếu đang mở
+    this.showDiaryPopup.set(false);
     this.showDetailPopup.set(r);
     this.isEditMode.set(false);
   }
@@ -290,10 +313,6 @@ export class Remind implements OnInit {
 
   closeDiary(): void {
     this.showDiaryPopup.set(false);
-  }
-
-  selectDay(i: number): void {
-    this.selectedDayIndex.set(i);
   }
 
   saveReminder(): void {
@@ -363,16 +382,41 @@ export class Remind implements OnInit {
 
   deleteReminder(r: Reminder): void {
     if (!r._id) return;
-    if (!confirm('Bạn có chắc muốn xóa lời nhắc này?')) return;
-    this.reminderApi.delete(r._id).subscribe({
+    this.deleteTarget.set(r);
+    this.showDeleteConfirm.set(true);
+  }
+
+  confirmDelete(): void {
+    const target = this.deleteTarget();
+    if (!target?._id) {
+      this.showDeleteConfirm.set(false);
+      return;
+    }
+    const id = target._id;
+    this.reminderApi.delete(id).subscribe({
       next: (res) => {
         if (res.success) {
-          this.reminders.update((list) => list.filter((x) => x._id !== r._id));
+          this.reminders.update((list) => list.filter((x) => x._id !== id));
+          this.toast.showSuccess('Đã xóa lời nhắc.');
         }
+        this.showDeleteConfirm.set(false);
         this.closeDetail();
       },
-      error: () => { },
+      error: () => {
+        this.showDeleteConfirm.set(false);
+      },
     });
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm.set(false);
+    this.deleteTarget.set(null);
+  }
+
+  completeReminder(_r: Reminder): void {
+    // Hiển thị banner thành công phía trên (giống đăng nhập thành công)
+    this.auth.showHeaderSuccess('Bạn đã hoàn thành lời nhắc');
+    this.closeDetail();
   }
 
   toggleComplete(
@@ -381,43 +425,81 @@ export class Remind implements OnInit {
   ): void {
     const reminderId = item.reminder._id != null ? String(item.reminder._id) : '';
     if (!reminderId) return;
-    if (item.completed) return;
     const dk = dateOverride ?? this.dateKey();
-    // Optimistic update: hiển thị tick ngay, không cần load lại trang
-    this.reminders.update((list) =>
-      list.map((r) => {
-        if (String(r._id) !== reminderId) return r;
-        const log = r.completion_log || [];
-        if (log.some((c) => c.date === dk && c.time === item.time)) return r;
-        return {
-          ...r,
-          completion_log: [...log, { date: dk, time: item.time }],
-        };
-      })
-    );
-    this.reminderApi
-      .markComplete(reminderId, dk, item.time)
-      .subscribe({
-        next: (res) => {
-          if (res.success && res.reminder) {
-            this.reminders.update((list) =>
-              list.map((r) => (String(r._id) === reminderId ? res.reminder! : r))
-            );
-          }
-        },
-        error: () => {
-          // Revert optimistic update khi API lỗi
-          this.reminders.update((list) =>
-            list.map((r) => {
-              if (String(r._id) !== reminderId) return r;
-              const log = (r.completion_log || []).filter(
-                (c) => !(c.date === dk && c.time === item.time)
+    if (!item.completed) {
+      // Đánh dấu hoàn thành
+      this.reminders.update((list) =>
+        list.map((r) => {
+          if (String(r._id) !== reminderId) return r;
+          const log = r.completion_log || [];
+          if (log.some((c) => c.date === dk && c.time === item.time)) return r;
+          return {
+            ...r,
+            completion_log: [...log, { date: dk, time: item.time }],
+          };
+        })
+      );
+      this.reminderApi
+        .markComplete(reminderId, dk, item.time)
+        .subscribe({
+          next: (res) => {
+            if (res.success && res.reminder) {
+              this.reminders.update((list) =>
+                list.map((r) => (String(r._id) === reminderId ? res.reminder! : r))
               );
-              return { ...r, completion_log: log };
-            })
+              this.auth.showHeaderSuccess('Bạn đã hoàn thành lời nhắc');
+            }
+          },
+          error: () => {
+            // Revert optimistic update khi API lỗi
+            this.reminders.update((list) =>
+              list.map((r) => {
+                if (String(r._id) !== reminderId) return r;
+                const log = (r.completion_log || []).filter(
+                  (c) => !(c.date === dk && c.time === item.time)
+                );
+                return { ...r, completion_log: log };
+              })
+            );
+          },
+        });
+    } else {
+      // Bỏ đánh dấu hoàn thành
+      this.reminders.update((list) =>
+        list.map((r) => {
+          if (String(r._id) !== reminderId) return r;
+          const log = (r.completion_log || []).filter(
+            (c) => !(c.date === dk && c.time === item.time)
           );
-        },
-      });
+          return { ...r, completion_log: log };
+        })
+      );
+      this.reminderApi
+        .markUncomplete(reminderId, dk, item.time)
+        .subscribe({
+          next: (res) => {
+            if (res.success && res.reminder) {
+              this.reminders.update((list) =>
+                list.map((r) => (String(r._id) === reminderId ? res.reminder! : r))
+              );
+            }
+          },
+          error: () => {
+            // Revert optimistic update khi API lỗi
+            this.reminders.update((list) =>
+              list.map((r) => {
+                if (String(r._id) !== reminderId) return r;
+                const log = r.completion_log || [];
+                if (log.some((c) => c.date === dk && c.time === item.time)) return r;
+                return {
+                  ...r,
+                  completion_log: [...log, { date: dk, time: item.time }],
+                };
+              })
+            );
+          },
+        });
+    }
   }
 
   addReminderTime(): void {

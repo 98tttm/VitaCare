@@ -51,24 +51,12 @@
 .orders-content-wrapper {
   overflow-y: auto;
   max-height: calc(100vh - 300px);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .orders-content-wrapper::-webkit-scrollbar {
-  width: 8px;
-}
-
-.orders-content-wrapper::-webkit-scrollbar-track {
-  background: var(--color-neutral-20);
-  border-radius: 4px;
-}
-
-.orders-content-wrapper::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
-}
-
-.orders-content-wrapper::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
+  display: none;
 }
 
 .remind-actions {
@@ -190,7 +178,7 @@
 
 .tab-button {
   flex: 1;
-  padding: 16px 24px;
+  padding: 10px 16px;
   border: none;
   background: transparent;
   color: var(--color-text-primary);
@@ -230,134 +218,119 @@
   border-radius: 2px;
 }
 
+.tab-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tab-label-top {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tab-label-sub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
 .remind-date-label {
   font-size: 14px;
   color: var(--color-text-secondary);
-  margin: 0 0 20px;
-}
-
-/* ---------- Time sections ---------- */
-.remind-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.remind-section {
-  background: var(--color-neutral-10);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 12px rgba(0, 88, 159, 0.12);
-  border: 1px solid var(--color-primary-lighter, #AACEF2);
-}
-
-.remind-section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-primary);
   margin: 0 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-primary-bg, #DAECFF);
 }
 
-.remind-section-cards {
+/* ---------- Calendar layout ---------- */
+.remind-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.remind-month-label {
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.remind-month-nav {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--color-primary-bg, #DAECFF);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.remind-month-nav:hover {
+  background: var(--color-primary-bg, #DAECFF);
+}
+
+.remind-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.remind-calendar-weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.remind-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.remind-calendar-cell {
+  background: var(--color-neutral-10);
+  border-radius: 10px;
+  padding: 4px 4px 6px;
+  min-height: 64px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.remind-section-empty {
-  font-size: 14px;
-  color: var(--color-text-tertiary);
-  margin: 0;
-  padding: 16px 0;
-}
-
-/* ---------- Medication card ---------- */
-.remind-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background: var(--color-primary-bg, #DAECFF);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
   border: 1px solid transparent;
-}
-
-.remind-card:hover {
-  background: var(--color-primary-lighter, #AACEF2);
-  box-shadow: 0 2px 8px rgba(0, 88, 159, 0.15);
-}
-
-.remind-card-image {
-  flex-shrink: 0;
-  width: 56px;
-  height: 56px;
-  background: var(--color-primary-light, #43A2E6);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: var(--color-text-inverse);
-}
-
-.remind-card-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.remind-card-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0 0 4px;
-}
-
-.remind-card-dosage,
-.remind-card-time {
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  margin: 0;
-}
-
-.remind-card-time {
-  margin-top: 2px;
-}
-
-/* Checkbox - tick hoàn thành */
-.remind-checkbox {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border: 2px solid var(--color-primary-light, #43A2E6);
-  border-radius: 6px;
-  background: var(--color-neutral-10);
   cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.remind-calendar-cell--other {
+  opacity: 0.5;
+}
+
+.remind-calendar-cell--today {
+  border-color: var(--color-primary);
+  background: #e6f3ff;
+}
+
+.remind-calendar-day-number {
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--color-text-primary);
+}
+
+.remind-calendar-tags {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  align-items: flex-start;
 }
 
-.remind-checkbox:hover {
-  border-color: var(--color-primary);
-}
-
-.remind-checkbox--checked {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-text-inverse);
-}
-
-.remind-checkbox--checked:hover {
-  opacity: 0.9;
-}
-
-.remind-checkbox i {
-  font-size: 16px;
+.remind-calendar-count {
+  font-size: 10px;
+  color: var(--color-text-secondary);
 }
 
 /* ---------- Modal overlay ---------- */
@@ -417,6 +390,67 @@
 
 .remind-modal-overlay--diary .remind-modal {
   max-width: 900px;
+}
+
+/* Popup xác nhận xóa lời nhắc (clone style global confirm) */
+.remind-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200000;
+}
+
+.remind-confirm-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 28px;
+  min-width: 320px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.remind-confirm-title {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.remind-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.remind-confirm-btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.remind-confirm-cancel {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.remind-confirm-cancel:hover {
+  background: #e0e0e0;
+}
+
+.remind-confirm-ok {
+  background: #00589F;
+  color: #fff;
+}
+
+.remind-confirm-ok:hover {
+  background: #004080;
 }
 
 .remind-modal-header {
@@ -700,11 +734,104 @@
 .remind-diary-items {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 360px;
+  gap: 10px;
+  max-height: 380px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
-.remind-card--diary {
-  padding: 12px;
+.remind-diary-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid var(--color-primary-bg, #DAECFF);
+  box-shadow: 0 2px 8px rgba(0, 88, 159, 0.06);
+  cursor: pointer;
+}
+
+.remind-diary-item-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remind-diary-pill-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-primary-bg, #DAECFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: 20px;
+}
+
+.remind-diary-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.remind-diary-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.remind-diary-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.remind-diary-time {
+  font-size: 12px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.remind-diary-dosage {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.remind-diary-checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 2px solid var(--color-primary-light, #43A2E6);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remind-diary-checkbox--checked {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.remind-diary-items::-webkit-scrollbar {
+  width: 4px;
+}
+
+.remind-diary-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.remind-diary-items::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
 }

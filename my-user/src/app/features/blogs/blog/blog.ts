@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@an
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 export interface BlogItem {
   title: string;
@@ -15,7 +16,7 @@ export interface BlogItem {
 @Component({
   selector: 'app-bai-viet-blog',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LoadingShippingComponent],
   templateUrl: './blog.html',
   styleUrl: './blog.css',
 })
@@ -59,12 +60,15 @@ export class Blog implements OnInit {
     { avatar: 'assets/placeholder/avatar.png', degree: 'Thạc sĩ', name: 'Hoàng Văn E', specialize: 'Nội tổng hợp' },
   ];
 
+  categoryCounts: Record<string, number> = {};
+
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.loadBlogs();
     this.loadDoctors();
     this.loadCategoryCounts();
+    this.loadTopicCounts();
   }
 
   /** Đếm số bài cho từng chuyên mục dựa trên API /api/blogs/category-counts */
@@ -73,18 +77,7 @@ export class Blog implements OnInit {
     this.http.get<any>(url).subscribe({
       next: (res) => {
         if (res?.success && res?.counts) {
-          const countsMap = res.counts;
-          this.featuredTopicCategories = this.blogCategoryItems
-            .map(cat => ({
-              name: cat.name,
-              count: countsMap[cat.name] || 0,
-              slug: this.normalizeTopicSlug(cat.slug)
-            }))
-            .filter(c => {
-              const lower = c.name.toLowerCase();
-              return !lower.includes('khuyến mãi') && !lower.includes('phân loại') && !lower.includes('truyền thông');
-            })
-            .sort((a, b) => b.count - a.count);
+          this.categoryCounts = res.counts;
           this.cdr.detectChanges();
         }
       },
@@ -94,11 +87,32 @@ export class Blog implements OnInit {
     });
   }
 
-  /** Lấy số lượng bài viết của một danh mục từ featuredTopicCategories */
+  /** Lấy các chuyên đề nổi bật từ API /api/blogs/topic-counts */
+  private loadTopicCounts(): void {
+    const url = 'http://localhost:3000/api/blogs/topic-counts?limit=10';
+    this.http.get<any>(url).subscribe({
+      next: (res) => {
+        if (res?.success && Array.isArray(res?.counts)) {
+          this.featuredTopicCategories = res.counts.map((item: any) => ({
+            name: item.name,
+            count: item.count,
+            slug: this.normalizeTopicSlug(item.slug || this.slugify(item.name))
+          })).filter((c: any) => {
+            const lower = c.name.toLowerCase();
+            return !lower.includes('khuyến mãi') && !lower.includes('phân loại') && !lower.includes('truyền thông');
+          });
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Lỗi khi lấy số lượng bài viết theo chuyên đề:', err);
+      }
+    });
+  }
+
+  /** Lấy số lượng bài viết của một danh mục từ categoryCounts */
   getCategoryCount(categoryName: string): number {
-    if (!this.featuredTopicCategories || this.featuredTopicCategories.length === 0) return 0;
-    const cat = this.featuredTopicCategories.find(c => c.name === categoryName);
-    return cat ? cat.count : 0;
+    return this.categoryCounts[categoryName] || 0;
   }
 
   private loadDoctors(): void {
@@ -354,5 +368,19 @@ export class Blog implements OnInit {
   private normalizeTopicSlug(slug: string): string {
     if (!slug) return '';
     return slug.replace(/^chuyen-de\//i, '').replace(/^\/+/, '');
+  }
+
+  private slugify(text: string): string {
+    if (!text) return '';
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
   }
 }

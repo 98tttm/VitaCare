@@ -3279,3 +3279,117 @@
     margin-top: -36px;
   }
 }
+
+/* =====================================================================
+   SCROLL REVEAL – 3D Entrance Animations
+   ===================================================================== */
+
+/* Base state: hidden and shifted */
+.scroll-reveal {
+  /* Enable 3D so children respect perspective */
+  perspective: 1200px;
+  opacity: 0;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Direction variants – initial hidden transforms */
+.scroll-reveal.from-bottom {
+  transform: translateY(60px) rotateX(6deg);
+  transform-origin: center bottom;
+}
+
+.scroll-reveal.from-left {
+  transform: translateX(-70px) rotateY(-8deg);
+  transform-origin: left center;
+}
+
+.scroll-reveal.from-right {
+  transform: translateX(70px) rotateY(8deg);
+  transform-origin: right center;
+}
+
+.scroll-reveal.from-top {
+  transform: translateY(-60px) rotateX(-6deg);
+  transform-origin: center top;
+}
+
+/* Revealed state */
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger delay helpers (optional: apply manually or via JS) */
+.scroll-reveal:nth-of-type(2) {
+  transition-delay: 0.05s;
+}
+
+.scroll-reveal:nth-of-type(3) {
+  transition-delay: 0.10s;
+}
+
+.scroll-reveal:nth-of-type(4) {
+  transition-delay: 0.15s;
+}
+
+.scroll-reveal:nth-of-type(5) {
+  transition-delay: 0.20s;
+}
+
+.scroll-reveal:nth-of-type(6) {
+  transition-delay: 0.25s;
+}
+
+.scroll-reveal:nth-of-type(7) {
+  transition-delay: 0.30s;
+}
+
+.scroll-reveal:nth-of-type(8) {
+  transition-delay: 0.08s;
+}
+
+.scroll-reveal:nth-of-type(9) {
+  transition-delay: 0.12s;
+}
+
+/* On mobile: reduce the 3D tilt for better perf */
+@media (max-width: 600px) {
+  .scroll-reveal.from-bottom {
+    transform: translateY(40px);
+  }
+
+  .scroll-reveal.from-left {
+    transform: translateX(-40px);
+  }
+
+  .scroll-reveal.from-right {
+    transform: translateX(40px);
+  }
+
+  .scroll-reveal.from-top {
+    transform: translateY(-40px);
+  }
+}
+
+/* =====================================================================
+   VC_REVEAL_ELEMENT – Card-level stagger animation (same as disease page)
+   ===================================================================== */
+.vc_reveal_element {
+  opacity: 0;
+  transform: translateY(50px) scale(0.93);
+  filter: blur(6px);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform, opacity, filter;
+}
+
+.vc_reveal_element.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}

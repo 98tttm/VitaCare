@@ -114,9 +114,9 @@ export class OrderDetailAcc {
     this.searchQuery = '';
     this.showDetailModal = true;
 
-    // Auto-select first order or specified order
+    // Auto-select first order or specified order (match by id hoặc orderNumber)
     if (selectedOrderId) {
-      const order = this.allOrders.find(o => o.id === selectedOrderId);
+      const order = this.allOrders.find(o => o.id === selectedOrderId || o.orderNumber === selectedOrderId);
       if (order) {
         this.selectedOrder = order;
       } else if (this.allOrders.length > 0) {

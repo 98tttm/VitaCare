@@ -1,7 +1,20 @@
-import { Component, ElementRef, ViewChild, inject, OnInit, signal, effect, untracked, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  inject,
+  OnInit,
+  signal,
+  effect,
+  untracked,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { OrderService, Order as BackendOrder } from '../../../core/services/order.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { OrderDetailAcc } from '../order-detail-acc/order-detail-acc';
@@ -30,18 +43,18 @@ interface Order {
   orderDate: string;
   // Đồng bộ với Order trong order-detail-acc.ts
   status:
-  | 'pending'
-  | 'confirmed'
-  | 'shipping'
-  | 'delivered'
-  | 'received'
-  | 'completed'
-  | 'cancelled'
-  | 'refund_rejected'
-  | 'unreview'
-  | 'reviewed'
-  | 'processing_return'
-  | 'returning'
+    | 'pending'
+    | 'confirmed'
+    | 'shipping'
+    | 'delivered'
+    | 'received'
+    | 'completed'
+    | 'cancelled'
+    | 'refund_rejected'
+    | 'unreview'
+    | 'reviewed'
+    | 'processing_return'
+    | 'returning';
   totalAmount: number;
   subtotal?: number;
   directDiscount?: number;
@@ -72,6 +85,7 @@ interface ReturnReason {
 })
 export class Orders implements OnInit, OnChanges {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private orderService = inject(OrderService);
   private authService = inject(AuthService); // Kept for other needs if any
   private cartService = inject(CartService);
@@ -170,8 +184,22 @@ export class Orders implements OnInit, OnChanges {
     this.orderService.getOrders(userId).subscribe({
       next: (res: any) => {
         if (res.success) {
-          this.orders = res.items.map((backendOrder: BackendOrder) => this.mapBackendOrder(backendOrder));
+          this.orders = res.items.map((backendOrder: BackendOrder) =>
+            this.mapBackendOrder(backendOrder),
+          );
           this.updateTabCounts();
+          const orderId = this.route.snapshot.queryParams['orderId'];
+          if (orderId && this.orderDetailModal && this.orders.length > 0) {
+            setTimeout(() => {
+              this.orderDetailModal.openModal(this.orders, orderId);
+              this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: { menu: 'orders' },
+                queryParamsHandling: 'merge',
+                replaceUrl: true,
+              });
+            }, 50);
+          }
         }
         this.isLoading = false;
         this.cdr.detectChanges(); // Manually trigger change detection
@@ -180,7 +208,7 @@ export class Orders implements OnInit, OnChanges {
         console.error('OrdersComponent: Failed to fetch orders', err);
         this.isLoading = false;
         this.cdr.detectChanges(); // Manually trigger change detection
-      }
+      },
     });
   }
 
@@ -244,7 +272,7 @@ export class Orders implements OnInit, OnChanges {
 
     // Nếu đơn cũ chưa lưu subtotal, tự tính từ tổng giá trị sản phẩm
     if (!subtotal || subtotal === 0) {
-      subtotal = products.reduce((acc, p) => acc + (p.price * p.quantity), 0);
+      subtotal = products.reduce((acc, p) => acc + p.price * p.quantity, 0);
       // Ước tính discount dựa trên tổng tiền
       const calculatedDiscount = subtotal + shippingFee - backendOrder.totalAmount;
       if (calculatedDiscount > 0) {
@@ -264,7 +292,7 @@ export class Orders implements OnInit, OnChanges {
       shippingFee,
       products: products,
       isReviewed: false, // Default
-      isReturned: false // Default
+      isReturned: false, // Default
     };
   }
 
@@ -286,9 +314,9 @@ export class Orders implements OnInit, OnChanges {
       if (this.activeTab === 'delivered') {
         // Tab "Đã giao hàng" chỉ hiển thị đơn 'delivered'.
         // Các đơn 'unreview'/'reviewed' sẽ hiển thị ở Quản lý đánh giá.
-        filtered = filtered.filter(o => o.status === 'delivered' || o.status === 'completed');
+        filtered = filtered.filter((o) => o.status === 'delivered' || o.status === 'completed');
       } else {
-        filtered = filtered.filter(o => o.status === this.activeTab);
+        filtered = filtered.filter((o) => o.status === this.activeTab);
       }
     }
 
@@ -296,27 +324,29 @@ export class Orders implements OnInit, OnChanges {
     if (this.searchQuery.trim()) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(
-        o =>
+        (o) =>
           o.orderNumber.toLowerCase().includes(query) ||
-          o.products.some(p => p.name.toLowerCase().includes(query))
+          o.products.some((p) => p.name.toLowerCase().includes(query)),
       );
     }
 
     // Sort by date (newest first) seems already sorted by backend, but redundant sort is safe
-    return filtered.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
+    return filtered.sort(
+      (a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime(),
+    );
   }
 
   // --- Tabs ---
   updateTabCounts(): void {
     const allOrders = this.orders;
-    this.tabs.forEach(tab => {
+    this.tabs.forEach((tab) => {
       if (tab.id === 'all') {
         tab.count = allOrders.length;
       } else if (tab.id === 'delivered') {
         // Số hiển thị trên tab "Đã giao hàng" chỉ đếm các đơn có status = 'delivered'
-        tab.count = allOrders.filter(o => o.status === 'delivered').length;
+        tab.count = allOrders.filter((o) => o.status === 'delivered').length;
       } else {
-        tab.count = allOrders.filter(o => o.status === tab.id).length;
+        tab.count = allOrders.filter((o) => o.status === tab.id).length;
       }
     });
   }
@@ -410,7 +440,7 @@ export class Orders implements OnInit, OnChanges {
   }
 
   getDisplayProducts(order: Order): OrderProduct[] {
-    const mainProducts = order.products.filter(p => !p.gifted);
+    const mainProducts = order.products.filter((p) => !p.gifted);
     if (this.isOrderExpanded(order)) {
       return mainProducts;
     }
@@ -418,11 +448,11 @@ export class Orders implements OnInit, OnChanges {
   }
 
   hasGiftedProduct(product: OrderProduct, order: Order): boolean {
-    return order.products.some(p => p.gifted && p.parentId === product.id);
+    return order.products.some((p) => p.gifted && p.parentId === product.id);
   }
 
   getGiftedProduct(product: OrderProduct, order: Order): OrderProduct | undefined {
-    return order.products.find(p => p.gifted && p.parentId === product.id);
+    return order.products.find((p) => p.gifted && p.parentId === product.id);
   }
 
   viewOrderDetails(order: Order): void {
@@ -485,7 +515,7 @@ export class Orders implements OnInit, OnChanges {
       this.reasonDropdownPosition = {
         top: rect.bottom, // Use rect directly for position: fixed
         left: rect.left,
-        width: rect.width
+        width: rect.width,
       };
     }
   }
@@ -497,20 +527,20 @@ export class Orders implements OnInit, OnChanges {
   }
 
   getReasonLabel(value: string): string {
-    const reason = this.returnReasonOptions.find(r => r.value === value);
+    const reason = this.returnReasonOptions.find((r) => r.value === value);
     return reason ? reason.label : '';
   }
 
   getModalDisplayProducts(): OrderProduct[] {
     if (!this.selectedOrder) return [];
-    const mainProducts = this.selectedOrder.products.filter(p => !p.gifted);
+    const mainProducts = this.selectedOrder.products.filter((p) => !p.gifted);
     if (this.isModalExpanded) return mainProducts;
     return mainProducts.slice(0, 2);
   }
 
   hasMoreModalProducts(): boolean {
     if (!this.selectedOrder) return false;
-    return this.selectedOrder.products.filter(p => !p.gifted).length > 2;
+    return this.selectedOrder.products.filter((p) => !p.gifted).length > 2;
   }
 
   toggleModalProducts(): void {
@@ -536,9 +566,10 @@ export class Orders implements OnInit, OnChanges {
     if (!this.canSubmitCancelOrder() || !this.selectedOrder) return;
 
     const order = this.selectedOrder;
-    const reason = this.selectedCancelReason === 'other'
-      ? this.cancelDetailedReason
-      : this.getCancelReasonLabel(this.selectedCancelReason);
+    const reason =
+      this.selectedCancelReason === 'other'
+        ? this.cancelDetailedReason
+        : this.getCancelReasonLabel(this.selectedCancelReason);
 
     // Gửi orderNumber (order_id trên MongoDB) để backend tìm đúng đơn
     this.orderService.cancelOrder(order.orderNumber, reason).subscribe({
@@ -555,7 +586,9 @@ export class Orders implements OnInit, OnChanges {
         console.error('Cancel order API error:', err);
         this.closeCancelOrderModal();
         this.cdr.detectChanges();
-        this.toast.showError('Hủy đơn hàng không thành công. Vui lòng thử lại sau hoặc kiểm tra lại trạng thái đơn.');
+        this.toast.showError(
+          'Hủy đơn hàng không thành công. Vui lòng thử lại sau hoặc kiểm tra lại trạng thái đơn.',
+        );
       },
     });
   }
@@ -568,7 +601,7 @@ export class Orders implements OnInit, OnChanges {
       this.cancelReasonDropdownPosition = {
         top: rect.bottom, // Use rect directly for position: fixed
         left: rect.left,
-        width: rect.width
+        width: rect.width,
       };
     }
   }
@@ -584,7 +617,7 @@ export class Orders implements OnInit, OnChanges {
   }
 
   getCancelReasonLabel(value: string): string {
-    const reason = this.cancelReasonOptions.find(r => r.value === value);
+    const reason = this.cancelReasonOptions.find((r) => r.value === value);
     return reason ? reason.label : '';
   }
 
@@ -640,32 +673,37 @@ export class Orders implements OnInit, OnChanges {
     const skus = new Set<string>();
     const ids = new Set<string>();
 
-    const repurchaseItems: Array<Partial<CartItem> & { quantity: number }> = purchasedProducts.map((p) => {
-      const payload: Partial<CartItem> & { quantity: number } = {
-        _id: p.id || p.sku || '',
-        sku: p.sku || '',
-        productName: p.name,
-        price: p.price || 0,
-        discount: 0,
-        image: p.image || '',
-        unit: p.unit || 'Hộp',
-        category: p.category || '',
-        hasPromotion: false,
-        quantity: p.quantity || 1,
-      };
-      if (payload.sku) skus.add(payload.sku);
-      if (payload._id) ids.add(String(payload._id));
-      return payload;
-    });
+    const repurchaseItems: Array<Partial<CartItem> & { quantity: number }> = purchasedProducts.map(
+      (p) => {
+        const payload: Partial<CartItem> & { quantity: number } = {
+          _id: p.id || p.sku || '',
+          sku: p.sku || '',
+          productName: p.name,
+          price: p.price || 0,
+          discount: 0,
+          image: p.image || '',
+          unit: p.unit || 'Hộp',
+          category: p.category || '',
+          hasPromotion: false,
+          quantity: p.quantity || 1,
+        };
+        if (payload.sku) skus.add(payload.sku);
+        if (payload._id) ids.add(String(payload._id));
+        return payload;
+      },
+    );
 
     // Ghi đè số lượng trong giỏ theo đúng số lượng của đơn mua lại
     this.cartService.setItemsForRepurchase(repurchaseItems);
 
     // Lưu cấu hình chọn sẵn (sku/id) để Cart biết chỉ select các sản phẩm vừa thêm
-    localStorage.setItem('repurchase_selection', JSON.stringify({
-      skus: Array.from(skus),
-      ids: Array.from(ids),
-    }));
+    localStorage.setItem(
+      'repurchase_selection',
+      JSON.stringify({
+        skus: Array.from(skus),
+        ids: Array.from(ids),
+      }),
+    );
 
     // Mở sidebar giỏ hàng để user thấy các sản phẩm đã được chọn sẵn
     this.cartSidebar.openSidebar();
@@ -674,7 +712,7 @@ export class Orders implements OnInit, OnChanges {
   onRate(order: Order): void {
     console.log('Rate order', order.id);
     this.showReviewModal = true;
-    this.reviewProducts = order.products.filter(p => !p.gifted);
+    this.reviewProducts = order.products.filter((p) => !p.gifted);
   }
 
   hasOrderBeenReviewed(order: Order): boolean {
@@ -720,7 +758,7 @@ export class Orders implements OnInit, OnChanges {
             this.updateTabCounts();
             this.cdr.detectChanges();
           }
-        }
+        },
       });
     }
     this.showReturnModal = false;
@@ -738,4 +776,3 @@ export class Orders implements OnInit, OnChanges {
     this.closeReviewModal();
   }
 }
-

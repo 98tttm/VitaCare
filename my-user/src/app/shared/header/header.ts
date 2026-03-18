@@ -1446,4 +1446,28 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     return ['/category', ...slug.split('/').filter(Boolean)];
   }
 
+  /** Chuẩn hoá tiering từ backend sang class màu (đồng/bạc/vàng) */
+  getTierClass(tier: string | null | undefined): string {
+    if (!tier) return '';
+    const raw = tier.toString().trim().toLowerCase();
+    // Chuẩn hoá đơn giản dấu tiếng Việt
+    const normalized = raw
+      .replace('đ', 'd')
+      .replace('ồng', 'ong')
+      .replace('ạc', 'ac')
+      .replace('àng', 'ang');
+
+    if (normalized.includes('gold') || normalized.includes('vang')) {
+      return 'vc_action_tier--gold';
+    }
+    if (normalized.includes('silver') || normalized.includes('bac')) {
+      return 'vc_action_tier--silver';
+    }
+    if (normalized.includes('bronze') || normalized.includes('dong')) {
+      return 'vc_action_tier--bronze';
+    }
+    // Mặc định coi là Đồng nếu không match rõ
+    return 'vc_action_tier--bronze';
+  }
+
 }

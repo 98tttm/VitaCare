@@ -58,6 +58,20 @@ const ConsultationPrescriptionModel = mongoose.model('admin_consultations_prescr
 const ReviewModel = mongoose.model('admin_reviews', genericSchema, 'reviews');
 const DiseaseGroupModel = mongoose.model('disease_groups_metadata', genericSchema, 'disease_groups');
 
+// --- CUSTOMER TIERING HELPERS ---
+/**
+ * Tính tiering từ tổng tiền đã chi (chỉ tính đơn đã giao thành công).
+ * Ngưỡng mặc định (có thể chỉnh lại theo business):
+ *  - < 3.000.000đ: Đồng
+ *  - 3.000.000 – < 10.000.000đ: Bạc
+ *  - >= 10.000.000đ: Vàng
+ */
+function getTierFromTotalSpent(total) {
+  const t = Number(total) || 0;
+  if (t >= 10_000_000) return 'Vàng';
+  if (t >= 3_000_000) return 'Bạc';
+  return 'Đồng';
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -703,8 +717,8 @@ app.get('/api/promotions', async (req, res) => {
 // GET /api/promotion-targets - danh sách đối tượng áp dụng khuyến mãi
 app.get('/api/promotion-targets', async (req, res) => {
   try {
-    const db = mongoose.connection.db;
-    const list = await db.collection('promotion_target').find({}).toArray();
+    // Đọc từ collection chuẩn 'promotion_promotion_target' thông qua model PromotionTarget
+    const list = await PromotionTarget.find().lean();
     res.json({ success: true, data: list });
   } catch (err) {
     console.error('[GET /api/promotion-targets] Error:', err);
@@ -749,7 +763,7 @@ app.post('/api/orders', async (req, res) => {
     const {
       user_id, paymentMethod, statusPayment, atPharmacy, pharmacyAddress,
       subtotal, directDiscount, voucherDiscount, shippingFee, shippingDiscount, totalAmount,
-      note, requestInvoice, hideProductInfo, item, shippingInfo,
+      note, requestInvoice, hideProductInfo, item, shippingInfo, promotion,
     } = req.body || {};
 
     const uid = (user_id != null && user_id !== '') ? String(user_id).trim() : null;
@@ -788,7 +802,7 @@ app.post('/api/orders', async (req, res) => {
       subtotal: Number(subtotal) || 0,
       directDiscount: Number(directDiscount) || 0,
       voucherDiscount: Number(voucherDiscount) || 0,
-      promotion: [],
+      promotion: Array.isArray(promotion) ? promotion : [],
       shippingFee: Number(shippingFee) || 0,
       shippingDiscount: Number(shippingDiscount) || 0,
       totalAmount: Number(totalAmount) || 0,
@@ -818,6 +832,58 @@ app.post('/api/orders', async (req, res) => {
     };
 
     await col.insertOne(orderDoc);
+
+    // Sau khi tạo đơn: trừ tồn kho sản phẩm và cập nhật lượt sử dụng khuyến mãi (nếu có)
+    try {
+      // Trừ stock cho từng sản phẩm trong đơn
+      if (Array.isArray(orderDoc.item) && orderDoc.item.length > 0) {
+        for (const it of orderDoc.item) {
+          const rawId = it.productId || it.product_id || it._id;
+          const qty = Number(it.quantity) || 1;
+          if (!rawId || qty <= 0) continue;
+          const idStr = String(rawId);
+          const filters = [{ _id: idStr }];
+          if (mongoose.Types.ObjectId.isValid(idStr)) {
+            filters.push({ _id: new mongoose.Types.ObjectId(idStr) });
+          }
+          filters.push({ '_id.$oid': idStr });
+          await productsCollection().updateOne(
+            { $or: filters },
+            { $inc: { stock: -qty } },
+          );
+        }
+      }
+
+      // Ghi nhận lượt sử dụng khuyến mãi
+      if (Array.isArray(orderDoc.promotion) && orderDoc.promotion.length > 0) {
+        for (const p of orderDoc.promotion) {
+          const pid = p.promotion_id || p.promotionId || null;
+          if (!pid) continue;
+          const promotionId = String(pid);
+
+          // Cập nhật bảng usage: thêm user và order vào mảng
+          await PromotionUsage.updateOne(
+            { promotion_id: promotionId },
+            {
+              $setOnInsert: { promotion_id: promotionId },
+              $addToSet: {
+                user_id: uid || null,
+                order_id: orderId,
+              },
+            },
+            { upsert: true },
+          );
+
+          // Tăng bộ đếm usage_count trong promotion_promotions
+          await PromotionModel.updateOne(
+            { promotion_id: promotionId },
+            { $inc: { usage_count: 1 } },
+          );
+        }
+      }
+    } catch (e) {
+      console.warn('[POST /api/orders] Cannot update stock or promotion usage:', e.message);
+    }
 
     // Tạo thông báo "đơn hàng mới" cho user (chỉ khi có user_id)
     if (uid) {
@@ -1444,44 +1510,24 @@ app.get('/api/carts', async (req, res) => {
 
     const itemsArray = Array.isArray(cartDoc.items) ? cartDoc.items : [];
 
-    // Fetch latest images from products collection
+    /**
+     * Tối ưu hiệu năng:
+     * Trước đây mỗi lần mở giỏ hàng FE sẽ gọi GET /api/carts,
+     * route này lại join sang collection products để lấy ảnh mới nhất
+     * cho từng sản phẩm trong giỏ → tạo một truy vấn $or rất lớn,
+     * dễ làm request chậm khi giỏ hoặc bảng sản phẩm lớn.
+     *
+     * Để tránh lag khi mở giỏ, ta bỏ bước join nặng này
+     * và chỉ chuẩn hoá lại dữ liệu số ngay trên items hiện có.
+     * Ảnh sản phẩm đã được lưu trong cart khi thêm vào giỏ,
+     * FE vẫn có thể hiển thị bình thường.
+     */
     if (itemsArray.length > 0) {
-      const productIds = itemsArray.map(it => it._id?.$oid || String(it._id)).filter(Boolean);
-
-      // Build query to handle both string and ObjectId
-      const idFilters = productIds.map(id => {
-        const filters = [{ _id: id }];
-        if (mongoose.Types.ObjectId.isValid(id)) {
-          filters.push({ _id: new mongoose.Types.ObjectId(id) });
-        }
-        filters.push({ "_id.$oid": id });
-        return filters;
-      }).flat();
-
-      if (idFilters.length > 0) {
-        const products = await productsCollection().find({ $or: idFilters }, { projection: { _id: 1, image: 1, gallery: 1, images: 1, imageUrl: 1 } }).toArray();
-
-        const productMap = {};
-        products.forEach(p => {
-          const pid = p._id?.$oid || String(p._id);
-
-          // Ưu tiên: field image -> images[0] -> gallery[0] -> imageUrl (Giống logic danh mục sản phẩm)
-          const primaryImage = p.image ||
-            (Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '') ||
-            (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery[0] : '') ||
-            p.imageUrl || '';
-
-          productMap[pid] = primaryImage;
-        });
-
-        // Cập nhật lại mảng items
-        itemsArray.forEach(it => {
-          const itId = it._id?.$oid || String(it._id);
-          if (productMap[itId]) {
-            it.image = productMap[itId];
-          }
-        });
-      }
+      itemsArray.forEach((it) => {
+        it.quantity = Number(it.quantity) || 1;
+        it.price = Number(it.price) || 0;
+        it.discount = Number(it.discount) || 0;
+      });
     }
 
     const totalQuantity = itemsArray.reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
@@ -2453,6 +2499,48 @@ app.post('/api/reminders/:id/complete', async (req, res) => {
   } catch (err) {
     console.error('Complete reminder error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi đánh dấu hoàn thành.' });
+  }
+});
+
+// POST /api/reminders/:id/uncomplete - Bỏ đánh dấu hoàn thành (theo ngày + giờ)
+app.post('/api/reminders/:id/uncomplete', async (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim();
+    const { date, time } = req.body || {};
+    if (!date || !time) {
+      return res.status(400).json({ success: false, message: 'Thiếu date hoặc time.' });
+    }
+    const dateNorm = String(date).slice(0, 10);
+    const timeNorm = normalizeReminderTimeStr(time);
+    const update = {
+      $pull: { completion_log: { date: dateNorm, time: timeNorm } },
+    };
+    const opts = { returnDocument: 'after' };
+    let doc = null;
+    if (id.length === 24 && /^[a-f0-9]{24}$/i.test(id)) {
+      const result = await remindersCollection().findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(id) },
+        update,
+        opts
+      );
+      doc = result && result.value !== undefined ? result.value : result;
+    }
+    if (!doc) {
+      const result = await remindersCollection().findOneAndUpdate(
+        { _id: id },
+        update,
+        opts
+      );
+      doc = result && result.value !== undefined ? result.value : result;
+    }
+    if (!doc) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy lời nhắc.' });
+    }
+    const reminder = { ...doc, _id: getId(doc) };
+    res.json({ success: true, reminder });
+  } catch (err) {
+    console.error('Un-complete reminder error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi bỏ đánh dấu hoàn thành.' });
   }
 });
 
@@ -3456,13 +3544,13 @@ app.post('/api/consultations', async (req, res) => {
       try {
         await noticesCollection().insertOne({
           user_id: uid,
-          type: 'order_updated',
+          type: 'qa_submitted',
           title: 'Câu hỏi đã được gửi',
           message: `Câu hỏi của bạn về sản phẩm "${productName}" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.`,
           createdAt: new Date().toISOString(),
           read: false,
-          link: '/account',
-          linkLabel: 'Xem thông báo',
+          link: `/product/${skuStr}`,
+          linkLabel: 'Xem câu hỏi',
           meta: skuStr,
         });
       } catch (e) {
@@ -5576,7 +5664,7 @@ async function seedDataAdmin() {
     { model: ConsultationProductModel, file: 'consultations_product.json' },
     { model: ConsultationPrescriptionModel, file: 'consultations_prescription.json' },
     { model: Pharmacist, file: 'pharmacists.json' },
-    { model: PromotionTarget, file: 'promotion_target.json' },
+    { model: PromotionTarget, file: 'promotion_promotion_target.json' },
     { model: PromotionUsage, file: 'promotion_usage.json' },
     { model: CustomerGroup, file: 'customer_groups.json' },
     { model: ProductGroup, file: 'product_groups.json' },
@@ -6094,26 +6182,52 @@ app.put('/api/admin/promotions/:id', async (req, res) => {
     );
 
     if (data) {
-      let targetRef = '';
-      const type = data.type || 'customer';
-      if (type === 'category') targetRef = data.target_category_id;
-      else if (type === 'product') targetRef = data.product_group_id;
-      else if (type === 'customer') targetRef = data.customer_group_id;
+      const rawType = (data.type || 'customer').toString().toLowerCase();
+      let targetType = 'Customer';
+      let targetRefs = [];
 
-      const targetUpdate = {
-        promotion_id: data.promotion_id || '',
-        target_type: [type],
-        target_ref: targetRef || '',
-        code: data.code || '',
-        name: data.name || '',
-        status: data.status || 'active'
-      };
+      if (rawType === 'category' && data.target_category_id) {
+        targetType = 'Category';
+        targetRefs = Array.isArray(data.target_category_id)
+          ? data.target_category_id
+          : [data.target_category_id];
+      } else if (rawType === 'product' && data.product_group_id) {
+        targetType = 'ProductGroup';
+        targetRefs = Array.isArray(data.product_group_id)
+          ? data.product_group_id
+          : [data.product_group_id];
+      } else if (rawType === 'customer') {
+        const mode = data.customer_target_mode || 'all';
+        if (mode === 'group' && data.customer_group_id) {
+          targetType = 'CustomerGroup';
+          targetRefs = Array.isArray(data.customer_group_id)
+            ? data.customer_group_id
+            : [data.customer_group_id];
+        } else if (mode === 'tier' && data.customer_tiers) {
+          targetType = 'CustomerTier';
+          targetRefs = Array.isArray(data.customer_tiers)
+            ? data.customer_tiers
+            : [data.customer_tiers];
+        }
+      }
 
-      await PromotionTarget.findOneAndUpdate(
-        { promotion_oid: id },
-        { $set: targetUpdate },
-        { upsert: true }
-      );
+      if (targetRefs.length > 0) {
+        const targetUpdate = {
+          promotion_oid: data._id.toString(),
+          promotion_id: data.promotion_id || '',
+          target_type: targetType,
+          target_ref: targetRefs,
+        };
+
+        await PromotionTarget.findOneAndUpdate(
+          { promotion_oid: id },
+          { $set: targetUpdate },
+          { upsert: true }
+        );
+      } else {
+        // Không còn target cụ thể nào => xoá mọi bản ghi target, coi như áp dụng cho tất cả
+        await PromotionTarget.deleteMany({ promotion_oid: id });
+      }
     }
 
     res.json({ success: true, data });
@@ -6364,12 +6478,12 @@ app.patch('/api/admin/consultations_product/reply', async (req, res) => {
       try {
         await noticesCollection().insertOne({
           user_id: String(userId),
-          type: 'order_updated',
+          type: 'qa_reply',
           title: 'Câu hỏi sản phẩm đã có phản hồi',
           message: `Câu hỏi của bạn về sản phẩm "${productName}" đã được ${answeredBy || 'dược sĩ'} giải đáp.`,
           createdAt: new Date().toISOString(),
           read: false,
-          link: '/account',
+          link: `/product/${sku}`,
           linkLabel: 'Xem phản hồi',
           meta: sku,
         });
@@ -6430,12 +6544,12 @@ app.patch('/api/admin/consultations_disease/reply', async (req, res) => {
       try {
         await noticesCollection().insertOne({
           user_id: String(userId),
-          type: 'order_updated',
+          type: 'qa_reply',
           title: 'Câu hỏi về bệnh đã có phản hồi',
           message: `Câu hỏi của bạn về bệnh "${diseaseName}" đã được ${answeredBy || 'dược sĩ'} giải đáp.`,
           createdAt: new Date().toISOString(),
           read: false,
-          link: '/account',
+          link: `/benh/${sku}`,
           linkLabel: 'Xem phản hồi',
           meta: sku,
         });
@@ -6462,9 +6576,60 @@ app.delete('/api/admin/consultations_disease/:sku/:questionId', async (req, res)
 
 app.get('/api/admin/users', async (req, res) => {
   try {
-    const data = await UserModel.find().sort({ registerdate: -1 }).lean();
+    // 1. Lấy danh sách user
+    const users = await UserModel.find().sort({ registerdate: -1 }).lean();
+
+    // 2. Aggregate tổng chi tiêu theo user_id chỉ với đơn đã giao thành công
+    const spendingAgg = await OrderModel.aggregate([
+      { $match: { status: 'delivered' } },
+      {
+        $group: {
+          _id: '$user_id',
+          totalspent: { $sum: { $ifNull: ['$totalAmount', 0] } }
+        }
+      }
+    ]);
+
+    const spendingMap = {};
+    spendingAgg.forEach((row) => {
+      if (!row || !row._id) return;
+      spendingMap[String(row._id)] = Number(row.totalspent) || 0;
+    });
+
+    // 3. Gán lại totalspent + tiering cho từng user (và đồng bộ vào DB)
+    const bulkOps = [];
+    const data = users.map((u) => {
+      const uid = String(u.user_id || u._id || '');
+      const aggSpent = spendingMap[uid] ?? 0;
+      const totalspent = typeof u.totalspent === 'number' ? u.totalspent : aggSpent;
+      const finalTotal = Math.max(totalspent, aggSpent);
+      const tiering = getTierFromTotalSpent(finalTotal);
+
+      // Chuẩn bị bulk update để lưu lại
+      if (uid) {
+        bulkOps.push({
+          updateOne: {
+            filter: { user_id: uid },
+            update: { $set: { totalspent: finalTotal, tiering } }
+          }
+        });
+      }
+
+      return {
+        ...u,
+        totalspent: finalTotal,
+        tiering
+      };
+    });
+
+    if (bulkOps.length) {
+      await UserModel.bulkWrite(bulkOps, { ordered: false }).catch(() => { });
+    }
+
     res.json({ success: true, data });
-  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.get('/api/admin/users/:id', async (req, res) => {

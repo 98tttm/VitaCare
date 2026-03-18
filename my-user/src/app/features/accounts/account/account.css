@@ -17,8 +17,8 @@
 
 /* Sidebar - nền gradient VitaCare (Primary #00589F) */
 .account-sidebar {
-  width: 300px;
-  min-width: 280px;
+  width: 280px;
+  min-width: 260px;
   flex-shrink: 0;
   background: linear-gradient(180deg, #00589F 0%, #2B3E66 100%);
   border-radius: 16px;
@@ -26,7 +26,7 @@
   color: #fff;
   box-shadow: 0 4px 20px rgba(0, 88, 159, 0.35);
   position: sticky;
-  top: 140px;
+  top: 90px;
   align-self: flex-start;
   z-index: 10;
 }
@@ -34,9 +34,10 @@
 /* User Profile Header */
 .user-profile-header {
   text-align: center;
-  padding-bottom: 18px;
+  padding-bottom: 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 18px;
+  position: relative;
 }
 
 .user-avatar {
@@ -81,14 +82,14 @@
 .account-nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px 12px 12px;
+  padding: 10px 12px 10px 10px;
   text-decoration: none;
   color: #fff;
   border-radius: 0 10px 10px 0;
@@ -116,8 +117,8 @@
   background: #7E62B9;
   color: #fff;
   font-weight: 600;
-  font-size: 16px;
-  padding-left: 16px;
+  font-size: 15px;
+  padding-left: 14px;
   border-radius: 14px 10px 10px 14px;
   box-shadow: 0 3px 14px rgba(106, 78, 158, 0.5);
   transform: none;
@@ -127,8 +128,8 @@
   content: '';
   position: absolute;
   left: 8px;
-  top: 6px;
-  bottom: 6px;
+  top: 4px;
+  bottom: 4px;
   width: 4px;
   background: #B2A2D8;
   border-radius: 2px;
@@ -183,35 +184,32 @@
   transform: scale(1.08);
 }
 
-/* Logout Section */
-.logout-section {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-logout {
-  display: flex;
+/* Logout icon ở góc trên sidebar */
+.logout-icon-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.08);
+  color: #fff;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  width: 100%;
-  padding: 14px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  transition: background-color 0.25s ease, transform 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  padding: 0;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-.btn-logout:hover {
-  background: rgba(255, 255, 255, 0.18);
+.logout-icon-btn i {
+  font-size: 18px;
+}
+
+.logout-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* Content Area - cùng chiều cao với sidebar */

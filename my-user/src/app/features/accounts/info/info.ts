@@ -33,6 +33,7 @@ export class Info implements OnInit {
   email = '';
   birthDate = '';
   gender = 'male';
+  tiering: string | null = null;
   /** Hiển thị trên form (readonly); đổi mật khẩu qua popup OTP */
   passwordDisplay = '••••••••';
   showPassword = false;
@@ -86,6 +87,7 @@ export class Info implements OnInit {
       this.email = (user.email as string) ?? '';
       this.birthDate = (user['birthday'] as string) ?? '';
       this.gender = (user['gender'] as string) ?? 'male';
+      this.tiering = (user['tiering'] as string) ?? null;
       this.originalUser = { ...user };
     }
   }

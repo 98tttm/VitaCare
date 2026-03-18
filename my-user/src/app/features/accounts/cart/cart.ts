@@ -110,18 +110,32 @@ export class Cart implements OnInit, OnDestroy {
     return Math.max(0, this.selectedTotalPrice() - this.voucherDiscount());
   });
 
+  /** Tránh gọi API giỏ hàng lặp lại khi sidebar đã mở và user không đổi. */
+  private lastOpenState = false;
+  private lastUserId: string | null = null;
+
   constructor() {
     effect(() => {
       const open = this.cartSidebar.isOpen();
       const user = this.authService.currentUser();
-      if (open && user && (user as any).user_id) {
-        this.loadCart((user as any).user_id as string);
-      } else if (open && !user?.user_id) {
-        this.loadGuestCart();
-      } else if (!open) {
+      const userId = user && (user as any).user_id ? String((user as any).user_id) : null;
+
+      // Chỉ load khi chuyển từ đóng → mở hoặc khi userId thay đổi.
+      if (open && !this.lastOpenState) {
+        if (userId) {
+          this.loadCart(userId);
+        } else {
+          this.loadGuestCart();
+        }
+      } else if (open && userId && userId !== this.lastUserId) {
+        this.loadCart(userId);
+      } else if (!open && this.lastOpenState) {
         this.cart.set(null);
         this.cartSelectedIds.set(new Set());
       }
+
+      this.lastOpenState = open;
+      this.lastUserId = userId;
     });
   }
 
@@ -144,7 +158,20 @@ export class Cart implements OnInit, OnDestroy {
       if (updatedCart && this.cartSidebar.isOpen()) {
         this.cart.set(updatedCart as CartModel);
         const items = updatedCart.items ?? [];
-        this.cartSelectedIds.set(this.getPreselectedIds(items as any));
+        const prevIds = this.cartSelectedIds();
+        let nextIds: Set<string>;
+        if (prevIds.size > 0) {
+          // Giữ nguyên lựa chọn hiện tại, chỉ bỏ những sản phẩm đã bị xoá
+          nextIds = new Set(
+            items
+              .map((i: any) => String(i._id ?? (i as any)._id))
+              .filter(id => prevIds.has(id)),
+          );
+        } else {
+          // Nếu trước đó chưa có lựa chọn nào (lần đầu mở hoặc từ Mua lại) → áp dụng logic preselect
+          nextIds = this.getPreselectedIds(items as any);
+        }
+        this.cartSelectedIds.set(nextIds);
         this.cdr.markForCheck();
       }
     });
@@ -175,8 +202,20 @@ export class Cart implements OnInit, OnDestroy {
           });
         }
         (c as any).totalPrice = tp;
-        this.cart.set(c);
-        this.cartSelectedIds.set(this.getPreselectedIds(c.items ?? []));
+        this.cart.set(c as CartModel);
+        const items = c.items ?? [];
+        const prevIds = this.cartSelectedIds();
+        let nextIds: Set<string>;
+        if (prevIds.size > 0) {
+          nextIds = new Set(
+            items
+              .map((i: any) => String(i._id ?? (i as any)._id))
+              .filter(id => prevIds.has(id)),
+          );
+        } else {
+          nextIds = this.getPreselectedIds(items as any);
+        }
+        this.cartSelectedIds.set(nextIds);
         this.cdr.markForCheck();
       }
     });
@@ -481,6 +520,8 @@ export class Cart implements OnInit, OnDestroy {
       subtotal: this.selectedSubtotal(),
       directDiscount: this.selectedDirectDiscount(),
       voucherDiscount: this.voucherDiscount(),
+      promotionId: this.appliedPromotion()?.promotion_id,
+      promotionName: this.appliedPromotion()?.name,
     });
     this.close();
     this.router.navigate(['/order']);

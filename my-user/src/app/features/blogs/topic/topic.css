@@ -19,7 +19,7 @@
 .cd-title {
     font-size: 40px;
     font-weight: 700;
-    color: #000;
+    color: #0047ab;
     margin: 0;
 }
 
@@ -34,20 +34,19 @@
     display: flex;
     align-items: center;
     font-size: 18px;
-    color: #00589f;
-    /* Màu xanh Vitacare */
+    color: #0047ab;
     margin-top: 20px;
 }
 
 .cd-section-icon {
     font-size: 24px;
-    color: #00589f !important;
+    color: #0047ab !important;
 }
 
 .cd-section-title {
     font-size: 18px;
     font-weight: 700;
-    color: #00589f;
+    color: #0047ab;
     margin: 0;
 }
 
@@ -115,12 +114,12 @@
 
 .cd-card-link {
     font-size: 14px;
-    color: #1a73e8;
+    color: #0047ab;
     font-weight: 500;
 }
 
 .cd-card-footer i {
-    color: #1a73e8;
+    color: #0047ab;
     font-size: 14px;
     transition: transform 0.2s;
 }
@@ -138,8 +137,7 @@
 .cd-load-more-btn {
     background: transparent;
     border: none;
-    color: #00589f;
-    /* Màu xanh Vitacare */
+    color: #0047ab;
     font-weight: 600;
     display: flex;
     align-items: center;
