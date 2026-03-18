@@ -4,10 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
-<<<<<<< HEAD
 
-=======
->>>>>>> a0aa7c0be33fd0e1bcec128d8ed6cdba86ecfef3
 
 export interface BlogItem {
     title: string;
