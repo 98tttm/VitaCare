@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 export interface BlogItem {
   title: string;
@@ -28,7 +27,7 @@ export interface SubCategory {
 @Component({
   selector: 'app-blog-category',
   standalone: true,
-  imports: [CommonModule, RouterLink, LoadingShippingComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './blog-category.html',
   styleUrl: './blog-category.css',
 })
@@ -135,7 +134,7 @@ export class BlogCategory implements OnInit {
       slug: 'gioi-tinh',
       keywords: ['giới tính', 'gioi tinh', 'sinh sản', 'tình dục'],
       subcategories: [
-        { name: 'Sức khỏe sinh sản', slug: 'suc-khoe-sinh-san', icon: 'assets/icon/transgender_10894616.png', count: 0, countKeywords: ['sinh sản', 'thụ tinh', 'vô sinh', 'buồng trứng'] },
+        { name: 'Sức khỏe giới tính', slug: 'suc-khoe-sinh-san', icon: 'assets/images/homepage/blogs/thai.webp', count: 0, countKeywords: ['sinh sản', 'giới tính', 'thụ tinh', 'vô sinh', 'buồng trứng'] },
         { name: 'Đời sống tình dục', slug: 'doi-song-tinh-duc', icon: 'assets/icon/chamsoccanhan/hotrotinhduc.png', count: 0, countKeywords: ['tình dục', 'quan hệ', 'an toàn tình dục'] }
       ]
     },
@@ -144,9 +143,9 @@ export class BlogCategory implements OnInit {
       slug: 'tin-tuc-suc-khoe',
       keywords: ['tin tức sức khoẻ', 'tin tức sức khỏe', 'tin y học', 'tin y dược', 'dịch bệnh', 'bệnh viện'],
       subcategories: [
-        { name: 'Tin y dược', slug: 'tin-y-duoc', icon: 'assets/icon/medical_16660084.png', count: 0, countKeywords: ['y dược', 'dược phẩm', 'nhà thuốc', 'thuốc', 'dược sĩ', 'FDA', 'thuốc mới'] },
-        { name: 'Dịch bệnh', slug: 'dich-benh', icon: 'assets/images/homepage/benh/mua4.webp', count: 0, countKeywords: ['dịch bệnh', 'dịch', 'covid', 'cúm', 'dịch tễ'] },
-        { name: 'Bệnh viện', slug: 'benh-vien', icon: 'assets/images/banner/woman_doctor.png', count: 0, countKeywords: ['bệnh viện', 'cơ sở y tế', 'nhập viện', 'phòng khám'] }
+        { name: 'Tin y dược', slug: 'tin-y-duoc', icon: 'assets/images/homepage/blogs/chung.webp', count: 0, countKeywords: ['y dược', 'dược phẩm', 'nhà thuốc', 'thuốc', 'dược sĩ', 'FDA', 'thuốc mới'] },
+        { name: 'Dịch bệnh', slug: 'dich-benh', icon: 'assets/images/homepage/blogs/chung.webp', count: 0, countKeywords: ['dịch bệnh', 'dịch', 'covid', 'cúm', 'dịch tễ'] },
+        { name: 'Bệnh viện', slug: 'benh-vien', icon: 'assets/images/homepage/blogs/chung.webp', count: 0, countKeywords: ['bệnh viện', 'cơ sở y tế', 'nhập viện', 'phòng khám'] }
       ]
     },
     { name: 'Người cao tuổi', slug: 'nguoi-cao-tuoi', keywords: ['người cao tuổi', 'nguoi cao tuoi', 'người già', 'ngũ tuần', 'lão khoa'] }
@@ -302,10 +301,11 @@ export class BlogCategory implements OnInit {
     const limit = this.initialSize;
     const cat = this.blogCategoryItems.find(c => c.slug === this.categorySlug);
 
-    const keywordsParam = this.subcat ? this.subcat : (cat && cat.keywords.length > 0 ? cat.keywords.join(',') : '');
+    const keywordsParam = cat && cat.keywords.length > 0 ? cat.keywords.join(',') : '';
     const kwQuery = keywordsParam ? `&keywords=${encodeURIComponent(keywordsParam)}` : '';
-    const categoryQuery = this.categoryName !== 'Danh mục bài viết' && !kwQuery ? `&category=${encodeURIComponent(this.categoryName)}` : '';
-    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${kwQuery}`;
+    const categoryQuery = this.categoryName !== 'Danh mục bài viết' ? `&category=${encodeURIComponent(this.categoryName)}` : '';
+    const subcatQuery = this.subcat ? `&subcategory=${encodeURIComponent(this.subcat)}` : '';
+    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${subcatQuery}${kwQuery}`;
 
     this.http.get<any>(url).subscribe({
       next: (res) => {

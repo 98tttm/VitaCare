@@ -45,8 +45,9 @@
 
 
         <!-- Loading state -->
-        <div *ngIf="loading" class="bv-loading-new">
-            <app-loading-shipping text="Đang xử lý..."></app-loading-shipping>
+        <div *ngIf="loading" class="bv-loading">
+            <div class="bv-loading-spinner"></div>
+            <p>Đang tải bài viết...</p>
         </div>
 
         <ng-container *ngIf="!loading">
@@ -100,9 +101,8 @@
                 </div>
 
                 <div class="text-center mt-5 mb-5" *ngIf="remainingCount > 0">
-                    <button class="btn btn-light rounded-pill px-4 py-2 border fw-medium text-dark bv-load-more-btn"
-                        (click)="loadMore()">
-                        <i class="bi bi-chevron-down fs-6 me-2 align-middle"></i> Xem thêm {{ remainingCount }} bài viết
+                    <button class="bv-load-more-btn" (click)="loadMore()">
+                        <i class="bi bi-chevron-double-down"></i> Xem thêm {{ remainingCount }} bài viết
                     </button>
                 </div>
 

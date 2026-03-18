@@ -131,19 +131,29 @@
     background: transparent;
     border: none;
     color: #00589f;
-    /* Màu xanh Vitacare */
     font-weight: 600;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 0 auto;
-    padding: 8px 24px;
-    transition: all 0.2s;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px auto;
+    padding: 10px 20px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bv-load-more-btn i {
+    font-size: 1.2rem;
 }
 
 .bv-load-more-btn:hover {
-    color: #3182ce;
+    color: #004481;
+    transform: translateY(2px);
+}
+
+.bv-load-more-btn:active {
+    transform: translateY(0);
 }
 
 /* Responsive */

@@ -8,7 +8,6 @@ import { CartService } from '../../../core/services/cart.service';
 import { BuyNowService } from '../../../core/services/buy-now.service';
 import { CartAnimationService } from '../../../core/services/cart-animation.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
 const API_BASE = 'http://localhost:3000/api';
 const BLOGS_DETAIL_PATH = API_BASE + '/blogs/';
@@ -43,7 +42,7 @@ interface BlogDetailData {
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule, LoadingShippingComponent],
+  imports: [CommonModule, RouterModule, HttpClientModule],
   templateUrl: './blog-detail.html',
   styleUrls: ['./blog-detail.css'],
 })

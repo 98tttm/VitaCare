@@ -12,11 +12,15 @@
 
                 <header class="tc-header">
                     <h1 class="tc-title">Bài viết {{ tagName }}</h1>
+                    <div class="tc-stats" *ngIf="total > 0">
+                        <span>{{ total }} bài viết</span>
+                    </div>
                 </header>
 
                 <!-- Loading State -->
-                <div *ngIf="loading && blogs.length === 0" class="tc-loading-new">
-                    <app-loading-shipping text="Đang xử lý..."></app-loading-shipping>
+                <div *ngIf="loading && blogs.length === 0" class="tc-loading">
+                    <div class="tc-spinner"></div>
+                    <p>Đang tải bài viết...</p>
                 </div>
 
                 <!-- Articles List -->
@@ -44,29 +48,15 @@
                 <!-- Load More -->
                 <div class="tc-load-more" *ngIf="remainingCount > 0">
                     <button (click)="loadMore()" class="tc-load-more-btn" [disabled]="loading">
-                        <i class="bi bi-chevron-double-down"></i>
                         <span *ngIf="!loading">Xem thêm {{ remainingCount }} bài viết</span>
                         <span *ngIf="loading">Đang tải...</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Sidebar -->
+            <!-- Sidebar (Optional, could be added later for better UX) -->
             <aside class="tc-sidebar">
-                <div class="tc-sidebar-card">
-                    <h3 class="tc-sidebar-title">Chuyên đề nổi bật</h3>
-                    <div class="tc-sidebar-list">
-                        <ng-container *ngFor="let item of featuredTopicCategories">
-                            <a [routerLink]="['/chuyen-de', item.slug]" class="tc-sidebar-item">
-                                <span class="tc-sidebar-name"># {{ item.name }}</span>
-                                <span class="tc-sidebar-count">{{ item.count }} bài viết</span>
-                            </a>
-                        </ng-container>
-                    </div>
-                    <a routerLink="/chuyen-de" class="tc-sidebar-viewall">
-                        Xem tất cả <i class="bi bi-chevron-right"></i>
-                    </a>
-                </div>
+                <!-- You could add featured products or related topics here -->
             </aside>
         </div>
     </div>

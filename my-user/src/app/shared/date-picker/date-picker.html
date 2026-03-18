@@ -1,5 +1,10 @@
-<div class="vc-datepicker">
-  <div class="vc-datepicker-input-wrapper" (click)="toggleCalendar()">
+<div class="vc-datepicker" [attr.aria-disabled]="disabled ? 'true' : null">
+  <div
+    class="vc-datepicker-input-wrapper"
+    (click)="toggleCalendar()"
+    [style.pointer-events]="disabled ? 'none' : null"
+    [style.opacity]="disabled ? '0.7' : null"
+  >
     <input
       type="text"
       class="vc-datepicker-input"
