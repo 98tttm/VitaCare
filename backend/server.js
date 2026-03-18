@@ -702,6 +702,160 @@ app.get('/api/products/related/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy sản phẩm liên quan.' });
   }
 });
+
+// ================= STORE SYSTEM API =================
+
+// GET /api/store-locations/tree - Lấy cây địa điểm (Tỉnh -> Quận -> Phường)
+app.get('/api/store-locations/tree', async (req, res) => {
+  try {
+    const doc = await locationsCollection().findOne();
+    if (!doc) return res.json([]);
+
+    const tree = [];
+    // Loại bỏ các field meta của MongoDB như _id
+    const codes = Object.keys(doc).filter(key => !key.startsWith('_'));
+
+    for (const code of codes) {
+      const tinh = doc[code];
+      const provinceItem = {
+        tinh: tinh.name,
+        quans: []
+      };
+
+      if (tinh.quan_huyen) {
+        for (const qCode in tinh.quan_huyen) {
+          const quan = tinh.quan_huyen[qCode];
+          const quanItem = {
+            ten: quan.name,
+            phuongs: []
+          };
+
+          if (quan.phuong_xa) {
+            for (const pCode in quan.phuong_xa) {
+              quanItem.phuongs.push(quan.phuong_xa[pCode].name);
+            }
+          }
+          provinceItem.quans.push(quanItem);
+        }
+      }
+      tree.push(provinceItem);
+    }
+
+    res.json(tree);
+  } catch (err) {
+    console.error('[GET /api/store-locations/tree] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách địa điểm.' });
+  }
+});
+
+// GET /api/stores - Lấy danh sách cửa hàng (có phân trang & lọc)
+app.get('/api/stores', async (req, res) => {
+  try {
+    const { keyword, tinh_thanh, quan_huyen, phuong_xa, page = 1, limit = 8 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const query = {};
+
+    if (keyword) {
+      query.$or = [
+        { ten_cua_hang: { $regex: keyword, $options: 'i' } },
+        { dia_chi: { $regex: keyword, $options: 'i' } }
+      ];
+    }
+
+    if (tinh_thanh && tinh_thanh !== 'Tất cả') {
+      query['dia_chi'] = { $regex: tinh_thanh, $options: 'i' };
+    }
+    if (quan_huyen && quan_huyen !== 'Tất cả') {
+      query['dia_chi'] = { $regex: quan_huyen, $options: 'i' };
+    }
+    if (phuong_xa && phuong_xa !== 'Tất cả') {
+      query['dia_chi'] = { $regex: phuong_xa, $options: 'i' };
+    }
+
+    const col = storeSystemCollection();
+    const [items, total] = await Promise.all([
+      col.find(query).skip(skip).limit(parseInt(limit)).toArray(),
+      col.countDocuments(query)
+    ]);
+
+    // Map data to match frontend Model
+    const mappedData = items.map(s => {
+      // Handle dia_chi (string in DB -> object in Frontend)
+      const dia_chi_str = s.dia_chi || '';
+      const mappedDiaChi = (typeof dia_chi_str === 'string')
+        ? { dia_chi_day_du: dia_chi_str }
+        : dia_chi_str;
+
+      // Handle so_dien_thoai (string in DB -> array in Frontend)
+      const sdt = s.so_dien_thoai || s.phone || '';
+      const sdt_array = (typeof sdt === 'string' && sdt) ? [sdt] : (Array.isArray(sdt) ? sdt : []);
+
+      return {
+        ...s,
+        dia_chi: mappedDiaChi,
+        thong_tin_lien_he: {
+          ...s.thong_tin_lien_he,
+          so_dien_thoai: sdt_array
+        }
+      };
+    });
+
+    res.json({
+      success: true,
+      data: mappedData,
+      total,
+      totalPages: Math.ceil(total / parseInt(limit))
+    });
+  } catch (err) {
+    console.error('[GET /api/stores] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách cửa hàng.' });
+  }
+});
+
+// ================= HEALTH TEST API =================
+
+// GET /api/quizzes - Lấy danh sách bài kiểm tra sức khỏe
+app.get('/api/quizzes', async (req, res) => {
+  try {
+    const list = await quizCollection().find({}).toArray();
+    res.json(list);
+  } catch (err) {
+    console.error('[GET /api/quizzes] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách bài thi.' });
+  }
+});
+
+// POST /api/quiz-results - Lưu kết quả kiểm tra
+app.post('/api/quiz-results', async (req, res) => {
+  try {
+    const resultDoc = {
+      ...req.body,
+      createdAt: new Date().toISOString()
+    };
+    await resultsCollection().insertOne(resultDoc);
+    res.json({ success: true, message: 'Đã lưu kết quả thành công.' });
+  } catch (err) {
+    console.error('[POST /api/quiz-results] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi khi lưu kết quả.' });
+  }
+});
+
+// GET /api/quiz-history/:quiz_id - Lấy lịch sử kết quả của bài thi
+app.get('/api/quiz-history/:quiz_id', async (req, res) => {
+  try {
+    const { quiz_id } = req.params;
+    const history = await resultsCollection()
+      .find({ quiz_id })
+      .sort({ _id: -1 })
+      .limit(20)
+      .toArray();
+    res.json(history);
+  } catch (err) {
+    console.error('[GET /api/quiz-history] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi tải lịch sử.' });
+  }
+});
 // GET /api/promotions - danh sách chương trình khuyến mãi
 app.get('/api/promotions', async (req, res) => {
   try {

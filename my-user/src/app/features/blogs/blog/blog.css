@@ -111,7 +111,7 @@
 }
 
 .bv-view-all {
-  color: #0047ab;
+  color: #43A2E6;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -122,7 +122,6 @@
 
 .bv-view-all:hover {
   text-decoration: underline;
-  color: #007BFF;
 }
 
 /* ===== Góc sức khỏe: bài lớn trái (ảnh thu nhỏ) + nhóm bài nhỏ phải căn thẳng đều ===== */
@@ -444,18 +443,16 @@
 .bv-prevention-viewall {
   font-size: 14px;
   font-weight: 500;
-  color: #0047ab;
+  color: #007BFF;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 .bv-prevention-viewall:hover {
   text-decoration: underline;
-  color: #007BFF;
 }
 
 .bv-prevention-articles {
@@ -756,7 +753,7 @@
 .bv-ft-title {
   font-size: 16px;
   font-weight: 700;
-  color: #0047ab;
+  color: #00589F;
   margin: 0 0 14px;
 }
 
@@ -788,7 +785,7 @@
 .bv-ft-count {
   display: block;
   font-size: 13px;
-  color: #0047ab;
+  color: #666;
   margin-top: 2px;
 }
 
@@ -799,13 +796,12 @@
   margin-top: 14px;
   font-size: 14px;
   font-weight: 600;
-  color: #0047ab;
+  color: #00589F;
   text-decoration: none;
 }
 
 .bv-ft-viewall:hover {
   text-decoration: underline;
-  color: #007BFF;
 }
 
 /* Đội ngũ chuyên môn (sidebar, dưới Chuyên đề nổi bật) */
@@ -880,13 +876,12 @@
   margin-top: 14px;
   font-size: 14px;
   font-weight: 600;
-  color: #0047ab;
+  color: #00589F;
   text-decoration: none;
 }
 
 .bv-et-viewall:hover {
   text-decoration: underline;
-  color: #007BFF;
 }
 
 .bv-sidebar-title {

@@ -1,19 +1,37 @@
 <div class="ht-root">
     <!-- BREADCRUMB -->
-    <div class="ht-breadcrumb" *ngIf="screen !== 'list'">
-        <a (click)="resetAll()">Trang chủ</a>
-        <span>›</span>
-        <a (click)="resetAll()">Kiểm tra sức khỏe</a>
-        <ng-container *ngIf="selectedQuiz">
-            <span>›</span>
-            <span style="color:#1E293B" *ngIf="screen === 'quiz'">{{ selectedQuiz.category_short }}</span>
+    <div class="vc_container pt-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb-vc">
+                <li class="breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
 
-            <ng-container *ngIf="screen === 'result'">
-                <span style="color:#1E293B">{{ selectedQuiz.category_short }}</span>
-                <span>›</span>
-                <span style="color:#1E293B">Kết quả kiểm tra</span>
-            </ng-container>
-        </ng-container>
+                <li class="breadcrumb-item active" *ngIf="screen === 'list'">Kiểm tra sức khỏe</li>
+                <li class="breadcrumb-item" *ngIf="screen !== 'list'">
+                    <a (click)="resetAll()" style="cursor: pointer;">Kiểm tra sức khỏe</a>
+                </li>
+
+                <ng-container *ngIf="selectedQuiz">
+                    <li class="breadcrumb-item active" *ngIf="screen === 'quiz' || screen === 'intro'">{{
+                        selectedQuiz.category_short }}</li>
+
+                    <ng-container *ngIf="screen === 'result'">
+                        <li class="breadcrumb-item">
+                            <a (click)="startQuiz(selectedQuiz)" style="cursor: pointer;">{{ selectedQuiz.category_short
+                                }}</a>
+                        </li>
+                        <li class="breadcrumb-item active">Kết quả kiểm tra</li>
+                    </ng-container>
+
+                    <ng-container *ngIf="screen === 'history'">
+                        <li class="breadcrumb-item">
+                            <a (click)="resetAll()" style="cursor: pointer;">{{ selectedQuiz.category_short
+                                }}</a>
+                        </li>
+                        <li class="breadcrumb-item active">Lịch sử</li>
+                    </ng-container>
+                </ng-container>
+            </ol>
+        </nav>
     </div>
 
     <!-- QUIZ LIST -->
@@ -23,9 +41,11 @@
                 tầm soát về những vấn đề như hen, bệnh phổi tắc nghẽn mạn tính, trào ngược dạ dày thực quản và nhiều vấn
                 đề
                 sức khỏe khác.</strong>
-            <p>Hãy khám phá ngay tính năng này để bắt đầu hành trình bảo vệ sức khỏe cho bạn và gia đình!</p>
+            <p style="color: var(--vc-main);">Hãy khám phá ngay tính năng này để bắt đầu hành trình bảo vệ sức khỏe cho
+                bạn và gia đình!</p>
             <div class="ht-disclaimer">
-                <strong>Miễn trừ trách nhiệm:</strong> Các thông tin tại công cụ tầm soát này mang tính chất tham khảo,
+                <strong style="color: var(--vc-main);">Miễn trừ trách nhiệm:</strong> Các thông tin tại công cụ tầm soát
+                này mang tính chất tham khảo,
                 không thể thay thế cho chẩn đoán và điều trị của bác sĩ chuyên khoa.
             </div>
         </div>
@@ -36,11 +56,60 @@
                 <div class="ht-card-icon-wrap material-symbols-rounded">{{ quiz.icon }}</div>
                 <div class="ht-card-info">
                     <span class="ht-card-tag">Kiểm tra</span>
+                    <button class="ht-card-history material-symbols-rounded" *ngIf="isLoggedIn" title="Lịch sử kiểm tra"
+                        (click)="viewHistory(quiz, $event)">history</button>
                     <div class="ht-card-title">{{ quiz.category }}</div>
                     <div class="ht-card-meta">{{ quiz.questions?.length || 0 }} câu hỏi</div>
                 </div>
                 <span class="ht-card-arrow">→</span>
             </div>
+        </div>
+    </div>
+
+    <!-- INTRO SCREEN -->
+    <div class="ht-intro-container" *ngIf="screen === 'intro'"
+        style="max-width: 680px; margin: 0 auto; padding: 32px 20px;">
+        <button class="ht-btn ht-btn-outline" (click)="resetAll()"
+            style="margin-bottom: 24px; padding: 8px 16px; display: inline-flex; align-items: center; gap: 4px; border: none; background: transparent; color: var(--vc-main);">
+            <span class="material-symbols-rounded" style="font-size: 18px;">arrow_back_ios</span> Quay lại danh sách
+        </button>
+        <div class="ht-intro-card"
+            style="background: var(--vc-neutral-10); border-radius: 20px; border: 1px solid var(--vc-neutral-30); padding: 32px 24px; text-align: center; box-shadow: 0 4px 16px rgba(0, 88, 159, 0.05); max-width: 600px; margin: 0 auto;">
+            <div class="ht-intro-icon-wrap"
+                style="width: 64px; height: 64px; border-radius: 16px; background: var(--vc-main-bg); color: var(--vc-main); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px;">
+                <span class="material-symbols-rounded">{{ selectedQuiz.icon }}</span>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--vc-main); margin-bottom: 12px;">{{
+                selectedQuiz.category }}</h2>
+            <div
+                style="font-size: 14px; font-weight: 600; color: var(--vc-main); background: var(--vc-main-bg); display: inline-block; padding: 4px 12px; border-radius: 20px; margin-bottom: 24px;">
+                {{ selectedQuiz.questions?.length || 0 }} câu hỏi
+            </div>
+
+            <div class="ht-intro-content"
+                style="text-align: left; background: var(--vc-neutral-20); padding: 20px; border-radius: 12px; margin-bottom: 32px;">
+                <p style="font-size: 15px; color: var(--vc-main); line-height: 1.6; margin-bottom: 12px;">
+                    Bài kiểm tra này sẽ đưa ra các câu hỏi trắc nghiệm ngắn giúp bạn đánh giá sơ bộ nguy cơ mắc
+                    <strong>{{ selectedQuiz.category_short }}</strong>.
+                </p>
+                <ul
+                    style="font-size: 14px; color: var(--vc-main); line-height: 1.6; padding-left: 20px; margin-bottom: 0;">
+                    <li>Trả lời trung thực để nhận được kết quả chính xác nhất.</li>
+                    <li>Sẽ mất khoảng một vài phút để hoàn thành.</li>
+                </ul>
+
+                <div class="ht-disclaimer"
+                    style="margin-top: 16px; padding: 12px; background: rgba(255, 255, 255, 0.5); border-left: 3px solid var(--vc-main); border-radius: 6px; font-size: 13px; font-style: italic; color: var(--vc-main);">
+                    <strong>Lưu ý:</strong> Kết quả chỉ mang tính tham khảo và không thay thế cho chẩn đoán y khoa từ
+                    bác sĩ.
+                </div>
+            </div>
+
+            <button class="btn btn-primary-vc"
+                style="padding: 14px 32px; font-size: 16px; width: 100%; max-width: 300px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(0, 88, 159, 0.3);"
+                (click)="beginQuiz()">
+                Bắt đầu kiểm tra
+            </button>
         </div>
     </div>
 
@@ -81,6 +150,105 @@
 
 
 
+    <!-- REGISTER SCREEN FOR GUESTS -->
+    <div class="ht-register-container" *ngIf="screen === 'register'"
+        style="max-width: 600px; margin: 0 auto; padding: 32px 20px;">
+        <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--vc-neutral-80); margin-bottom: 8px;">Đăng ký nhận
+                kết quả</h2>
+            <p style="font-size: 14px; color: var(--vc-neutral-60); margin-bottom: 24px;">Điền thông tin để nhận kết quả
+                kiểm tra {{ selectedQuiz.category }} của bạn</p>
+
+            <form (ngSubmit)="handleSubmitReg()">
+                <div class="form-group mb-3">
+                    <label
+                        style="font-size: 14px; font-weight: 600; color: var(--vc-neutral-80); margin-bottom: 8px;"><span
+                            style="color: red;">*</span> Họ và tên</label>
+                    <input type="text" class="form-control" placeholder="Họ và tên" [(ngModel)]="form.name" name="name"
+                        style="border-radius: 8px; border: 1px solid var(--vc-neutral-30); padding: 12px; font-size: 14px; color: var(--vc-main);">
+                    <div style="color: red; font-size: 12px; margin-top: 4px;" *ngIf="formErrors.name">{{
+                        formErrors.name }}</div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label
+                        style="font-size: 14px; font-weight: 600; color: var(--vc-neutral-80); margin-bottom: 8px;"><span
+                            style="color: red;">*</span> Tỉnh/ Thành phố</label>
+                    <select class="form-select" [(ngModel)]="form.province" name="province"
+                        style="border-radius: 8px; border: 1px solid var(--vc-neutral-30); padding: 12px; font-size: 14px; color: var(--vc-main);">
+                        <option value="">Chọn Thành Phố/Tỉnh</option>
+                        <option *ngFor="let p of tinhThanhList" [value]="p">{{ p }}</option>
+                    </select>
+                    <div style="color: red; font-size: 12px; margin-top: 4px;" *ngIf="formErrors.province">{{
+                        formErrors.province }}</div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label
+                        style="font-size: 14px; font-weight: 600; color: var(--vc-neutral-80); margin-bottom: 8px;"><span
+                            style="color: red;">*</span> Số điện thoại</label>
+                    <input type="tel" class="form-control" placeholder="Nhập số điện thoại" [(ngModel)]="form.phone"
+                        name="phone"
+                        style="border-radius: 8px; border: 1px solid var(--vc-neutral-30); padding: 12px; font-size: 14px; color: var(--vc-main);">
+                    <div style="color: red; font-size: 12px; margin-top: 4px;" *ngIf="formErrors.phone">{{
+                        formErrors.phone }}</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label
+                            style="font-size: 14px; font-weight: 600; color: var(--vc-neutral-80); margin-bottom: 8px;">Ngày
+                            sinh</label>
+                        <input type="date" class="form-control" [(ngModel)]="form.dob" name="dob"
+                            style="border-radius: 8px; border: 1px solid var(--vc-neutral-30); padding: 12px; font-size: 14px; color: var(--vc-main);">
+                    </div>
+                    <div class="col-6">
+                        <label
+                            style="font-size: 14px; font-weight: 600; color: var(--vc-neutral-80); margin-bottom: 8px;">Giới
+                            tính</label>
+                        <select class="form-select" [(ngModel)]="form.gender" name="gender"
+                            style="border-radius: 8px; border: 1px solid var(--vc-neutral-30); padding: 12px; font-size: 14px; color: var(--vc-main);">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label
+                        style="font-size: 14px; font-weight: 600; color: var(--vc-neutral-80); margin-bottom: 8px;">Mã
+                        giới thiệu (Tùy chọn)</label>
+                    <input type="text" class="form-control" placeholder="Nhập mã giới thiệu"
+                        [(ngModel)]="form.referralCode" name="referralCode"
+                        style="border-radius: 8px; border: 1px solid var(--vc-neutral-30); padding: 12px; font-size: 14px; color: var(--vc-main);">
+                </div>
+
+                <div class="form-check mb-4" style="display: flex; align-items: flex-start; gap: 8px;">
+                    <input class="form-check-input" type="checkbox" [(ngModel)]="form.agreed" name="agreed"
+                        id="agreeTOS" style="margin-top: 4px;">
+                    <label class="form-check-label" for="agreeTOS"
+                        style="font-size: 13px; color: var(--vc-main); line-height: 1.5;">
+                        Bằng cách tích vào ô chọn, bạn đã đồng ý với việc lưu thông tin và chấp nhận <a href="#"
+                            style="color: var(--vc-main); font-weight: 600; text-decoration: none;">Điều khoản
+                            VitaCare</a>
+                    </label>
+                </div>
+                <div style="color: red; font-size: 12px; margin-top: -16px; margin-bottom: 16px;"
+                    *ngIf="formErrors.agreed">{{ formErrors.agreed }}</div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+                    <button type="button" class="btn"
+                        style="background: var(--vc-neutral-20); color: var(--vc-main); font-weight: 600; padding: 12px 24px; border-radius: 8px;"
+                        (click)="beginQuiz()">Trả lời lại</button>
+                    <button type="submit" class="btn btn-primary-vc"
+                        style="padding: 12px 24px; border-radius: 8px; font-weight: 600;"
+                        [disabled]="!form.name || !form.province || !form.phone || !form.agreed">Nhận kết quả</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- RESULT SCREEN -->
     <div class="ht-result-container" *ngIf="screen === 'result'">
         <div class="ht-result-header">
@@ -116,6 +284,54 @@
             <button class="ht-btn ht-btn-outline" (click)="startQuiz(selectedQuiz)">Làm lại</button>
             <button class="btn btn-primary-vc" style="padding: 12px 24px; font-size: 14px;" (click)="resetAll()">Khám
                 phá bài test khác</button>
+        </div>
+    </div>
+
+    <!-- HISTORY SCREEN -->
+    <div class="ht-history-container" *ngIf="screen === 'history'"
+        style="max-width: 680px; margin: 0 auto; padding: 32px 20px;">
+        <div class="ht-history-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+            <button class="ht-btn ht-btn-outline" (click)="resetAll()"
+                style="padding: 8px 12px; display: flex; align-items: center; border: none; background: transparent; color: var(--vc-main);">
+                <span class="material-symbols-rounded" style="font-size: 20px;">arrow_back_ios</span>
+            </button>
+            <div>
+                <h2 style="font-size: 20px; font-weight: 800; color: var(--vc-main); margin: 0;">Lịch sử {{
+                    selectedQuiz.category_short }}</h2>
+                <p style="font-size: 13px; color: var(--vc-main); margin: 4px 0 0; opacity: 0.8;">Quản lý các kết quả
+                    kiểm tra trước đây của bạn</p>
+            </div>
+        </div>
+
+        <div *ngIf="!historyRecords || historyRecords.length === 0"
+            style="text-align: center; padding: 48px 24px; background: var(--vc-neutral-10); border-radius: 16px; border: 1px dashed var(--vc-neutral-40);">
+            <span class="material-symbols-rounded"
+                style="font-size: 48px; color: var(--vc-neutral-40); margin-bottom: 12px; display: block;">history</span>
+            <p style="font-size: 15px; color: var(--vc-main); font-weight: 600;">Bạn chưa có kết quả kiểm tra nào</p>
+            <p style="font-size: 13px; color: var(--vc-main); opacity: 0.8;">Hãy thực hiện bài kiểm tra để theo dõi sức
+                khỏe.</p>
+            <button class="btn btn-primary-vc" style="margin-top: 16px; padding: 10px 24px;" (click)="beginQuiz()">Làm
+                bài test ngay</button>
+        </div>
+
+        <div class="ht-history-list" *ngIf="historyRecords && historyRecords.length > 0">
+            <div class="ht-history-card" *ngFor="let record of historyRecords"
+                style="background: var(--vc-neutral-10); border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--vc-neutral-30); box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div
+                        style="font-size: 12px; color: var(--vc-main); opacity: 0.7; margin-bottom: 6px; font-weight: 600;">
+                        {{ record.created_at | date:'dd/MM/yyyy HH:mm' }}
+                    </div>
+                    <div style="font-size: 16px; font-weight: 700; color: var(--vc-main); margin-bottom: 4px;">{{
+                        record.ResultConfig?.title || 'Đã ghi nhận' }}</div>
+                    <div style="font-size: 13px; color: var(--vc-main);"><span style="font-weight: 600;">Điểm số:</span>
+                        {{ record.score }}</div>
+                </div>
+                <div [ngClass]="record.score === 0 ? 'low' : 'high'"
+                    style="font-weight: 800; font-size: 24px; padding: 12px 16px; border-radius: 12px; background: var(--vc-main-bg); color: var(--vc-main);">
+                    {{ record.score === 0 ? 'Tốt' : 'Lưu ý' }}
+                </div>
+            </div>
         </div>
     </div>
 </div>

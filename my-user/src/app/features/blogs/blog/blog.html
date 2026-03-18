@@ -9,7 +9,7 @@
 
     <!-- Loading: hiển thị khi đang tải, ẩn khi đã có data -->
     <div *ngIf="loading" class="bv-loading-new">
-      <app-loading-shipping text="Đang xử lý..."></app-loading-shipping>
+      <app-loading-shipping text="Đang tải bài viết..."></app-loading-shipping>
     </div>
 
     <!-- Nội dung bài viết: chỉ hiển thị sau khi load xong -->
@@ -106,8 +106,9 @@
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/dinh-duong" class="bv-prevention-viewall">Xem tất cả<i
-                    class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/dinh-duong" class="bv-prevention-viewall">Xem tất cả ({{
+                  getCategoryCount('Dinh
+                  dưỡng') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -148,8 +149,9 @@
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/me-va-be" class="bv-prevention-viewall"> Xem tất cả<i
-                    class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/me-va-be" class="bv-prevention-viewall">Xem tất cả ({{
+                  getCategoryCount('Mẹ &
+                  bé') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -184,7 +186,7 @@
             <div class="bv-prevention-card bv-elderly-card">
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Người cao tuổi</h3>
-                <a routerLink="/bai-viet/danh-muc/nguoi-cao-tuoi" class="bv-prevention-viewall">Xem tất cả<i
+                <a routerLink="/bai-viet/danh-muc/nguoi-cao-tuoi" class="bv-prevention-viewall">Xem tất cả <i
                     class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
@@ -227,8 +229,9 @@
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/khoe-dep" class="bv-prevention-viewall">Xem tất cả<i
-                    class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/khoe-dep" class="bv-prevention-viewall">Xem tất cả ({{
+                  getCategoryCount('Khỏe
+                  đẹp') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -269,8 +272,9 @@
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/gioi-tinh" class="bv-prevention-viewall">Xem tất cả<i
-                    class="bi bi-chevron-right"></i></a>
+                <a routerLink="/bai-viet/danh-muc/gioi-tinh" class="bv-prevention-viewall">Xem tất cả ({{
+                  getCategoryCount('Giới
+                  tính') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
@@ -370,6 +374,7 @@
                   </div>
                 </div>
               </div>
+              <a routerLink="/bai-viet" class="bv-et-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
             </div>
           </aside>
         </div>

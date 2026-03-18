@@ -32,7 +32,8 @@
           <span class="cart-sidebar-header-qty">Số lượng</span>
         </div>
         <div class="cart-sidebar-list">
-          <div class="cart-sidebar-item cart-sidebar-grid" *ngFor="let item of cart()?.items">
+          <div class="cart-sidebar-item cart-sidebar-grid" *ngFor="let item of cart()?.items"
+            [attr.data-cart-item-id]="item._id">
             <label class="cart-sidebar-item-check">
               <input type="checkbox" [checked]="isItemSelected(item)" [disabled]="item.stock === 0"
                 (change)="onItemCheck(item, $any($event.target).checked)" />

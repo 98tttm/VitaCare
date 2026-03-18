@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-policy',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [RouterModule],
   templateUrl: './policy.html',
   styleUrl: './policy.css',
 })

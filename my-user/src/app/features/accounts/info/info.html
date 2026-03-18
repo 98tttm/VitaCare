@@ -187,7 +187,10 @@
                 <div class="avatar-wrapper">
                     <img *ngIf="!avatarError" [src]="userAvatar" alt="Avatar" class="avatar-image" (error)="avatarError = true">
                     <i *ngIf="avatarError" class="bi bi-person-circle avatar-fallback" aria-hidden="true"></i>
-                    <span class="avatar-camera" title="Chụp ảnh đại diện" role="button" tabindex="0"
+                    <span class="avatar-camera" title="Chụp ảnh đại diện" role="button"
+                        [attr.tabindex]="isEditing() ? 0 : -1"
+                        [style.pointer-events]="!isEditing() ? 'none' : null"
+                        [style.opacity]="!isEditing() ? '0.6' : null"
                         (click)="triggerAvatarCapture()" (keydown.enter)="triggerAvatarCapture(); $event.preventDefault()"
                         aria-label="Mở camera chụp ảnh đại diện"><i class="bi bi-camera"></i></span>
                 </div>
@@ -214,12 +217,12 @@
         </div>
 
         <!-- Personal Information Form -->
-        <form class="info-form" (ngSubmit)="onSubmit()">
+        <form class="info-form" (ngSubmit)="onUpdateInfo($event)">
             <!-- Họ tên -->
             <div class="form-group">
                 <label for="fullName" class="form-label">Họ tên</label>
                 <input type="text" class="form-control" id="fullName" [(ngModel)]="fullName" name="fullName"
-                    placeholder="Nhập họ tên">
+                    placeholder="Nhập họ tên" [disabled]="!isEditing()">
             </div>
 
             <!-- Ngày sinh & Giới tính -->
@@ -230,6 +233,7 @@
                         <app-date-picker
                           [value]="birthDate || null"
                           (valueChange)="birthDate = $event || ''"
+                          [disabled]="!isEditing()"
                           placeholder="dd/mm/yyyy">
                         </app-date-picker>
                     </div>
@@ -240,17 +244,17 @@
                         <div class="gender-options">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="gender" id="male" value="male"
-                                    [(ngModel)]="gender">
+                                    [(ngModel)]="gender" [disabled]="!isEditing()">
                                 <label class="form-check-label" for="male">Nam</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="gender" id="female" value="female"
-                                    [(ngModel)]="gender">
+                                    [(ngModel)]="gender" [disabled]="!isEditing()">
                                 <label class="form-check-label" for="female">Nữ</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="gender" id="other" value="other"
-                                    [(ngModel)]="gender">
+                                    [(ngModel)]="gender" [disabled]="!isEditing()">
                                 <label class="form-check-label" for="other">Khác</label>
                             </div>
                         </div>
@@ -267,7 +271,8 @@
                             placeholder="Nhập số điện thoại (ít nhất 10 chữ số)" required
                             (blur)="validateMainPhoneField()"
                             (ngModelChange)="errors.phone && validateMainPhoneField()"
-                            [class.info-input-error]="errors.phone">
+                            [class.info-input-error]="errors.phone"
+                            [disabled]="!isEditing()">
                         @if (errors.phone) {
                             <span class="info-field-error">{{ errors.phone }}</span>
                         }
@@ -277,7 +282,7 @@
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email"
-                            placeholder="Nhập email">
+                            placeholder="Nhập email" [disabled]="!isEditing()">
                     </div>
                 </div>
             </div>
@@ -287,7 +292,9 @@
                 <button type="button" class="btn-change-password" (click)="changePassword($event)">
                     Thay đổi mật khẩu
                 </button>
-                <button type="submit" class="btn-update">Cập nhật thông tin</button>
+                <button type="submit" class="btn-update" [disabled]="isSubmitting">
+                  {{ isEditing() ? 'Lưu thông tin' : 'Cập nhật thông tin' }}
+                </button>
             </div>
         </form>
     </div>

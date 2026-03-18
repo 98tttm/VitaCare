@@ -17,6 +17,8 @@ export class DatePickerComponent implements OnInit {
   @Input() placeholder = 'dd/mm/yyyy';
   /** Label hiển thị trên header (nếu muốn override) */
   @Input() label = '';
+  /** Khoá datepicker (read-only) */
+  @Input() disabled = false;
 
   @Output() valueChange = new EventEmitter<string | null>();
 
@@ -43,6 +45,7 @@ export class DatePickerComponent implements OnInit {
   }
 
   toggleCalendar(): void {
+    if (this.disabled) return;
     this.showCalendar = !this.showCalendar;
     if (this.showCalendar) {
       this.viewMode = 'day';
@@ -90,6 +93,7 @@ export class DatePickerComponent implements OnInit {
   }
 
   selectDate(cell: { day: number | null; dateKey: string | null }): void {
+    if (this.disabled) return;
     if (!cell.dateKey) return;
     this.value = cell.dateKey;
     this.valueChange.emit(this.value);
@@ -97,12 +101,14 @@ export class DatePickerComponent implements OnInit {
   }
 
   selectMonth(monthIndex: number): void {
+    if (this.disabled) return;
     this.viewMonth = monthIndex;
     this.viewMode = 'day';
     this.buildCalendar();
   }
 
   selectYear(year: number): void {
+    if (this.disabled) return;
     this.viewYear = year;
     this.viewMode = 'month';
   }

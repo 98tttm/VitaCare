@@ -75,6 +75,8 @@ export class Info implements OnInit {
 
   isSubmitting = false;
   errors: { phone?: string; password?: string; confirmPassword?: string; otp?: string } = {};
+  /** Mặc định khoá form; bấm "Cập nhật thông tin" lần 1 để mở khoá, lần 2 để lưu. */
+  isEditing = signal(false);
 
   readonly PASSWORD_RULE = 'Ít nhất 8 ký tự, 1 chữ in hoa và 1 ký tự đặc biệt.';
 
@@ -90,6 +92,16 @@ export class Info implements OnInit {
       this.tiering = (user['tiering'] as string) ?? null;
       this.originalUser = { ...user };
     }
+  }
+
+  onUpdateInfo(e: Event): void {
+    e.preventDefault();
+    if (this.isSubmitting) return;
+    if (!this.isEditing()) {
+      this.isEditing.set(true);
+      return;
+    }
+    this.onSubmit();
   }
 
   /** Ràng buộc SĐT: ít nhất 10 chữ số, chỉ số. */
@@ -428,6 +440,7 @@ export class Info implements OnInit {
             this.toastService.showSuccess('Số điện thoại đã được cập nhật.');
             this.closeOtpModal();
             this.doUpdateProfileRest();
+            this.isEditing.set(false);
           } else {
             this.otpAttempts++;
             this.errors.otp = (res as { message?: string }).message || 'Mã OTP không đúng.';
@@ -598,10 +611,9 @@ export class Info implements OnInit {
         if (res.success && res.user) {
           this.authService.setUser(res.user as import('../../../core/services/auth.service').LoggedUser);
           this.toastService.showSuccess('Thông tin đã được cập nhật thành công!');
-          // Reload lại trang để đồng bộ ngay sidebar, header và các khu vực khác dùng thông tin user
-          setTimeout(() => {
-            window.location.reload();
-          }, 400);
+          this.isEditing.set(false);
+          this.originalUser = { ...(res.user as any) };
+          this.originalPhone = (res.user as any)?.phone ?? this.phone;
         } else {
           this.toastService.showError((res as { message?: string }).message || 'Cập nhật thất bại.');
         }
