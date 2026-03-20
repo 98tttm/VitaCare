@@ -2,12 +2,14 @@
 <div class="vc-homepage">
 
     <!-- BACKGROUND BANNER (2 lớp để fade mượt) -->
-    <div class="vc-homepage-bg-layer bg-a" aria-hidden="true" [style.background-image]="'url(' + bgA + ')'"
-        [class.is-active]="activeLayer === 'A'">
+    <div class="vc-homepage-bg-layer bg-a" aria-hidden="false" [style.background-image]="'url(' + bgA + ')'"
+        [class.is-active]="activeLayer === 'A'" (click)="onBigBannerClick()" style="cursor: pointer;" role="button"
+        aria-label="Big banner">
     </div>
 
-    <div class="vc-homepage-bg-layer bg-b" aria-hidden="true" [style.background-image]="'url(' + bgB + ')'"
-        [class.is-active]="activeLayer === 'B'">
+    <div class="vc-homepage-bg-layer bg-b" aria-hidden="false" [style.background-image]="'url(' + bgB + ')'"
+        [class.is-active]="activeLayer === 'B'" (click)="onBigBannerClick()" style="cursor: pointer;" role="button"
+        aria-label="Big banner">
     </div>
 
     <!-- Slider controls (left/right arrows + dots) -->
@@ -23,11 +25,11 @@
     <!-- ========== HERO / BANNER SLIDER (mobile: vuốt trái/phải đổi banner) ========== -->
     <section class="vc-hero" (touchstart)="onBannerTouchStart($event)" (touchend)="onBannerTouchEnd($event)">
         <div class="vc-hero-main">
-            <img [src]="subBanner1" alt="Hero banner" />
+            <img [src]="subBanner1" alt="Hero banner" (click)="onSubBanner1Click()" style="cursor: pointer;" />
         </div>
         <div class="vc-hero-side">
-            <img [src]="subBanner3" alt="Banner Top" />
-            <img [src]="subBanner2" alt="Banner Bottom" />
+            <img [src]="subBanner3" alt="Banner Top" (click)="onSubBanner3Click()" style="cursor: pointer;" />
+            <img [src]="subBanner2" alt="Banner Bottom" (click)="onSubBanner2Click()" style="cursor: pointer;" />
         </div>
     </section>
 
@@ -43,103 +45,151 @@
     </section>
 
     <!-- ========== FLASH SALE (giống thiết kế: gradient, mascot, badge, tabs, thẻ SP) ========== -->
-    <section class="vc-flash-sale-container scroll-reveal from-left">
-        <div class="vc-flash-sale-header">
-            <div class="fs-mascot-wrap">
-                <img src="assets/images/mascot/shipping.png" class="fs-mascot"
-                    style="width: 200px; height: auto; object-fit: contain; object-position: left bottom;"
-                    alt="Mascot Flashsale" />
+    <div class="flash-sale-wrapper">
+        <div class="quiz-border-spinner"></div>
+        <section class="vc-flash-sale-container scroll-reveal from-left">
+            <div class="vc-flash-sale-header">
+                <div class="fs-mascot-wrap">
+                    <img src="assets/images/mascot/shipping.png" class="fs-mascot"
+                        style="width: 200px; height: auto; object-fit: contain; object-position: left bottom;"
+                        alt="Mascot Flashsale" />
+                </div>
+                <a (click)="onSeeAllFlash()" class="btn-see-now">XEM NGAY</a>
             </div>
-            <a href="#" class="btn-see-now">XEM NGAY</a>
-        </div>
 
-        <div class="fs-deal-row">
-            <div class="fs-deal-text-wrap">
-                <span class="fs-deal-text">DEAL XỊN QUÀ XINH</span>
-            </div>
-            <div class="fs-badge-40 fs-badge-inline">
-                <span class="fs-badge-line">Giảm đến</span>
-                <span class="fs-badge-value">40%</span>
-            </div>
-        </div>
-
-        <div class="fs-tabs">
-            <div class="fs-tab" [class.active]="activeFlashSlot === 0"
-                (click)="activeFlashSlot = 0; computeFlashCountdown()">
-                <span class="time">{{ flashSlotTodayLabel }}</span>
-                <span class="status">{{ flashSlotTodayStatus }}</span>
-            </div>
-            <div class="fs-tab" [class.active]="activeFlashSlot === 1"
-                (click)="activeFlashSlot = 1; computeFlashCountdown()">
-                <span class="time">{{ flashSlotTomorrowLabel }}</span>
-                <span class="status">{{ flashSlotTomorrowStatus }}</span>
-            </div>
-        </div>
-
-        <div class="fs-countdown-row">
-            <span class="fs-countdown-label">{{ flashCountdownLabel }}</span>
-            <div class="fs-countdown-boxes" *ngIf="!flashCountdownEnded">
-                <span class="fs-countdown-num">{{ flashCountdownHours | number:'2.0-0' }}</span>
-                <span class="fs-countdown-sep">:</span>
-                <span class="fs-countdown-num">{{ flashCountdownMinutes | number:'2.0-0' }}</span>
-                <span class="fs-countdown-sep">:</span>
-                <span class="fs-countdown-num">{{ flashCountdownSeconds | number:'2.0-0' }}</span>
-            </div>
-        </div>
-
-        <div class="flash-products-wrap">
-            <button type="button" class="flash-nav flash-nav-prev" (click)="scrollFlashPrev()" aria-label="Trước">
-                <i class="bi bi-chevron-left"></i>
-            </button>
-            <div class="flash-products" #flashProductsSlider>
-                <div class="product-card fs-card" [class.is-out-of-stock]="p.stock === 0"
-                    *ngFor="let p of flashSaleProducts" (click)="goToProductDetail(p)" role="button" tabindex="0">
-                    <!-- Out of Stock Badge -->
-                    <div class="fs-img-wrap">
-                        <span class="fs-sale-tag" *ngIf="getFlashSaleTag(p) !== '0%'">{{ getFlashSaleTag(p) }}</span>
-                        <img [src]="p.image" [alt]="p.name" />
-                    </div>
-                    <h4 class="fs-product-name">{{ p.name }}</h4>
-                    <div class="price-row">
-                        <span class="price">{{ getFlashPriceDisplay(p) }}đ<span class="price-unit">/Hộp</span></span>
-                        <div class="low-stock-remind"
-                            *ngIf="p.stock !== undefined && p.stock !== null && p.stock > 0 && p.stock < 5">
-                            <i class="bi bi-fire"></i> Chỉ còn: {{ p.stock }}
-                        </div>
-                    </div>
-                    <div class="old-price-row" *ngIf="p.originalPrice && p.originalPrice > p.price">
-                        <span class="original-price">
-                            {{ getFlashOriginalPriceDisplay(p) }}đ/Hộp
-                        </span>
-                    </div>
-                    <div class="home-product-button-group">
-                        <ng-container
-                            *ngIf="p.stock === undefined || p.stock === null || p.stock > 0; else outOfStockHomeFlash">
-                            <button type="button" class="btn-home-cart"
-                                (click)="addToCart(p, $event); $event.stopPropagation()">Thêm vào giỏ</button>
-                            <button type="button" class="btn-home-buy" (click)="buyNow(p); $event.stopPropagation()">Mua
-                                ngay</button>
-                        </ng-container>
-                        <ng-template #outOfStockHomeFlash>
-                            <button type="button" class="btn-home-cart"
-                                (click)="requestConsultation(p); $event.stopPropagation()">Tư vấn</button>
-                            <button type="button" class="btn-home-buy" disabled
-                                style="background: #ccc; border-color: #ccc;">Hết hàng</button>
-                        </ng-template>
-                    </div>
+            <div class="fs-deal-row">
+                <div class="fs-deal-text-wrap">
+                    <span class="fs-deal-text">DEAL XỊN QUÀ XINH</span>
+                </div>
+                <div class="fs-badge-40 fs-badge-inline">
+                    <span class="fs-badge-line">Giảm đến</span>
+                    <span class="fs-badge-value">40%</span>
                 </div>
             </div>
-            <button type="button" class="flash-nav flash-nav-next" (click)="scrollFlashNext()" aria-label="Sau">
-                <i class="bi bi-chevron-right"></i>
-            </button>
-        </div>
-    </section>
+
+            <div class="fs-content-white-box">
+                <div class="fs-tabs">
+                    <div class="fs-tab" [class.active]="activeFlashSlot === 0" (click)="setActiveFlashSlot(0)">
+                        <span class="time">{{ flashSlotTodayLabel }}</span>
+                        <span class="status">{{ flashSlotTodayStatus }}</span>
+                    </div>
+                    <div class="fs-tab" [class.active]="activeFlashSlot === 1" (click)="setActiveFlashSlot(1)">
+                        <span class="time">{{ flashSlotTomorrowLabel }}</span>
+                        <span class="status">{{ flashSlotTomorrowStatus }}</span>
+                    </div>
+                    <div class="fs-tab" [class.active]="activeFlashSlot === 2" (click)="setActiveFlashSlot(2)">
+                        <span class="time">{{ flashSlotAfterTomorrowLabel }}</span>
+                        <span class="status">{{ flashSlotAfterTomorrowStatus }}</span>
+                    </div>
+                </div>
+
+                <div class="fs-countdown-row">
+                    <span class="fs-countdown-label">{{ flashCountdownLabel }}</span>
+                    <div class="fs-countdown-boxes" *ngIf="!flashCountdownEnded">
+                        <span class="fs-countdown-num">{{ flashCountdownHours | number:'2.0-0' }}</span>
+                        <span class="fs-countdown-sep">:</span>
+                        <span class="fs-countdown-num">{{ flashCountdownMinutes | number:'2.0-0' }}</span>
+                        <span class="fs-countdown-sep">:</span>
+                        <span class="fs-countdown-num">{{ flashCountdownSeconds | number:'2.0-0' }}</span>
+                    </div>
+                </div>
+
+                <div class="flash-products-wrap">
+                    <button type="button" class="flash-nav flash-nav-prev" (click)="scrollFlashPrev()"
+                        aria-label="Trước">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <div class="flash-products" [class.expanded-grid]="isFlashExpanded" #flashProductsSlider>
+                        <!-- Loading skeleton -->
+                        <ng-container *ngIf="isLoadingFlashProducts">
+                            <div class="product-card fs-card skeleton" *ngFor="let i of [1,2,3,4,5]">
+                                <div class="fs-img-wrap skel-img">
+                                    <div class="skel-loader-text">Đang cập nhật dữ liệu...</div>
+                                </div>
+                                <div class="skel-text short"></div>
+                                <div class="skel-text long"></div>
+                                <div class="skel-btn"></div>
+                            </div>
+                        </ng-container>
+
+                        <!-- Actual products -->
+                        <ng-container *ngIf="!isLoadingFlashProducts">
+                            <div class="product-card fs-card" [class.is-out-of-stock]="p.stock === 0"
+                                [class.coming-soon]="activeFlashSlot !== 0"
+                                *ngFor="let p of (isFlashExpanded ? flashSaleProducts.slice(0, visibleFlashCount) : flashSaleProducts)"
+                                (click)="goToProductDetail(p)" role="button" tabindex="0">
+                                <!-- Out of Stock Badge -->
+                                <div class="fs-img-wrap">
+                                    <span class="fs-sale-tag" *ngIf="getFlashSaleTag(p) !== '0%'">{{ getFlashSaleTag(p)
+                                        }}</span>
+                                    <img [src]="p.image" [alt]="p.name" />
+                                </div>
+                                <h4 class="fs-product-name">{{ p.name }}</h4>
+                                <div class="price-row">
+                                    <span class="price">{{ getFlashPriceDisplay(p) }}đ<span class="price-unit">/{{
+                                            p.unit ||
+                                            'Hộp' }}</span></span>
+                                    <div class="low-stock-remind"
+                                        *ngIf="p.stock !== undefined && p.stock !== null && p.stock > 0 && p.stock < 5">
+                                        <i class="bi bi-fire"></i> Chỉ còn: {{ p.stock }}
+                                    </div>
+                                </div>
+                                <div class="old-price-row" *ngIf="p.originalPrice && p.originalPrice > p.price">
+                                    <span class="original-price">
+                                        {{ getFlashOriginalPriceDisplay(p) }}đ/{{ p.unit || 'Hộp' }}
+                                    </span>
+                                </div>
+                                <div class="fs-product-unit" *ngIf="p.unit">{{ p.unit }}</div>
+                                <div class="fs-promo-badge" [class.coming-soon]="activeFlashSlot !== 0">
+                                    <div class="fs-promo-progress"></div>
+                                    <div class="fs-promo-content">
+                                        <i class="bi bi-fire"></i>
+                                        <span>{{ activeFlashSlot === 0 ? 'Ưu đãi giá sốc' : 'Mở bán 200 suất' }}</span>
+                                    </div>
+                                </div>
+                                <div class="home-product-button-group">
+                                    <ng-container
+                                        *ngIf="p.stock === undefined || p.stock === null || p.stock > 0; else outOfStockHomeFlash">
+                                        <button type="button" class="btn-home-buy" style="width: 100%; flex: none;"
+                                            (click)="(activeFlashSlot === 0 ? buyNow(p) : goToProductDetail(p)); $event.stopPropagation()">
+                                            {{ activeFlashSlot === 0 ? 'Chọn mua' : 'Xem chi tiết' }}
+                                        </button>
+                                    </ng-container>
+                                    <ng-template #outOfStockHomeFlash>
+                                        <button type="button" class="btn-home-buy" disabled
+                                            style="background: #ccc; border-color: #ccc; width: 100%; flex: none;">Hết
+                                            hàng</button>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <button type="button" class="flash-nav flash-nav-next" (click)="scrollFlashNext()" aria-label="Sau">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                    <!-- Thẻ div.flash-products-wrap kết thúc sau nút Next -->
+                </div>
+                <div class="flash-view-more-container">
+                    <button type="button" class="view-all-flash" (click)="toggleViewAllFlash()"
+                        *ngIf="visibleFlashCount < flashSaleProducts.length">
+                        Xem thêm
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <button type="button" class="view-all-flash collapse-btn" (click)="collapseFlash()"
+                        *ngIf="isFlashExpanded">
+                        Thu gọn
+                        <i class="bi bi-chevron-double-up"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <!-- ========== CATEGORIES ========== -->
     <section class="vc-title scroll-reveal from-bottom">
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/1.webp" alt="Danh mục" />
-            <h2>Danh mục sản phẩm</h2>
+            <h2>Danh mục tủ thuốc</h2>
         </div>
 
         <div class="category-grid" #categoryGrid>
@@ -185,12 +235,16 @@
             <button class="product-nav prev" (click)="scrollProductPrev()" aria-label="Prev products">‹</button>
             <div class="product-grid" #productSlider>
                 <!-- Loading skeleton shown while fetching -->
-                <div class="product-card skeleton" *ngIf="isLoadingFeaturedProducts">
-                    <div class="img-skel"></div>
-                    <div class="text-skel short"></div>
-                    <div class="text-skel long"></div>
-                    <div class="btn-skel"></div>
-                </div>
+                <ng-container *ngIf="isLoadingFeaturedProducts">
+                    <div class="product-card skeleton" *ngFor="let i of [1,2,3,4,5]">
+                        <div class="skel-img">
+                            <div class="skel-loader-text">Đang cập nhật dữ liệu...</div>
+                        </div>
+                        <div class="skel-text short"></div>
+                        <div class="skel-text long"></div>
+                        <div class="skel-btn"></div>
+                    </div>
+                </ng-container>
 
                 <!-- Actual products -->
                 <ng-container *ngIf="!isLoadingFeaturedProducts && !isFeaturedProductsError">
@@ -246,31 +300,35 @@
 
     <!-- ========== KIỂM TRA SỨC KHỎE (Health Quiz) – Chữ trên, thẻ + ảnh dưới ========== -->
     <section class="vc-health-quiz-wrap scroll-reveal from-left">
-        <div class="quiz-banner">
-            <div class="quiz-banner-top">
-                <h2 class="quiz-banner-title">Kiểm tra sức khỏe</h2>
-                <p class="quiz-banner-subtitle">Kết quả đánh giá sẽ cho bạn lời khuyên xử trí phù hợp!</p>
-            </div>
-            <div class="quiz-banner-bottom">
-                <div class="quiz-banner-cards-wrap">
-                    <button class="quiz-chevron quiz-chevron-prev" (click)="scrollQuizPrev()" aria-label="Trước">
-                        <i class="bi bi-chevron-left"></i>
-                    </button>
-                    <div class="quiz-banner-cards" #quizSlider>
-                        <div class="quiz-card" *ngFor="let q of quizItems" (click)="startQuiz(q)" role="button"
-                            tabindex="0">
-                            <div class="quiz-card-icon">
-                                <span class="material-symbols-rounded">{{ q.icon }}</span>
-                            </div>
-                            <h3 class="quiz-card-title">{{ q.description }}</h3>
-                        </div>
-                    </div>
-                    <button class="quiz-chevron quiz-chevron-next" (click)="scrollQuizNext()" aria-label="Sau">
-                        <i class="bi bi-chevron-right"></i>
-                    </button>
+        <div class="quiz-banner-wrapper">
+            <div class="quiz-border-spinner"></div>
+            <div class="quiz-banner">
+                <div class="quiz-lighting"></div>
+                <div class="quiz-banner-top">
+                    <h2 class="quiz-banner-title">Kiểm tra sức khỏe</h2>
+                    <p class="quiz-banner-subtitle">Kết quả đánh giá sẽ cho bạn lời khuyên xử trí phù hợp!</p>
                 </div>
-                <div class="quiz-banner-doctors">
-                    <img src="assets/images/banner/2_young_doctor.png" alt="Bác sĩ tư vấn" />
+                <div class="quiz-banner-bottom">
+                    <div class="quiz-banner-cards-wrap">
+                        <button class="quiz-chevron quiz-chevron-prev" (click)="scrollQuizPrev()" aria-label="Trước">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <div class="quiz-banner-cards" #quizSlider>
+                            <div class="quiz-card" *ngFor="let q of quizItems" (click)="startQuiz(q)" role="button"
+                                tabindex="0">
+                                <div class="quiz-card-icon">
+                                    <span class="material-symbols-rounded">{{ q.icon }}</span>
+                                </div>
+                                <h3 class="quiz-card-title">{{ q.description }}</h3>
+                            </div>
+                        </div>
+                        <button class="quiz-chevron quiz-chevron-next" (click)="scrollQuizNext()" aria-label="Sau">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="quiz-banner-doctors">
+                        <img src="assets/images/homepage/quiz/home_quiz.png" alt="Bác sĩ tư vấn" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -281,7 +339,8 @@
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/4.webp" alt="Blog" />
             <h2>Góc sức khỏe <span class="section-sep">|</span><a [routerLink]="['/bai-viet']"
-                    class="section-view-all">Xem tất cả <i class="bi bi-chevron-right"></i></a></h2>
+                    class="section-view-all">Xem
+                    tất cả <i class="bi bi-chevron-double-right"></i></a></h2>
         </div>
         <div class="blog-layout">
             <a [href]="blogs[0].link || '#'" class="blog-main" *ngIf="blogs && blogs.length; else blogFallback">
@@ -326,7 +385,7 @@
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/5.webp" alt="Bệnh" />
             <h2>Bệnh <span class="section-sep">|</span><a [routerLink]="['/disease']" class="section-view-all">Xem tất
-                    cả <i class="bi bi-chevron-right"></i></a></h2>
+                    cả <i class="bi bi-chevron-double-right"></i></a></h2>
         </div>
         <div class="disease-tabs">
             <button [class.active]="activeDiseaseTab === 'doi_tuong'" (click)="activeDiseaseTab='doi_tuong'">Bệnh theo
@@ -337,7 +396,8 @@
         <div class="disease-tab-panel">
             <div class="disease-tab-content" *ngIf="activeDiseaseTab === 'doi_tuong'">
                 <div class="disease-grid">
-                    <div class="disease-card" *ngFor="let d of diseases">
+                    <div class="disease-card" *ngFor="let d of diseases" (click)="onDiseaseGroupClick(d, $event)"
+                        style="cursor: pointer;">
                         <div class="d-card-media">
                             <img [src]="d.image || 'assets/images/homepage/benh/doi_tuong_1.webp'" [alt]="d.name" />
                         </div>
@@ -345,7 +405,8 @@
                         <ul class="disease-list">
                             <li *ngFor="let it of d.items">{{ it }}</li>
                         </ul>
-                        <a href="#" (click)="onDiseaseGroupClick(d, $event)" class="disease-link">Tìm hiểu thêm ></a>
+                        <a href="#" (click)="$event.stopPropagation(); onDiseaseGroupClick(d, $event)"
+                            class="disease-link">Tìm hiểu thêm ></a>
                     </div>
                 </div>
             </div>
@@ -354,13 +415,15 @@
                 <div class="seasonal-slider-wrap">
                     <button class="seasonal-nav prev" (click)="scrollSeasonalPrev()" aria-label="Trước">‹</button>
                     <div class="seasonal-slider" #seasonalSlider>
-                        <div class="seasonal-card" *ngFor="let s of seasonalDiseasesToShow">
+                        <div class="seasonal-card" *ngFor="let s of seasonalDiseasesToShow"
+                            (click)="onSeasonalDiseaseClick(s, $event)" style="cursor: pointer;">
                             <div class="d-card-media">
                                 <img [src]="s.image" [alt]="s.name" />
                             </div>
                             <h4>{{ s.name }}</h4>
                             <p class="disease-summary">{{ s.items ? s.items.slice(0,2).join(', ') : '' }}</p>
-                            <a href="#" (click)="onSeasonalDiseaseClick(s, $event)" class="disease-link">
+                            <a href="#" (click)="$event.stopPropagation(); onSeasonalDiseaseClick(s, $event)"
+                                class="disease-link">
                                 Tìm hiểu thêm <i class="bi bi-chevron-right"></i>
                             </a>
                         </div>

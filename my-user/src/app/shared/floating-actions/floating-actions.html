@@ -1,8 +1,10 @@
 <div class="floating-actions">
+  <!-- Túi xu tích điểm -->
+  <app-coin></app-coin>
+
   <!-- Icon viên thuốc + số thông báo nhắc lịch (chỉ hiện sau khi popup nhắc đã đóng) -->
   @if (reminderBadge.showReminderBadge()) {
-  <button type="button" class="fab fab-reminder" aria-label="Lịch nhắc uống thuốc"
-    (click)="goToReminder()">
+  <button type="button" class="fab fab-reminder" aria-label="Lịch nhắc uống thuốc" (click)="goToReminder()">
     <i class="bi bi-capsule" aria-hidden="true"></i>
     <span class="fab-reminder-count">{{ reminderBadge.reminderDueCount() }}</span>
   </button>

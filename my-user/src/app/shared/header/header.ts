@@ -544,7 +544,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   dismissReminderPopup(): void {
     const userId = (this.authService.currentUser() as { user_id?: string })?.user_id;
-    const ids = this.medicationDueList.map((n) => n.id);
+    const ids = this.medicationDueList
+      .map((n) => n.id)
+      // reminder-due-* là notice "ảo" (sinh động từ reminders), không tồn tại trong DB → tránh gọi markAsRead để khỏi 404
+      .filter((id) => !String(id || '').startsWith('reminder-due-'));
     this.runReminderPopupCloseAnimation(() => {
       this.setReminderAckSession();
       if (userId && ids.length) {
@@ -619,15 +622,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   dismissOrderPopup(): void {
-    const userId = (this.authService.currentUser() as { user_id?: string })?.user_id;
-    const ids = this.orderNoticeList.map((n) => n.id);
     this.runOrderPopupCloseAnimation(() => {
       this.setOrderPopupAckSession();
-      if (userId && ids.length) {
-        ids.forEach((id) =>
-          this.noticeService.markAsRead(id, userId).subscribe({ error: () => { } })
-        );
-      }
     });
   }
 
@@ -780,6 +776,56 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     return m ? m[1] : null;
   }
 
+  private getNoticeTimeMs(n: NoticeItem): number {
+    // 1) Prefer `time` from API if present
+    if (n.time) {
+      const ms = new Date(n.time).getTime();
+      if (Number.isFinite(ms) && ms > 0) return ms;
+    }
+
+    // 2) For medication reminders, parse due id to get exact hh:mm + date
+    if (n.type === 'medication_reminder') {
+      const parsed = this.parseReminderDueId(n.id);
+      if (parsed) {
+        const dueDate = new Date(`${parsed.date}T${parsed.time}:00+07:00`);
+        const ms = dueDate.getTime();
+        if (Number.isFinite(ms) && ms > 0) return ms;
+      }
+    }
+
+    // 3) Fallback: parse hh:mm only (no date) -> return 0 so it will go last
+    return 0;
+  }
+
+  /**
+   * Thời gian hiển thị ở bell dropdown: dạng "Vừa xong" / "10 phút" / "1 giờ" ...
+   * Yêu cầu: màu xám + nằm cùng hàng với title.
+   */
+  formatBellRelativeTime(n: NoticeItem): string {
+    const ms = this.getNoticeTimeMs(n);
+    if (!ms) return '';
+
+    const date = new Date(ms);
+    const now = new Date();
+    const diffMs = Math.abs(now.getTime() - date.getTime());
+
+    const diffM = Math.floor(diffMs / 60000);
+    const diffH = Math.floor(diffMs / 3600000);
+    const diffD = Math.floor(diffMs / 86400000);
+
+    if (diffM < 1) return 'Vừa xong';
+    if (diffM < 60) return `${diffM} phút`;
+    if (diffH < 24) return `${diffH} giờ`;
+    if (diffD < 7) return `${diffD} ngày`;
+
+    // Với thông báo cũ hơn 7 ngày: hiển thị ngày (không dùng "trước" để đúng style người dùng).
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  }
+
   /** Chỉ giữ các lời nhắc trong cửa sổ ±60 phút: ví dụ lịch 15h chỉ hiện khi thời gian thực từ 14h đến 16h (chưa tick). */
   private filterReminderWithin60Minutes(list: NoticeItem[]): NoticeItem[] {
     const now = new Date();
@@ -888,13 +934,13 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           const unread = items.filter((n) => !n.read);
           this.unreadNotifyCount = Math.min(unread.length, 99);
           const sorted = [...items].sort((a, b) => {
-            const am = a.type === 'medication_reminder' ? 0 : 1;
-            const bm = b.type === 'medication_reminder' ? 0 : 1;
-            if (am !== bm) return am - bm;
+            const ta = this.getNoticeTimeMs(a);
+            const tb = this.getNoticeTimeMs(b);
+            if (tb !== ta) return tb - ta; // mới nhất lên trước
+            // cùng thời gian: chưa đọc lên trước
             const ar = a.read ? 1 : 0;
             const br = b.read ? 1 : 0;
-            if (ar !== br) return ar - br;
-            return 0;
+            return ar - br;
           });
           const pick: NoticeItem[] = [];
           const seen = new Set<string>();
@@ -933,19 +979,22 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     // Vấn đề 2: Mapping dữ liệu sạch cho section Hot Deals
     this.productService.getProducts({ limit: 5, sort: 'discount' }).subscribe(res => {
       this.hotDeals = (res.products || []).map((p: any) => {
-        const currentPrice = p.price || 0;
-        const discountAmount = p.discount || 0;
-        const oldPrice = currentPrice + discountAmount;
+        // Backend: `price` là giá gốc, `discount` là số tiền giảm (VND).
+        // => Giá sau giảm = price - discount
+        const originalPrice = Number(p.price) || 0;
+        const discountAmount = Number(p.discount) || 0;
+        const salePrice = Math.max(0, originalPrice - discountAmount);
+
         let discountPercent = 0;
-        if (oldPrice > 0 && discountAmount > 0) {
-          discountPercent = Math.round((discountAmount / oldPrice) * 100);
+        if (originalPrice > 0 && discountAmount > 0) {
+          discountPercent = Math.round((discountAmount / originalPrice) * 100);
         }
 
         return {
           id: p._id?.$oid || p._id?.toString() || p._id,
           name: p.name,
-          price: currentPrice || 0, // Fallback tránh hiện lỗi template
-          oldPrice: oldPrice,
+          price: salePrice || 0, // giá sau giảm
+          oldPrice: originalPrice, // giá gốc để template hiển thị gạch ngang
           discountPercent: discountPercent,
           unit: p.unit || 'Hộp',
           image: p.image || 'assets/icon/medical_16660084.png',

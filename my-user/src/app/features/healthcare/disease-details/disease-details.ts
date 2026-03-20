@@ -773,7 +773,7 @@ export class DiseaseDetails implements OnInit, OnDestroy {
   /** Breadcrumb: về nhóm bệnh cụ thể */
   navigateToGroup(e: Event, groupSlug: string) {
     e.preventDefault();
-    this.router.navigate(['/disease'], { queryParams: { groupSlug } });
+    this.router.navigate(['/category/tra-cuu-benh', groupSlug]);
     this.cdr.detectChanges();
   }
 }

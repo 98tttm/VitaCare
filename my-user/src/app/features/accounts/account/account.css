@@ -9,10 +9,11 @@
   display: flex;
   align-items: stretch;
   gap: 24px;
-  padding: 10px 0 0 0;
+  padding: 10px 0 60px 0;
   max-width: 1200px;
   margin: 0 auto;
   font-family: 'Inter', sans-serif;
+  min-height: 100vh; /* giúp position: sticky của sidebar bền hơn khi scroll */
 }
 
 /* Sidebar - nền gradient VitaCare (Primary #00589F) */
@@ -27,8 +28,8 @@
   box-shadow: 0 4px 20px rgba(0, 88, 159, 0.35);
   position: sticky;
   top: 90px;
-  align-self: flex-start;
   z-index: 10;
+  align-self: flex-start;
 }
 
 /* User Profile Header */
@@ -221,10 +222,21 @@
   flex-direction: column;
 }
 
+/* Thông báo: chặn scroll ngoài, chỉ dùng 1 scroll nội bộ của danh sách */
+.account-wrapper--notice-full .account-content {
+  overflow: visible;
+  min-height: 0;
+}
+
 /* Khi xem Sổ sức khỏe: ẩn sidebar, content full width */
 .account-wrapper--health-full .account-content {
   flex: 1 1 100%;
   max-width: 100%;
+}
+
+/* Neo sidebar thấp hơn một chút trên tab Quản lý đánh giá */
+.account-wrapper--reviews-full .account-sidebar {
+  top: 100px;
 }
 
 /* Responsive */

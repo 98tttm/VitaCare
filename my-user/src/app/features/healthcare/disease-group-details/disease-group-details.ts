@@ -62,7 +62,18 @@ export class DiseaseGroupDetails implements OnInit, OnDestroy {
     this.loading = true;
     this.diseaseService.getDiseaseGroups().subscribe(groups => {
       this.ngZone.run(() => {
-        this.selectedGroup = groups.find((g: any) => g.slug === slug) || { slug, name: slug };
+        // Cải thiện logic tìm group: khớp slug hoặc là phần cuối của fullPathSlug
+        this.selectedGroup = groups.find((g: any) => {
+          const gSlug = g.slug || '';
+          const gPath = g.fullPathSlug || '';
+          return gSlug === slug || gPath === slug || gPath.endsWith('/' + slug);
+        });
+
+        // Nếu không tìm thấy, tạo object giả với name rỗng để kích hoạt fallback
+        if (!this.selectedGroup) {
+          this.selectedGroup = { slug, name: '' };
+        }
+
         this.fetchDiseases(1);
       });
     });

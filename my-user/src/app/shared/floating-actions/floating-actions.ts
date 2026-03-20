@@ -14,11 +14,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChatService, type ChatTurn } from '../../core/services/chat.service';
 import { ReminderBadgeService } from '../../core/services/reminder-badge.service';
+import { Coin } from '../coin/coin';
 
 @Component({
   selector: 'app-floating-actions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Coin],
   templateUrl: './floating-actions.html',
   styleUrl: './floating-actions.css',
 })

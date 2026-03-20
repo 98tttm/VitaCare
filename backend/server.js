@@ -332,10 +332,11 @@ app.get('/api/products', async (req, res) => {
     const categoryIdParam = String(req.query.categoryId || '').trim();
     const minPrice = req.query.minPrice !== undefined && req.query.minPrice !== '' ? Number(req.query.minPrice) : null;
     const maxPrice = req.query.maxPrice !== undefined && req.query.maxPrice !== '' ? Number(req.query.maxPrice) : null;
-    const limit = Math.min(Math.max(1, parseInt(req.query.limit, 10) || 12), 200);
+    const hasDiscount = String(req.query.hasDiscount || '').trim().toLowerCase() === 'true';
+    let limit = Math.min(Math.max(1, parseInt(req.query.limit, 10) || 12), 1000);
+    if (hasDiscount) limit = 100000; // Mở tối đa 100k sản phẩm
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const sort = String(req.query.sort || 'newest');
-    const hasDiscount = String(req.query.hasDiscount || '').trim().toLowerCase() === 'true';
 
     const filter = {};
     // Làm sạch dữ liệu rác "Có" như đã note
@@ -483,7 +484,22 @@ app.get('/api/products', async (req, res) => {
       }
     }
     if (hasDiscount) {
-      filter.discount = { $gt: 0 };
+      const discountCond = {
+        $or: [
+          { discount: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
+          { salePrice: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
+          { giaKhuyenMai: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
+          { originalPrice: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
+          { giaGoc: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
+          // Thêm check so sánh giá bàng $expr để vét nốt các trường hợp ko có field discount riêng
+          { $expr: { $gt: [{ $convert: { input: "$originalPrice", to: "double", onError: 0, onNull: 0 } }, { $convert: { input: "$price", to: "double", onError: 0, onNull: 0 } }] } },
+          { $expr: { $gt: [{ $convert: { input: "$giaGoc", to: "double", onError: 0, onNull: 0 } }, { $convert: { input: "$price", to: "double", onError: 0, onNull: 0 } }] } }
+        ]
+      };
+      if (filter.$and) filter.$and.push(discountCond);
+      else filter.$and = [discountCond];
+
+      // Reset limit cao hơn ở đây nếu cần (đã làm ở trên)
     }
     if (minPrice != null && !isNaN(minPrice)) {
       filter.price = filter.price || {};
@@ -516,8 +532,7 @@ app.get('/api/products', async (req, res) => {
     }
     if (sort === 'newest') sortOption = { _id: -1 };
     if (sort === 'discount') {
-      // Vấn đề 2: Lọc sản phẩm có discount thực sự và sort (cái mới nhất trước)
-      filter.$expr = { $gt: [{ $convert: { input: "$discount", to: "double", onError: 0, onNull: 0 } }, 0] };
+      // Bỏ $expr để không ghi đè filter.hasDiscount đã xử lý ở trên
       sortOption = { discount: -1, _id: -1 };
     }
 
@@ -526,6 +541,13 @@ app.get('/api/products', async (req, res) => {
       col.countDocuments(filter)
     ]);
 
+    if (hasDiscount) {
+      console.log(`\n--- FLASH SALE DEBUG ---`);
+      console.log(`[Filter]:`, JSON.stringify(filter));
+      console.log(`[Found]: ${items.length} products`);
+      console.log(`[Sample Discount]:`, items.length > 0 ? items[0].discount : 'N/A');
+      console.log(`-------------------------\n`);
+    }
 
     const products = items.map((p) => {
       const id = getId(p);
@@ -546,8 +568,10 @@ app.get('/api/products', async (req, res) => {
         name: p.name,
         productName: p.name,
         price: p.price,
+        originalPrice: p.originalPrice || p.giaGoc || undefined,
+        salePrice: p.salePrice || p.giaKhuyenMai || undefined,
         discount: p.discount,
-        unit: p.unit || 'Hộp',
+        unit: p.unit || p.unitOfMeasure || p.donViTinh || 'Hộp',
         image: primaryImage,
         categoryId,
         slug: p.slug || id,
@@ -1126,14 +1150,21 @@ async function buildDueReminderNoticeItems(user_id, now) {
       if (done) continue;
       const [hh, mm] = timeNorm.split(':').map((x) => parseInt(x, 10) || 0);
       const slotMin = hh * 60 + mm;
-      if (curMin < slotMin) continue;
+      // Thông báo "tiệm cận" trước giờ uống 1 giờ.
+      const leadMin = 60;
+      const notifyMin = slotMin - leadMin;
+      if (curMin < notifyMin) continue;
       const rid = getId(r) || String(r._id);
+      // `time` của reminder notice dùng cho hiển thị/sort phải là GIỜ UỐNG THẬT,
+      // còn "hiển thị sớm" do điều kiện curMin >= slotMin - leadMin ở trên.
+      const slotDate = new Date(`${todayKey}T${timeNorm}:00+07:00`);
+      const dueTimeMs = slotDate.getTime();
       out.push({
         id: `reminder-due-${rid}-${todayKey}-${timeNorm.replace(':', '')}`,
         type: 'medication_reminder',
         title: 'Nhắc uống thuốc',
         message: `${r.med_name || 'Thuốc'} — ${r.dosage || ''}${r.unit ? ' ' + r.unit : ''} (lịch ${timeNorm})`,
-        time: now.toISOString(),
+        time: new Date(dueTimeMs).toISOString(),
         read: false,
         link: '/account',
         linkLabel: 'Mở lịch nhắc',
@@ -1141,7 +1172,11 @@ async function buildDueReminderNoticeItems(user_id, now) {
       });
     }
   }
-  out.sort((a, b) => (b.meta || '').localeCompare(a.meta || ''));
+  out.sort((a, b) => {
+    const ta = a.time ? new Date(a.time).getTime() : 0;
+    const tb = b.time ? new Date(b.time).getTime() : 0;
+    return tb - ta;
+  });
   return out;
 }
 
@@ -1179,6 +1214,12 @@ app.get('/api/notices', async (req, res) => {
       console.warn('[GET /api/notices] due reminders:', e.message);
     }
     const merged = [...dueReminders, ...items];
+    // Sort lại sau khi merge để notification luôn đúng theo thời gian mới nhất.
+    merged.sort((a, b) => {
+      const ta = a.time ? new Date(a.time).getTime() : 0;
+      const tb = b.time ? new Date(b.time).getTime() : 0;
+      return tb - ta;
+    });
     res.json({ success: true, items: merged });
   } catch (err) {
     console.error('[GET /api/notices] Error:', err);
@@ -1219,6 +1260,31 @@ app.patch('/api/notices/read-all', async (req, res) => {
   } catch (err) {
     console.error('[PATCH /api/notices/read-all] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi đánh dấu đọc tất cả.' });
+  }
+});
+
+// DELETE /api/notices/:id - Xóa thông báo theo user_id
+app.delete('/api/notices/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user_id = String(req.query.user_id || req.body?.user_id || '').trim();
+    if (!user_id) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+    const col = noticesCollection();
+
+    const filter = mongoose.Types.ObjectId.isValid(id)
+      ? { _id: new mongoose.Types.ObjectId(id), user_id }
+      : { _id: id, user_id };
+
+    const result = await col.deleteOne(filter);
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy thông báo.' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[DELETE /api/notices/:id] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa thông báo.' });
   }
 });
 
@@ -1403,13 +1469,16 @@ app.put('/api/orders/:id/confirm-returned', async (req, res) => {
     try {
       const orderData = result.value || result;
       const user_id = orderData.user_id || 'guest';
-      await db.collection('notices').insertOne({
+      await noticesCollection().insertOne({
         user_id,
+        type: 'order_updated',
         title: 'Xác nhận nhận hàng hoàn trả',
-        body: `Bạn đã xác nhận nhận hàng hoàn trả cho đơn ${orderId} thành công.`,
-        type: 'order',
-        isRead: false,
-        createdAt: new Date()
+        message: `Bạn đã xác nhận nhận hàng hoàn trả cho đơn ${orderId} thành công.`,
+        createdAt: new Date().toISOString(),
+        read: false,
+        link: '/account',
+        linkLabel: 'Xem đơn hàng',
+        meta: orderId,
       });
     } catch (e) {
       console.warn('[PUT /api/orders/:id/confirm-returned] Cannot create notice:', e.message);
@@ -1455,13 +1524,16 @@ app.put('/api/orders/:id/cancel-return', async (req, res) => {
     // Ghi log notice
     try {
       const user_id = doc.user_id || doc.userId || 'guest';
-      await mongoose.connection.db.collection('notices').insertOne({
+      await noticesCollection().insertOne({
         user_id,
+        type: 'order_updated',
         title: 'Hủy yêu cầu trả hàng',
-        body: `Bạn đã hủy yêu cầu trả hàng cho đơn ${doc.order_id || id} thành công. Đơn hàng đã chuyển về trạng thái chờ đánh giá.`,
-        type: 'order',
-        isRead: false,
-        createdAt: new Date()
+        message: `Bạn đã hủy yêu cầu trả hàng cho đơn ${doc.order_id || id} thành công. Đơn hàng đã chuyển về trạng thái chờ đánh giá.`,
+        createdAt: new Date().toISOString(),
+        read: false,
+        link: '/account',
+        linkLabel: 'Xem đơn hàng',
+        meta: doc.order_id || id,
       });
     } catch (e) {
       console.warn('[PUT /api/orders/:id/cancel-return] Cannot create notice:', e.message);
@@ -2509,12 +2581,19 @@ app.get('/api/reminders', async (req, res) => {
         instruction: r.instruction,
         note: r.note,
         image_url: r.image_url,
+        tag_label: r.tag_label ?? null,
+        tag_color: r.tag_color ?? null,
         config_status: r.config_status,
         schedule_status: r.schedule_status,
         reminder_sound: r.reminder_sound,
         is_completed: r.is_completed,
         last_completed_date: r.last_completed_date,
         completion_log: log.map((c) => ({ date: String(c.date || ''), time: String(c.time || '') })),
+        skipped_dates: Array.isArray(r.skipped_dates)
+          ? r.skipped_dates
+              .map((x) => normalizeCalendarYmd(String(x)))
+              .filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))
+          : [],
       };
     });
     res.json({ success: true, reminders });
@@ -2549,10 +2628,17 @@ app.post('/api/reminders', async (req, res) => {
       instruction: body.instruction || '',
       note: body.note || '',
       image_url: body.image_url || null,
+      tag_label: body.tag_label || null,
+      tag_color: body.tag_color || null,
       config_status: 'Active',
       schedule_status: 'Active',
       reminder_sound: body.reminder_sound !== false,
       completion_log: [],
+      skipped_dates: Array.isArray(body.skipped_dates)
+        ? body.skipped_dates
+            .map((x) => normalizeCalendarYmd(String(x)))
+            .filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))
+        : [],
     };
     const result = await remindersCollection().insertOne(doc);
     const reminder = { ...doc, _id: result.insertedId.toString() };
@@ -2571,7 +2657,8 @@ app.patch('/api/reminders/:id', async (req, res) => {
     const body = req.body || {};
     const allowed = [
       'start_date', 'end_date', 'frequency', 'times_per_day', 'reminder_times',
-      'med_name', 'dosage', 'unit', 'route', 'instruction', 'note', 'image_url', 'config_status', 'schedule_status'
+      'med_name', 'dosage', 'unit', 'route', 'instruction', 'note', 'image_url', 'tag_label', 'tag_color', 'config_status', 'schedule_status',
+      'skipped_dates',
     ];
     const set = {};
     for (const key of allowed) {
@@ -2597,20 +2684,270 @@ app.patch('/api/reminders/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/reminders/:id
-app.delete('/api/reminders/:id', async (req, res) => {
+/** Chuẩn YYYY-MM-DD (hỗ trợ 2026-3-20) */
+function normalizeCalendarYmd(s) {
+  const m = String(s || '').trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (!m) return '';
+  return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+}
+/** Cộng ngày trên lịch civil — khớp “date key” giống UI */
+function addCalendarDaysYmd(ymd, deltaDays) {
+  const key = normalizeCalendarYmd(ymd);
+  if (!key) return '';
+  const [y, mo, d] = key.split('-').map((x) => parseInt(x, 10));
+  const ms = Date.UTC(y, mo - 1, d + deltaDays);
+  return new Date(ms).toISOString().slice(0, 10);
+}
+function pickQueryParam(reqQuery, key) {
+  const v = reqQuery?.[key];
+  return Array.isArray(v) ? v[0] : v;
+}
+
+/**
+ * Nhật ký: dùng POST + JSON body để scope=day không bị mất (một số proxy/client cắt query DELETE).
+ * DELETE không date: xóa full document.
+ */
+async function runReminderCalendarDelete(req, res, id, fromPost) {
   try {
-    const id = req.params.id;
-    const oid = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
-    const result = await remindersCollection().deleteOne({ _id: oid });
-    if (result.deletedCount === 0) {
+    const reminderDateKey = (val) => {
+      if (val == null) return '';
+      if (val instanceof Date && !isNaN(val.getTime())) return val.toISOString().slice(0, 10);
+      const s = String(val).trim();
+      const mx = s.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (mx) return mx[1];
+      const d = new Date(s);
+      return isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
+    };
+
+    const idStr = String(id || '').trim();
+    const body = req.body || {};
+    const q = req.query || {};
+
+    let qDate = '';
+    let scopeRaw = 'from';
+    let rangeStartQ = '';
+    let rangeEndQ = '';
+
+    if (fromPost) {
+      qDate = normalizeCalendarYmd(body.calendarDate || body.date);
+      scopeRaw = String(body.scope ?? body.mode ?? '')
+        .trim()
+        .toLowerCase();
+      rangeStartQ = normalizeCalendarYmd(body.rangeStart);
+      rangeEndQ = normalizeCalendarYmd(body.rangeEnd);
+      if (!qDate || !/^\d{4}-\d{2}-\d{2}$/.test(qDate)) {
+        return res.status(400).json({ success: false, message: 'Thiếu hoặc sai calendarDate (YYYY-MM-DD).' });
+      }
+      if (!rangeStartQ || !rangeEndQ) {
+        return res.status(400).json({ success: false, message: 'Thiếu rangeStart / rangeEnd.' });
+      }
+      if (!scopeRaw || (scopeRaw !== 'day' && scopeRaw !== 'from' && scopeRaw !== 'single' && scopeRaw !== 'singleday')) {
+        return res.status(400).json({ success: false, message: 'scope phải là day hoặc from.' });
+      }
+    } else {
+      qDate = normalizeCalendarYmd(pickQueryParam(q, 'date'));
+      scopeRaw = String(pickQueryParam(q, 'scope') ?? '')
+        .trim()
+        .toLowerCase();
+      rangeStartQ = normalizeCalendarYmd(pickQueryParam(q, 'rangeStart'));
+      rangeEndQ = normalizeCalendarYmd(pickQueryParam(q, 'rangeEnd'));
+    }
+
+    const hasDate = qDate && /^\d{4}-\d{2}-\d{2}$/.test(qDate);
+
+    /* Không mặc định scope=from: thiếu scope + có ?date → từng gây cắt hết từ ngày đó (21,22,23… mất). */
+    if (!fromPost && hasDate) {
+      if (
+        !scopeRaw ||
+        (scopeRaw !== 'day' && scopeRaw !== 'from' && scopeRaw !== 'single' && scopeRaw !== 'singleday')
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: 'DELETE với ?date phải kèm scope=day hoặc scope=from.',
+        });
+      }
+    }
+    const singleDayScope =
+      scopeRaw === 'day' || scopeRaw === 'single' || scopeRaw === 'singleday';
+
+    const hasClientRange =
+      /^\d{4}-\d{2}-\d{2}$/.test(rangeStartQ) &&
+      /^\d{4}-\d{2}-\d{2}$/.test(rangeEndQ) &&
+      rangeStartQ <= rangeEndQ;
+
+    /** Luôn dùng _id đúng kiểu BSON trong DB (tránh 404 oan khi so khớp ObjectId vs chuỗi). */
+    let doc = null;
+    if (idStr && mongoose.Types.ObjectId.isValid(idStr)) {
+      doc = await remindersCollection().findOne({ _id: new mongoose.Types.ObjectId(idStr) });
+    }
+    if (!doc && idStr) {
+      doc = await remindersCollection().findOne({ _id: idStr });
+    }
+    if (!doc) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy lời nhắc.' });
     }
+    const oid = doc._id;
+
+    const oldStart = hasClientRange ? rangeStartQ : reminderDateKey(doc.start_date) || qDate;
+    const oldEnd = hasClientRange ? rangeEndQ : reminderDateKey(doc.end_date) || qDate;
+
+    if (!hasDate) {
+      if (fromPost) {
+        return res.status(400).json({ success: false, message: 'Thiếu ngày xóa.' });
+      }
+      await remindersCollection().deleteOne({ _id: oid });
+      return res.json({ success: true });
+    }
+
+    /** Chỉ bỏ một ngày: lưu skipped_dates (một bản ghi thuốc; tần suất cách ngày/tuần không bị lệch). */
+    if (singleDayScope) {
+      if (qDate < oldStart || qDate > oldEnd) {
+        return res.json({ success: true, message: 'Ngày không nằm trong khoảng lịch.' });
+      }
+
+      const dayKeyFromLog = (e) =>
+        normalizeCalendarYmd(String(e.date || '')) || String(e.date || '').slice(0, 10);
+
+      const newLog = (doc.completion_log || []).filter((e) => dayKeyFromLog(e) !== qDate);
+
+      const prevSkipped = Array.isArray(doc.skipped_dates)
+        ? doc.skipped_dates.map((x) => normalizeCalendarYmd(String(x))).filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))
+        : [];
+      if (prevSkipped.includes(qDate)) {
+        return res.json({ success: true });
+      }
+
+      const freq = String(doc.frequency || 'Daily');
+      const singleCalendarDayInRange = oldStart === oldEnd;
+      const onlyOnceDay = freq === 'Once' && qDate === oldStart;
+
+      if ((singleCalendarDayInRange && qDate === oldStart) || onlyOnceDay) {
+        await remindersCollection().deleteOne({ _id: oid });
+        return res.json({ success: true });
+      }
+
+      await remindersCollection().updateOne(
+        { _id: oid },
+        {
+          $addToSet: { skipped_dates: qDate },
+          $set: { completion_log: newLog, updatedAt: new Date() },
+        }
+      );
+      return res.json({ success: true });
+    }
+
+    if (qDate <= oldStart) {
+      await remindersCollection().deleteOne({ _id: oid });
+      return res.json({ success: true });
+    }
+
+    if (qDate > oldEnd) {
+      return res.json({ success: true, message: 'Không có khoảng lịch bị hủy.' });
+    }
+
+    const newEndKey = addCalendarDaysYmd(qDate, -1);
+
+    const fromLog = (doc.completion_log || []).filter((e) => {
+      const dk =
+        normalizeCalendarYmd(String(e.date || '')) || String(e.date || '').slice(0, 10);
+      return dk && dk <= newEndKey;
+    });
+
+    await remindersCollection().updateOne(
+      { _id: oid },
+      { $set: { end_date: newEndKey + 'T00:00:00.000Z', completion_log: fromLog, updatedAt: new Date() } }
+    );
+
     res.json({ success: true });
   } catch (err) {
     console.error('Delete reminders error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa lời nhắc.' });
   }
+}
+
+app.post('/api/reminders/:id/delete-calendar', async (req, res) => {
+  await runReminderCalendarDelete(req, res, req.params.id, true);
+});
+
+/**
+ * Chỉ bỏ một ngày trên lịch (skipped_dates) — không có scope, không cắt end_date.
+ * Tránh nhầm với nhánh "từ ngày đến hết" làm mất cả 21,22,23…
+ */
+app.post('/api/reminders/:id/skip-one-day', async (req, res) => {
+  try {
+    const idStr = String(req.params.id || '').trim();
+    const body = req.body || {};
+    const qDate = normalizeCalendarYmd(body.calendarDate || body.date);
+    const rangeStartQ = normalizeCalendarYmd(body.rangeStart);
+    const rangeEndQ = normalizeCalendarYmd(body.rangeEnd);
+    if (!qDate || !/^\d{4}-\d{2}-\d{2}$/.test(qDate)) {
+      return res.status(400).json({ success: false, message: 'Thiếu hoặc sai calendarDate (YYYY-MM-DD).' });
+    }
+    if (!rangeStartQ || !rangeEndQ) {
+      return res.status(400).json({ success: false, message: 'Thiếu rangeStart / rangeEnd.' });
+    }
+    if (rangeStartQ > rangeEndQ) {
+      return res.status(400).json({ success: false, message: 'rangeStart phải ≤ rangeEnd.' });
+    }
+
+    let doc = null;
+    if (idStr && mongoose.Types.ObjectId.isValid(idStr)) {
+      doc = await remindersCollection().findOne({ _id: new mongoose.Types.ObjectId(idStr) });
+    }
+    if (!doc && idStr) {
+      doc = await remindersCollection().findOne({ _id: idStr });
+    }
+    if (!doc) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy lời nhắc.' });
+    }
+    const oid = doc._id;
+    const oldStart = rangeStartQ;
+    const oldEnd = rangeEndQ;
+
+    if (qDate < oldStart || qDate > oldEnd) {
+      return res.json({ success: true, message: 'Ngày không nằm trong khoảng lịch.' });
+    }
+
+    const dayKeyFromLog = (e) =>
+      normalizeCalendarYmd(String(e.date || '')) || String(e.date || '').slice(0, 10);
+
+    const newLog = (doc.completion_log || []).filter((e) => dayKeyFromLog(e) !== qDate);
+
+    const prevSkipped = Array.isArray(doc.skipped_dates)
+      ? doc.skipped_dates.map((x) => normalizeCalendarYmd(String(x))).filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))
+      : [];
+    if (prevSkipped.includes(qDate)) {
+      return res.json({ success: true });
+    }
+
+    const freq = String(doc.frequency || 'Daily');
+    const singleCalendarDayInRange = oldStart === oldEnd;
+    const onlyOnceDay = freq === 'Once' && qDate === oldStart;
+
+    if ((singleCalendarDayInRange && qDate === oldStart) || onlyOnceDay) {
+      await remindersCollection().deleteOne({ _id: oid });
+      return res.json({ success: true });
+    }
+
+    await remindersCollection().updateOne(
+      { _id: oid },
+      {
+        $addToSet: { skipped_dates: qDate },
+        $set: { completion_log: newLog, updatedAt: new Date() },
+      }
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Skip one reminder day error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi bỏ một ngày lịch.' });
+  }
+});
+
+// DELETE /api/reminders/:id
+// - Không có ?date: xóa toàn bộ document.
+// - Có query: legacy (nhật ký dùng POST delete-calendar)
+app.delete('/api/reminders/:id', async (req, res) => {
+  await runReminderCalendarDelete(req, res, req.params.id, false);
 });
 
 // POST /api/reminders/:id/complete - Đánh dấu hoàn thành (theo ngày + giờ)
@@ -4641,6 +4978,142 @@ app.delete('/api/recently-viewed/all', async (req, res) => {
   } catch (err) {
     console.error('[DELETE /api/recently-viewed/all] Error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xóa danh sách vừa xem.' });
+  }
+});
+
+// ========= USER COINS & STREAKS (Users_memory) =========
+// GET /api/users-memory/coins?user_id=...
+app.get('/api/users-memory/coins', async (req, res) => {
+  try {
+    const user_id = String(req.query.user_id || '').trim();
+    if (!user_id) return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+
+    const memoryUser = await usersMemoryCollection().findOne({ user_id });
+    if (!memoryUser) {
+      // Khởi tạo nếu chưa có
+      const newData = {
+        user_id,
+        coins: { balance: 0, lastCompletedDate: null, currentStreak: 0, history: [] },
+        updatedAt: new Date()
+      };
+      await usersMemoryCollection().insertOne(newData);
+      return res.json({ success: true, coins: newData.coins });
+    }
+
+    res.json({ success: true, coins: memoryUser.coins || { balance: 0, lastCompletedDate: null, currentStreak: 0, history: [] } });
+  } catch (err) {
+    console.error('[GET /api/users-memory/coins] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
+  }
+});
+
+// POST /api/users-memory/coins/reward
+// Body: { user_id, amount, dateKey, reason }
+app.post('/api/users-memory/coins/reward', async (req, res) => {
+  try {
+    const { user_id, amount, dateKey, reason } = req.body || {};
+    if (!user_id) return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+
+    const memoryUser = await usersMemoryCollection().findOne({ user_id });
+    let coins = memoryUser?.coins || { balance: 0, lastCompletedDate: null, currentStreak: 0, history: [] };
+
+    // Idempotency check: don't apply reward twice for the same date
+    if (coins.lastCompletedDate === dateKey) {
+      return res.json({ success: true, message: 'Reward already applied for this date.', coins });
+    }
+
+    // Streak logic
+    let newStreak = 1;
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = yesterday.toISOString().split('T')[0];
+
+    if (coins.lastCompletedDate === yesterdayKey) {
+      newStreak = (coins.currentStreak || 0) + 1;
+    }
+
+    const amt = Number(amount) || 0;
+    const newBalance = (Number(coins.balance) || 0) + amt;
+    const newEntry = {
+      amount: amt,
+      reason: reason || 'Hoàn thành nhắc nhở',
+      date: new Date().toISOString(),
+      dateKey,
+      transactionId: new mongoose.Types.ObjectId().toString()
+    };
+
+    coins = {
+      balance: newBalance,
+      lastCompletedDate: dateKey,
+      currentStreak: newStreak,
+      history: [newEntry, ...(coins.history || [])].slice(0, 50)
+    };
+
+    await usersMemoryCollection().updateOne(
+      { user_id },
+      { $set: { user_id, coins, updatedAt: new Date() } },
+      { upsert: true }
+    );
+
+    res.json({ success: true, coins });
+  } catch (err) {
+    console.error('[POST /api/users-memory/coins/reward] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xử lý xu.' });
+  }
+});
+
+// POST /api/users-memory/coins/reset
+app.post('/api/users-memory/coins/reset', async (req, res) => {
+  try {
+    const { user_id } = req.body || {};
+    if (!user_id) return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+
+    await usersMemoryCollection().updateOne(
+      { user_id },
+      {
+        $set: {
+          'coins.balance': 0,
+          'coins.currentStreak': 0,
+          'coins.lastCompletedDate': null,
+          'coins.history': [],
+          updatedAt: new Date()
+        }
+      }
+    );
+    res.json({ success: true, message: 'Đã reset toàn bộ dữ liệu xu.' });
+  } catch (err) {
+    console.error('[POST /api/users-memory/coins/reset] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi reset xu.' });
+  }
+});
+
+// POST /api/reminders/reset-today-logs
+// Body: { user_id, dateKey } - Xóa completion_log hôm nay để test lại flow tick thưởng xu
+app.post('/api/reminders/reset-today-logs', async (req, res) => {
+  try {
+    const { user_id, dateKey } = req.body || {};
+    if (!user_id || !dateKey) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id hoặc dateKey.' });
+    }
+
+    // Lấy collection reminders
+    const remindersColl = mongoose.connection.db.collection('reminders');
+
+    // Xóa các completion_log entries có date === dateKey cho user này
+    const result = await remindersColl.updateMany(
+      { user_id },
+      { $pull: { completion_log: { date: dateKey } } }
+    );
+
+    res.json({
+      success: true,
+      message: `Đã xóa log hoàn thành ngày ${dateKey} (${result.modifiedCount} nhắc nhở được reset).`,
+      modifiedCount: result.modifiedCount
+    });
+  } catch (err) {
+    console.error('[POST /api/reminders/reset-today-logs] Error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi reset log.' });
   }
 });
 

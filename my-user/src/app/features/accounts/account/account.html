@@ -22,7 +22,9 @@
   </ng-template>
   <div class="vc_container">
     <!-- Account Component - User Profile Sidebar -->
-    <div class="account-wrapper" [class.account-wrapper--health-full]="activeMenu === 'health'">
+    <div class="account-wrapper" [class.account-wrapper--health-full]="activeMenu === 'health'"
+      [class.account-wrapper--reviews-full]="activeMenu === 'reviews'"
+      [class.account-wrapper--notice-full]="activeMenu === 'notifications'">
       <!-- User Profile Card with Menu (ẩn khi đang xem Sổ sức khỏe) -->
       <div class="account-sidebar" *ngIf="activeMenu !== 'health'">
         <!-- User Avatar & Info -->

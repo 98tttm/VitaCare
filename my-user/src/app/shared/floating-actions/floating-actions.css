@@ -90,16 +90,57 @@
 }
 
 .fab-scroll {
-  background-color: var(--color-primary);
-  color: #fff;
+  background-color: transparent;
+  color: #004f8c; /* mũi tên xanh đậm */
+  position: fixed;
+  overflow: visible;
+  z-index: 1;
+  animation: fab-scroll-bob 1.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Khung tròn trong suốt + hiệu ứng tráng gương */
+.fab-scroll::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 88, 159, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 88, 159, 0.16);
+  z-index: -1; /* nằm dưới nội dung nút */
+  pointer-events: none;
 }
 
 .fab-scroll:hover {
-  background-color: var(--color-primary-hover);
+  /* không đổi hiệu ứng tráng gương (đã bỏ) */
+  color: #003f7a;
 }
 
 .fab-scroll .bi {
   font-size: 1.25rem;
+}
+
+@keyframes fab-scroll-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-scroll {
+    animation: none;
+  }
+  .fab-chat {
+    animation: none;
+  }
 }
 
 /* Nút Vitabot - icon ảnh (vị trí đã fixed ở .fab-chat) */
@@ -107,10 +148,23 @@
   background: linear-gradient(135deg, var(--color-primary-bg) 0%, var(--color-primary-lighter) 100%);
   color: var(--color-primary);
   padding: 0;
+  animation: fab-chat-bob 1.6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .fab-chat:hover {
   background: linear-gradient(135deg, var(--color-primary-lighter) 0%, var(--color-primary-light) 100%);
+}
+
+@keyframes fab-chat-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .fab-chat-img {

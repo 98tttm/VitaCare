@@ -1,0 +1,82 @@
+<div class="vc-datepicker-wrapper" #container>
+    <!-- Triggers -->
+    <div class="vc-datepicker-input-group" [class.disabled]="disabled" (click)="toggleCalendar()">
+        <i class="bi bi-calendar-event vc-datepicker-icon"></i>
+        <input type="text" readonly [placeholder]="placeholder" [value]="displayValue" class="vc-datepicker-input" />
+    </div>
+
+    <!-- Popup Calendar -->
+    <div class="vc-datepicker-panel" *ngIf="showCalendar" (click)="$event.stopPropagation()"
+        (mouseleave)="closeCalendar()">
+
+        <!-- Day View -->
+        <div class="vc-datepicker-view" *ngIf="viewMode === 'day'">
+            <div class="vc-datepicker-header">
+                <button type="button" class="vc-nav-btn" (click)="prevMonth()">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <span class="vc-month-label" (click)="goToMonthMode()">{{ monthLabel }}</span>
+                <button type="button" class="vc-nav-btn" (click)="nextMonth()">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+            <div class="vc-calendar-grid">
+                <div class="vc-weekday">T2</div>
+                <div class="vc-weekday">T3</div>
+                <div class="vc-weekday">T4</div>
+                <div class="vc-weekday">T5</div>
+                <div class="vc-weekday">T6</div>
+                <div class="vc-weekday">T7</div>
+                <div class="vc-weekday vc-text-danger">CN</div>
+
+                <ng-container *ngFor="let week of weeks">
+                    <ng-container *ngFor="let cell of week">
+                        <div *ngIf="cell.day" class="vc-date-range-cell" [class.is-start]="isStart(cell.dateKey)"
+                            [class.is-end]="isEnd(cell.dateKey)" [class.in-range]="inRange(cell.dateKey)"
+                            [class.has-end]="hasEnd()" [class.is-same]="isSameAsStartAndEnd(cell.dateKey)"
+                            [class.is-past-locked]="isPast(cell.dateKey)"
+                            [style.cursor]="isPast(cell.dateKey) ? 'not-allowed' : 'pointer'" (click)="selectDate(cell)"
+                            (mouseenter)="onCellHover(cell.dateKey)" (mouseleave)="onCellLeave()">
+                            <div class="cell-inner">{{ cell.day }}</div>
+                        </div>
+                        <div *ngIf="!cell.day" class="vc-date-range-cell empty"></div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- Month View -->
+        <div class="vc-datepicker-view" *ngIf="viewMode === 'month'">
+            <div class="vc-datepicker-header">
+                <span class="vc-empty-space"></span>
+                <span class="vc-month-label" (click)="goToYearMode()">{{ viewYear }}</span>
+                <span class="vc-empty-space"></span>
+            </div>
+            <div class="vc-grid-3x4">
+                <button type="button" class="vc-grid-btn" *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]; let i = index"
+                    [class.selected]="viewMonth === i" (click)="selectMonth(i)">
+                    Th.{{ m }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Year View -->
+        <div class="vc-datepicker-view" *ngIf="viewMode === 'year'">
+            <div class="vc-datepicker-header">
+                <button type="button" class="vc-nav-btn" (click)="prevMonth()">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <span class="vc-month-label">{{ viewYear - 4 }} - {{ viewYear + 7 }}</span>
+                <button type="button" class="vc-nav-btn" (click)="nextMonth()">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+            <div class="vc-grid-3x4">
+                <button type="button" class="vc-grid-btn" *ngFor="let i of [-4,-3,-2,-1,0,1,2,3,4,5,6,7]"
+                    [class.selected]="i === 0" (click)="selectYear(viewYear + i)">
+                    {{ viewYear + i }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

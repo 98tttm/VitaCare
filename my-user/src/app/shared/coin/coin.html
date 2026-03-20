@@ -1,0 +1,18 @@
+<div class="coin-bag-container" [class.is-dragging]="isDragging()"
+  [style.--coin-dx.px]="dx()"
+  [style.--coin-dy.px]="dy()"
+  (pointerdown)="onPointerDown($event)">
+    <div class="coin-bag-wrapper">
+        @if (!isImgError()) {
+        <img src="assets/images/homepage/bump/tui_xu.png" alt="Túi xu" class="coin-bag-img" (error)="onImgError()">
+        } @else {
+        <div class="coin-fallback">
+            <i class="bi bi-gift-fill"></i>
+        </div>
+        }
+        <div class="coin-balance-badge">
+            <i class="bi bi-coin"></i>
+            <span>{{ balance() }}</span>
+        </div>
+    </div>
+</div>

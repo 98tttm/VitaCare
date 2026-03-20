@@ -18,7 +18,7 @@
   </div>
 
   @if (showCalendar) {
-    <div class="vc-datepicker-panel">
+    <div class="vc-datepicker-panel" (mouseleave)="closeCalendar()">
       <div class="vc-datepicker-header">
         <button type="button" class="vc-datepicker-nav" (click)="prevMonth()">
           <i class="bi bi-chevron-left"></i>

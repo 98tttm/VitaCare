@@ -1,0 +1,96 @@
+.coin-bag-container {
+    position: fixed;
+    right: 17px;
+    bottom: calc(20px + 48px + 12px + 48px + 12px + 48px + 20px);
+    /* Phía trên chatbot và nút nhắc */
+    z-index: 100000;
+    pointer-events: auto;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translate(var(--coin-dx, 0px), var(--coin-dy, 0px));
+    touch-action: none;
+    user-select: none;
+}
+
+.coin-bag-container.is-dragging {
+    cursor: grabbing;
+}
+
+.coin-bag-container.is-dragging .coin-bag-img {
+    transform: none !important;
+    animation: none !important;
+}
+
+.coin-bag-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.coin-bag-img {
+    width: 62px;
+    height: auto;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: coin-bounce 1.9s ease-in-out infinite;
+}
+
+.coin-bag-container:hover .coin-bag-img {
+    /* Chỉ tăng độ sáng (tránh đè lên transform của animation) */
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.18));
+}
+
+.coin-balance-badge {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #fbc02d !important;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    border: 1.2px solid #fbc02d !important;
+    min-width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
+    z-index: 2;
+}
+
+.coin-balance-badge .bi-coin {
+    font-size: 12px;
+}
+
+.coin-fallback {
+    width: 50px;
+    height: 50px;
+    background: #ffc107;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes coin-bounce {
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    40% {
+        transform: translateY(-6px) scale(1.03);
+    }
+
+    70% {
+        transform: translateY(3px) scale(0.995);
+    }
+}

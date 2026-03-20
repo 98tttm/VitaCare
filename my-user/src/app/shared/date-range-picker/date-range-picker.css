@@ -1,0 +1,259 @@
+.vc-datepicker-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.vc-datepicker-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.vc-datepicker-input-group.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.vc-datepicker-icon {
+    position: absolute;
+    left: 10px;
+    color: #64748b;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.vc-datepicker-input {
+    width: 100%;
+    padding: 8px 10px 8px 32px;
+    border: 1px solid #cbd5e1;
+    border-radius: inherit;
+    font-size: 13px;
+    color: #1e293b;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+}
+
+.vc-datepicker-input::placeholder {
+    color: #94a3b8;
+}
+
+.vc-datepicker-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 280px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 88, 159, 0.12);
+    padding: 15px;
+    z-index: 9999;
+    border: 1px solid rgba(0, 88, 159, 0.1);
+}
+
+.vc-datepicker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.vc-nav-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #00589F;
+    font-size: 16px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.vc-nav-btn:hover {
+    background: #f1f5f9;
+}
+
+.vc-month-label {
+    font-weight: 700;
+    font-size: 15px;
+    color: #1e3b5a;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.vc-month-label:hover {
+    background: #f1f5f9;
+}
+
+.vc-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px 0;
+}
+
+.vc-weekday {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    padding-bottom: 8px;
+}
+
+.vc-text-danger {
+    color: #ef4444;
+}
+
+/* RANGE UI REFINED - COMPACT & DEP */
+.vc-date-range-cell {
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    height: 24px;
+    /* Lower height as requested */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 6px 0;
+}
+
+.cell-inner {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    border-radius: 50%;
+    z-index: 2;
+    transition: all 0.2s;
+}
+
+.vc-date-range-cell:not(.empty):not(.in-range):not(.is-start):not(.is-end):hover .cell-inner {
+    background-color: #f1f5f9;
+}
+
+/* Background Strip - matching 24px height */
+.vc-date-range-cell.in-range::before,
+.vc-date-range-cell.is-start:not(.is-same)::before,
+.vc-date-range-cell.is-end:not(.is-same)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: #00589F;
+    z-index: 1;
+}
+
+/* Connect to neighbors */
+.vc-date-range-cell.in-range::before {
+    left: -2px;
+    right: -2px;
+}
+
+/* Start from 50% center */
+.vc-date-range-cell.is-start::before {
+    left: 50%;
+    right: -2px;
+}
+
+/* End till 50% center */
+.vc-date-range-cell.is-end::before {
+    right: 50%;
+    left: -2px;
+}
+
+.vc-date-range-cell.in-range .cell-inner {
+    color: #ffffff;
+}
+
+/* Wrap edges fix for IN-RANGE cells (Pill look) */
+.vc-date-range-cell.in-range:nth-child(7n + 1)::before {
+    left: calc(50% - 12px);
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.vc-date-range-cell.in-range:nth-child(7n)::before {
+    right: calc(50% - 12px);
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* boundary cleanup */
+.vc-date-range-cell.is-start:nth-child(7n)::before,
+.vc-date-range-cell.is-end:nth-child(7n + 1)::before {
+    display: none;
+}
+
+/* Selected Endpoint Circles */
+.vc-date-range-cell.is-start .cell-inner,
+.vc-date-range-cell.is-end .cell-inner {
+    background-color: #ffffff;
+    border: 1.5px solid #00589F;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+/* Solo selections */
+.vc-date-range-cell.is-start:not(.has-end):not(.in-range) .cell-inner,
+.vc-date-range-cell.is-start.is-same .cell-inner {
+    background-color: #00589F;
+    color: #ffffff;
+    border: none;
+}
+
+.vc-date-range-cell.is-start:not(.has-end):not(.in-range)::before,
+.vc-date-range-cell.is-same::before {
+    display: none;
+}
+
+/* Other Modes */
+.vc-grid-3x4 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.vc-grid-btn {
+    padding: 10px 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.vc-grid-btn:hover {
+    background: #f1f5f9;
+}
+
+.vc-grid-btn.selected {
+    background: #eaf4ff;
+    color: #00589F;
+    border-color: #00589F;
+}
+
+/* Locked past dates */
+.vc-date-range-cell.is-past-locked {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.vc-date-range-cell.is-past-locked .cell-inner {
+    color: #94a3b8;
+    text-decoration: line-through;
+}

@@ -127,6 +127,11 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text-primary);
+  outline: none;
+}
+
+.vc-datepicker-day:focus {
+  outline: none;
 }
 
 .vc-datepicker-day--empty {
@@ -139,8 +144,15 @@
 }
 
 .vc-datepicker-day--selected {
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
+  background: var(--color-primary, #00589F);
+  color: var(--color-text-inverse, #fff);
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 88, 159, 0.25);
+}
+
+.vc-datepicker-day--selected:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 88, 159, 0.35);
 }
 
 .vc-datepicker-month-item,

@@ -11,6 +11,7 @@ import { CategoryService } from '../../../core/services/category.service';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPopupService } from '../../../core/services/blog-popup.service';
 import { PromotionService } from '../../../core/services/promotion.service';
+import { getLocalIcon } from '../../../shared/header/header-icons';
 
 interface Product {
   id?: number | string;
@@ -22,6 +23,7 @@ interface Product {
   stock?: number;
   categoryId?: any;
   slug?: string;  // dùng để điều hướng /product/:slug
+  unit?: string;
 }
 
 interface Category {
@@ -81,13 +83,15 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   subBanner3 = 'assets/images/banner/Banner Homepage  (1).png'; // Right top    (User input: sub_3 = ô bên phải nhỏ ở trên)
 
   currentBannerIndex = 0;
-  activeFlashSlot: 0 | 1 = 0;
+  activeFlashSlot: 0 | 1 | 2 = 0;
 
   flashSlotTodayLabel = '';
   flashSlotTomorrowLabel = '';
+  flashSlotAfterTomorrowLabel = '';
 
   flashSlotTodayStatus = '';
   flashSlotTomorrowStatus = '';
+  flashSlotAfterTomorrowStatus = '';
 
   private flashSaleTimer: number | null = null;
   private flashCountdownTimer: number | null = null;
@@ -98,6 +102,16 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   flashCountdownSeconds = 0;
   flashCountdownEnded = false;
   flashCountdownLabel = 'Kết thúc sau';
+
+  isFlashExpanded = false;
+  visibleFlashCount = 5;
+
+  private allPickedFlashProducts: Product[] = [];
+  private flashProducts0: Product[] = [];
+  private flashProducts1: Product[] = [];
+  private flashProducts2: Product[] = [];
+
+  isLoadingFlashProducts = false;
 
   /** ===== Cross-fade state (2 layer) ===== */
   activeLayer: 'A' | 'B' = 'A';
@@ -236,18 +250,18 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
             const cards = entry.target.querySelectorAll('.vc_reveal_element:not(.active)');
             cards.forEach((card, i) => {
               const el = card as HTMLElement;
-              el.style.transitionDelay = `${i * 0.06}s`;
-              // Slight timeout to let the parent reveal first
+              el.style.transitionDelay = `${i * 0.01}s`;
+              // Instantaneous timeout
               setTimeout(() => {
                 el.classList.add('active');
-              }, 80 + i * 60);
+              }, 10 + i * 10);
             });
           }
         });
       },
       {
-        threshold: 0.1,
-        rootMargin: '0px 0px -60px 0px'
+        threshold: 0,
+        rootMargin: '0px 0px 250px 0px'
       }
     );
 
@@ -301,6 +315,42 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
 
   prevBanner(): void {
     this.goToBanner(this.currentBannerIndex - 1);
+  }
+
+  onBigBannerClick(): void {
+    this.router.navigate(['/products']);
+  }
+
+  onSubBanner1Click(): void {
+    // Blue / Ensure banner -> Nutrition
+    this.navigateByCategoryName('Dinh dưỡng');
+  }
+
+  onSubBanner3Click(): void {
+    // Top Right banner -> Personal Care
+    this.navigateByCategoryName('Chăm sóc cá nhân');
+  }
+
+  onSubBanner2Click(): void {
+    // Bottom Right (Pink) banner -> Cosmeceuticals
+    this.navigateByCategoryName('Dược mỹ phẩm');
+  }
+
+  private navigateByCategoryName(name: string): void {
+    const slugFromApi = this.categoryNameToSlug[name];
+    if (slugFromApi) {
+      const segments = slugFromApi.split('/').filter(Boolean);
+      this.router.navigate(['/category', ...segments]);
+    } else {
+      // Robust fallback slugs if API mapping fails
+      const fallbackMapping: Record<string, string[]> = {
+        'Dinh dưỡng': ['dinh-duong'],
+        'Chăm sóc cá nhân': ['cham-soc-ca-nhan'],
+        'Dược mỹ phẩm': ['duoc-my-pham']
+      };
+      const segments = fallbackMapping[name] || [name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')];
+      this.router.navigate(['/category', ...segments]);
+    }
   }
 
   setBanner(i: number): void {
@@ -370,6 +420,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
+    const afterTomorrow = new Date(today);
+    afterTomorrow.setDate(today.getDate() + 2);
 
     // khung giờ cố định
     const startMin = 8 * 60;   // 08:00
@@ -377,9 +429,11 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
 
     this.flashSlotTodayLabel = this.buildSlotLabel(today, '8:00', '22:00');
     this.flashSlotTomorrowLabel = this.buildSlotLabel(tomorrow, '8:00', '22:00');
+    this.flashSlotAfterTomorrowLabel = this.buildSlotLabel(afterTomorrow, '8:00', '22:00');
 
     this.flashSlotTodayStatus = this.getSlotStatus(today, startMin, endMin, now);
     this.flashSlotTomorrowStatus = this.getSlotStatus(tomorrow, startMin, endMin, now);
+    this.flashSlotAfterTomorrowStatus = this.getSlotStatus(afterTomorrow, startMin, endMin, now);
 
     // auto active theo ngày hiện tại
     const nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -390,8 +444,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   private buildSlotLabel(date: Date, start: string, end: string): string {
     const d = date.getDate();
     const m = date.getMonth() + 1;
-    const y = date.getFullYear();
-    return `${start} - ${end}, ${d}/${m}/${y}`;
+    return `${start} - ${end}, ${d}/${m}`;
   }
 
   private getSlotStatus(slotDate: Date, startMin: number, endMin: number, now: Date): string {
@@ -410,7 +463,9 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
 
   /** Trạng thái slot đang chọn (Sắp diễn ra / Đang diễn ra / Đã kết thúc) */
   get activeFlashSlotStatus(): string {
-    return this.activeFlashSlot === 0 ? this.flashSlotTodayStatus : this.flashSlotTomorrowStatus;
+    if (this.activeFlashSlot === 0) return this.flashSlotTodayStatus;
+    if (this.activeFlashSlot === 1) return this.flashSlotTomorrowStatus;
+    return this.flashSlotAfterTomorrowStatus;
   }
 
   /** Khi "Sắp diễn ra": thay các chữ số trước phần ngàn bằng x (90.000→xx.000, 100.000→xxx.000, 1.000.000→x.xxx.000). */
@@ -445,7 +500,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     const giaBan = p.price ?? 0;
     const giaGachChan = p.originalPrice;
     if (giaGachChan != null && giaGachChan > 0 && giaBan > 0 && giaGachChan > giaBan) {
-      const pct = Math.min(99, Math.max(1, Math.round(((giaGachChan - giaBan) / giaBan) * 100)));
+      // Đúng công thức: (Giá gốc - Giá bán) / Giá gốc
+      const pct = Math.min(99, Math.max(1, Math.round(((giaGachChan - giaBan) / giaGachChan) * 100)));
       return `-${pct}%`;
     }
     return '0%';
@@ -457,7 +513,13 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-    const slotDate = this.activeFlashSlot === 0 ? today : tomorrow;
+    const afterTomorrow = new Date(today);
+    afterTomorrow.setDate(today.getDate() + 2);
+
+    let slotDate: Date;
+    if (this.activeFlashSlot === 0) slotDate = today;
+    else if (this.activeFlashSlot === 1) slotDate = tomorrow;
+    else slotDate = afterTomorrow;
     const startMin = 8 * 60;
     const endMin = 22 * 60;
     const status = this.getSlotStatus(slotDate, startMin, endMin, now);
@@ -513,11 +575,19 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   //   => hoặc có discount > 0, hoặc originalPrice > price
   // - random thứ tự
   // - giới hạn số lượng thẻ hiển thị (ví dụ 12)
-  private loadFlashSaleProducts(limit = 200): void {
-    // Chỉ lấy các sản phẩm đang có giảm giá từ backend
+  private parsePrice(val: any): number {
+    if (typeof val === 'number') return val;
+    if (!val) return 0;
+    const str = String(val).replace(/\./g, '').replace(/,/g, '').replace(/[^0-9]/g, '');
+    return parseInt(str, 10) || 0;
+  }
+
+  private loadFlashSaleProducts(limit = 50000): void {
+    this.isLoadingFlashProducts = true;
     const url = `http://localhost:3000/api/products?limit=${limit}&hasDiscount=true&sort=discount`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
+        this.isLoadingFlashProducts = false;
         const list = Array.isArray(res?.products) ? res.products : Array.isArray(res) ? res : [];
         if (!Array.isArray(list) || list.length === 0) {
           this.cdr.detectChanges();
@@ -525,62 +595,142 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
         const mapped = list.map((p: any) => {
-          const giaBan = p.salePrice ?? p.price;
-          const price = Number(giaBan) || 0;
-          let originalPrice: number | undefined;
-          if (p.originalPrice != null && p.originalPrice > 0) {
-            originalPrice = Number(p.originalPrice);
-          } else if (p.salePrice != null && p.price != null && Number(p.price) > 0) {
-            originalPrice = Number(p.price);
-          } else {
-            const discount = p.discount ?? 0;
-            if (discount > 0 && price > 0) {
-              if (discount <= 1) originalPrice = Math.round(price / (1 - discount));
-              else originalPrice = price + Math.round(Number(discount));
+          // Lấy giá niêm yết (gốc)
+          let giaGoc = this.parsePrice(p.originalPrice || p.giaGoc || p.price);
+
+          // Lấy giá trị giảm giá (có thể là % hoặc số tiền)
+          const discountVal = this.parsePrice(p.discount);
+
+          // Lấy giá đang bán thực tế (nếu backend đã tính sẵn)
+          let giaHienTai = this.parsePrice(p.salePrice || p.giaKhuyenMai);
+
+          if (giaHienTai > 0) {
+            // Đã có giá bán, ta chỉ việc dùng
+            // (giaGoc đã lấy từ p.price hoặc fileld khác ở trên)
+          } else if (discountVal > 0 && giaGoc > 0) {
+            // Chưa có giaHienTai, tính dựa trên discountVal
+            if (discountVal < 100) {
+              // Trường hợp discount là % (ví dụ 10, 20)
+              giaHienTai = Math.round(giaGoc * (1 - discountVal / 100));
+            } else {
+              // Trường hợp discount là số tiền mặt (ví dụ 500.000)
+              giaHienTai = giaGoc - discountVal;
             }
           }
-          if (originalPrice != null && originalPrice <= price) originalPrice = undefined;
+
+          // Đảm bảo không bao giờ bàng 0 nếu có dữ liệu gốc
+          if (giaHienTai <= 0) giaHienTai = giaGoc;
+
+          // Nếu dữ liệu bị ngược (giá gốc <= giá bán), reset giá gốc về 0 để không hiện tag giảm giá giả
+          if (giaGoc <= giaHienTai) {
+            giaGoc = 0;
+          }
+
           return {
             id: p._id || p.id,
             name: p.name || p.title || 'Sản phẩm',
             image: p.image || p.imageUrl || 'assets/images/banner/About_us_Hero.png',
-            price,
-            originalPrice,
-            discount: p.discount || 0,
+            price: giaHienTai,
+            originalPrice: giaGoc > 0 ? giaGoc : undefined,
+            discount: giaGoc > giaHienTai ? Math.round((1 - giaHienTai / giaGoc) * 100) : 0,
             categoryId: p.categoryId || p.category_id || (p.category && (p.category._id || p.category.id)) || undefined,
             slug: p.slug || (p.slugName && String(p.slugName).trim() ? p.slugName : null) || (p._id ? String(p._id) : p.id ? String(p.id) : ''),
+            unit: p.unit || p.unitOfMeasure || p.donViTinh || 'Hộp'
           };
         });
+        // Lấy tất cả sản phẩm thỏa mã có giảm giá thực sự
         const discounted = mapped.filter((p: any) => {
-          const price = p.price ?? 0;
-          const discount = p.discount ?? 0;
-          const hasPromo = (discount > 0) || (p.originalPrice && p.originalPrice > price);
-          return !!p.image && price > 0 && hasPromo;
+          // Bao gồm cả trường hợp có discount > 0 (từ field discount) OR có giaGoc > price
+          const hasPromo = (p.discount > 0) || (p.originalPrice && p.originalPrice > p.price);
+          return p.price > 0 && hasPromo;
         });
 
-        // Số lượng thẻ Deal cần hiển thị (có thể tăng/giảm tuỳ thiết kế)
-        const desiredCount = 24;
         let picked: any[] = [];
 
         if (discounted.length > 0) {
-          // Ưu tiên chọn sản phẩm đến từ nhiều danh mục khác nhau (round-robin theo categoryId)
-          picked = this.pickByCategoryRoundRobin(discounted as Product[], desiredCount);
+          // Lấy hết các sản phẩm có giảm giá
+          picked = discounted;
         } else {
           // Fallback: nếu không có sản phẩm discount, chọn random trong toàn bộ list có giá > 0
           const valid = mapped.filter((p: any) => !!p.image && (p.price ?? 0) > 0);
-          picked = this.shuffleArray(valid).slice(0, Math.min(desiredCount, valid.length));
+          picked = this.shuffleArray(valid).slice(0, 20);
         }
 
-        this.flashSaleProducts = picked;
+        this.allPickedFlashProducts = picked;
+        // Tạo 3 bộ sản phẩm khác nhau (random thứ tự) cho 3 ngày
+        this.flashProducts0 = [...picked]; // Giữ nguyên thứ tự cày ban đầu cho slot 0
+        this.flashProducts1 = this.shuffleArray([...picked]);
+        this.flashProducts2 = this.shuffleArray([...picked]);
+
+        // Sync ban đầu
+        this.updateFlashProductsDisplay();
+
         this.cdr.detectChanges();
         this.scheduleProductSliderRecompute();
       },
       error: (err) => {
+        this.isLoadingFlashProducts = false;
         console.error('Failed to load flash sale products', err);
         this.cdr.detectChanges();
         this.scheduleProductSliderRecompute();
       }
     });
+  }
+
+  setActiveFlashSlot(index: number): void {
+    this.activeFlashSlot = index as 0 | 1 | 2;
+    this.computeFlashCountdown();
+    this.updateFlashProductsDisplay();
+    // Reset slider về đầu khi đổi tab
+    if (this.flashProductsSlider) {
+      this.flashProductsSlider.nativeElement.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+  }
+
+  updateFlashProductsDisplay(): void {
+    if (this.activeFlashSlot === 0) {
+      this.flashSaleProducts = this.flashProducts0;
+    } else if (this.activeFlashSlot === 1) {
+      this.flashSaleProducts = this.flashProducts1;
+    } else {
+      this.flashSaleProducts = this.flashProducts2;
+    }
+    this.cdr.markForCheck();
+  }
+
+  onSeeAllFlash(): void {
+    this.router.navigate(['/products']);
+  }
+
+  toggleViewAllFlash(): void {
+    if (!this.isFlashExpanded) {
+      this.isFlashExpanded = true;
+      // Khi vừa mở rộng, ta hiện 10 sản phẩm (2 hàng)
+      this.visibleFlashCount = 10;
+    } else {
+      // Mỗi lần nhấn tiếp theo, xổ xuống thêm 5 sản phẩm (1 hàng)
+      if (this.visibleFlashCount < this.flashSaleProducts.length) {
+        this.visibleFlashCount += 5;
+      }
+    }
+    this.cdr.markForCheck();
+
+    // Recompute slider/layout
+    setTimeout(() => this.scheduleProductSliderRecompute(), 100);
+  }
+
+  collapseFlash(): void {
+    this.isFlashExpanded = false;
+    this.visibleFlashCount = 5; // Reset to 1 row
+    this.cdr.markForCheck();
+
+    // Reset slider về đầu khi thu gọn
+    if (this.flashProductsSlider) {
+      this.flashProductsSlider.nativeElement.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+
+    // Recompute slider after collapsing back to single row
+    setTimeout(() => this.scheduleProductSliderRecompute(), 100);
   }
 
   categories: Category[] = [
@@ -756,18 +906,18 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
 
   // Danh mục sản phẩm: slug dùng để điều hướng /category/:slug (fallback nếu API chưa load)
   homepageCategories = [
-    { id: 1, name: 'Thần kinh não', slug: 'than-kinh-nao', iconSrc: 'src/assets/images/homepage/categlories/1.png', icon: 'assets/images/homepage/categlories/1.png' },
-    { id: 2, name: 'Vitamin & Khoáng chất', slug: 'vitamin-khoang-chat', iconSrc: 'src/assets/images/homepage/categlories/2.png', icon: 'assets/images/homepage/categlories/2.png' },
-    { id: 3, name: 'Sức khoẻ tim mạch', slug: 'suc-khoe-tim-mach', iconSrc: 'src/assets/images/homepage/categlories/3.png', icon: 'assets/images/homepage/categlories/3.png' },
-    { id: 4, name: 'Tăng sức đề kháng, miễn dịch', slug: 'tang-suc-de-khang-mien-dich', iconSrc: 'src/assets/images/homepage/categlories/4.png', icon: 'assets/images/homepage/categlories/4.png' },
-    { id: 5, name: 'Hỗ trợ tiêu hoá', slug: 'ho-tro-tieu-hoa', iconSrc: 'src/assets/images/homepage/categlories/5.png', icon: 'assets/images/homepage/categlories/5.png' },
-    { id: 6, name: 'Sinh lý - Nội tiết tố', slug: 'sinh-ly-noi-tiet-to', iconSrc: 'src/assets/images/homepage/categlories/6.png', icon: 'assets/images/homepage/categlories/6.png' },
-    { id: 7, name: 'Dinh dưỡng', slug: 'dinh-duong', iconSrc: 'src/assets/images/homepage/categlories/7.png', icon: 'assets/images/homepage/categlories/7.png' },
-    { id: 8, name: 'Hỗ trợ điều trị', slug: 'ho-tro-dieu-tri', iconSrc: 'src/assets/images/homepage/categlories/8.png', icon: 'assets/images/homepage/categlories/8.png' },
-    { id: 9, name: 'Giải pháp làn da', slug: 'giai-phap-lan-da', iconSrc: 'src/assets/images/homepage/categlories/9.png', icon: 'assets/images/homepage/categlories/9.png' },
-    { id: 10, name: 'Chăm sóc da mặt', slug: 'cham-soc-da-mat', iconSrc: 'src/assets/images/homepage/categlories/10.png', icon: 'assets/images/homepage/categlories/10.png' },
-    { id: 11, name: 'Chăm sóc cơ thể', slug: 'cham-soc-co-the', iconSrc: 'src/assets/images/homepage/categlories/11.png', icon: 'assets/images/homepage/categlories/11.png' },
-    { id: 12, name: 'Hỗ trợ làm đẹp', slug: 'ho-tro-lam-dep', iconSrc: 'src/assets/images/homepage/categlories/12.png', icon: 'assets/images/homepage/categlories/12.png' }
+    { id: 1, name: 'Thần kinh não', slug: 'than-kinh-nao', iconSrc: 'assets/images/homepage/categlories/1.png', icon: getLocalIcon('Thần kinh não') },
+    { id: 2, name: 'Vitamin & Khoáng chất', slug: 'vitamin-khoang-chat', iconSrc: 'assets/images/homepage/categlories/2.png', icon: getLocalIcon('Vitamin & Khoáng chất') },
+    { id: 3, name: 'Sức khoẻ tim mạch', slug: 'suc-khoe-tim-mach', iconSrc: 'assets/images/homepage/categlories/3.png', icon: getLocalIcon('Sức khoẻ tim mạch') },
+    { id: 4, name: 'Tăng sức đề kháng, miễn dịch', slug: 'tang-suc-de-khang-mien-dich', iconSrc: 'assets/images/homepage/categlories/4.png', icon: getLocalIcon('Tăng cường chức năng') },
+    { id: 5, name: 'Hỗ trợ tiêu hóa', slug: 'ho-tro-tieu-hoa', iconSrc: 'assets/images/homepage/categlories/5.png', icon: getLocalIcon('Hỗ trợ tiêu hóa') },
+    { id: 6, name: 'Sinh lý - Nội tiết tố', slug: 'sinh-ly-noi-tiet-to', iconSrc: 'assets/images/homepage/categlories/6.png', icon: getLocalIcon('Sinh lý - Nội tiết tố') },
+    { id: 7, name: 'Dinh dưỡng', slug: 'dinh-duong', iconSrc: 'assets/images/homepage/categlories/7.png', icon: getLocalIcon('Dinh dưỡng') },
+    { id: 8, name: 'Hỗ trợ điều trị', slug: 'ho-tro-dieu-tri', iconSrc: 'assets/images/homepage/categlories/8.png', icon: getLocalIcon('Hỗ trợ điều trị') },
+    { id: 9, name: 'Giải pháp làn da', slug: 'giai-phap-lan-da', iconSrc: 'assets/images/homepage/categlories/9.png', icon: getLocalIcon('Giải pháp làn da') },
+    { id: 10, name: 'Chăm sóc da mặt', slug: 'cham-soc-da-mat', iconSrc: 'assets/images/homepage/categlories/10.png', icon: getLocalIcon('Chăm sóc da mặt') },
+    { id: 11, name: 'Chăm sóc cơ thể', slug: 'cham-soc-co-the', iconSrc: 'assets/images/homepage/categlories/11.png', icon: getLocalIcon('Chăm sóc cơ thể') },
+    { id: 12, name: 'Hỗ trợ làm đẹp', slug: 'ho-tro-lam-dep', iconSrc: 'assets/images/homepage/categlories/12.png', icon: getLocalIcon('Hỗ trợ làm đẹp') }
   ];
 
   // Health quiz (Kiểm tra sức khỏe) – danh sách từ API, icon Material Symbols giống health-test

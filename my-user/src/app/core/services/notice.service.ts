@@ -36,4 +36,8 @@ export class NoticeService {
   markAllAsRead(userId: string): Observable<{ success: boolean }> {
     return this.http.patch<{ success: boolean }>(`${this.apiUrl}/read-all`, { user_id: userId });
   }
+
+  deleteNotice(noticeId: string, userId: string): Observable<{ success: boolean }> {
+    return this.http.delete<{ success: boolean }>(`${this.apiUrl}/${encodeURIComponent(noticeId)}?user_id=${encodeURIComponent(userId)}`);
+  }
 }

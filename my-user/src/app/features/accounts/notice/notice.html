@@ -17,7 +17,8 @@
       </button>
     </div>
 
-    <!-- Tab bar: Tất cả / Đơn hàng / Đơn thuốc / Lịch uống thuốc / Hỏi đáp -->
+    <div class="notice-body-panel">
+    <!-- Tab bar neo trên đầu list -->
     <div class="tab-navigation">
       <div class="tab-list">
         @for (tab of tabs; track tab.id) {
@@ -34,7 +35,7 @@
       </div>
     </div>
 
-    <!-- Danh sách thông báo - chỉ phần này mới scroll -->
+    <!-- Danh sách thông báo -->
     <div class="notice-scroll">
       <div class="notice-content">
         @if (loading) {
@@ -119,11 +120,63 @@
                     }
                   </div>
                 </div>
+                <button
+                  type="button"
+                  class="notice-delete-btn"
+                  (click)="requestDeleteNotice(item)"
+                  aria-label="Xóa thông báo"
+                >
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
               </li>
             }
           </ul>
         }
       </div>
     </div>
+
+    @if (showDeleteConfirm && deleteConfirmItem) {
+      <div
+        class="notice-confirm-overlay"
+        (click)="cancelDeleteNoticeConfirm()"
+      >
+        <div
+          class="notice-confirm-modal"
+          (click)="$event.stopPropagation()"
+          role="dialog"
+          aria-modal="true"
+        >
+          <h3 class="notice-confirm-title">Xác nhận xóa</h3>
+          <p class="notice-confirm-hint">{{ getDeleteConfirmHint(deleteConfirmItem) }}</p>
+          <div class="notice-confirm-actions">
+            <button
+              type="button"
+              class="notice-confirm-btn notice-confirm-cancel"
+              (click)="cancelDeleteNoticeConfirm()"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              class="notice-confirm-btn notice-confirm-ok"
+              (click)="confirmDeleteNoticeConfirm()"
+            >
+              Xóa
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    </div>
+
+    @if (!loading && !loadError && getFilteredList().length > 0 && getFilteredTotal() > getFilteredList().length) {
+    <div class="notice-load-more-wrap">
+      <button type="button" class="notice-load-more-btn" (click)="loadMore()">
+        Xem thêm
+        <i class="bi bi-chevron-double-down" aria-hidden="true"></i>
+      </button>
+    </div>
+    }
   </div>
 </div>
