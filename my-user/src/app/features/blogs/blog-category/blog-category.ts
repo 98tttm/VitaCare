@@ -388,7 +388,8 @@ export class BlogCategory implements OnInit {
   private normalizeSlug(raw: string): string {
     if (!raw || typeof raw !== 'string') return '';
     let s = raw.trim().replace(/^\/+/, '');
-    if (s.toLowerCase().startsWith('bai-viet/')) s = s.slice(9);
+    if (s.toLowerCase().startsWith('blog/')) s = s.slice(5);
+    else if (s.toLowerCase().startsWith('bai-viet/')) s = s.slice(9);
     return s;
   }
 
@@ -398,7 +399,7 @@ export class BlogCategory implements OnInit {
     const slugRaw = (b.slug || (b as any).slug)?.trim();
     const idStr = b._id != null ? String(b._id) : '';
     const slug = this.normalizeSlug(slugRaw || '') || idStr;
-    const link = slug ? `/bai-viet/${slug}` : '/bai-viet';
+    const link = slug ? `/blog/${slug}` : '/blog';
     return {
       title: b.title || b.name || 'Bài viết sức khỏe',
       image: b.primaryImage?.url || b.image || b.imageUrl || 'assets/placeholder/blog-thumb.jpg',
@@ -415,7 +416,7 @@ export class BlogCategory implements OnInit {
       title: `${catName} - Bài viết mẫu ${i + 1}`,
       image: 'assets/placeholder/blog-main.jpg',
       excerpt: `Đây là bài viết mẫu cho chuyên mục ${catName}. Cung cấp các thông tin hữu ích và kiến thức chuyên sâu về chủ đề này.`,
-      link: `/bai-viet/bai-viet-mau-${i + 1}`,
+      link: `/blog/bai-viet-mau-${i + 1}`,
       slug: `bai-viet-mau-${i + 1}`,
       categoryName: catName
     }));

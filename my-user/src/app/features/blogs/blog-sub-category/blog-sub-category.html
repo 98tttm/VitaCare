@@ -3,8 +3,8 @@
     <div class="bv-container">
         <nav class="breadcrumb-vc">
             <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
-            <div class="breadcrumb-item"><a routerLink="/bai-viet">Góc sức khoẻ</a></div>
-            <div class="breadcrumb-item"><a [routerLink]="['/bai-viet/danh-muc', categorySlug]">{{ categoryName }}</a>
+            <div class="breadcrumb-item"><a routerLink="/blog">Góc sức khoẻ</a></div>
+            <div class="breadcrumb-item"><a [routerLink]="['/blog/danh-muc', categorySlug]">{{ categoryName }}</a>
             </div>
             <div class="breadcrumb-item active">{{ subcategoryName }}</div>
         </nav>
@@ -32,7 +32,7 @@
         <div *ngIf="!loading && blogs.length === 0" class="bv-no-data text-center py-5">
             <i class="bi bi-journal-x fs-1 text-light"></i>
             <p class="mt-3 fs-5 text-secondary">Chưa có bài viết nào trong danh mục này.</p>
-            <button routerLink="/bai-viet" class="btn btn-primary rounded-pill px-4 mt-2">Quay lại trang chính</button>
+            <button routerLink="/blog" class="btn btn-primary rounded-pill px-4 mt-2">Quay lại trang chính</button>
         </div>
 
         <!-- Article Grid -->

@@ -240,8 +240,8 @@ export class BlogDetail implements OnInit, OnDestroy {
     if (!html) return '';
     let normalizedHtml = html
       .replace(/href="https:\/\/nhathuoclongchau.com.vn\/benh\/([^"]+).html"/gi, 'href="/benh/$1"')
-      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/bai-viet\/([^"]+).html"/gi, 'href="/bai-viet/$1"')
-      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/([^"]+).html"/gi, 'href="/bai-viet/$1"');
+      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/bai-viet\/([^"]+).html"/gi, 'href="/blog/$1"')
+      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/([^"]+).html"/gi, 'href="/blog/$1"');
 
     normalizedHtml = normalizedHtml
       .replace(/<h3([^>]*)>/gi, '<b class="d-block mt-3 mb-2" $1>')
@@ -267,11 +267,11 @@ export class BlogDetail implements OnInit, OnDestroy {
   }
 
   get breadcrumbs(): { name: string; link?: string }[] {
-    const list: { name: string; link?: string }[] = [{ name: 'Trang chủ', link: '/' }, { name: 'Góc sức khỏe', link: '/bai-viet' }];
+    const list: { name: string; link?: string }[] = [{ name: 'Trang chủ', link: '/' }, { name: 'Góc sức khỏe', link: '/blog' }];
     if (this.blog && this.blog.category) {
       const cat = this.blog.category;
       if (cat.name) {
-        list.push({ name: cat.name, link: `/bai-viet/danh-muc/${cat.slug || ''}` });
+        list.push({ name: cat.name, link: `/blog/danh-muc/${cat.slug || ''}` });
       }
     }
     return list;
@@ -289,7 +289,7 @@ export class BlogDetail implements OnInit, OnDestroy {
         event.preventDefault();
         let targetUrl = href;
         if (href.includes('/benh/')) targetUrl = this.getInternalUrl(href, 'benh');
-        else if (href.includes('/bai-viet/')) targetUrl = this.getInternalUrl(href, 'bai-viet');
+        else if (href.includes('/blog/') || href.includes('/bai-viet/')) targetUrl = this.getInternalUrl(href, 'blog');
         if (href.startsWith('/') && !href.includes('//')) { targetUrl = href; }
         window.scrollTo(0, 0);
         this.router.navigateByUrl(targetUrl);
@@ -303,8 +303,12 @@ export class BlogDetail implements OnInit, OnDestroy {
     if (slug.includes('nhathuoclongchau.com.vn/')) { slug = slug.split('nhathuoclongchau.com.vn/')[1]; }
     else if (slug.startsWith('http')) { return slug; }
     if (slug.startsWith('/')) slug = slug.substring(1);
-    slug = slug.replace(/^benh\//i, '').replace(/^bai-viet\//i, '');
-    slug = slug.replace(/^benh\//i, '').replace(/^bai-viet\//i, '');
+    // Strip all possible prefixes
+    slug = slug.replace(/^benh\//i, '')
+      .replace(/^blog\//i, '')
+      .replace(/^bai-viet\//i, '')
+      .replace(/^topic\//i, '')
+      .replace(/^chuyen-de\//i, '');
     slug = slug.replace(/\.html$/i, '');
     return `/${type}/${slug}`;
   }
@@ -374,14 +378,22 @@ export class BlogDetail implements OnInit, OnDestroy {
     if (this.blog?.relatedArticles && this.blog.relatedArticles.length > 0) {
       this.relatedBlogs = this.blog.relatedArticles.map(a => ({
         title: a.name || a.title,
-        link: this.getInternalUrl(a.slug || a.id || '', 'bai-viet')
+        link: this.getInternalUrl(a.slug || a.id || '', 'blog')
       }));
       this.cdr.detectChanges();
       return;
     }
-    this.http.get<any[]>(`${API_BASE}/blogs?limit=10`).subscribe({
-      next: (data) => {
+
+    const category = this.blog?.category?.name || (this.blog as any)?.categoryName;
+    const url = category
+      ? `${API_BASE}/blogs?category=${encodeURIComponent(category)}&limit=11`
+      : `${API_BASE}/blogs?limit=11`;
+
+    this.http.get<any>(url).subscribe({
+      next: (res) => {
+        const data = Array.isArray(res) ? res : (res.blogs || res.data || []);
         if (!Array.isArray(data)) return;
+
         const currentSlug = (this.blog?.slug || (this.blog as any)?._id || '').toString().toLowerCase();
         this.relatedBlogs = data
           .filter((b) => {
@@ -391,9 +403,25 @@ export class BlogDetail implements OnInit, OnDestroy {
           .slice(0, 10)
           .map((b) => ({
             title: b.title || 'Góc sức khoẻ',
-            link: this.getInternalUrl(b.slug || b._id || '', 'bai-viet'),
+            link: this.getInternalUrl(b.slug || b._id || '', 'blog'),
           }));
-        this.cdr.detectChanges();
+
+        // Fallback if no related blogs found in category (excluding current)
+        if (this.relatedBlogs.length === 0 && category) {
+          this.http.get<any>(`${API_BASE}/blogs?limit=11`).subscribe(fallbackRes => {
+            const fallbackData = Array.isArray(fallbackRes) ? fallbackRes : (fallbackRes.blogs || fallbackRes.data || []);
+            this.relatedBlogs = fallbackData
+              .filter((b: any) => (b.slug || b._id || '').toString().toLowerCase() !== currentSlug)
+              .slice(0, 10)
+              .map((b: any) => ({
+                title: b.title || 'Góc sức khoẻ',
+                link: this.getInternalUrl(b.slug || b._id || '', 'blog'),
+              }));
+            this.cdr.detectChanges();
+          });
+        } else {
+          this.cdr.detectChanges();
+        }
       },
       error: (err) => { console.error('Error loading related blogs:', err); },
     });

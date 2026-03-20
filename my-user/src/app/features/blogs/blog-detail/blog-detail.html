@@ -18,7 +18,7 @@
     <!-- Not found -->
     <div *ngIf="notFound && !loading" class="bd-notfound">
       <h2>Bài viết không tồn tại</h2>
-      <a routerLink="/bai-viet" class="bd-btn-link">← Quay lại danh sách bài viết</a>
+      <a routerLink="/blog" class="bd-btn-link">← Quay lại danh sách bài viết</a>
     </div>
 
     <!-- Article Wrapper -->
@@ -109,7 +109,7 @@
         <div class="blog-tags" *ngIf="blog.tags?.length">
           <span class="tags-title">Chủ đề:</span>
           <div class="tags-list">
-            <a *ngFor="let tag of blog.tags" [routerLink]="['/chuyen-de', tag.slug || tag]" class="tag-badge">
+            <a *ngFor="let tag of blog.tags" [routerLink]="['/topic', tag.slug || tag]" class="tag-badge">
               {{ tag.title || tag.name || tag }}
             </a>
           </div>
@@ -118,7 +118,7 @@
         <!-- Thông tin tham khảo -->
         <div class="bd-disclaimer">
           <p>Thông tin và sản phẩm gợi ý trong bài viết chỉ mang tính chất tham khảo, vui lòng liên hệ với Bác sĩ, Dược
-            sĩ hoặc chuyên viên y tế để được tư vấn cụ thể. <a routerLink="/chinh-sach/chinh-sach-noi-dung"
+            sĩ hoặc chuyên viên y tế để được tư vấn cụ thể. <a routerLink="/policy/chinh-sach-noi-dung"
               class="bd-disclaimer-link">Xem thêm</a></p>
         </div>
 

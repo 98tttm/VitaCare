@@ -1048,7 +1048,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           type: 'simple',
           slug: '',
           items: [
-            { name: 'Góc sức khỏe', icon: 'bi bi-heart-pulse-fill', slug: 'goc-suc-khoe', route: '/bai-viet' },
+            { name: 'Góc sức khỏe', icon: 'bi bi-heart-pulse-fill', slug: 'goc-suc-khoe', route: '/blog' },
             { name: 'Tra cứu bệnh', icon: 'bi bi-search-heart-fill', slug: 'tra-cuu-benh', route: '/disease' }
           ]
         };
@@ -1189,7 +1189,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSubCategoryClick(sub: any): void {
-    // Custom route (e.g. Góc sức khỏe -> /bai-viet, Tra cứu bệnh -> /disease)
+    // Custom route (e.g. Góc sức khỏe -> /blog, Tra cứu bệnh -> /disease)
     if (typeof sub === 'object' && sub?.route) {
       this.router.navigateByUrl(sub.route);
       this.hoveredCategory = null;

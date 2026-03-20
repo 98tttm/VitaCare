@@ -192,7 +192,8 @@ export class BlogSubCategory implements OnInit {
     private normalizeSlug(raw: string): string {
         if (!raw || typeof raw !== 'string') return '';
         let s = raw.trim().replace(/^\/+/, '');
-        if (s.toLowerCase().startsWith('bai-viet/')) s = s.slice(9);
+        if (s.toLowerCase().startsWith('blog/')) s = s.slice(5);
+        else if (s.toLowerCase().startsWith('bai-viet/')) s = s.slice(9);
         return s;
     }
 
@@ -200,7 +201,7 @@ export class BlogSubCategory implements OnInit {
         const slugRaw = (b.slug || (b as any).slug)?.trim();
         const idStr = b._id != null ? String(b._id) : '';
         const slug = this.normalizeSlug(slugRaw || '') || idStr;
-        const link = slug ? `/bai-viet/${slug}` : '/bai-viet';
+        const link = slug ? `/blog/${slug}` : '/blog';
 
         return {
             title: b.title || b.name || 'Bài viết sức khỏe',

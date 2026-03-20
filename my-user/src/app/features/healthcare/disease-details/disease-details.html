@@ -461,14 +461,14 @@
             <div class="dd-related-articles-card">
                 <div class="dd-ra-header">
                     <h2 class="dd-ra-title">Bài viết liên quan <a
-                            [routerLink]="['/bai-viet/topic', breadcrumbGroup?.slug || disease.slug]"
-                            class="dd-ra-see-all">Xem tất cả <i class="bi bi-chevron-right"></i></a></h2>
+                            [routerLink]="['/topic', breadcrumbGroup?.slug || disease.slug]" class="dd-ra-see-all">Xem
+                            tất cả <i class="bi bi-chevron-right"></i></a></h2>
                 </div>
 
                 <div class="dd-ra-side-list">
                     <!-- Featured Article with Image -->
                     <a class="dd-ra-side-featured"
-                        [routerLink]="getInternalUrl(disease.related_articles[0].slug, 'bai-viet')">
+                        [routerLink]="getInternalUrl(disease.related_articles[0].slug, 'blog')">
                         <div class="dd-ra-side-img">
                             <img [src]="disease.related_articles[0].primaryImage?.url">
                         </div>
@@ -481,7 +481,7 @@
                     <!-- Compact List of other articles -->
                     <div class="dd-ra-side-items">
                         <a class="dd-ra-side-item" *ngFor="let article of disease.related_articles.slice(1, 6)"
-                            [routerLink]="getInternalUrl(article.slug, 'bai-viet')">
+                            [routerLink]="getInternalUrl(article.slug, 'blog')">
                             <span class="dd-ra-category-chip small">{{ article.category?.name }}</span>
                             <p class="dd-ra-side-item-title">{{ article.name }}</p>
                         </a>

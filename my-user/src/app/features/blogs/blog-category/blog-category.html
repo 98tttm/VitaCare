@@ -3,9 +3,9 @@
         <!-- Breadcrumb -->
         <nav class="breadcrumb-vc">
             <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
-            <div class="breadcrumb-item"><a routerLink="/bai-viet">Góc sức khoẻ</a></div>
+            <div class="breadcrumb-item"><a routerLink="/blog">Góc sức khoẻ</a></div>
             <ng-container *ngIf="subcat">
-                <div class="breadcrumb-item"><a [routerLink]="['/bai-viet/danh-muc', categorySlug]">{{ categoryName
+                <div class="breadcrumb-item"><a [routerLink]="['/blog/danh-muc', categorySlug]">{{ categoryName
                         }}</a></div>
                 <div class="breadcrumb-item active">{{ subcat }}</div>
             </ng-container>
@@ -25,7 +25,7 @@
             *ngIf="currentCategoryItems?.subcategories && currentCategoryItems.subcategories.length > 0">
             <div class="row g-4 justify-content-center">
                 <div class="col-6 col-md-4 col-lg-3" *ngFor="let sub of currentCategoryItems.subcategories">
-                    <a [routerLink]="['/bai-viet/danh-muc', categorySlug, sub.slug]"
+                    <a [routerLink]="['/blog/danh-muc', categorySlug, sub.slug]"
                         class="bv-subcategory-card text-decoration-none d-flex flex-column align-items-center justify-content-center p-0 pt-3 bg-white rounded-4 shadow-sm h-100"
                         [class.active]="subcat === sub.name">
                         <div class="bv-subcategory-icon mb-3" [class.bv-subcategory-icon--cover]="!!sub.coverImage">
@@ -54,7 +54,7 @@
             <div *ngIf="filteredBlogs.length === 0" class="bv-no-data">
                 <i class="bi bi-journal-x"></i>
                 <p>Chưa có bài viết nào trong danh mục này.</p>
-                <button routerLink="/bai-viet" class="btn btn-primary mt-3">Quay lại trang chính</button>
+                <button routerLink="/blog" class="btn btn-primary mt-3">Quay lại trang chính</button>
             </div>
 
             <!-- Content Grid -->

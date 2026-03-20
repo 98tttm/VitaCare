@@ -280,8 +280,8 @@
     <section class="vc-blogs scroll-reveal from-right">
         <div class="section-title">
             <img class="section-icon" src="assets/images/homepage/title/4.webp" alt="Blog" />
-            <h2>Góc sức khỏe <span class="section-sep">|</span><a [routerLink]="['/bai-viet']"
-                    class="section-view-all">Xem tất cả <i class="bi bi-chevron-right"></i></a></h2>
+            <h2>Góc sức khỏe <span class="section-sep">|</span><a [routerLink]="['/blog']" class="section-view-all">Xem
+                    tất cả <i class="bi bi-chevron-right"></i></a></h2>
         </div>
         <div class="blog-layout">
             <a [href]="blogs[0].link || '#'" class="blog-main" *ngIf="blogs && blogs.length; else blogFallback">

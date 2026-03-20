@@ -12,8 +12,159 @@
 
 .tc-content-wrapper {
     display: grid;
-    grid-template-columns: 8fr 4fr;
+    grid-template-columns: 1fr 340px;
     gap: 30px;
+    align-items: start;
+}
+
+.tc-main {
+    min-width: 0;
+}
+
+.tc-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 20px;
+}
+
+/* Chuyên đề nổi bật */
+.bv-featured-topics-box {
+    background: #e3f2fd;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.bv-ft-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #00589F;
+    margin: 0 0 14px;
+}
+
+.bv-ft-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bv-ft-item {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+}
+
+.bv-ft-item:hover {
+    color: #00589F;
+}
+
+.bv-ft-name {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.bv-ft-count {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.bv-ft-viewall {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #00589F;
+    text-decoration: none;
+}
+
+.bv-ft-viewall:hover {
+    text-decoration: underline;
+}
+
+/* Đội ngũ chuyên môn */
+.bv-expert-team-box {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #eee;
+}
+
+.bv-et-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #00589F;
+    margin: 0 0 14px;
+}
+
+.bv-et-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.bv-doctor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bv-doctor-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.bv-doctor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.bv-doctor-degree {
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+    display: block;
+}
+
+.bv-doctor-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: block;
+}
+
+.bv-doctor-spec {
+    font-size: 12px;
+    color: #666;
+    display: block;
+}
+
+.bv-et-viewall {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #00589F;
+    text-decoration: none;
+}
+
+.bv-et-viewall:hover {
+    text-decoration: underline;
 }
 
 .tc-main {
@@ -32,7 +183,7 @@
 .tc-title {
     font-size: 28px;
     font-weight: 700;
-    color: #202124;
+    color: #00589F;
     margin: 0 0 8px 0;
 }
 
@@ -203,7 +354,8 @@
     }
 
     .tc-sidebar {
-        display: none;
+        position: static;
+        margin-top: 40px;
     }
 }
 

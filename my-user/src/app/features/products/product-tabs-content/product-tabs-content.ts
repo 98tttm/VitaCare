@@ -55,7 +55,7 @@ export class ProductTabsContent {
         newLink = `href=\"/product/${slug}\"`;
       } else if (path.startsWith('/bai-viet/')) {
         const slug = cleanPath.replace('/bai-viet/', '');
-        newLink = `href=\"/bai-viet/${slug}\"`;
+        newLink = `href=\"/blog/${slug}\"`;
       } else if (path.startsWith('/benh/')) {
         const slug = cleanPath.replace('/benh/', '');
         newLink = `href=\"/benh/${slug}\"`;
@@ -64,7 +64,7 @@ export class ProductTabsContent {
         newLink = `href=\"/category?brand=${slug}\"`;
       } else if (path.startsWith('/thanh-phan/')) {
         const slug = cleanPath.replace('/thanh-phan/', '');
-        newLink = `href=\"/bai-viet/${slug}\"`;
+        newLink = `href=\"/blog/${slug}\"`;
       } else if (
         path.startsWith('/thuc-pham-chuc-nang') ||
         path.startsWith('/duoc-my-pham') ||

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
+import { BlogQuickViewService } from '../../../core/services/blog-quick-view.service';
 
 export interface BlogItem {
   title: string;
@@ -60,7 +61,11 @@ export class Blog implements OnInit {
     { avatar: 'assets/placeholder/avatar.png', degree: 'Thạc sĩ', name: 'Hoàng Văn E', specialize: 'Nội tổng hợp' },
   ];
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private blogQuickViewService: BlogQuickViewService
+  ) { }
 
   ngOnInit(): void {
     this.loadBlogs();
@@ -68,29 +73,22 @@ export class Blog implements OnInit {
     this.loadCategoryCounts();
   }
 
-  /** Đếm số bài cho từng chuyên mục dựa trên API /api/blogs/category-counts */
+  /** Đếm số bài cho từng chuyên mục dựa trên API /api/blogs/topic-counts */
   private loadCategoryCounts(): void {
-    const url = 'http://localhost:3000/api/blogs/category-counts';
+    const url = 'http://localhost:3000/api/blogs/topic-counts?limit=10';
     this.http.get<any>(url).subscribe({
       next: (res) => {
-        if (res?.success && res?.counts) {
-          const countsMap = res.counts;
-          this.featuredTopicCategories = this.blogCategoryItems
-            .map(cat => ({
-              name: cat.name,
-              count: countsMap[cat.name] || 0,
-              slug: this.normalizeTopicSlug(cat.slug)
-            }))
-            .filter(c => {
-              const lower = c.name.toLowerCase();
-              return !lower.includes('khuyến mãi') && !lower.includes('phân loại') && !lower.includes('truyền thông');
-            })
-            .sort((a, b) => b.count - a.count);
+        if (res?.success && Array.isArray(res?.counts)) {
+          this.featuredTopicCategories = res.counts.map((item: any) => ({
+            name: item.name,
+            count: item.count,
+            slug: this.normalizeTopicSlug(item.slug || this.slugify(item.name))
+          }));
           this.cdr.detectChanges();
         }
       },
       error: (err) => {
-        console.error('Lỗi khi lấy số lượng bài viết theo danh mục:', err);
+        console.error('Lỗi khi lấy số lượng bài viết theo chủ đề:', err);
       }
     });
   }
@@ -198,7 +196,8 @@ export class Blog implements OnInit {
   private normalizeSlug(raw: string): string {
     if (!raw || typeof raw !== 'string') return '';
     let s = raw.trim().replace(/^\/+/, '');
-    if (s.toLowerCase().startsWith('bai-viet/')) s = s.slice(9);
+    if (s.toLowerCase().startsWith('blog/')) s = s.slice(5);
+    else if (s.toLowerCase().startsWith('bai-viet/')) s = s.slice(9);
     return s;
   }
 
@@ -207,7 +206,7 @@ export class Blog implements OnInit {
     const slugRaw = (b.slug || b.url || '')?.trim();
     const idStr = b._id != null ? String(b._id) : '';
     const slug = this.normalizeSlug(slugRaw || '') || idStr;
-    const link = slug ? `/bai-viet/${slug}` : '/bai-viet';
+    const link = slug ? `/blog/${slug}` : '/blog';
     return {
       title: b.title || b.name || 'Bài viết sức khỏe',
       image: b.primaryImage?.url || b.image || b.imageUrl || 'assets/placeholder/blog-thumb.jpg',
@@ -220,25 +219,25 @@ export class Blog implements OnInit {
 
   /** Link đến trang chi tiết bài viết. Luôn trả về /bai-viet/{slug} (không lặp bai-viet). */
   getBlogDetailLink(b: BlogItem): string {
-    if (!b) return '/bai-viet';
-    const fromLink = b.link ? b.link.replace(/^\/?bai-viet\/?/i, '').trim() : '';
+    if (!b) return '/blog';
+    const fromLink = b.link ? b.link.replace(/^\/?(blog|bai-viet)\/?/i, '').trim() : '';
     const fromSlug = b.slug ? this.normalizeSlug(b.slug) : '';
     const slug = this.normalizeSlug(fromLink) || fromSlug;
-    return slug ? `/bai-viet/${slug}` : '/bai-viet';
+    return slug ? `/blog/${slug}` : '/blog';
   }
 
   private setFallbackBlogs(): void {
     this.blogs = [
-      { title: 'Thanh toán 10 người nhập viện sau khi Ăn thịt, trứng cá xanh', image: 'assets/placeholder/blog-main.jpg', excerpt: 'Mô tả ngắn về sự cố an toàn thực phẩm...', link: '/bai-viet/anuong', slug: 'anuong', categoryName: 'Tin tức' },
-      { title: '5 thói quen giúp ngủ ngon hơn', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Tổng hợp 5 thói quen dễ thực hiện...', link: '/bai-viet/ngu-ngon', slug: 'ngu-ngon', categoryName: 'Dinh dưỡng' },
-      { title: 'Ăn gì để tăng sức đề kháng?', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Các thực phẩm giàu vitamin...', link: '/bai-viet/tang-de-khang', slug: 'tang-de-khang', categoryName: 'Dinh dưỡng' },
-      { title: 'Cách xử trí khi bị cảm lạnh', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Mẹo chăm sóc tại nhà...', link: '/bai-viet/cam-lanh', slug: 'cam-lanh', categoryName: 'Sức khỏe' },
-      { title: 'Chế độ ăn cho người tiểu đường', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Gợi ý thực đơn và lưu ý...', link: '/bai-viet/tieu-duong', slug: 'tieu-duong', categoryName: 'Chế độ dinh dưỡng' },
-      { title: 'Phòng ngừa bệnh tim mạch', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Lối sống và dinh dưỡng...', link: '/bai-viet/tim-mach', slug: 'tim-mach', categoryName: 'Phòng ngừa bệnh' },
-      { title: 'Chăm sóc da mùa khô', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Bí quyết dưỡng ẩm...', link: '/bai-viet/lam-dep', slug: 'lam-dep', categoryName: 'Sức khỏe làm đẹp' },
-      { title: 'Dinh dưỡng cho bà bầu', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Thực phẩm nên và không nên...', link: '/bai-viet/me-va-be', slug: 'me-va-be', categoryName: 'Chăm sóc mẹ và bé' },
-      { title: 'Thuốc kháng sinh: dùng đúng cách', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Lưu ý khi sử dụng...', link: '/bai-viet/thuoc-benh', slug: 'thuoc-benh', categoryName: 'Thuốc và bệnh' },
-      { title: 'Sức khỏe cộng đồng trong mùa dịch', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Cách bảo vệ bản thân và gia đình...', link: '/bai-viet/cong-dong', slug: 'cong-dong', categoryName: 'Sức khỏe cộng đồng' },
+      { title: 'Thanh toán 10 người nhập viện sau khi Ăn thịt, trứng cá xanh', image: 'assets/placeholder/blog-main.jpg', excerpt: 'Mô tả ngắn về sự cố an toàn thực phẩm...', link: '/blog/anuong', slug: 'anuong', categoryName: 'Tin tức' },
+      { title: '5 thói quen giúp ngủ ngon hơn', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Tổng hợp 5 thói quen dễ thực hiện...', link: '/blog/ngu-ngon', slug: 'ngu-ngon', categoryName: 'Dinh dưỡng' },
+      { title: 'Ăn gì để tăng sức đề kháng?', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Các thực phẩm giàu vitamin...', link: '/blog/tang-de-khang', slug: 'tang-de-khang', categoryName: 'Dinh dưỡng' },
+      { title: 'Cách xử trí khi bị cảm lạnh', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Mẹo chăm sóc tại nhà...', link: '/blog/cam-lanh', slug: 'cam-lanh', categoryName: 'Sức khỏe' },
+      { title: 'Chế độ ăn cho người tiểu đường', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Gợi ý thực đơn và lưu ý...', link: '/blog/tieu-duong', slug: 'tieu-duong', categoryName: 'Chế độ dinh dưỡng' },
+      { title: 'Phòng ngừa bệnh tim mạch', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Lối sống và dinh dưỡng...', link: '/blog/tim-mach', slug: 'tim-mach', categoryName: 'Phòng ngừa bệnh' },
+      { title: 'Chăm sóc da mùa khô', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Bí quyết dưỡng ẩm...', link: '/blog/lam-dep', slug: 'lam-dep', categoryName: 'Sức khỏe làm đẹp' },
+      { title: 'Dinh dưỡng cho bà bầu', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Thực phẩm nên và không nên...', link: '/blog/me-va-be', slug: 'me-va-be', categoryName: 'Chăm sóc mẹ và bé' },
+      { title: 'Thuốc kháng sinh: dùng đúng cách', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Lưu ý khi sử dụng...', link: '/blog/thuoc-benh', slug: 'thuoc-benh', categoryName: 'Thuốc và bệnh' },
+      { title: 'Sức khỏe cộng đồng trong mùa dịch', image: 'assets/placeholder/blog-thumb.jpg', excerpt: 'Cách bảo vệ bản thân và gia đình...', link: '/blog/cong-dong', slug: 'cong-dong', categoryName: 'Sức khỏe cộng đồng' },
     ];
   }
 
@@ -352,8 +351,30 @@ export class Blog implements OnInit {
 
   /** Sub-categories cho thẻ "Tin tức sức khoẻ" (nav ngang) */
   healthNewsSubCategories = ['Tin y dược', 'Dịch bệnh', 'Bệnh viện'];
+
   private normalizeTopicSlug(slug: string): string {
     if (!slug) return '';
     return slug.replace(/^chuyen-de\//i, '').replace(/^\/+/, '');
+  }
+
+  private slugify(text: string): string {
+    if (!text) return '';
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD') // Tách các dấu tiếng Việt
+      .replace(/[\u0300-\u036f]/g, '') // Loại bỏ các dấu
+      .replace(/[đĐ]/g, 'd') // Thay đ thành d
+      .replace(/[^a-z0-9\s-]/g, '') // Loại bỏ ký tự đặc biệt
+      .trim()
+      .replace(/\s+/g, '-') // Thay khoảng trắng bằng dấu gạch ngang
+      .replace(/-+/g, '-'); // Loại bỏ các dấu gạch ngang dư thừa
+  }
+
+  /** Mở popup xem nhanh bài viết */
+  openQuickView(event: MouseEvent, blog: any): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.blogQuickViewService.open(blog);
   }
 }

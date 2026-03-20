@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
+import { BlogQuickViewService } from '../../../core/services/blog-quick-view.service';
 
 
 export interface BlogItem {
@@ -24,6 +25,9 @@ export interface BlogItem {
 })
 export class TopicCategory implements OnInit {
     blogs: BlogItem[] = [];
+    featuredTopicCategories: { name: string; count: number; slug: string }[] = [];
+    doctors: { avatar: string; degree: string; name: string; specialize: string }[] = [];
+
     loading = true;
     skip = 0;
     limit = 10;
@@ -59,14 +63,22 @@ export class TopicCategory implements OnInit {
         'khoe-dep': 'Khỏe đẹp',
         'me-va-be': 'Mẹ và bé',
         'phong-benh-song-khoe': 'Phòng bệnh & Sống khỏe',
-        'tin-tuc-suc-khoe': 'Tin tức sức khỏe'
+        'tin-tuc-suc-khoe': 'Tin tức sức khỏe',
+        'dot-quy': 'Đột quỵ',
+        'tieu-duong': 'Tiểu đường',
+        'huyet-ap-cao': 'Huyết áp cao',
+        'huyet-ap': 'Huyết áp',
+        'xuong-khop': 'Xương khớp',
+        'benh-da-day': 'Bệnh dạ dày',
+        'da-day': 'Dạ dày'
     };
 
     constructor(
         private http: HttpClient,
         private route: ActivatedRoute,
         private titleService: Title,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private blogQuickViewService: BlogQuickViewService
     ) { }
 
     ngOnInit(): void {
@@ -81,6 +93,41 @@ export class TopicCategory implements OnInit {
             this.skip = 0;
             this.blogs = [];
             this.loadBlogs();
+            this.loadTopicCounts();
+            this.loadDoctors();
+        });
+    }
+
+    private loadTopicCounts(): void {
+        const url = 'http://localhost:3000/api/blogs/topic-counts?limit=10';
+        this.http.get<any>(url).subscribe({
+            next: (res) => {
+                if (res?.success && Array.isArray(res?.counts)) {
+                    this.featuredTopicCategories = res.counts.map((item: any) => ({
+                        name: item.name,
+                        count: item.count,
+                        slug: this.normalizeTopicSlug(item.slug || this.slugify(item.name))
+                    }));
+                    this.cdr.detectChanges();
+                }
+            }
+        });
+    }
+
+    private loadDoctors(): void {
+        const url = 'http://localhost:3000/api/doctors?limit=5';
+        this.http.get<any[]>(url).subscribe({
+            next: (data) => {
+                if (Array.isArray(data)) {
+                    this.doctors = data.map(d => ({
+                        avatar: d.avatar?.url || d.image || 'assets/placeholder/avatar.png',
+                        degree: d.degree || 'Bác sĩ',
+                        name: d.name || d.fullName || 'Chuyên gia',
+                        specialize: d.specialize || d.specialty || ''
+                    }));
+                    this.cdr.detectChanges();
+                }
+            }
         });
     }
 
@@ -88,6 +135,7 @@ export class TopicCategory implements OnInit {
         if (!slug) return '';
         // Remove prefixes and separate words
         const clean = slug
+            .replace(/^topic\//i, '')
             .replace(/^chuyen-de\//i, '')
             .replace(/-/g, ' ');
 
@@ -132,12 +180,21 @@ export class TopicCategory implements OnInit {
     private normalizeBlog(b: any): BlogItem {
         const mainCat = Array.isArray(b.categories) && b.categories[0] ? b.categories[0].name : null;
         const categoryName = mainCat || b.categoryName || 'Bài viết';
-        const slug = b.slug || b._id;
+        const rawSlug = b.slug || b._id || '';
+
+        // Strip possible prefixes from the blog slug
+        const slug = rawSlug.toString()
+            .replace(/^chuyen-de\//i, '')
+            .replace(/^bai-viet\//i, '')
+            .replace(/^blog\//i, '')
+            .replace(/^topic\//i, '')
+            .replace(/^\/+/, '');
+
         return {
             title: b.title || 'Bài viết sức khỏe',
             image: b.primaryImage?.url || b.image || b.imageUrl || 'assets/images/banner/woman_doctor.png',
             excerpt: b.shortDescription || b.excerpt || (typeof b.description === 'string' ? b.description.replace(/<[^>]*>/g, '').slice(0, 160) : ''),
-            link: `/bai-viet/${slug}`,
+            link: `/blog/${slug}`,
             slug: slug,
             categoryName: categoryName
         };
@@ -148,11 +205,32 @@ export class TopicCategory implements OnInit {
         // Handle encoded slashes and double prefixes aggressively
         let normalized = decodeURIComponent(slug);
 
-        // Remove any occurrences of 'chuyen-de/' prefix multiple times if necessary
-        while (normalized.toLowerCase().includes('chuyen-de/')) {
-            normalized = normalized.replace(/chuyen-de\//i, '');
+        // Remove any occurrences of 'topic/' or 'chuyen-de/' prefix multiple times if necessary
+        while (normalized.toLowerCase().includes('topic/') || normalized.toLowerCase().includes('chuyen-de/')) {
+            normalized = normalized.replace(/topic\//i, '').replace(/chuyen-de\//i, '');
         }
 
         return normalized.replace(/^\/+/, '').trim();
+    }
+
+    private slugify(text: string): string {
+        if (!text) return '';
+        return text
+            .toString()
+            .toLowerCase()
+            .normalize('NFD') // Tách các dấu tiếng Việt
+            .replace(/[\u0300-\u036f]/g, '') // Loại bỏ các dấu
+            .replace(/[đĐ]/g, 'd') // Thay đ thành d
+            .replace(/[^a-z0-9\s-]/g, '') // Loại bỏ ký tự đặc biệt
+            .trim()
+            .replace(/\s+/g, '-') // Thay khoảng trắng bằng dấu gạch ngang
+            .replace(/-+/g, '-'); // Loại bỏ các dấu gạch ngang dư thừa
+    }
+
+    /** Mở popup xem nhanh bài viết */
+    openQuickView(event: MouseEvent, blog: any): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.blogQuickViewService.open(blog);
     }
 }

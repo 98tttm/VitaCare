@@ -21,12 +21,12 @@
           <h2>Góc sức khoẻ</h2>
         </div>
         <div class="bv-cat-filters btn-cat">
-          <a *ngFor="let item of blogCategoryItems" [routerLink]="['/bai-viet/danh-muc', item.slug]"
-            class="bv-cat-btn">{{
+          <a *ngFor="let item of blogCategoryItems" [routerLink]="['/blog/danh-muc', item.slug]" class="bv-cat-btn">{{
             item.name }}</a>
         </div>
         <div class="bv-blog-hero">
-          <a *ngIf="mainBlog" [routerLink]="getBlogDetailLink(mainBlog)" class="bv-blog-main">
+          <a *ngIf="mainBlog" [attr.href]="getBlogDetailLink(mainBlog)" (click)="openQuickView($event, mainBlog)"
+            class="bv-blog-main">
             <div class="bv-blog-main-img">
               <img [src]="mainBlog.image || 'assets/placeholder/blog-main.jpg'" [alt]="mainBlog.title" />
               <span class="bv-badge">{{ mainBlog.categoryName || 'Góc sức khoẻ' }}</span>
@@ -37,7 +37,8 @@
             </div>
           </a>
           <div class="bv-blog-side">
-            <a *ngFor="let b of relatedBlogs" [routerLink]="getBlogDetailLink(b)" class="bv-blog-side-item">
+            <a *ngFor="let b of relatedBlogs" [attr.href]="getBlogDetailLink(b)" (click)="openQuickView($event, b)"
+              class="bv-blog-side-item">
               <img [src]="b.image || 'assets/placeholder/blog-thumb.jpg'" [alt]="b.title" loading="lazy" />
               <div class="bv-blog-side-content">
                 <span class="bv-badge-sm">{{ b.categoryName || 'Góc sức khoẻ' }}</span>
@@ -59,18 +60,18 @@
                 <h3 class="bv-prevention-title">Phòng bệnh & Sống khoẻ</h3>
                 <nav class="bv-prevention-subcat">
                   <a *ngFor="let sub of preventionSubCategories; let i = index"
-                    [routerLink]="['/bai-viet/danh-muc/phong-benh-song-khoe']" [queryParams]="{ subcat: sub }"
+                    [routerLink]="['/blog/danh-muc/phong-benh-song-khoe']" [queryParams]="{ subcat: sub }"
                     class="bv-prevention-subcat-link" [class.active]="i === 0">
                     {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/phong-benh-song-khoe" class="bv-prevention-viewall">Xem tất cả <i
+                <a routerLink="/blog/danh-muc/phong-benh-song-khoe" class="bv-prevention-viewall">Xem tất cả <i
                     class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
-                  <a *ngIf="preventionCardArticles[0]" [routerLink]="getBlogDetailLink(preventionCardArticles[0])"
-                    class="bv-prevention-featured">
+                  <a *ngIf="preventionCardArticles[0]" [attr.href]="getBlogDetailLink(preventionCardArticles[0])"
+                    (click)="openQuickView($event, preventionCardArticles[0])" class="bv-prevention-featured">
                     <div class="bv-prevention-featured-img">
                       <img [src]="preventionCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
                         [alt]="preventionCardArticles[0].title" />
@@ -80,19 +81,22 @@
                       <p>{{ preventionCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
                     </div>
                   </a>
-                  <a *ngIf="preventionCardArticles[1]" [routerLink]="getBlogDetailLink(preventionCardArticles[1])"
-                    class="bv-prevention-text-only">
+                  <a *ngIf="preventionCardArticles[1]" [attr.href]="getBlogDetailLink(preventionCardArticles[1])"
+                    (click)="openQuickView($event, preventionCardArticles[1])" class="bv-prevention-text-only">
                     <h4>{{ preventionCardArticles[1].title }}</h4>
                     <p>{{ preventionCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
                   </a>
                 </div>
                 <div class="bv-prevention-bottom">
-                  <a *ngIf="preventionCardArticles[2]" [routerLink]="getBlogDetailLink(preventionCardArticles[2])"
-                    class="bv-prevention-title-link">{{ preventionCardArticles[2].title }}</a>
-                  <a *ngIf="preventionCardArticles[3]" [routerLink]="getBlogDetailLink(preventionCardArticles[3])"
-                    class="bv-prevention-title-link">{{ preventionCardArticles[3].title }}</a>
-                  <a *ngIf="preventionCardArticles[4]" [routerLink]="getBlogDetailLink(preventionCardArticles[4])"
-                    class="bv-prevention-title-link">{{ preventionCardArticles[4].title }}</a>
+                  <a *ngIf="preventionCardArticles[2]" [attr.href]="getBlogDetailLink(preventionCardArticles[2])"
+                    (click)="openQuickView($event, preventionCardArticles[2])" class="bv-prevention-title-link">{{
+                    preventionCardArticles[2].title }}</a>
+                  <a *ngIf="preventionCardArticles[3]" [attr.href]="getBlogDetailLink(preventionCardArticles[3])"
+                    (click)="openQuickView($event, preventionCardArticles[3])" class="bv-prevention-title-link">{{
+                    preventionCardArticles[3].title }}</a>
+                  <a *ngIf="preventionCardArticles[4]" [attr.href]="getBlogDetailLink(preventionCardArticles[4])"
+                    (click)="openQuickView($event, preventionCardArticles[4])" class="bv-prevention-title-link">{{
+                    preventionCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
@@ -101,19 +105,19 @@
                 <h3 class="bv-prevention-title">Dinh dưỡng</h3>
                 <nav class="bv-prevention-subcat">
                   <a *ngFor="let sub of nutritionSubCategories; let i = index"
-                    [routerLink]="['/bai-viet/danh-muc/dinh-duong']" [queryParams]="{ subcat: sub }"
+                    [routerLink]="['/blog/danh-muc/dinh-duong']" [queryParams]="{ subcat: sub }"
                     class="bv-prevention-subcat-link" [class.active]="i === 0">
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/dinh-duong" class="bv-prevention-viewall">Xem tất cả ({{
+                <a routerLink="/blog/danh-muc/dinh-duong" class="bv-prevention-viewall">Xem tất cả ({{
                   getCategoryCount('Dinh
                   dưỡng') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
-                  <a *ngIf="nutritionCardArticles[0]" [routerLink]="getBlogDetailLink(nutritionCardArticles[0])"
-                    class="bv-prevention-featured">
+                  <a *ngIf="nutritionCardArticles[0]" [attr.href]="getBlogDetailLink(nutritionCardArticles[0])"
+                    (click)="openQuickView($event, nutritionCardArticles[0])" class="bv-prevention-featured">
                     <div class="bv-prevention-featured-img">
                       <img [src]="nutritionCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
                         [alt]="nutritionCardArticles[0].title" />
@@ -123,19 +127,22 @@
                       <p>{{ nutritionCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
                     </div>
                   </a>
-                  <a *ngIf="nutritionCardArticles[1]" [routerLink]="getBlogDetailLink(nutritionCardArticles[1])"
-                    class="bv-prevention-text-only">
+                  <a *ngIf="nutritionCardArticles[1]" [attr.href]="getBlogDetailLink(nutritionCardArticles[1])"
+                    (click)="openQuickView($event, nutritionCardArticles[1])" class="bv-prevention-text-only">
                     <h4>{{ nutritionCardArticles[1].title }}</h4>
                     <p>{{ nutritionCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
                   </a>
                 </div>
                 <div class="bv-prevention-bottom">
-                  <a *ngIf="nutritionCardArticles[2]" [routerLink]="getBlogDetailLink(nutritionCardArticles[2])"
-                    class="bv-prevention-title-link">{{ nutritionCardArticles[2].title }}</a>
-                  <a *ngIf="nutritionCardArticles[3]" [routerLink]="getBlogDetailLink(nutritionCardArticles[3])"
-                    class="bv-prevention-title-link">{{ nutritionCardArticles[3].title }}</a>
-                  <a *ngIf="nutritionCardArticles[4]" [routerLink]="getBlogDetailLink(nutritionCardArticles[4])"
-                    class="bv-prevention-title-link">{{ nutritionCardArticles[4].title }}</a>
+                  <a *ngIf="nutritionCardArticles[2]" [attr.href]="getBlogDetailLink(nutritionCardArticles[2])"
+                    (click)="openQuickView($event, nutritionCardArticles[2])" class="bv-prevention-title-link">{{
+                    nutritionCardArticles[2].title }}</a>
+                  <a *ngIf="nutritionCardArticles[3]" [attr.href]="getBlogDetailLink(nutritionCardArticles[3])"
+                    (click)="openQuickView($event, nutritionCardArticles[3])" class="bv-prevention-title-link">{{
+                    nutritionCardArticles[3].title }}</a>
+                  <a *ngIf="nutritionCardArticles[4]" [attr.href]="getBlogDetailLink(nutritionCardArticles[4])"
+                    (click)="openQuickView($event, nutritionCardArticles[4])" class="bv-prevention-title-link">{{
+                    nutritionCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
@@ -143,20 +150,19 @@
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Mẹ & bé</h3>
                 <nav class="bv-prevention-subcat">
-                  <a *ngFor="let sub of momBabySubCategories; let i = index"
-                    [routerLink]="['/bai-viet/danh-muc/me-va-be']" [queryParams]="{ subcat: sub }"
-                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                  <a *ngFor="let sub of momBabySubCategories; let i = index" [routerLink]="['/blog/danh-muc/me-va-be']"
+                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/me-va-be" class="bv-prevention-viewall">Xem tất cả ({{
+                <a routerLink="/blog/danh-muc/me-va-be" class="bv-prevention-viewall">Xem tất cả ({{
                   getCategoryCount('Mẹ &
                   bé') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
-                  <a *ngIf="momBabyCardArticles[0]" [routerLink]="getBlogDetailLink(momBabyCardArticles[0])"
-                    class="bv-prevention-featured">
+                  <a *ngIf="momBabyCardArticles[0]" [attr.href]="getBlogDetailLink(momBabyCardArticles[0])"
+                    (click)="openQuickView($event, momBabyCardArticles[0])" class="bv-prevention-featured">
                     <div class="bv-prevention-featured-img">
                       <img [src]="momBabyCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
                         [alt]="momBabyCardArticles[0].title" />
@@ -166,19 +172,22 @@
                       <p>{{ momBabyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
                     </div>
                   </a>
-                  <a *ngIf="momBabyCardArticles[1]" [routerLink]="getBlogDetailLink(momBabyCardArticles[1])"
-                    class="bv-prevention-text-only">
+                  <a *ngIf="momBabyCardArticles[1]" [attr.href]="getBlogDetailLink(momBabyCardArticles[1])"
+                    (click)="openQuickView($event, momBabyCardArticles[1])" class="bv-prevention-text-only">
                     <h4>{{ momBabyCardArticles[1].title }}</h4>
                     <p>{{ momBabyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
                   </a>
                 </div>
                 <div class="bv-prevention-bottom">
-                  <a *ngIf="momBabyCardArticles[2]" [routerLink]="getBlogDetailLink(momBabyCardArticles[2])"
-                    class="bv-prevention-title-link">{{ momBabyCardArticles[2].title }}</a>
-                  <a *ngIf="momBabyCardArticles[3]" [routerLink]="getBlogDetailLink(momBabyCardArticles[3])"
-                    class="bv-prevention-title-link">{{ momBabyCardArticles[3].title }}</a>
-                  <a *ngIf="momBabyCardArticles[4]" [routerLink]="getBlogDetailLink(momBabyCardArticles[4])"
-                    class="bv-prevention-title-link">{{ momBabyCardArticles[4].title }}</a>
+                  <a *ngIf="momBabyCardArticles[2]" [attr.href]="getBlogDetailLink(momBabyCardArticles[2])"
+                    (click)="openQuickView($event, momBabyCardArticles[2])" class="bv-prevention-title-link">{{
+                    momBabyCardArticles[2].title }}</a>
+                  <a *ngIf="momBabyCardArticles[3]" [attr.href]="getBlogDetailLink(momBabyCardArticles[3])"
+                    (click)="openQuickView($event, momBabyCardArticles[3])" class="bv-prevention-title-link">{{
+                    momBabyCardArticles[3].title }}</a>
+                  <a *ngIf="momBabyCardArticles[4]" [attr.href]="getBlogDetailLink(momBabyCardArticles[4])"
+                    (click)="openQuickView($event, momBabyCardArticles[4])" class="bv-prevention-title-link">{{
+                    momBabyCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
@@ -186,13 +195,13 @@
             <div class="bv-prevention-card bv-elderly-card">
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Người cao tuổi</h3>
-                <a routerLink="/bai-viet/danh-muc/nguoi-cao-tuoi" class="bv-prevention-viewall">Xem tất cả <i
+                <a routerLink="/blog/danh-muc/nguoi-cao-tuoi" class="bv-prevention-viewall">Xem tất cả <i
                     class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
                   <a *ngIf="elderlyCardArticles[0]" [routerLink]="getBlogDetailLink(elderlyCardArticles[0])"
-                    class="bv-prevention-featured">
+                    (click)="openQuickView($event, elderlyCardArticles[0])" class="bv-prevention-featured">
                     <div class="bv-prevention-featured-img">
                       <img [src]="elderlyCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
                         [alt]="elderlyCardArticles[0].title" />
@@ -202,19 +211,22 @@
                       <p>{{ elderlyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
                     </div>
                   </a>
-                  <a *ngIf="elderlyCardArticles[1]" [routerLink]="getBlogDetailLink(elderlyCardArticles[1])"
-                    class="bv-prevention-text-only">
+                  <a *ngIf="elderlyCardArticles[1]" [attr.href]="getBlogDetailLink(elderlyCardArticles[1])"
+                    (click)="openQuickView($event, elderlyCardArticles[1])" class="bv-prevention-text-only">
                     <h4>{{ elderlyCardArticles[1].title }}</h4>
                     <p>{{ elderlyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
                   </a>
                 </div>
                 <div class="bv-prevention-bottom">
-                  <a *ngIf="elderlyCardArticles[2]" [routerLink]="getBlogDetailLink(elderlyCardArticles[2])"
-                    class="bv-prevention-title-link">{{ elderlyCardArticles[2].title }}</a>
-                  <a *ngIf="elderlyCardArticles[3]" [routerLink]="getBlogDetailLink(elderlyCardArticles[3])"
-                    class="bv-prevention-title-link">{{ elderlyCardArticles[3].title }}</a>
-                  <a *ngIf="elderlyCardArticles[4]" [routerLink]="getBlogDetailLink(elderlyCardArticles[4])"
-                    class="bv-prevention-title-link">{{ elderlyCardArticles[4].title }}</a>
+                  <a *ngIf="elderlyCardArticles[2]" [attr.href]="getBlogDetailLink(elderlyCardArticles[2])"
+                    (click)="openQuickView($event, elderlyCardArticles[2])" class="bv-prevention-title-link">{{
+                    elderlyCardArticles[2].title }}</a>
+                  <a *ngIf="elderlyCardArticles[3]" [attr.href]="getBlogDetailLink(elderlyCardArticles[3])"
+                    (click)="openQuickView($event, elderlyCardArticles[3])" class="bv-prevention-title-link">{{
+                    elderlyCardArticles[3].title }}</a>
+                  <a *ngIf="elderlyCardArticles[4]" [attr.href]="getBlogDetailLink(elderlyCardArticles[4])"
+                    (click)="openQuickView($event, elderlyCardArticles[4])" class="bv-prevention-title-link">{{
+                    elderlyCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
@@ -223,20 +235,19 @@
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Khỏe đẹp</h3>
                 <nav class="bv-prevention-subcat">
-                  <a *ngFor="let sub of beautySubCategories; let i = index"
-                    [routerLink]="['/bai-viet/danh-muc/khoe-dep']" [queryParams]="{ subcat: sub }"
-                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                  <a *ngFor="let sub of beautySubCategories; let i = index" [routerLink]="['/blog/danh-muc/khoe-dep']"
+                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/khoe-dep" class="bv-prevention-viewall">Xem tất cả ({{
+                <a routerLink="/blog/danh-muc/khoe-dep" class="bv-prevention-viewall">Xem tất cả ({{
                   getCategoryCount('Khỏe
                   đẹp') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
                   <a *ngIf="beautyCardArticles[0]" [routerLink]="getBlogDetailLink(beautyCardArticles[0])"
-                    class="bv-prevention-featured">
+                    (click)="openQuickView($event, beautyCardArticles[0])" class="bv-prevention-featured">
                     <div class="bv-prevention-featured-img">
                       <img [src]="beautyCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
                         [alt]="beautyCardArticles[0].title" />
@@ -246,19 +257,22 @@
                       <p>{{ beautyCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
                     </div>
                   </a>
-                  <a *ngIf="beautyCardArticles[1]" [routerLink]="getBlogDetailLink(beautyCardArticles[1])"
-                    class="bv-prevention-text-only">
+                  <a *ngIf="beautyCardArticles[1]" [attr.href]="getBlogDetailLink(beautyCardArticles[1])"
+                    (click)="openQuickView($event, beautyCardArticles[1])" class="bv-prevention-text-only">
                     <h4>{{ beautyCardArticles[1].title }}</h4>
                     <p>{{ beautyCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
                   </a>
                 </div>
                 <div class="bv-prevention-bottom">
-                  <a *ngIf="beautyCardArticles[2]" [routerLink]="getBlogDetailLink(beautyCardArticles[2])"
-                    class="bv-prevention-title-link">{{ beautyCardArticles[2].title }}</a>
-                  <a *ngIf="beautyCardArticles[3]" [routerLink]="getBlogDetailLink(beautyCardArticles[3])"
-                    class="bv-prevention-title-link">{{ beautyCardArticles[3].title }}</a>
-                  <a *ngIf="beautyCardArticles[4]" [routerLink]="getBlogDetailLink(beautyCardArticles[4])"
-                    class="bv-prevention-title-link">{{ beautyCardArticles[4].title }}</a>
+                  <a *ngIf="beautyCardArticles[2]" [attr.href]="getBlogDetailLink(beautyCardArticles[2])"
+                    (click)="openQuickView($event, beautyCardArticles[2])" class="bv-prevention-title-link">{{
+                    beautyCardArticles[2].title }}</a>
+                  <a *ngIf="beautyCardArticles[3]" [attr.href]="getBlogDetailLink(beautyCardArticles[3])"
+                    (click)="openQuickView($event, beautyCardArticles[3])" class="bv-prevention-title-link">{{
+                    beautyCardArticles[3].title }}</a>
+                  <a *ngIf="beautyCardArticles[4]" [attr.href]="getBlogDetailLink(beautyCardArticles[4])"
+                    (click)="openQuickView($event, beautyCardArticles[4])" class="bv-prevention-title-link">{{
+                    beautyCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
@@ -266,20 +280,19 @@
               <div class="bv-prevention-header">
                 <h3 class="bv-prevention-title">Giới tính</h3>
                 <nav class="bv-prevention-subcat">
-                  <a *ngFor="let sub of genderSubCategories; let i = index"
-                    [routerLink]="['/bai-viet/danh-muc/gioi-tinh']" [queryParams]="{ subcat: sub }"
-                    class="bv-prevention-subcat-link" [class.active]="i === 0">
+                  <a *ngFor="let sub of genderSubCategories; let i = index" [routerLink]="['/blog/danh-muc/gioi-tinh']"
+                    [queryParams]="{ subcat: sub }" class="bv-prevention-subcat-link" [class.active]="i === 0">
                     <span *ngIf="i > 0" class="bv-prevention-sep">|</span>{{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/gioi-tinh" class="bv-prevention-viewall">Xem tất cả ({{
+                <a routerLink="/blog/danh-muc/gioi-tinh" class="bv-prevention-viewall">Xem tất cả ({{
                   getCategoryCount('Giới
                   tính') }}) <i class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
                   <a *ngIf="genderCardArticles[0]" [routerLink]="getBlogDetailLink(genderCardArticles[0])"
-                    class="bv-prevention-featured">
+                    (click)="openQuickView($event, genderCardArticles[0])" class="bv-prevention-featured">
                     <div class="bv-prevention-featured-img">
                       <img [src]="genderCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
                         [alt]="genderCardArticles[0].title" />
@@ -289,19 +302,22 @@
                       <p>{{ genderCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
                     </div>
                   </a>
-                  <a *ngIf="genderCardArticles[1]" [routerLink]="getBlogDetailLink(genderCardArticles[1])"
-                    class="bv-prevention-text-only">
+                  <a *ngIf="genderCardArticles[1]" [attr.href]="getBlogDetailLink(genderCardArticles[1])"
+                    (click)="openQuickView($event, genderCardArticles[1])" class="bv-prevention-text-only">
                     <h4>{{ genderCardArticles[1].title }}</h4>
                     <p>{{ genderCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
                   </a>
                 </div>
                 <div class="bv-prevention-bottom">
-                  <a *ngIf="genderCardArticles[2]" [routerLink]="getBlogDetailLink(genderCardArticles[2])"
-                    class="bv-prevention-title-link">{{ genderCardArticles[2].title }}</a>
-                  <a *ngIf="genderCardArticles[3]" [routerLink]="getBlogDetailLink(genderCardArticles[3])"
-                    class="bv-prevention-title-link">{{ genderCardArticles[3].title }}</a>
-                  <a *ngIf="genderCardArticles[4]" [routerLink]="getBlogDetailLink(genderCardArticles[4])"
-                    class="bv-prevention-title-link">{{ genderCardArticles[4].title }}</a>
+                  <a *ngIf="genderCardArticles[2]" [attr.href]="getBlogDetailLink(genderCardArticles[2])"
+                    (click)="openQuickView($event, genderCardArticles[2])" class="bv-prevention-title-link">{{
+                    genderCardArticles[2].title }}</a>
+                  <a *ngIf="genderCardArticles[3]" [attr.href]="getBlogDetailLink(genderCardArticles[3])"
+                    (click)="openQuickView($event, genderCardArticles[3])" class="bv-prevention-title-link">{{
+                    genderCardArticles[3].title }}</a>
+                  <a *ngIf="genderCardArticles[4]" [attr.href]="getBlogDetailLink(genderCardArticles[4])"
+                    (click)="openQuickView($event, genderCardArticles[4])" class="bv-prevention-title-link">{{
+                    genderCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
@@ -310,18 +326,18 @@
                 <h3 class="bv-prevention-title">Tin tức sức khoẻ</h3>
                 <nav class="bv-prevention-subcat">
                   <a *ngFor="let sub of healthNewsSubCategories; let i = index"
-                    [routerLink]="['/bai-viet/danh-muc/tin-tuc-suc-khoe']" [queryParams]="{ subcat: sub }"
+                    [routerLink]="['/blog/danh-muc/tin-tuc-suc-khoe']" [queryParams]="{ subcat: sub }"
                     class="bv-prevention-subcat-link" [class.active]="i === 0">
                     {{ sub }}
                   </a>
                 </nav>
-                <a routerLink="/bai-viet/danh-muc/tin-tuc-suc-khoe" class="bv-prevention-viewall">Xem tất cả <i
+                <a routerLink="/blog/danh-muc/tin-tuc-suc-khoe" class="bv-prevention-viewall">Xem tất cả <i
                     class="bi bi-chevron-right"></i></a>
               </div>
               <div class="bv-prevention-articles">
                 <div class="bv-prevention-top">
                   <a *ngIf="healthNewsCardArticles[0]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[0])"
-                    class="bv-prevention-featured">
+                    (click)="openQuickView($event, healthNewsCardArticles[0])" class="bv-prevention-featured">
                     <div class="bv-prevention-featured-img">
                       <img [src]="healthNewsCardArticles[0].image || 'assets/placeholder/blog-main.jpg'"
                         [alt]="healthNewsCardArticles[0].title" />
@@ -331,19 +347,22 @@
                       <p>{{ healthNewsCardArticles[0].excerpt || 'Mô tả ngắn...' }}</p>
                     </div>
                   </a>
-                  <a *ngIf="healthNewsCardArticles[1]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[1])"
-                    class="bv-prevention-text-only">
+                  <a *ngIf="healthNewsCardArticles[1]" [attr.href]="getBlogDetailLink(healthNewsCardArticles[1])"
+                    (click)="openQuickView($event, healthNewsCardArticles[1])" class="bv-prevention-text-only">
                     <h4>{{ healthNewsCardArticles[1].title }}</h4>
                     <p>{{ healthNewsCardArticles[1].excerpt || 'Mô tả ngắn...' }}</p>
                   </a>
                 </div>
                 <div class="bv-prevention-bottom">
-                  <a *ngIf="healthNewsCardArticles[2]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[2])"
-                    class="bv-prevention-title-link">{{ healthNewsCardArticles[2].title }}</a>
-                  <a *ngIf="healthNewsCardArticles[3]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[3])"
-                    class="bv-prevention-title-link">{{ healthNewsCardArticles[3].title }}</a>
-                  <a *ngIf="healthNewsCardArticles[4]" [routerLink]="getBlogDetailLink(healthNewsCardArticles[4])"
-                    class="bv-prevention-title-link">{{ healthNewsCardArticles[4].title }}</a>
+                  <a *ngIf="healthNewsCardArticles[2]" [attr.href]="getBlogDetailLink(healthNewsCardArticles[2])"
+                    (click)="openQuickView($event, healthNewsCardArticles[2])" class="bv-prevention-title-link">{{
+                    healthNewsCardArticles[2].title }}</a>
+                  <a *ngIf="healthNewsCardArticles[3]" [attr.href]="getBlogDetailLink(healthNewsCardArticles[3])"
+                    (click)="openQuickView($event, healthNewsCardArticles[3])" class="bv-prevention-title-link">{{
+                    healthNewsCardArticles[3].title }}</a>
+                  <a *ngIf="healthNewsCardArticles[4]" [attr.href]="getBlogDetailLink(healthNewsCardArticles[4])"
+                    (click)="openQuickView($event, healthNewsCardArticles[4])" class="bv-prevention-title-link">{{
+                    healthNewsCardArticles[4].title }}</a>
                 </div>
               </div>
             </div>
@@ -354,13 +373,13 @@
               <div class="bv-ft-list">
                 <ng-container *ngFor="let item of featuredTopicCategories">
                   <a *ngIf="item.name.toLowerCase().indexOf('khuyến mãi') === -1 && item.name.toLowerCase().indexOf('phân loại') === -1 && item.name.toLowerCase().indexOf('truyền thông') === -1"
-                    [routerLink]="['/chuyen-de', item.slug]" class="bv-ft-item" [attr.data-category]="item.name">
+                    [routerLink]="['/topic', item.slug]" class="bv-ft-item" [attr.data-category]="item.name">
                     <span class="bv-ft-name"># {{ item.name }}</span>
                     <span class="bv-ft-count">{{ item.count }} bài viết</span>
                   </a>
                 </ng-container>
               </div>
-              <a routerLink="/chuyen-de" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+              <a routerLink="/topic" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
             </div>
             <div class="bv-expert-team-box">
               <h3 class="bv-et-title">Đội ngũ chuyên môn</h3>
@@ -374,7 +393,7 @@
                   </div>
                 </div>
               </div>
-              <a routerLink="/bai-viet" class="bv-et-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+              <a routerLink="/blog" class="bv-et-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
             </div>
           </aside>
         </div>

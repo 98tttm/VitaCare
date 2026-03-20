@@ -1,0 +1,43 @@
+<div class="bv-modal-overlay" *ngIf="blogQuickViewService.visible()" (click)="onBackdropClick($event)">
+    <div class="bv-modal-container" *ngIf="blogQuickViewService.blog() as blog">
+        <div class="bv-modal-header">
+            <h4>XEM TRƯỚC BÀI VIẾT</h4>
+            <div class="bv-header-actions">
+                <button class="bv-close-btn" (click)="close()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="bv-modal-body">
+            <div class="bv-quickview-content">
+                <div class="bv-quickview-img">
+                    <img [src]="blog.image || 'assets/placeholder/blog-main.jpg'" [alt]="blog.title" />
+                </div>
+                <div class="bv-quickview-info">
+                    <span class="bv-quickview-badge">{{ blog.categoryName || 'Sức khỏe' }}</span>
+                    <h2 class="bv-quickview-title">
+                        <a [routerLink]="getBlogLink(blog)" (click)="navigateToDetail($event, blog)">{{ blog.title
+                            }}</a>
+                    </h2>
+
+                    <div class="bv-quickview-meta" *ngIf="blog.author">
+                        <img *ngIf="blog.author.avatar" [src]="blog.author.avatar" class="bv-author-avatar" />
+                        <span class="bv-author-name">{{ blog.author.name }}</span>
+                    </div>
+
+                    <div class="bv-quickview-excerpt">
+                        <p>{{ blog.excerpt || blog.shortDescription || 'Đang tải nội dung...' }}</p>
+                    </div>
+
+                    <div class="bv-quickview-actions">
+                        <a [routerLink]="getBlogLink(blog)" (click)="navigateToDetail($event, blog)"
+                            class="bv-btn-read-more">
+                            Đến trang bài viết
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -270,8 +270,8 @@ export class DiseaseDetails implements OnInit, OnDestroy {
     // Make external links internal (both diseases and blog posts)
     const internalizedHtml = cleanedHtml
       .replace(/href="https:\/\/nhathuoclongchau.com.vn\/benh\/([^"]+).html"/gi, 'href="/benh/$1"')
-      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/bai-viet\/([^"]+).html"/gi, 'href="/bai-viet/$1"')
-      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/([^"]+).html"/gi, 'href="/bai-viet/$1"');
+      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/bai-viet\/([^"]+).html"/gi, 'href="/blog/$1"')
+      .replace(/href="https:\/\/nhathuoclongchau.com.vn\/([^"]+).html"/gi, 'href="/blog/$1"');
 
     const fixedHtml = internalizedHtml.replace(/<h3[^>]*>/gi, '<b style="display: block; margin-top: 25px; margin-bottom: 10px; color: #00589F; font-size: 19px; font-weight: 700;">')
       .replace(/<\/h3>/gi, '</b>');
@@ -296,9 +296,9 @@ export class DiseaseDetails implements OnInit, OnDestroy {
     if (slug.startsWith('/')) slug = slug.substring(1);
 
     // Xóa prefix dư thừa (cả có và không có / ở đầu)
-    slug = slug.replace(/^benh\//i, '').replace(/^bai-viet\//i, '');
-    // Xóa lần nữa nếu vẫn còn (trường hợp /bai-viet/bai-viet/...)
-    slug = slug.replace(/^benh\//i, '').replace(/^bai-viet\//i, '');
+    slug = slug.replace(/^benh\//i, '').replace(/^(blog|bai-viet)\//i, '');
+    // Xóa lần nữa nếu vẫn còn (trường hợp /blog/blog/...)
+    slug = slug.replace(/^benh\//i, '').replace(/^(blog|bai-viet)\//i, '');
 
     // Xóa đuôi .html
     slug = slug.replace(/\.html$/i, '');
@@ -319,7 +319,7 @@ export class DiseaseDetails implements OnInit, OnDestroy {
 
         let targetUrl = href;
         if (href.includes('/benh/')) targetUrl = this.getInternalUrl(href, 'benh');
-        else if (href.includes('/bai-viet/')) targetUrl = this.getInternalUrl(href, 'bai-viet');
+        else if (href.includes('/blog/') || href.includes('/bai-viet/')) targetUrl = this.getInternalUrl(href, 'blog');
 
         window.scrollTo(0, 0);
         this.router.navigateByUrl(targetUrl);
@@ -395,7 +395,7 @@ export class DiseaseDetails implements OnInit, OnDestroy {
   }
 
   goToBlogBySlug(slug: string) {
-    const url = this.getInternalUrl(slug, 'bai-viet');
+    const url = this.getInternalUrl(slug, 'blog');
     window.scrollTo(0, 0);
     this.router.navigateByUrl(url);
   }

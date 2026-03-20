@@ -6,7 +6,7 @@
                 <!-- Breadcrumb -->
                 <nav class="breadcrumb-vc">
                     <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
-                    <div class="breadcrumb-item"><a routerLink="/chuyen-de">Chuyên đề</a></div>
+                    <div class="breadcrumb-item"><a routerLink="/topic">Chuyên đề</a></div>
                     <div class="breadcrumb-item active">{{ tagName }}</div>
                 </nav>
 
@@ -25,13 +25,13 @@
                 <!-- Articles List -->
                 <div class="tc-list" *ngIf="blogs.length > 0">
                     <div *ngFor="let blog of blogs" class="tc-card">
-                        <a [routerLink]="blog.link" class="tc-card-img-link">
+                        <a [attr.href]="blog.link" (click)="openQuickView($event, blog)" class="tc-card-img-link">
                             <img [src]="blog.image" [alt]="blog.title" class="tc-card-img">
                         </a>
                         <div class="tc-card-body">
                             <div class="tc-card-badge">{{ blog.categoryName }}</div>
                             <h2 class="tc-card-title">
-                                <a [routerLink]="blog.link">{{ blog.title }}</a>
+                                <a [attr.href]="blog.link" (click)="openQuickView($event, blog)">{{ blog.title }}</a>
                             </h2>
                             <p class="tc-card-excerpt">{{ blog.excerpt }}</p>
                         </div>
@@ -55,7 +55,21 @@
 
             <!-- Sidebar (Optional, could be added later for better UX) -->
             <aside class="tc-sidebar">
-                <!-- You could add featured products or related topics here -->
+                <!-- Chuyên đề nổi bật -->
+                <div class="bv-featured-topics-box">
+                    <h3 class="bv-ft-title">Chuyên đề nổi bật</h3>
+                    <div class="bv-ft-list">
+                        <ng-container *ngFor="let item of featuredTopicCategories">
+                            <a *ngIf="item.name.toLowerCase().indexOf('khuyến mãi') === -1 && item.name.toLowerCase().indexOf('phân loại') === -1 && item.name.toLowerCase().indexOf('truyền thông') === -1"
+                                [routerLink]="['/topic', item.slug]" class="bv-ft-item"
+                                [attr.data-category]="item.name">
+                                <span class="bv-ft-name"># {{ item.name }}</span>
+                                <span class="bv-ft-count">{{ item.count }} bài viết</span>
+                            </a>
+                        </ng-container>
+                    </div>
+                    <a routerLink="/topic" class="bv-ft-viewall">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+                </div>
             </aside>
         </div>
     </div>

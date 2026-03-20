@@ -122,7 +122,7 @@ export class Footer implements OnInit {
   }
 
   goBlog(): void {
-    this.router.navigate(['/bai-viet']);
+    this.router.navigate(['/blog']);
   }
 
   openDrugLookup(): void {

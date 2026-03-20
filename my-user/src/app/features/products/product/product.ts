@@ -664,9 +664,9 @@ export class Product implements OnInit, OnDestroy {
     }
 
     getBlogDetailLink(blog: any): string {
-        if (!blog) return '/bai-viet';
-        const slug = blog.slug || (blog.url && typeof blog.url === 'string' ? blog.url.replace(/.*\/bai-viet\/?/i, '').replace(/\.html$/i, '').trim() : '') || (blog._id ? String(blog._id) : '');
-        return slug ? `/bai-viet/${encodeURIComponent(slug)}` : '/bai-viet';
+        if (!blog) return '/blog';
+        const slug = blog.slug || (blog.url && typeof blog.url === 'string' ? blog.url.replace(/.*\/(blog|bai-viet)\/?/i, '').replace(/\.html$/i, '').trim() : '') || (blog._id ? String(blog._id) : '');
+        return slug ? `/blog/${encodeURIComponent(slug)}` : '/blog';
     }
 
     trackRecentlyViewedBlog(blog: any) {

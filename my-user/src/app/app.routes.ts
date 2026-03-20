@@ -147,7 +147,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/blogs/blog-sub-category/blog-sub-category').then(m => m.BlogSubCategory),
   },
   {
-    path: 'blog/chuyen-de/:specialtySlug',
+    path: 'topic/:specialtySlug',
     loadComponent: () => import('./features/blogs/topic-category/topic-category').then(m => m.TopicCategory),
   },
   {

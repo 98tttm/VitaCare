@@ -3,7 +3,7 @@
         <!-- Breadcrumb -->
         <nav class="breadcrumb-vc">
             <div class="breadcrumb-item"><a routerLink="/">Trang chủ</a></div>
-            <div class="breadcrumb-item"><a routerLink="/bai-viet">Góc sức khỏe</a></div>
+            <div class="breadcrumb-item"><a routerLink="/blog">Góc sức khỏe</a></div>
             <div class="breadcrumb-item active">Chuyên đề</div>
         </nav>
 
@@ -25,8 +25,7 @@
 
             <!-- Topics Grid -->
             <div *ngIf="!loading" class="cd-grid">
-                <a *ngFor="let item of featuredTopicCategories" [routerLink]="['/chuyen-de', item.slug]"
-                    class="cd-card">
+                <a *ngFor="let item of featuredTopicCategories" [routerLink]="['/topic', item.slug]" class="cd-card">
                     <div class="cd-card-content">
                         <span class="cd-card-name">{{ item.name }}</span>
                         <div class="cd-card-footer">
