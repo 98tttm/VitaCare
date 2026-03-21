@@ -25,15 +25,25 @@
                 <!-- STEP 1: Login -->
                 <ng-container *ngIf="currentStep === 'login'">
                     <h2 class="form-title">ĐĂNG NHẬP</h2>
+                    <div class="role-actions">
+                        <button type="button" class="role-btn" [class.active]="selectedRole === 'admin'"
+                            (click)="selectRole('admin')">Admin</button>
+                        <button type="button" class="role-btn" [class.active]="selectedRole === 'pharmacist'"
+                            (click)="selectRole('pharmacist')">Pharmacist</button>
+                    </div>
 
                     <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
                         <div class="form-group">
                             <label for="email">Email<span class="required">*</span></label>
                             <input type="email" id="email" formControlName="email" placeholder="Nhập email của bạn"
+                                (blur)="validateEmailByRole()"
                                 [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
                             <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
                                 class="error-message">
                                 Email không hợp lệ
+                            </div>
+                            <div *ngIf="!loginForm.get('email')?.invalid && roleEmailError" class="error-message">
+                                {{ roleEmailError }}
                             </div>
                         </div>
 
@@ -57,7 +67,8 @@
                             <a (click)="goToForgotPassword()" class="forgot-link">Quên mật khẩu?</a>
                         </div>
 
-                        <button type="submit" class="submit-btn" [disabled]="loginForm.invalid || isLoading">Đăng
+                        <button type="submit" class="submit-btn"
+                            [disabled]="loginForm.invalid || isLoading || isRoleEmailValid !== true">Đăng
                             nhập</button>
                     </form>
                 </ng-container>

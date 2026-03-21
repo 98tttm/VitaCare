@@ -1,0 +1,61 @@
+.pharmacist-only-empty {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+}
+
+.empty-card {
+  width: min(560px, 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+  border: 1px solid #d8e6ff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 54, 120, 0.08);
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 28px;
+  background: #eaf2ff;
+  border: 1px solid #cfe1ff;
+}
+
+.empty-card h2 {
+  margin: 0 0 10px;
+  color: #184a96;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.empty-card p {
+  margin: 0;
+  color: #4b5b79;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+:host-context(.dark-mode) .empty-card {
+  background: linear-gradient(180deg, #1a2236 0%, #141b2c 100%);
+  border-color: #334867;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+:host-context(.dark-mode) .empty-icon {
+  background: #273756;
+  border-color: #3b527a;
+}
+
+:host-context(.dark-mode) .empty-card h2 {
+  color: #b8d1ff;
+}
+
+:host-context(.dark-mode) .empty-card p {
+  color: #c3ccdc;
+}

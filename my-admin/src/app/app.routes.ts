@@ -45,15 +45,21 @@ export const routes: Routes = [
       },
       {
         path: 'blogs',
-        loadComponent: () => import('./blogmanage/blogmanage').then((m) => m.Blogmanage)
-      },
-      {
-        path: 'blogs/detail',
-        loadComponent: () => import('./blogdetail/blogdetail').then((m) => m.Blogdetail)
-      },
-      {
-        path: 'blogs/create',
-        loadComponent: () => import('./blogdetail/blogdetail').then((m) => m.Blogdetail)
+        loadComponent: () => import('./pharmacist-only-shell/pharmacist-only-shell').then((m) => m.PharmacistOnlyShell),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./blogmanage/blogmanage').then((m) => m.Blogmanage)
+          },
+          {
+            path: 'detail',
+            loadComponent: () => import('./blogdetail/blogdetail').then((m) => m.Blogdetail)
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./blogdetail/blogdetail').then((m) => m.Blogdetail)
+          },
+        ]
       },
       {
         path: 'promotions',
@@ -61,15 +67,21 @@ export const routes: Routes = [
       },
       {
         path: 'diseases',
-        loadComponent: () => import('./diseasemanage/diseasemanage').then((m) => m.Diseasemanage)
-      },
-      {
-        path: 'diseases/detail',
-        loadComponent: () => import('./diseasedetail/diseasedetail').then((m) => m.Diseasedetail)
-      },
-      {
-        path: 'diseases/create',
-        loadComponent: () => import('./diseasedetail/diseasedetail').then((m) => m.Diseasedetail)
+        loadComponent: () => import('./pharmacist-only-shell/pharmacist-only-shell').then((m) => m.PharmacistOnlyShell),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./diseasemanage/diseasemanage').then((m) => m.Diseasemanage)
+          },
+          {
+            path: 'detail',
+            loadComponent: () => import('./diseasedetail/diseasedetail').then((m) => m.Diseasedetail)
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./diseasedetail/diseasedetail').then((m) => m.Diseasedetail)
+          },
+        ]
       },
       {
         path: 'consultation-prescription',
@@ -81,7 +93,13 @@ export const routes: Routes = [
       },
       {
         path: 'consultation-disease',
-        loadComponent: () => import('./consultationdisease/consultationdisease').then((m) => m.Consultationdisease)
+        loadComponent: () => import('./pharmacist-only-shell/pharmacist-only-shell').then((m) => m.PharmacistOnlyShell),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./consultationdisease/consultationdisease').then((m) => m.Consultationdisease)
+          },
+        ]
       }
     ]
   }

@@ -97,7 +97,7 @@
         <!-- Middle Charts Row (Legacy small charts updated) -->
         <div class="mid-charts-grid">
             <div class="chart-box-mini circle-chart-card">
-                <h4>Phân bổ Khuyến mãi</h4>
+                <h4>Trạng thái Khuyến mãi</h4>
                 <div class="mini-canvas-container">
                     <canvas #promoDistributionChart></canvas>
                 </div>
@@ -171,11 +171,14 @@
                 <div class="list-header">
                     <h4>Cảnh báo Tồn kho</h4>
                     <div class="list-header-actions">
-                        <span class="stock-total-count">Tổng: {{ totalOutOfStockCount }}</span>
+                        <span class="stock-total-count">Hết hàng: {{ totalOutOfStockCount }}</span>
                         <button class="btn-text-sm" (click)="viewOutOfStockProducts()">Xem thêm</button>
                     </div>
                 </div>
                 <div class="list-body stock-list-body">
+                    <div class="stock-fallback-note" *ngIf="showingLowStockFallback">
+                        Hiện chưa có sản phẩm hết hàng (stock = 0). Đang hiển thị sản phẩm sắp hết.
+                    </div>
                     <table class="dashboard-table plain">
                         <thead>
                             <tr>
@@ -214,14 +217,8 @@
                     <button class="btn-text-sm" (click)="viewAllProducts()">Xem tất cả</button>
                 </div>
                 <div class="list-body product-list-body">
-                    <div class="product-item" *ngFor="let prod of topProducts">
-                        <div class="img-wrapper">
-                            <img [src]="prod.image" onerror="this.src='assets/images/default-product.png'">
-                        </div>
-                        <div class="prod-info">
-                            <p class="name">{{ prod.name }}</p>
-                            <p class="sales">Đã bán: <strong>{{ prod.sales }}</strong> sản phẩm</p>
-                        </div>
+                    <div class="top-products-chart-container">
+                        <canvas #topProductsChart></canvas>
                     </div>
                 </div>
             </div>

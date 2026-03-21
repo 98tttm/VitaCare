@@ -4,6 +4,7 @@ import { OrderService } from '../services/order.service';
 import { CustomerService } from '../services/customer.service';
 import { ProductService } from '../services/product.service';
 import { ConsultationService } from '../services/consultation.service';
+import { PromotionService } from '../services/promotion.service';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { forkJoin, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
@@ -26,6 +27,7 @@ export class Home implements OnInit {
   @ViewChild('promoDistributionChart') promoDistributionChartRef!: ElementRef;
   @ViewChild('statusPieChart') statusPieChartRef!: ElementRef;
   @ViewChild('customerBarChart') customerBarChartRef!: ElementRef;
+  @ViewChild('topProductsChart') topProductsChartRef!: ElementRef;
 
   // New Chart refs
   @ViewChild('paymentMethodChart') paymentMethodChartRef!: ElementRef;
@@ -40,6 +42,7 @@ export class Home implements OnInit {
   totalCustomersCount = 0;
   totalProductsCount = 0;
   totalOutOfStockCount = 0;
+  showingLowStockFallback = false;
 
   recentOrders: any[] = [];
   topProducts: any[] = [];
@@ -50,6 +53,7 @@ export class Home implements OnInit {
   private currentOrders: any[] = [];
   private currentCustomers: any[] = [];
   private currentPrescriptions: any[] = [];
+  private currentPromotions: any[] = [];
 
   constructor(
     private authService: AuthService,
@@ -57,6 +61,7 @@ export class Home implements OnInit {
     private customerService: CustomerService,
     private productService: ProductService,
     private consultationService: ConsultationService,
+    private promotionService: PromotionService,
     private cdr: ChangeDetectorRef,
     private decimalPipe: DecimalPipe,
     private router: Router,
@@ -70,7 +75,7 @@ export class Home implements OnInit {
     this.themeSubscription = this.themeService.isDarkMode$.subscribe(isDark => {
       this.updateChartDefaults(isDark);
       if (!this.isLoading) {
-        this.initCharts(this.currentOrders, this.currentCustomers, this.currentPrescriptions);
+        this.initCharts(this.currentOrders, this.currentCustomers, this.currentPrescriptions, this.currentPromotions);
       }
     });
   }
@@ -101,7 +106,8 @@ export class Home implements OnInit {
       orders: this.orderService.getOrders(),
       customers: this.customerService.getCustomers(),
       products: this.productService.getAllProducts(),
-      prescriptions: this.consultationService.getPrescriptionConsultations()
+      prescriptions: this.consultationService.getPrescriptionConsultations(),
+      promotions: this.promotionService.getPromotions()
     }).subscribe({
       next: (results: any) => {
         this.stats = results.stats.data || results.stats;
@@ -110,6 +116,9 @@ export class Home implements OnInit {
         this.currentPrescriptions =
           results.prescriptions?.data ||
           (Array.isArray(results.prescriptions) ? results.prescriptions : []);
+        this.currentPromotions =
+          results.promotions?.data ||
+          (Array.isArray(results.promotions) ? results.promotions : []);
         const products = results.products.data || results.products;
 
         this.processMetrics(this.currentOrders, this.currentCustomers, products);
@@ -117,7 +126,7 @@ export class Home implements OnInit {
 
         this.cdr.detectChanges();
         // Slightly longer delay for high-quality rendering
-        setTimeout(() => this.initCharts(this.currentOrders, this.currentCustomers, this.currentPrescriptions), 300);
+        setTimeout(() => this.initCharts(this.currentOrders, this.currentCustomers, this.currentPrescriptions, this.currentPromotions), 300);
       },
       error: (err) => {
         console.error('Error loading dashboard data:', err);
@@ -140,45 +149,41 @@ export class Home implements OnInit {
       return db - da;
     }).slice(0, 4);
 
-    const salesMap: { [key: string]: number } = {};
-    orders.forEach(o => {
-      (o.item || o.items || []).forEach((it: any) => {
-        const id = it.sku || it.productId || 'unknown';
-        salesMap[id] = (salesMap[id] || 0) + (it.quantity || 1);
-      });
-    });
-
-    this.topProducts = Object.keys(salesMap)
-      .map(id => {
-        const p = products.find(prod => prod.sku === id || prod._id === id);
-        return {
-          id,
-          name: p ? p.name : 'Sản phẩm ' + id,
-          sales: salesMap[id],
-          image: p ? (Array.isArray(p.image) ? p.image[0] : (p.image || '')) : ''
-        };
-      })
-      .sort((a, b) => b.sales - a.sales)
-      .slice(0, 3);
-
-    const outOfStockAll = products
-      .filter(p => (p.stock !== undefined && Number(p.stock) === 0))
+    this.topProducts = (products || [])
       .map((p: any) => ({
-        ...p,
+        id: p._id || p.id || p.sku,
+        name: p.name || 'Sản phẩm',
+        sales: Number(p.sold || 0),
         image: p.image || (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery[0] : '')
       }))
+      .sort((a: any, b: any) => b.sales - a.sales)
+      .slice(0, 5);
+
+    const normalizedProducts = (products || []).map((p: any) => ({
+      ...p,
+      image: p.image || (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery[0] : ''),
+      stock: Number(p.stock ?? 0)
+    }));
+
+    const outOfStockAll = normalizedProducts
+      .filter(p => (p.stock !== undefined && Number(p.stock) === 0))
       .sort((a, b) => (a.stock || 0) - (b.stock || 0));
 
+    const lowStockAll = normalizedProducts
+      .filter((p: any) => Number.isFinite(p.stock) && p.stock > 0 && p.stock < 10)
+      .sort((a: any, b: any) => a.stock - b.stock);
+
     this.totalOutOfStockCount = outOfStockAll.length;
-    this.outOfStockProducts = outOfStockAll.slice(0, 5);
+    this.showingLowStockFallback = outOfStockAll.length === 0;
+    this.outOfStockProducts = (outOfStockAll.length > 0 ? outOfStockAll : lowStockAll).slice(0, 5);
   }
 
-  initCharts(orders: any[], customers: any[], prescriptions: any[]) {
+  initCharts(orders: any[], customers: any[], prescriptions: any[], promotions: any[]) {
     if (typeof Chart === 'undefined') return;
 
     this.renderRevenueChart(this.stats.revenue30d || []);
     this.renderPrescriptionStatusChart(prescriptions);
-    this.renderPromoDistributionChart(orders);
+    this.renderPromoDistributionChart(promotions);
     this.renderStatusPieChart(orders);
     this.renderCustomerBarChart(customers);
 
@@ -186,6 +191,7 @@ export class Home implements OnInit {
     this.renderPaymentMethodChart(orders);
     this.renderCustomerTierChart(customers);
     this.renderPeakHoursChart(orders);
+    this.renderTopProductsChart(this.topProducts);
   }
 
   private renderRevenueChart(revenueData: any[]) {
@@ -316,25 +322,48 @@ export class Home implements OnInit {
     });
   }
 
-  private renderPromoDistributionChart(orders: any[]) {
+  private renderPromoDistributionChart(promotions: any[]) {
     if (!this.promoDistributionChartRef) return;
     const ctx = this.promoDistributionChartRef.nativeElement.getContext('2d');
     const isDark = this.themeService.isDarkMode;
 
     if (this.charts['promo']) this.charts['promo'].destroy();
 
-    const withPromo = orders.filter(o => o.promotion && (Array.isArray(o.promotion) ? o.promotion.length > 0 : !!o.promotion)).length;
-    const defaultCnt = orders.length - withPromo;
+    const now = Date.now();
+    const parseDate = (value: any): number | null => {
+      if (!value) return null;
+      const d = new Date(value);
+      const t = d.getTime();
+      return Number.isNaN(t) ? null : t;
+    };
+
+    let activeCount = 0;
+    let upcomingCount = 0;
+    let endedCount = 0;
+
+    (promotions || []).forEach((p: any) => {
+      const start = parseDate(p.startDate || p.start_at || p.startTime);
+      const end = parseDate(p.endDate || p.end_at || p.endTime);
+
+      if (start !== null && now < start) {
+        upcomingCount++;
+      } else if (end !== null && now > end) {
+        endedCount++;
+      } else {
+        activeCount++;
+      }
+    });
 
     this.charts['promo'] = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Mã', 'Mặc định'],
+        labels: ['Đang diễn ra', 'Sắp diễn ra', 'Đã kết thúc'],
         datasets: [{
-          data: [withPromo, defaultCnt],
+          data: [activeCount, upcomingCount, endedCount],
           backgroundColor: [
             'rgba(99, 102, 241, 0.95)',
-            isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(99, 102, 241, 0.18)'
+            'rgba(99, 102, 241, 0.6)',
+            isDark ? 'rgba(99, 102, 241, 0.28)' : 'rgba(99, 102, 241, 0.22)'
           ],
           borderWidth: 0,
           hoverOffset: 4
@@ -586,12 +615,72 @@ export class Home implements OnInit {
     });
   }
 
+  private renderTopProductsChart(products: any[]) {
+    if (!this.topProductsChartRef) return;
+    const ctx = this.topProductsChartRef.nativeElement.getContext('2d');
+    const isDark = this.themeService.isDarkMode;
+
+    if (this.charts['topProducts']) this.charts['topProducts'].destroy();
+
+    const top = (products || []).slice(0, 5);
+    const labels = top.map((p: any) => {
+      const name = String(p.name || 'Sản phẩm');
+      return name.length > 34 ? `${name.slice(0, 34)}...` : name;
+    });
+    const data = top.map((p: any) => Number(p.sales || 0));
+
+    this.charts['topProducts'] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Lượt bán',
+          data,
+          backgroundColor: [
+            'rgba(99, 102, 241, 0.95)',
+            'rgba(99, 102, 241, 0.82)',
+            'rgba(99, 102, 241, 0.7)',
+            'rgba(99, 102, 241, 0.58)',
+            'rgba(99, 102, 241, 0.46)'
+          ],
+          borderRadius: 8,
+          borderSkipped: false,
+          barThickness: 18
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' },
+            ticks: { color: isDark ? '#94a3b8' : '#64748b', font: { size: 10 } }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: isDark ? '#cbd5e1' : '#334155', font: { size: 11 } }
+          }
+        }
+      }
+    });
+  }
+
   viewAllOrders() {
     this.router.navigate(['/admin/orders']);
   }
 
   viewAllProducts() {
-    this.router.navigate(['/admin/products']);
+    this.router.navigate(['/admin/products'], {
+      queryParams: {
+        sortColumn: 'sold',
+        sortDirection: 'desc'
+      }
+    });
   }
 
   viewAllCustomers() {

@@ -8010,32 +8010,107 @@ app.delete('/api/admin/product_groups/:id', async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
 
-app.post('/api/admin/login', async (req, res) => {
-  const { email, password } = req.body;
+const ADMIN_ROLES = {
+  admin: {
+    model: AdminModel,
+    emailFields: ['adminemail', 'email'],
+    passwordField: 'password',
+    roleLabel: 'Admin'
+  },
+  pharmacist: {
+    model: Pharmacist,
+    emailFields: ['pharmacistEmail', 'email'],
+    passwordField: 'password',
+    roleLabel: 'Pharmacist'
+  }
+};
+
+function getRoleConfig(roleRaw) {
+  const role = String(roleRaw || 'admin').toLowerCase();
+  return ADMIN_ROLES[role] || null;
+}
+
+function getEmailQuery(email, emailFields) {
+  return {
+    $or: emailFields.map((field) => ({ [field]: email }))
+  };
+}
+
+app.post('/api/admin/check-role-email', async (req, res) => {
+  const { email, role } = req.body || {};
+  const normalizedEmail = String(email || '').trim();
+  const roleConfig = getRoleConfig(role);
+
+  if (!roleConfig) {
+    return res.status(400).json({ success: false, valid: false, message: 'Vai trò không hợp lệ.' });
+  }
+  if (!normalizedEmail) {
+    return res.status(400).json({ success: false, valid: false, message: 'Email là bắt buộc.' });
+  }
+
   try {
-    const admin = await AdminModel.findOne({ adminemail: email });
-    if (admin && admin.password === password) {
-      res.json({ success: true, message: 'Login success', admin });
-    } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    const user = await roleConfig.model.findOne(getEmailQuery(normalizedEmail, roleConfig.emailFields));
+    if (!user) {
+      return res.json({
+        success: false,
+        valid: false,
+        message: `Email này không thuộc vai trò ${roleConfig.roleLabel}.`
+      });
     }
-  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+    return res.json({ success: true, valid: true });
+  } catch (error) {
+    return res.status(500).json({ success: false, valid: false, message: error.message });
+  }
+});
+
+app.post('/api/admin/login', async (req, res) => {
+  const { email, password, role } = req.body || {};
+  const roleConfig = getRoleConfig(role);
+  if (!roleConfig) {
+    return res.status(400).json({ success: false, message: 'Vai trò không hợp lệ.' });
+  }
+
+  try {
+    const user = await roleConfig.model.findOne(getEmailQuery(email, roleConfig.emailFields));
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Email không thuộc vai trò đã chọn.' });
+    }
+    const storedPassword = user?.[roleConfig.passwordField];
+    if (storedPassword !== password) {
+      return res.status(401).json({ success: false, message: 'Mật khẩu không chính xác.' });
+    }
+    const responseUser = user.toObject ? user.toObject() : user;
+    responseUser.accountRole = String(role).toLowerCase();
+    res.json({ success: true, message: 'Login success', admin: responseUser });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.post('/api/admin/forgot-password', async (req, res) => {
-  const { email } = req.body;
-  try {
-    const admin = await AdminModel.findOne({ adminemail: email });
-    if (!admin) return res.status(404).json({ success: false, message: 'Email không tồn tại trong hệ thống' });
-  } catch (err) { return res.status(500).json({ success: false, message: 'Lỗi kiểm tra email' }); }
+  const { email, role } = req.body || {};
+  const roleConfig = getRoleConfig(role);
+  if (!roleConfig) {
+    return res.status(400).json({ success: false, message: 'Vai trò không hợp lệ.' });
+  }
 
+  try {
+    const user = await roleConfig.model.findOne(getEmailQuery(email, roleConfig.emailFields));
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Email không tồn tại trong vai trò đã chọn.' });
+    }
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Lỗi kiểm tra email' });
+  }
+
+  const roleKey = String(role).toLowerCase();
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-  resetCodes[email] = code;
+  resetCodes[`${roleKey}:${email}`] = code;
 
   const mailOptions = {
     from: 'vitacarehotro@gmail.com',
     to: email,
-    subject: 'Yêu cầu đặt lại mật khẩu - VitaCare Admin',
+    subject: `Yêu cầu đặt lại mật khẩu - VitaCare ${roleConfig.roleLabel}`,
     html: `
         <div style="background-color: #e8f0fe; padding: 50px 20px; font-family: Arial, sans-serif;">
             <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
@@ -8045,7 +8120,7 @@ app.post('/api/admin/forgot-password', async (req, res) => {
                 <div style="padding: 50px 40px; text-align: center;">
                     <h2 style="color: #004695; margin: 0 0 25px 0; font-size: 26px; font-weight: bold;">Yêu cầu đặt lại mật khẩu</h2>
                     <p style="color: #777; font-size: 18px; margin: 0;">Xin chào,</p>
-                    <p style="color: #777; font-size: 17px; line-height: 1.6; margin: 10px 0 40px 0;">Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản VitaCare của bạn. Sử dụng mã OTP bên dưới để xác thực:</p>
+                    <p style="color: #777; font-size: 17px; line-height: 1.6; margin: 10px 0 40px 0;">Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản ${roleConfig.roleLabel} của bạn. Sử dụng mã OTP bên dưới để xác thực:</p>
                     <div style="background-color: #e3f2fd; padding: 25px 50px; border-radius: 12px; display: inline-block; margin-bottom: 40px;">
                         <span style="font-size: 52px; font-weight: 800; color: #1e5ba0; letter-spacing: 10px;">${code}</span>
                     </div>
@@ -8066,8 +8141,9 @@ app.post('/api/admin/forgot-password', async (req, res) => {
 });
 
 app.post('/api/admin/verify-code', (req, res) => {
-  const { email, code } = req.body;
-  if (resetCodes[email] && resetCodes[email] === code) {
+  const { email, code, role } = req.body || {};
+  const roleKey = String(role || 'admin').toLowerCase();
+  if (resetCodes[`${roleKey}:${email}`] && resetCodes[`${roleKey}:${email}`] === code) {
     res.json({ success: true });
   } else {
     res.status(400).json({ success: false, message: 'Mã xác thực không chính xác' });
@@ -8075,31 +8151,52 @@ app.post('/api/admin/verify-code', (req, res) => {
 });
 
 app.post('/api/admin/reset-password', async (req, res) => {
+  const { email, newPassword, role } = req.body || {};
+  const roleConfig = getRoleConfig(role);
+  if (!roleConfig) {
+    return res.status(400).json({ success: false, message: 'Vai trò không hợp lệ.' });
+  }
+
   try {
-    const updated = await AdminModel.findOneAndUpdate(
-      { adminemail: req.body.email },
-      { password: req.body.newPassword },
+    const updated = await roleConfig.model.findOneAndUpdate(
+      getEmailQuery(email, roleConfig.emailFields),
+      { [roleConfig.passwordField]: newPassword },
       { new: true }
     );
-    if (!updated) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản admin' });
-    delete resetCodes[req.body.email];
+    if (!updated) {
+      return res.status(404).json({ success: false, message: `Không tìm thấy tài khoản ${roleConfig.roleLabel}` });
+    }
+    delete resetCodes[`${String(role).toLowerCase()}:${email}`];
     res.json({ success: true, message: 'Đổi mật khẩu thành công' });
-  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.post('/api/admin/change-password', async (req, res) => {
+  const { email, oldPassword, newPassword, role } = req.body || {};
+  const roleConfig = getRoleConfig(role);
+  if (!roleConfig) {
+    return res.status(400).json({ success: false, message: 'Vai trò không hợp lệ.' });
+  }
+
   try {
-    const { email, oldPassword, newPassword } = req.body;
-    const admin = await AdminModel.findOne({ adminemail: email });
-    if (!admin) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản' });
-    if (admin.password !== oldPassword) return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không chính xác' });
-    const updated = await AdminModel.findOneAndUpdate(
-      { adminemail: email },
-      { password: newPassword },
+    const user = await roleConfig.model.findOne(getEmailQuery(email, roleConfig.emailFields));
+    if (!user) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản' });
+    if (user?.[roleConfig.passwordField] !== oldPassword) {
+      return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không chính xác' });
+    }
+    const updated = await roleConfig.model.findOneAndUpdate(
+      getEmailQuery(email, roleConfig.emailFields),
+      { [roleConfig.passwordField]: newPassword },
       { new: true }
     );
-    res.json({ success: true, message: 'Đổi mật khẩu thành công', admin: updated });
-  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+    const responseUser = updated?.toObject ? updated.toObject() : updated;
+    if (responseUser) responseUser.accountRole = String(role).toLowerCase();
+    res.json({ success: true, message: 'Đổi mật khẩu thành công', admin: responseUser });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 

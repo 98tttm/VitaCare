@@ -1,0 +1,14 @@
+@if (isPharmacist) {
+  <router-outlet />
+} @else {
+  <section class="pharmacist-only-empty" role="status" aria-live="polite">
+    <div class="empty-card">
+      <div class="empty-icon" aria-hidden="true">🔒</div>
+      <h2>Chức năng này không thuộc vai trò của bạn</h2>
+      <p>
+        Tài khoản hiện tại không có quyền truy cập màn hình này.
+        Vui lòng dùng tài khoản dược sĩ để tiếp tục.
+      </p>
+    </div>
+  </section>
+}

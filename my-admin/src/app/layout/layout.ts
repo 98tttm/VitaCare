@@ -6,6 +6,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { Notice } from '../notice/notice';
+import { AuthRole } from '../services/auth.service';
 
 @Component({
   selector: 'app-layout',
@@ -87,11 +88,12 @@ export class Layout implements OnInit, OnDestroy {
     if (adminStr) {
       try {
         const mainAdmin = JSON.parse(adminStr);
+        const accountRole = mainAdmin.accountRole === 'pharmacist' ? 'Dược sĩ' : 'Quản trị viên';
         this.profileData = {
-          name: mainAdmin.adminname || 'Admin VitaCare',
-          role: mainAdmin.role || 'Quản trị viên',
-          email: mainAdmin.adminemail || 'admin@vitacare.vn',
-          phone: mainAdmin.phone || 'Chưa cập nhật',
+          name: mainAdmin.adminname || mainAdmin.pharmacistName || 'Admin VitaCare',
+          role: mainAdmin.role || accountRole,
+          email: mainAdmin.adminemail || mainAdmin.pharmacistEmail || mainAdmin.email || 'admin@vitacare.vn',
+          phone: mainAdmin.phone || mainAdmin.pharmacistPhone || 'Chưa cập nhật',
           region: mainAdmin.region || 'Chưa cập nhật',
           joinDate: mainAdmin.joinDate || '01/01/2024',
           password: mainAdmin.password || '',
@@ -328,7 +330,7 @@ export class Layout implements OnInit, OnDestroy {
     }
 
     const email = this.profileData.email;
-    this.authService.changePassword(email, this.oldPasswordInput, this.newPasswordInput).subscribe({
+    this.authService.changePassword(email, this.oldPasswordInput, this.newPasswordInput, this.getCurrentRole()).subscribe({
       next: (res) => {
         // Update the cached admin in localStorage with the new password hash
         if (res.admin) {
@@ -372,5 +374,17 @@ export class Layout implements OnInit, OnDestroy {
   confirmLogout() {
     this.isLogoutConfirmModalOpen = false;
     this.router.navigate(['/login']);
+  }
+
+  private getCurrentRole(): AuthRole {
+    if (typeof window === 'undefined') return 'admin';
+    try {
+      const raw = localStorage.getItem('admin');
+      if (!raw) return 'admin';
+      const parsed = JSON.parse(raw);
+      return parsed?.accountRole === 'pharmacist' ? 'pharmacist' : 'admin';
+    } catch (_) {
+      return 'admin';
+    }
   }
 }

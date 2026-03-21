@@ -206,6 +206,14 @@
                             [class.active]="sortColumn === 'stock' && sortDirection === 'asc'">
                             <i class="bi bi-box"></i> Tồn: Ít nhất
                         </button>
+                        <button (click)="onSortSelect('sold', 'desc')" class="sort-option-btn"
+                            [class.active]="sortColumn === 'sold' && sortDirection === 'desc'">
+                            <i class="bi bi-fire"></i> Bán chạy nhất
+                        </button>
+                        <button (click)="onSortSelect('sold', 'asc')" class="sort-option-btn"
+                            [class.active]="sortColumn === 'sold' && sortDirection === 'asc'">
+                            <i class="bi bi-sort-numeric-down"></i> Bán chậm nhất
+                        </button>
                     </div>
                 </div>
             </div>
@@ -387,6 +395,14 @@
                         <select class="form-control" [(ngModel)]="newProduct.unit">
                             <option *ngFor="let u of units" [value]="u">{{ u }}</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Đã bán:</label>
+                        <input type="number" class="form-control" [(ngModel)]="newProduct.sold" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rating:</label>
+                        <input type="number" class="form-control" [(ngModel)]="newProduct.rating" step="0.1" readonly>
                     </div>
 
                     <div class="form-group full-width">

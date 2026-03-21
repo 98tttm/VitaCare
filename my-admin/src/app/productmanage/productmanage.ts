@@ -89,6 +89,8 @@ export class Productmanage implements OnInit {
     brand: '',
     categoryId: '',
     stock: 0,
+    sold: 0,
+    rating: 0,
     unit: 'Hộp',
     description: '',
     usage: '',
@@ -157,6 +159,12 @@ export class Productmanage implements OnInit {
       this.pendingOpenProductId = params['openProductId'] || null;
       if (typeof params['search'] === 'string') {
         this.searchTerm = params['search'].toLowerCase();
+      }
+      if (typeof params['sortColumn'] === 'string') {
+        this.sortColumn = params['sortColumn'];
+      }
+      if (typeof params['sortDirection'] === 'string' && (params['sortDirection'] === 'asc' || params['sortDirection'] === 'desc')) {
+        this.sortDirection = params['sortDirection'];
       }
       if (typeof params['stockStatus'] === 'string') {
         const statuses = params['stockStatus'].split(',').map((s: string) => s.trim());
@@ -590,7 +598,9 @@ export class Productmanage implements OnInit {
           this.newProduct = {
             ...res.data,
             gallery: gallery,
-            image: res.data.image || (gallery.length > 0 ? gallery[0] : '')
+            image: res.data.image || (gallery.length > 0 ? gallery[0] : ''),
+            sold: Number(res.data.sold ?? 0),
+            rating: Number(res.data.rating ?? 0)
           };
           const catId = res.data.categoryId || '';
           this.newProduct.categoryId = catId;
@@ -703,6 +713,8 @@ export class Productmanage implements OnInit {
       brand: '',
       categoryId: '',
       stock: 0,
+      sold: 0,
+      rating: 0,
       unit: 'Hộp',
       description: '',
       usage: '',
