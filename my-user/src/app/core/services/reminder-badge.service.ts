@@ -12,6 +12,9 @@ export class ReminderBadgeService {
   /** Số lời nhắc uống thuốc (từ API notices, type medication_reminder) */
   readonly reminderDueCount = signal(0);
 
+  /** Mỗi phần tử: một dòng tóm tắt (giờ + thuốc) cho tooltip FAB viên thuốc */
+  readonly reminderDueLines = signal<string[]>([]);
+
   /** Popup nhắc lịch đã được user đóng (session) */
   readonly popupAcked = signal(false);
 
@@ -20,8 +23,9 @@ export class ReminderBadgeService {
     () => this.popupAcked() && this.reminderDueCount() > 0
   );
 
-  setReminderDueCount(count: number): void {
+  setReminderDueCount(count: number, lines: string[] = []): void {
     this.reminderDueCount.set(count);
+    this.reminderDueLines.set(lines);
   }
 
   setPopupAcked(): void {

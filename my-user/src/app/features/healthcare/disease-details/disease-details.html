@@ -351,39 +351,63 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="fw-bold mb-1 text-dark">{{ q.full_name || 'Khách vãng lai' }}</h6>
-                                    <p class="question-content text-dark mb-2">{{ q.question }}</p>
 
-                                    <div class="interaction d-flex gap-3 align-items-center mb-3">
-                                        <span class="text-muted small">{{ formatDate(q.createdAt) }}</span>
-                                        <div class="vc-like-hover-wrap"
-                                            (mouseenter)="onLikersEnter('ldq-' + getGenericId(q), q.likes)"
-                                            (mouseleave)="onLikersLeave()">
+                                    <ng-container *ngIf="editingDiseaseQuestionId !== getGenericId(q)">
+                                        <p class="question-content text-dark mb-2">{{ q.question }}</p>
+
+                                        <div class="interaction d-flex flex-wrap gap-3 align-items-center mb-3">
+                                            <span class="text-muted small">{{ formatDate(q.updatedAt || q.createdAt) }}</span>
+                                            <div class="vc-like-hover-wrap"
+                                                (mouseenter)="onLikersEnter('ldq-' + getGenericId(q), q.likes)"
+                                                (mouseleave)="onLikersLeave()">
+                                                <button
+                                                    class="btn btn-link btn-sm text-decoration-none p-0 d-flex align-items-center gap-1"
+                                                    [class.vc-liked-active]="isConsultationLiked(q)"
+                                                    [class.text-muted]="!isConsultationLiked(q)"
+                                                    [style.color]="isConsultationLiked(q) ? '#ffc107' : ''"
+                                                    (click)="likeConsultation(q)">
+                                                    <i class="bi" [class.bi-hand-thumbs-up-fill]="isConsultationLiked(q)"
+                                                        [class.bi-hand-thumbs-up]="!isConsultationLiked(q)"
+                                                        [style.color]="isConsultationLiked(q) ? '#ffc107' : ''"></i>
+                                                    <span [style.color]="isConsultationLiked(q) ? '#ffc107' : ''">Hữu ích {{
+                                                        q.likes?.length > 0 ? '(' + q.likes.length + ')' : '' }}</span>
+                                                </button>
+                                                <div *ngIf="likerPanelVisible('ldq-' + getGenericId(q))" class="vc-like-popover"
+                                                    (mouseenter)="onLikersPopoverEnter()">
+                                                    <div *ngIf="likerHoverPanel?.loading" class="vc-like-popover-loading">Đang tải…</div>
+                                                    <ng-container *ngIf="likerHoverPanel && !likerHoverPanel.loading">
+                                                        <div class="vc-like-popover-name" *ngFor="let nm of likerHoverPanel.names">{{ nm }}</div>
+                                                        <div class="vc-like-popover-more" *ngIf="likerHoverPanel.more > 0">
+                                                            Xem thêm {{ likerHoverPanel.more }} người khác
+                                                        </div>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
                                             <button
-                                                class="btn btn-link btn-sm text-decoration-none p-0 d-flex align-items-center gap-1"
-                                                [class.vc-liked-active]="isConsultationLiked(q)"
-                                                [class.text-muted]="!isConsultationLiked(q)"
-                                                [style.color]="isConsultationLiked(q) ? '#ffc107' : ''"
-                                                (click)="likeConsultation(q)">
-                                                <i class="bi" [class.bi-hand-thumbs-up-fill]="isConsultationLiked(q)"
-                                                    [class.bi-hand-thumbs-up]="!isConsultationLiked(q)"
-                                                    [style.color]="isConsultationLiked(q) ? '#ffc107' : ''"></i>
-                                                <span [style.color]="isConsultationLiked(q) ? '#ffc107' : ''">Hữu ích {{
-                                                    q.likes?.length > 0 ? '(' + q.likes.length + ')' : '' }}</span>
-                                            </button>
-                                            <div *ngIf="likerPanelVisible('ldq-' + getGenericId(q))" class="vc-like-popover"
-                                                (mouseenter)="onLikersPopoverEnter()">
-                                                <div *ngIf="likerHoverPanel?.loading" class="vc-like-popover-loading">Đang tải…</div>
-                                                <ng-container *ngIf="likerHoverPanel && !likerHoverPanel.loading">
-                                                    <div class="vc-like-popover-name" *ngFor="let nm of likerHoverPanel.names">{{ nm }}</div>
-                                                    <div class="vc-like-popover-more" *ngIf="likerHoverPanel.more > 0">
-                                                        Xem thêm {{ likerHoverPanel.more }} người khác
-                                                    </div>
-                                                </ng-container>
+                                                class="btn btn-link btn-sm text-decoration-none p-0 text-primary fw-medium"
+                                                (click)="toggleReplyConsultation(q)">Trả lời</button>
+                                            <div class="d-flex align-items-center gap-3"
+                                                *ngIf="isDiseaseConsultationQuestionOwner(q)">
+                                                <button type="button"
+                                                    class="btn btn-link btn-sm text-decoration-none p-0 text-primary fw-medium"
+                                                    (click)="startEditDiseaseQuestion(q)">Chỉnh sửa</button>
+                                                <button type="button"
+                                                    class="btn btn-link btn-sm text-decoration-none p-0 text-danger fw-medium"
+                                                    (click)="deleteDiseaseQuestion(q)">Xóa</button>
                                             </div>
                                         </div>
-                                        <button
-                                            class="btn btn-link btn-sm text-decoration-none p-0 text-primary fw-medium"
-                                            (click)="toggleReplyConsultation(q)">Trả lời</button>
+                                    </ng-container>
+
+                                    <div *ngIf="editingDiseaseQuestionId === getGenericId(q)" class="mb-3">
+                                        <textarea class="form-control mb-2" rows="4"
+                                            [(ngModel)]="editDiseaseQuestionContent"
+                                            style="font-size: 0.95rem;"></textarea>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                (click)="cancelEditDiseaseQuestion()">Hủy</button>
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                (click)="updateDiseaseQuestion(q)">Lưu</button>
+                                        </div>
                                     </div>
 
                                     <!-- Reply Area -->
@@ -412,7 +436,13 @@
                                             style="border-left: 6px solid #00589f !important; background-color: #f1f3f7 !important;"
                                             *ngFor="let rep of q.replies">
                                             <div class="d-flex align-items-center gap-2 mb-2">
-                                                <img [src]="rep.avatar" class="rounded-circle" width="24" height="24">
+                                                <img *ngIf="rep.avatar" [src]="rep.avatar" class="rounded-circle"
+                                                    width="24" height="24" alt="">
+                                                <div *ngIf="!rep.avatar"
+                                                    class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold"
+                                                    style="width: 24px; height: 24px; min-width: 24px; font-size: 0.65rem;">
+                                                    {{ rep.fullname?.substring(0, 2).toUpperCase() || '?' }}
+                                                </div>
                                                 <span class="fw-bold"
                                                     [style.color]="rep.is_admin ? '#00589f' : 'inherit'">{{ rep.fullname
                                                     }}</span>
@@ -420,10 +450,71 @@
                                                     style="background-color: #00589f !important; color: white !important; font-size: 0.7rem;"
                                                     *ngIf="rep.is_admin">Dược sĩ</span>
                                             </div>
-                                            <p class="reply-content mb-1 text-secondary" style="font-size: 0.9rem;">{{
-                                                rep.content }}</p>
-                                            <div class="reply-meta d-flex align-items-center gap-3">
-                                                <span class="text-muted small">{{ formatDate(rep.time) }}</span>
+
+                                            <ng-container *ngIf="editingDiseaseReplyId !== getGenericId(rep)">
+                                                <p class="reply-content mb-1 text-secondary" style="font-size: 0.9rem;">{{
+                                                    rep.content }}</p>
+                                                <div class="reply-meta d-flex align-items-center flex-wrap gap-2 gap-md-3">
+                                                    <span class="text-muted small">{{ formatDate(rep.updatedAt || rep.time) }}</span>
+                                                    <div class="vc-like-hover-wrap"
+                                                        (mouseenter)="onLikersEnter(diseaseReplyLikerPanelKey(q, rep), rep.likes)"
+                                                        (mouseleave)="onLikersLeave()">
+                                                        <button type="button"
+                                                            class="btn btn-link btn-sm text-decoration-none p-0 d-flex align-items-center gap-1"
+                                                            [class.vc-liked-active]="isDiseaseReplyLiked(q, rep)"
+                                                            [class.text-muted]="!isDiseaseReplyLiked(q, rep)"
+                                                            [style.color]="isDiseaseReplyLiked(q, rep) ? '#ffc107' : ''"
+                                                            (click)="likeDiseaseReply(q, rep)">
+                                                            <i class="bi"
+                                                                [class.bi-hand-thumbs-up-fill]="isDiseaseReplyLiked(q, rep)"
+                                                                [class.bi-hand-thumbs-up]="!isDiseaseReplyLiked(q, rep)"
+                                                                [style.color]="isDiseaseReplyLiked(q, rep) ? '#ffc107' : ''"></i>
+                                                            <span
+                                                                [style.color]="isDiseaseReplyLiked(q, rep) ? '#ffc107' : ''">Hữu
+                                                                ích {{
+                                                                rep.likes?.length > 0 ? '(' + rep.likes.length + ')' : ''
+                                                                }}</span>
+                                                        </button>
+                                                        <div *ngIf="likerPanelVisible(diseaseReplyLikerPanelKey(q, rep))"
+                                                            class="vc-like-popover" (mouseenter)="onLikersPopoverEnter()">
+                                                            <div *ngIf="likerHoverPanel?.loading"
+                                                                class="vc-like-popover-loading">Đang tải…</div>
+                                                            <ng-container
+                                                                *ngIf="likerHoverPanel && !likerHoverPanel.loading">
+                                                                <div class="vc-like-popover-name"
+                                                                    *ngFor="let nm of likerHoverPanel.names">{{ nm }}
+                                                                </div>
+                                                                <div class="vc-like-popover-more"
+                                                                    *ngIf="likerHoverPanel.more > 0">
+                                                                    Xem thêm {{ likerHoverPanel.more }} người khác
+                                                                </div>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-3"
+                                                        *ngIf="isDiseaseConsultationReplyOwner(rep)">
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-medium"
+                                                            style="font-size: 0.85rem;"
+                                                            (click)="startEditDiseaseReply(q, rep)">Chỉnh sửa</button>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-link text-danger p-0 text-decoration-none fw-medium"
+                                                            style="font-size: 0.85rem;"
+                                                            (click)="deleteDiseaseReply(q, rep)">Xóa</button>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+
+                                            <div *ngIf="editingDiseaseReplyId === getGenericId(rep)" class="mt-1">
+                                                <textarea class="form-control mb-2" rows="3"
+                                                    [(ngModel)]="editDiseaseReplyContent"
+                                                    style="font-size: 0.9rem;"></textarea>
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                        (click)="cancelEditDiseaseReply()">Hủy</button>
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                        (click)="updateDiseaseReply(q, rep)">Lưu</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

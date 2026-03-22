@@ -64,7 +64,7 @@
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 12px 40px rgba(44, 57, 94, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.06);
-  z-index: 1200;
+  z-index: 1650;
   overflow: hidden;
   animation: notice-dropdown-in 0.2s ease;
 }
@@ -216,7 +216,8 @@
   inset: 0;
   background: rgba(44, 57, 94, 0.25);
   backdrop-filter: blur(4px);
-  z-index: 1500;
+  /* Trên toàn viewport, cao hơn mọi nội dung vùng main (danh mục SP z-index ~100…); dưới modal admin (2000). */
+  z-index: 1800;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;

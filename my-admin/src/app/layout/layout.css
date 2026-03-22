@@ -650,6 +650,12 @@ input:checked+.slider:before {
     min-height: 0;
 }
 
+/* Quản lý sản phẩm: padding dọc trong vùng cuộn làm hàng bảng hiện “xuyên” khe; neo sticky sát mép dưới top-bar */
+.main-content .content-body.content-body--pm-sticky {
+    padding-top: 0;
+    padding-bottom: 16px;
+}
+
 /* Header Profile Container */
 .header-profile-container {
     position: relative;

@@ -7,7 +7,7 @@
 .breadcrumb {
     font-size: 14px;
     color: #888;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 
 .breadcrumb .current {
@@ -98,8 +98,8 @@
 /* Unified Stats Container */
 .stats-container {
     display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 10px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
 }
 
@@ -107,24 +107,25 @@
     flex: 1;
     min-width: 140px;
     background-color: var(--color-bg-secondary);
-    padding: 24px 16px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 8px 10px 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--color-neutral-30);
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    min-height: 0;
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
     border-color: var(--color-primary-light);
 }
 
@@ -135,17 +136,19 @@
 }
 
 .stat-label {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--color-text-secondary);
     text-transform: uppercase;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    letter-spacing: 0.35px;
+    line-height: 1.25;
 }
 
 .stat-value {
-    font-size: 32px;
+    font-size: 22px;
     font-weight: 800;
+    line-height: 1.1;
     color: var(--color-text-primary);
     transition: color 0.3s;
 }
@@ -186,7 +189,8 @@
 .filter-bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    padding: 4px 0 8px;
+    margin-bottom: 8px;
     gap: 16px;
 }
 
@@ -264,6 +268,11 @@
     font-size: 14px;
     color: var(--color-text-primary);
     border-bottom: 1px solid var(--color-neutral-30);
+}
+
+.consultation-product-container .data-table th,
+.consultation-product-container .data-table td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 .data-table tbody tr:hover {
@@ -571,7 +580,8 @@
     justify-content: flex-end;
     align-items: center;
     gap: 16px;
-    margin-bottom: 24px;
+    padding: 4px 0 8px;
+    margin-bottom: 8px;
     position: relative;
     z-index: 100;
 }

@@ -113,10 +113,13 @@ export class Cart implements OnInit, OnDestroy {
   voucherDiscount = signal(0);
   useVitaXu = signal(false);
 
+  /** Khách vãng lai: không dùng Vita Xu trong giỏ. */
+  isGuest = computed(() => !this.authService.currentUser()?.user_id);
+
   vitaXuBalance = computed(() => this.coinService.effectiveBalance());
 
   vitaXuDiscount = computed(() => {
-    if (!this.useVitaXu()) return 0;
+    if (this.isGuest() || !this.useVitaXu()) return 0;
     return Math.min(this.vitaXuBalance(), this.selectedTotalPrice());
   });
 
@@ -141,6 +144,10 @@ export class Cart implements OnInit, OnDestroy {
       const open = this.cartSidebar.isOpen();
       const user = this.authService.currentUser();
       const userId = user && (user as any).user_id ? String((user as any).user_id) : null;
+
+      if (!userId) {
+        this.useVitaXu.set(false);
+      }
 
       // Chỉ load khi chuyển từ đóng → mở hoặc khi userId thay đổi.
       if (open && !this.lastOpenState) {

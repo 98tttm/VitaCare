@@ -434,7 +434,7 @@ body.dark-mode .breadcrumb {
     text-align: left !important;
     direction: ltr;
     unicode-bidi: plaintext;
-    font-family: 'Lexend', sans-serif;
+    font-family: var(--font-family-base, 'Inter', sans-serif);
     overflow-wrap: anywhere;
     word-break: break-word;
     position: relative;

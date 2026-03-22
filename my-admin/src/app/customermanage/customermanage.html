@@ -1,6 +1,6 @@
 <div class="container customer-manage-container">
     <!-- Breadcrumb -->
-    <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
+    <div class="breadcrumb text-sm mb-1 font-medium" style="color: var(--color-neutral-60);">
         Quản lý khách hàng <span class="mx-1">/</span> <span style="color: var(--color-primary);">Danh sách
             khách hàng</span>
     </div>
@@ -9,7 +9,7 @@
     <div class="page-header py-4 customer-page-header-card"
         style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
         <h1 class="content-title"
-            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
+            style="margin: 0; font-size: 22px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
             Danh sách
             khách hàng</h1>
         <button type="button" class="btn-add-action" (click)="goCreateCustomer()">
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Filter & Toolbar -->
-    <div class="filter-bar py-4">
+    <div class="filter-bar py-2">
         <div class="flex items-center gap-4">
             <div class="search-wrapper">
                 <input type="text" class="search-input" placeholder="Tìm kiếm...." (input)="onSearch($event)">
@@ -230,7 +230,7 @@
                     <td class="font-bold">{{ c.full_name }}</td>
                     <td>{{ c.addressString }}</td>
                     <td class="text-center">
-                        <span class="tier-pill" [ngClass]="'tier-' + tierSlug(c.tiering)">
+                        <span class="tier-pill" [ngClass]="tierPillClass(c.tiering)">
                             {{ c.tiering }}
                         </span>
                     </td>

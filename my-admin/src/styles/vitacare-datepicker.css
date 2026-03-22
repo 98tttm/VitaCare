@@ -1,0 +1,314 @@
+/**
+ * VitaCare — Flatpickr theo mẫu nhẹ (card trắng, header T2–CN xám, accent #00589F).
+ * Không hiển thị nút xóa ngày — chỉ phần lịch.
+ */
+
+.flatpickr-calendar,
+input.form-control.vc-date-input {
+    --vc-dp-primary: #00589f;
+    --vc-dp-primary-soft: rgba(0, 88, 159, 0.14);
+    --vc-dp-primary-muted: rgba(0, 88, 159, 0.55);
+    --vc-dp-surface: #ffffff;
+    --vc-dp-surface-subtle: #f4f7fb;
+    --vc-dp-surface-nav: #e8f0f8;
+    --vc-dp-surface-nav-hover: #dde8f4;
+    --vc-dp-border-soft: rgba(0, 88, 159, 0.18);
+    --vc-dp-weekday: #6b7280;
+    --vc-dp-day-muted: #c5cad3;
+    --vc-dp-shadow: rgba(15, 23, 42, 0.07);
+    --vc-dp-shadow-tint: rgba(0, 88, 159, 0.06);
+}
+
+/* Wrapper khi static: true — full width, neo cho position absolute của lịch */
+.flatpickr-wrapper {
+    display: block;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Mở lịch: nổi lên trên hàng form kế bên (trong modal cuộn) */
+.flatpickr-wrapper:has(.flatpickr-calendar.open) {
+    z-index: 40;
+}
+
+/*
+ * Lịch static: mặc định Flatpickr đặt dưới ô (top: 100%) — dễ lệch xa trong modal cuộn.
+ * Đưa lên phía trên ô, sát khung nhập.
+ */
+.flatpickr-calendar.static {
+    top: auto !important;
+    bottom: calc(100% + 6px);
+    left: 0;
+    right: auto;
+}
+
+/* Trong modal: chồng lên dòng form phía dưới (không cần z-index như body) */
+.flatpickr-calendar.static.open {
+    z-index: 100 !important;
+}
+
+/* Nếu sau này có chỗ không dùng static và gắn body */
+.flatpickr-calendar.open:not(.static) {
+    z-index: 11000 !important;
+}
+
+.flatpickr-calendar {
+    background: var(--vc-dp-surface) !important;
+    border-radius: 16px;
+    border: 1px solid var(--vc-dp-border-soft);
+    box-shadow:
+        0 4px 6px var(--vc-dp-shadow-tint),
+        0 18px 40px var(--vc-dp-shadow);
+    overflow: hidden;
+    font-family: var(--font-family-base, 'Inter', sans-serif);
+    transition:
+        box-shadow 0.22s ease,
+        border-color 0.22s ease;
+}
+
+.flatpickr-calendar.arrowTop::before {
+    border-bottom-color: rgba(0, 88, 159, 0.12) !important;
+}
+
+.flatpickr-calendar.arrowTop::after {
+    border-bottom-color: var(--vc-dp-surface) !important;
+}
+
+.flatpickr-calendar.arrowBottom::before {
+    border-top-color: rgba(0, 88, 159, 0.12) !important;
+}
+
+.flatpickr-calendar.arrowBottom::after {
+    border-top-color: var(--vc-dp-surface) !important;
+}
+
+/* Ẩn mọi nút xóa / footer tùy chỉnh (không dùng trong mẫu) */
+.flatpickr-calendar button.flatpickr-clear,
+.flatpickr-calendar .flatpickr-clear,
+.flatpickr-calendar .flatpickr-footer {
+    display: none !important;
+}
+
+/* —— Thanh tháng: nền sáng, chữ xanh đậm —— */
+.flatpickr-months {
+    padding: 12px 10px 10px;
+    background: var(--vc-dp-surface-subtle);
+    border-bottom: 1px solid rgba(0, 88, 159, 0.08);
+}
+
+.flatpickr-months .flatpickr-month {
+    background: transparent;
+    color: var(--vc-dp-primary);
+    fill: var(--vc-dp-primary);
+}
+
+.flatpickr-current-month {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--vc-dp-primary);
+}
+
+.flatpickr-current-month span.cur-month {
+    color: var(--vc-dp-primary);
+    font-weight: 700;
+}
+
+/* Tháng + năm: không khung — chữ xanh, hover nền rất nhạt */
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: var(--vc-dp-primary);
+    font-weight: 700;
+    transition: background 0.18s ease;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover,
+.flatpickr-current-month input.cur-year:hover {
+    background: var(--vc-dp-primary-soft) !important;
+    box-shadow: none !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:focus,
+.flatpickr-current-month input.cur-year:focus {
+    outline: none;
+    background: rgba(0, 88, 159, 0.1) !important;
+    box-shadow: none !important;
+}
+
+.flatpickr-current-month .numInputWrapper:hover {
+    background: transparent !important;
+}
+
+/* Nút prev/next: ô vuông bo góc, nền xanh rất nhạt */
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    top: 10px;
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--vc-dp-surface-nav);
+    border: 1px solid var(--vc-dp-border-soft);
+    color: var(--vc-dp-primary);
+    fill: var(--vc-dp-primary);
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.12s ease;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+    background: var(--vc-dp-surface-nav-hover);
+    border-color: var(--vc-dp-primary-muted);
+    color: var(--vc-dp-primary);
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: var(--vc-dp-primary);
+}
+
+.flatpickr-months .flatpickr-prev-month:active,
+.flatpickr-months .flatpickr-next-month:active {
+    transform: scale(0.96);
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* —— Hàng T2 … CN: chữ xám, nền rất nhạt —— */
+.flatpickr-weekdays {
+    background: rgba(244, 247, 251, 0.85);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+span.flatpickr-weekday {
+    color: var(--vc-dp-weekday);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+}
+
+.flatpickr-days {
+    border-top: none;
+    background: var(--vc-dp-surface);
+}
+
+.dayContainer {
+    padding: 10px 12px 14px;
+}
+
+.flatpickr-day {
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-weight: 500;
+    color: #374151;
+    max-width: 40px;
+    height: 40px;
+    line-height: 38px;
+    transition:
+        background 0.16s ease,
+        border-color 0.16s ease,
+        color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+.flatpickr-day:hover:not(.flatpickr-disabled):not(.selected):not(.startRange):not(.endRange) {
+    background: var(--vc-dp-surface-subtle);
+    border-color: var(--vc-dp-border-soft);
+    color: var(--vc-dp-primary);
+    box-shadow: 0 1px 4px var(--vc-dp-shadow-tint);
+}
+
+.flatpickr-day.today {
+    border-color: var(--vc-dp-primary-muted);
+    color: var(--vc-dp-primary);
+    font-weight: 600;
+    background: rgba(0, 88, 159, 0.04);
+}
+
+.flatpickr-day.today:hover {
+    background: var(--vc-dp-primary-soft);
+    border-color: var(--vc-dp-primary);
+}
+
+/* Ngày chọn: viền xanh + chữ xanh, nền rất nhẹ (không block đặc) */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: rgba(0, 88, 159, 0.1) !important;
+    border-color: var(--vc-dp-primary) !important;
+    color: var(--vc-dp-primary) !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+}
+
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: rgba(0, 88, 159, 0.16) !important;
+    border-color: var(--vc-dp-primary) !important;
+    color: var(--vc-dp-primary) !important;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: var(--vc-dp-day-muted);
+    font-weight: 400;
+}
+
+.flatpickr-day.flatpickr-disabled:hover {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--vc-dp-day-muted);
+}
+
+.flatpickr-time .flatpickr-am-pm:hover,
+.flatpickr-time input:hover,
+.flatpickr-time .flatpickr-time-separator:hover {
+    background: var(--vc-dp-surface-subtle);
+}
+
+/* Ô input: viền nhẹ, focus mới lên xanh rõ */
+input.form-control.vc-date-input {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%2300589F' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.75' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+    border: 1px solid var(--color-neutral-40, #e5e7eb);
+    border-radius: 12px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+input.form-control.vc-date-input:hover:not(:disabled) {
+    border-color: rgba(0, 88, 159, 0.35);
+    box-shadow: 0 1px 3px var(--vc-dp-shadow-tint);
+}
+
+input.form-control.vc-date-input:focus {
+    border-color: var(--vc-dp-primary);
+    box-shadow: 0 0 0 3px var(--vc-dp-primary-soft);
+    outline: none;
+}
+
+input.form-control.vc-date-input:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}

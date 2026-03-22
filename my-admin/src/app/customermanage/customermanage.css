@@ -1,9 +1,17 @@
-/* Product Manage Styles - Based on Order Manage for Consistency */
-.product-manage-container {
+Ôªø/* Product Manage Styles - Based on Order Manage for Consistency */
+.product-manage-container,
+.customer-manage-container {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-6);
     font-family: var(--font-family-base);
+}
+
+.product-manage-container {
+    gap: var(--spacing-6);
+}
+
+.customer-manage-container {
+    gap: 0;
 }
 
 /* Header */
@@ -18,7 +26,7 @@
     margin-bottom: 20px;
 }
 
-/* Gi?ng n˙t ThÍm s?n ph?m */
+/* Gi?ng n¬ùt Th¬ùm s?n ph?m */
 .btn-add-action {
     background: linear-gradient(135deg, #4A55A2 0%, #3C4690 100%) !important;
     color: white !important;
@@ -207,6 +215,15 @@
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     border: 1px solid var(--color-neutral-30);
+    margin-top: 0;
+}
+
+.customer-manage-container thead th {
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.customer-manage-container tbody td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 table {
@@ -630,7 +647,7 @@ input[type="checkbox"] {
     }
 }
 
-/* Member tier colors: .tier-dong / .tier-bac / .tier-vang (tierSlug) */
+/* Tier pills ¬ù class t? tierPillClass() trong TS */
 .tier-pill {
     display: inline-flex;
     align-items: center;
@@ -641,68 +658,63 @@ input[type="checkbox"] {
     font-weight: 700;
     letter-spacing: 0.3px;
     white-space: nowrap;
-    background: transparent;
-    border: none;
-    box-shadow: none;
 }
 
 .tier-dong {
-    color: #c06c35;
-    text-shadow: 0 0 1px rgba(192, 108, 53, 0.35);
+    background: linear-gradient(135deg, #b87333, #d28a52, #e1a869, #b87333);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 8px rgba(184, 115, 51, 0.3);
 }
 
 .tier-bac {
-    color: #8b9cb3;
-    text-shadow: 0 0 1px rgba(139, 156, 179, 0.4);
+    background: linear-gradient(135deg, #c0c0c0, #e0e0e0, #f8f8f8, #b0b0b0);
+    color: #1a5a04;
+    border: none;
+    box-shadow: 0 2px 8px rgba(192, 192, 192, 0.3);
 }
 
 .tier-vang {
-    color: #c9a017;
-    text-shadow: 0 0 1px rgba(212, 165, 25, 0.45);
-}
-
-/* Dark mode: brighter metallic + soft glow */
-:host-context(body.dark-mode) .tier-dong {
-    color: #ffb07a;
-    text-shadow:
-        0 0 10px rgba(255, 160, 110, 0.55),
-        0 0 2px rgba(0, 0, 0, 0.8);
-}
-
-:host-context(body.dark-mode) .tier-bac {
-    color: #e8eef7;
-    text-shadow:
-        0 0 8px rgba(200, 215, 235, 0.4),
-        0 0 2px rgba(0, 0, 0, 0.7);
-}
-
-:host-context(body.dark-mode) .tier-vang {
-    color: #ffe566;
-    text-shadow:
-        0 0 12px rgba(255, 220, 90, 0.5),
-        0 0 2px rgba(0, 0, 0, 0.75);
-}
-
-:host-context(body.dark-mode) .tier-kimcuong {
-    color: #5eead4;
-    text-shadow: 0 0 10px rgba(94, 234, 212, 0.35);
+    background: linear-gradient(135deg, #ffd700, #ffec8b, #f5d142, #ffd700);
+    color: #1a5a04;
+    border: none;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
 
 .tier-kimcuong {
-    color: #0e7490;
-    font-weight: 700;
+    background: linear-gradient(135deg, #a8edea, #c2e9fb, #a8edea, #74ebd5);
+    color: #1a3a5c;
+    border: none;
+    box-shadow: 0 2px 8px rgba(116, 235, 213, 0.3);
 }
 
 .tier-thanhvien {
+    background: var(--color-bg-light);
     color: var(--color-text-secondary);
-    font-weight: 600;
+    border: 1px solid var(--color-neutral-30);
 }
 
-.tier-tier-default {
-    color: var(--color-text-primary);
-    font-weight: 600;
+.tier-default {
+    background: var(--color-neutral-20);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-neutral-30);
 }
 
+:host-context(body.dark-mode) .tier-dong {
+    box-shadow: 0 2px 12px rgba(255, 160, 110, 0.35);
+}
+
+:host-context(body.dark-mode) .tier-bac {
+    box-shadow: 0 2px 12px rgba(200, 215, 235, 0.25);
+}
+
+:host-context(body.dark-mode) .tier-vang {
+    box-shadow: 0 2px 12px rgba(255, 220, 90, 0.35);
+}
+
+:host-context(body.dark-mode) .tier-kimcuong {
+    box-shadow: 0 2px 12px rgba(94, 234, 212, 0.3);
+}
 
 /* ===================== DROPDOWN & FILTER ===================== */
 .dropdown-container {
@@ -902,7 +914,7 @@ input[type="checkbox"] {
     transform: none !important;
 }
 
-/* Sort dropdown (??ng b? qu?n lù s?n ph?m) */
+/* Sort dropdown */
 .sort-dropdown-menu {
     position: absolute;
     top: 100%;

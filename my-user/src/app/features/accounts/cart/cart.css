@@ -633,6 +633,43 @@
   transform: translateX(14px);
 }
 
+/* Khách vãng lai: không dùng Vita Xu — thanh xám, toggle tắt và không tương tác */
+.cart-sidebar-vitaxu-row--guest {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  opacity: 0.95;
+}
+
+.cart-sidebar-vitaxu-row--guest .cart-sidebar-vitaxu-left {
+  color: #6b7280;
+}
+
+.cart-sidebar-vitaxu-row--guest .cart-sidebar-vitaxu-left .bi-coin {
+  color: #9ca3af;
+}
+
+.cart-sidebar-vitaxu-row--guest .cart-sidebar-vitaxu-meta small {
+  color: #9ca3af;
+}
+
+.cart-sidebar-vitaxu-row--guest .cart-sidebar-vitaxu-switch {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.cart-sidebar-vitaxu-row--guest .cart-sidebar-vitaxu-switch .slider {
+  cursor: not-allowed;
+  background-color: #d1d5db;
+}
+
+.cart-sidebar-vitaxu-row--guest .cart-sidebar-vitaxu-switch input:checked + .slider {
+  background-color: #d1d5db;
+}
+
+.cart-sidebar-vitaxu-row--guest .cart-sidebar-vitaxu-switch input:checked + .slider:before {
+  transform: translateX(0);
+}
+
 /* Chi tiết thanh toán - nằm trong footer, căn dưới */
 .cart-sidebar-summary {
   display: flex;

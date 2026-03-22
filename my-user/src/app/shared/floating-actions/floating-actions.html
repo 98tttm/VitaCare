@@ -2,12 +2,29 @@
   <!-- Túi xu tích điểm -->
   <app-coin></app-coin>
 
-  <!-- Icon viên thuốc + số thông báo nhắc lịch (chỉ hiện sau khi popup nhắc đã đóng) -->
+  <!-- Icon viên thuốc + tooltip lịch nhắc khi hover (chỉ hiện sau khi popup nhắc đã đóng) -->
   @if (reminderBadge.showReminderBadge()) {
-  <button type="button" class="fab fab-reminder" aria-label="Lịch nhắc uống thuốc" (click)="goToReminder()">
-    <i class="bi bi-capsule" aria-hidden="true"></i>
-    <span class="fab-reminder-count">{{ reminderBadge.reminderDueCount() }}</span>
-  </button>
+  <div class="fab-reminder-wrap">
+    <div class="fab-reminder-popover" role="tooltip" (click)="goToReminder()">
+      <div class="fab-reminder-popover-title">Lịch nhắc uống thuốc</div>
+      @if (reminderBadge.reminderDueLines().length) {
+      <ul class="fab-reminder-popover-list">
+        @for (line of reminderBadge.reminderDueLines(); track $index) {
+        <li>{{ line }}</li>
+        }
+      </ul>
+      } @else {
+      <p class="fab-reminder-popover-fallback">Có {{ reminderBadge.reminderDueCount() }} lời nhắc trong khung giờ gần đây
+        (±60 phút).</p>
+      }
+      <p class="fab-reminder-popover-hint">Bấm để mở trang nhắc lịch</p>
+    </div>
+    <a routerLink="/health/nhac-lich-uong-thuoc" class="fab fab-reminder" aria-label="Lịch nhắc uống thuốc"
+      (mousedown)="$event.preventDefault()">
+      <i class="bi bi-capsule" aria-hidden="true"></i>
+      <span class="fab-reminder-count">{{ reminderBadge.reminderDueCount() }}</span>
+    </a>
+  </div>
   }
   <!-- Nút mở/đóng chat (phía trên) -->
   <button type="button" class="fab fab-chat" [attr.aria-label]="chatOpen() ? 'Đóng chat' : 'Mở chat'"

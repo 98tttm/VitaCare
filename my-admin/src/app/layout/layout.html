@@ -463,7 +463,7 @@
             <span style="font-size: 14px; font-weight: 500; color: var(--color-text-primary);">{{ toastMessage }}</span>
         </div>
 
-        <div class="content-body">
+        <div class="content-body" [class.content-body--pm-sticky]="isContentBodyPmSticky">
             <router-outlet></router-outlet>
         </div>
     </main>

@@ -3,7 +3,7 @@
     padding: var(--spacing-6);
     background-color: var(--color-bg-light);
     min-height: 100vh;
-    font-family: 'Arimo', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Header Section */

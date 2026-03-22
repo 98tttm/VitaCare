@@ -71,6 +71,11 @@ export class DiseaseDetails implements OnInit, OnDestroy {
   guestDisplayName = '';
   replyingToQuestionId: string | null = null;
   consultationReplyContent = '';
+  /** Chỉnh sửa phản hồi hỏi đáp bệnh (chỉ chủ user_id / khách cùng guest id). */
+  editingDiseaseReplyId: string | null = null;
+  editDiseaseReplyContent = '';
+  editingDiseaseQuestionId: string | null = null;
+  editDiseaseQuestionContent = '';
 
   /** Tooltip danh sách người đã bấm "Hữu ích" (câu hỏi về bệnh). */
   likerHoverKey: string | null = null;
@@ -902,7 +907,7 @@ export class DiseaseDetails implements OnInit, OnDestroy {
         const randomDigits = Math.floor(100 + Math.random() * 900); // 100-999
         fullName = `Khách vãng lai ${randomDigits}`;
       }
-      userId = '';
+      userId = this.getOrCreateUserId();
     }
 
     const payload = {
@@ -985,6 +990,57 @@ export class DiseaseDetails implements OnInit, OnDestroy {
       });
   }
 
+  diseaseReplyLikerPanelKey(question: any, rep: any): string {
+    return `ldr-${this.getGenericId(question)}-${this.getGenericId(rep)}`;
+  }
+
+  isDiseaseReplyLiked(_question: any, rep: any): boolean {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId || !rep || !Array.isArray(rep.likes)) return false;
+    return rep.likes.some((id: any) => {
+      const idStr = id && typeof id === 'object' && id.$oid ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+  }
+
+  likeDiseaseReply(question: any, rep: any) {
+    const userId = String(this.getCurrentUserIdOrGuest() || '');
+    if (!userId) {
+      this.authService.openAuthModal();
+      return;
+    }
+    const qId = this.getGenericId(question);
+    const rId = this.getGenericId(rep);
+    if (!qId || !rId) return;
+
+    const sku = this.consultationSku(this.disease);
+
+    if (!Array.isArray(rep.likes)) rep.likes = [];
+    const idx = rep.likes.findIndex((id: any) => {
+      const idStr = id && typeof id === 'object' && id.$oid ? id.$oid : String(id || '');
+      return idStr === userId;
+    });
+    if (idx > -1) {
+      rep.likes.splice(idx, 1);
+    } else {
+      rep.likes.push(userId);
+    }
+    this.cdr.detectChanges();
+
+    this.diseaseService
+      .likeDiseaseConsultationReply({ sku, questionId: qId, replyId: rId, userId })
+      .subscribe({
+        next: (data: any) => {
+          this.applyDiseaseConsultationPayload(data);
+          this.cdr.detectChanges();
+          this.triggerNoticeRefreshSoon();
+        },
+        error: (err) => {
+          console.error('Like disease reply error', err);
+        },
+      });
+  }
+
   toggleReplyConsultation(question: any) {
     const qid = this.getGenericId(question);
     if (this.replyingToQuestionId === qid) {
@@ -993,6 +1049,161 @@ export class DiseaseDetails implements OnInit, OnDestroy {
       this.replyingToQuestionId = qid;
       this.consultationReplyContent = '';
     }
+  }
+
+  /** Chủ câu hỏi (user đăng nhập hoặc guest id trùng q.user_id). */
+  isDiseaseConsultationQuestionOwner(q: any): boolean {
+    if (!q) return false;
+    const uid = String(this.getCurrentUserIdOrGuest() || '');
+    const qOwner = q.user_id != null && q.user_id !== '' ? String(q.user_id) : '';
+    return !!uid && !!qOwner && uid === qOwner;
+  }
+
+  startEditDiseaseQuestion(q: any) {
+    const id = this.getGenericId(q);
+    if (!id) return;
+    this.editingDiseaseQuestionId = id;
+    this.editDiseaseQuestionContent = String(q.question || '');
+    this.editingDiseaseReplyId = null;
+    this.replyingToQuestionId = null;
+    this.cdr.detectChanges();
+  }
+
+  cancelEditDiseaseQuestion() {
+    this.editingDiseaseQuestionId = null;
+    this.editDiseaseQuestionContent = '';
+    this.cdr.detectChanges();
+  }
+
+  updateDiseaseQuestion(q: any) {
+    if (!this.editDiseaseQuestionContent.trim()) {
+      this.toastService.showError('Vui lòng nhập nội dung câu hỏi');
+      return;
+    }
+    const sku = this.consultationSku(this.disease);
+    const userId = this.getCurrentUserIdOrGuest();
+    if (!sku || !userId) return;
+
+    this.diseaseService
+      .patchDiseaseConsultationQuestion({
+        sku,
+        questionId: this.getGenericId(q),
+        question: this.editDiseaseQuestionContent.trim(),
+        userId,
+      })
+      .subscribe({
+        next: (data) => {
+          this.toastService.showSuccess('Đã cập nhật câu hỏi');
+          this.applyDiseaseConsultationPayload(data);
+          this.cancelEditDiseaseQuestion();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Update disease question error:', err);
+          const msg = err.error?.message || 'Lỗi cập nhật câu hỏi.';
+          this.toastService.showError(msg);
+        },
+      });
+  }
+
+  deleteDiseaseQuestion(q: any) {
+    if (!confirm('Xóa câu hỏi này? Toàn bộ phản hồi kèm theo cũng sẽ bị xóa.')) return;
+    const sku = this.consultationSku(this.disease);
+    const userId = this.getCurrentUserIdOrGuest();
+    if (!sku || !userId) return;
+
+    this.diseaseService.deleteDiseaseConsultationQuestion(sku, this.getGenericId(q), userId).subscribe({
+      next: (data) => {
+        this.toastService.showSuccess('Đã xóa câu hỏi');
+        this.applyDiseaseConsultationPayload(data);
+        if (this.editingDiseaseQuestionId === this.getGenericId(q)) this.cancelEditDiseaseQuestion();
+        if (this.replyingToQuestionId === this.getGenericId(q)) this.replyingToQuestionId = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Delete disease question error:', err);
+        const msg = err.error?.message || 'Lỗi xóa câu hỏi.';
+        this.toastService.showError(msg);
+      },
+    });
+  }
+
+  /** Trùng user đăng nhập hoặc id khách (localStorage) với rep.user_id. */
+  isDiseaseConsultationReplyOwner(rep: any): boolean {
+    if (!rep) return false;
+    const uid = String(this.getCurrentUserIdOrGuest() || '');
+    const rid = rep.user_id != null && rep.user_id !== '' ? String(rep.user_id) : '';
+    return !!uid && !!rid && uid === rid;
+  }
+
+  startEditDiseaseReply(_q: any, rep: any) {
+    const id = this.getGenericId(rep);
+    if (!id) return;
+    this.editingDiseaseReplyId = id;
+    this.editDiseaseReplyContent = String(rep.content || '');
+    this.replyingToQuestionId = null;
+    this.cdr.detectChanges();
+  }
+
+  cancelEditDiseaseReply() {
+    this.editingDiseaseReplyId = null;
+    this.editDiseaseReplyContent = '';
+    this.cdr.detectChanges();
+  }
+
+  updateDiseaseReply(question: any, rep: any) {
+    if (!this.editDiseaseReplyContent.trim()) {
+      this.toastService.showError('Vui lòng nhập nội dung phản hồi');
+      return;
+    }
+    const sku = this.consultationSku(this.disease);
+    const userId = this.getCurrentUserIdOrGuest();
+    if (!sku || !userId) return;
+
+    this.diseaseService
+      .patchDiseaseConsultationReply({
+        sku,
+        questionId: this.getGenericId(question),
+        replyId: this.getGenericId(rep),
+        content: this.editDiseaseReplyContent.trim(),
+        userId,
+      })
+      .subscribe({
+        next: (data) => {
+          this.toastService.showSuccess('Đã cập nhật phản hồi');
+          this.applyDiseaseConsultationPayload(data);
+          this.cancelEditDiseaseReply();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Update disease reply error:', err);
+          const msg = err.error?.message || 'Lỗi cập nhật phản hồi.';
+          this.toastService.showError(msg);
+        },
+      });
+  }
+
+  deleteDiseaseReply(question: any, rep: any) {
+    if (!confirm('Xóa phản hồi này?')) return;
+    const sku = this.consultationSku(this.disease);
+    const userId = this.getCurrentUserIdOrGuest();
+    if (!sku || !userId) return;
+
+    this.diseaseService
+      .deleteDiseaseConsultationReply(sku, this.getGenericId(question), this.getGenericId(rep), userId)
+      .subscribe({
+        next: (data) => {
+          this.toastService.showSuccess('Đã xóa phản hồi');
+          this.applyDiseaseConsultationPayload(data);
+          if (this.editingDiseaseReplyId === this.getGenericId(rep)) this.cancelEditDiseaseReply();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Delete disease reply error:', err);
+          const msg = err.error?.message || 'Lỗi xóa phản hồi.';
+          this.toastService.showError(msg);
+        },
+      });
   }
 
   submitReplyConsultation(question: any) {

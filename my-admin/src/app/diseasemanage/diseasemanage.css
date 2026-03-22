@@ -11,7 +11,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
 }
 
 .content-title {
@@ -124,7 +124,9 @@
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
-    padding: 10px 0;
+    padding: 4px 0 8px;
+    margin-top: 0;
+    margin-bottom: 6px;
 }
 
 .search-wrapper {
@@ -471,6 +473,14 @@
 .blog-manage-container>.table-scrollable {
     margin-top: 0;
     box-shadow: var(--shadow-sm);
+}
+
+.blog-manage-container thead th {
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.blog-manage-container tbody td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 table {

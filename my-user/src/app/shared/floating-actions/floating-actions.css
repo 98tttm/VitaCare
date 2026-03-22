@@ -10,11 +10,12 @@
 }
 
 .floating-actions .fab,
+.floating-actions .fab-reminder-wrap,
 .floating-actions .chat-panel {
   pointer-events: auto;
 }
 
-/* Nút FAB chung */
+/* Nút FAB chung (button hoặc thẻ a + routerLink) */
 .fab {
   width: 48px;
   height: 48px;
@@ -26,19 +27,125 @@
   justify-content: center;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  box-sizing: border-box;
 }
 
-/* Icon viên thuốc: phía trên chatbot, chỉ hiện khi popup nhắc đã đóng và còn lời nhắc */
-.fab-reminder {
+/* Khung cố định: nút + popover hover (popover nằm trái nút, tránh tràn màn hình nhỏ → xem media query) */
+.fab-reminder-wrap {
   position: fixed;
   right: 20px;
   bottom: calc(20px + 48px + 12px + 48px + 12px);
+  width: 48px;
+  height: 48px;
+  z-index: 1;
+}
+
+/* Cầu nối hover trong suốt bên trái nút — khung lệch ra nhưng chuột không gãy giữa nút ↔ popover */
+.fab-reminder-wrap::after {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: 0;
+  width: 32px;
+  height: 48px;
+}
+
+.fab-reminder-popover {
+  position: absolute;
+  /* Neo đáy cùng nút, mở lên; lệch trái + translateY để khung không đè túi xu / badge */
+  right: calc(100% + 20px);
+  bottom: 0;
+  top: auto;
+  width: min(268px, calc(100vw - 100px));
+  max-height: min(200px, 36vh);
+  overflow-y: auto;
+  padding: 10px 12px;
+  background: var(--vc-infor-bg, #f1ecfa);
+  border: 1px solid var(--vc-infor, #b9a6dc);
+  border-radius: 12px;
+  box-shadow: -4px 8px 24px rgba(107, 82, 168, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(14px, 20px);
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
+  pointer-events: none;
+  text-align: left;
+  z-index: 2;
+}
+
+/* Chỉ chuột hover — không dùng :focus-within (click vào <a> sẽ focus và giữ khung mở) */
+@media (hover: hover) and (pointer: fine) {
+  .fab-reminder-wrap:hover .fab-reminder-popover {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(0, 20px);
+    pointer-events: auto;
+    cursor: pointer;
+  }
+}
+
+.fab-reminder-popover-title {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--vc-infor-text, #6b52a8);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.fab-reminder-popover-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #43386b;
+  line-height: 1.45;
+}
+
+.fab-reminder-popover-list li + li {
+  margin-top: 6px;
+}
+
+.fab-reminder-popover-fallback {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #43386b;
+  line-height: 1.45;
+}
+
+.fab-reminder-popover-hint {
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(185, 166, 220, 0.6);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--vc-infor-hover, #7b63c6);
+}
+
+/* Icon viên thuốc: trong wrap, chỉ hiện khi popup nhắc đã đóng và còn lời nhắc */
+.fab-reminder {
+  position: relative;
+  width: 100%;
+  height: 100%;
   background: var(--vc-infor-bg, #F1ECFA);
   color: var(--vc-infor-text, #6B52A8);
   border: 1px solid var(--vc-infor, #B9A6DC);
 }
 
-.fab-reminder:hover {
+@media (hover: hover) and (pointer: fine) {
+  .fab-reminder-wrap:hover .fab-reminder {
+    background: var(--vc-infor, #B9A6DC);
+    color: #fff;
+  }
+}
+
+.fab-reminder:focus-visible {
   background: var(--vc-infor, #B9A6DC);
   color: #fff;
 }
@@ -408,8 +515,34 @@
   font-size: 1.1rem;
 }
 
+@media (max-width: 520px) {
+  .fab-reminder-popover {
+    right: calc(100% + 12px);
+    left: auto;
+    bottom: 0;
+    top: auto;
+    width: min(260px, calc(100vw - 32px));
+    max-height: min(180px, 34vh);
+    box-shadow: -4px 8px 22px rgba(107, 82, 168, 0.22);
+    transform: translate(10px, 16px);
+  }
+
+  .fab-reminder-wrap::after {
+    left: -28px;
+    top: 0;
+    width: 28px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 520px) and (hover: hover) and (pointer: fine) {
+  .fab-reminder-wrap:hover .fab-reminder-popover {
+    transform: translate(0, 16px);
+  }
+}
+
 @media (max-width: 480px) {
-  .fab-reminder {
+  .fab-reminder-wrap {
     right: 12px;
     bottom: calc(12px + 48px + 10px + 48px + 10px);
   }

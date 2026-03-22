@@ -1,6 +1,8 @@
 import { Component, ViewChild, ElementRef, OnDestroy, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterModule, Router } from '@angular/router';
+import { RouterOutlet, RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
@@ -15,6 +17,10 @@ import { AuthRole } from '../services/auth.service';
   styleUrl: './layout.css',
 })
 export class Layout implements OnInit, OnDestroy {
+  /** Route Sản phẩm: bỏ padding dọc thừa trong vùng cuộn (sticky + list không lộ khe). */
+  isContentBodyPmSticky = false;
+  private contentBodyPmStickySub: Subscription | null = null;
+
   isSidebarCollapsed = false;
   isAdminDropdownOpen = false;
   isConsultationMenuOpen = false;
@@ -59,6 +65,14 @@ export class Layout implements OnInit, OnDestroy {
     this.isDarkMode = this.themeService.isDarkMode;
     this.loadProfile();
     this.loadAreas();
+    this.applyContentBodyPmStickyClass(this.router.url);
+    this.contentBodyPmStickySub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => this.applyContentBodyPmStickyClass(e.urlAfterRedirects));
+  }
+
+  private applyContentBodyPmStickyClass(url: string): void {
+    this.isContentBodyPmSticky = /\/admin\/products(?:\/|$|\?|#)/.test(url);
   }
 
   loadAreas() {
@@ -153,6 +167,8 @@ export class Layout implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.contentBodyPmStickySub?.unsubscribe();
+    this.contentBodyPmStickySub = null;
     this.stopCamera();
   }
 

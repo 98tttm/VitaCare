@@ -1,8 +1,10 @@
 import {
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
   Input,
+  Output,
   forwardRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -40,10 +42,17 @@ export class VcSearchableSelectComponent implements ControlValueAccessor {
   @Input() filterPlaceholder = 'Gõ để tìm…';
   @Input() disabled = false;
   @Input() emptyFilterMessage = 'Không tìm thấy';
+  /** true: ô nhập + sổ gợi ý HTML (combobox) */
+  @Input() allowCustomValue = false;
+
+  @Output() readonly inputBlur = new EventEmitter<void>();
 
   value = '';
   filterText = '';
   open = false;
+
+  /** Đóng panel sau blur ô combobox (tránh chọn option bị đóng sớm). */
+  private vcBlurCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
   private onChange: (v: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -72,27 +81,76 @@ export class VcSearchableSelectComponent implements ControlValueAccessor {
   }
 
   get filteredOptions(): { value: string; label: string }[] {
-    const q = vcNormalizeVnSearch(this.filterText);
+    const raw = this.allowCustomValue ? this.value : this.filterText;
+    const q = vcNormalizeVnSearch(raw);
     if (!q) return this.options;
-    return this.options.filter((o) => vcNormalizeVnSearch(o.label).startsWith(q));
+    return this.options.filter((o) =>
+      this.allowCustomValue
+        ? vcNormalizeVnSearch(o.label).includes(q)
+        : vcNormalizeVnSearch(o.label).startsWith(q),
+    );
   }
 
   toggle(ev: MouseEvent): void {
     ev.stopPropagation();
     if (this.disabled) return;
+    this.clearVcBlurTimer();
     this.open = !this.open;
     if (this.open) {
-      this.filterText = '';
+      if (!this.allowCustomValue) this.filterText = '';
       this.onTouched();
+    }
+  }
+
+  /** Combobox: giữ focus khi bấm mũi tên */
+  onToggleMouseDown(ev: MouseEvent): void {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (this.disabled) return;
+    this.clearVcBlurTimer();
+    this.open = !this.open;
+    if (this.open) this.onTouched();
+  }
+
+  onComboboxValueChange(v: string): void {
+    this.value = v;
+    this.onChange(v);
+  }
+
+  onComboboxFocus(): void {
+    this.clearVcBlurTimer();
+    this.open = true;
+    this.onTouched();
+  }
+
+  onComboboxBlur(): void {
+    this.clearVcBlurTimer();
+    this.vcBlurCloseTimer = setTimeout(() => {
+      this.vcBlurCloseTimer = null;
+      this.open = false;
+      this.inputBlur.emit();
+    }, 180);
+  }
+
+  private clearVcBlurTimer(): void {
+    if (this.vcBlurCloseTimer != null) {
+      clearTimeout(this.vcBlurCloseTimer);
+      this.vcBlurCloseTimer = null;
     }
   }
 
   selectOption(opt: { value: string; label: string }, ev: MouseEvent): void {
     ev.stopPropagation();
+    this.clearVcBlurTimer();
     this.value = opt.value;
     this.onChange(this.value);
     this.open = false;
     this.filterText = '';
+  }
+
+  onOptionMouseDown(opt: { value: string; label: string }, ev: MouseEvent): void {
+    ev.preventDefault();
+    this.selectOption(opt, ev);
   }
 
   onFilterInput(ev: Event): void {
@@ -104,6 +162,7 @@ export class VcSearchableSelectComponent implements ControlValueAccessor {
     if (!this.open) return;
     const root = this.host.nativeElement;
     if (root.contains(ev.target as Node)) return;
+    this.clearVcBlurTimer();
     this.open = false;
     this.filterText = '';
   }

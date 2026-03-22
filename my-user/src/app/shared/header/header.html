@@ -592,49 +592,52 @@
 
   </header>
 
-  <!-- Thanh ngắn bên phải: nhắc uống thuốc — trượt từ lề phải, khi đóng có hiệu ứng trượt ra -->
-  <div class="vc_reminder_bar" *ngIf="(showReminderPopup || reminderPopupClosing) && medicationDueList.length > 0"
-    [class.vc_reminder_bar--closing]="reminderPopupClosing" role="region" aria-label="Nhắc uống thuốc">
-    <div class="vc_reminder_bar_inner">
-      <div class="vc_reminder_bar_top">
-        <span class="vc_reminder_bar_icon" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
-        <button type="button" class="vc_reminder_bar_dismiss" (click)="dismissReminderPopup()"
-          aria-label="Đóng thông báo">×</button>
+  <!-- Khối thông báo tím bên phải: top = mép dưới header; xếp dọc — đơn hàng → đơn thuốc → nhắc uống thuốc -->
+  <div class="vc_notify_bars_stack" aria-live="polite">
+    <!-- Đơn hàng (trên cùng) -->
+    <div class="vc_reminder_bar vc_notify_bar--order"
+      *ngIf="(showOrderPopup || orderPopupClosing) && orderNoticeList.length > 0"
+      [class.vc_reminder_bar--closing]="orderPopupClosing" role="region" aria-label="Thông báo đơn hàng">
+      <div class="vc_reminder_bar_inner">
+        <div class="vc_reminder_bar_top">
+          <span class="vc_reminder_bar_icon" aria-hidden="true"><i class="bi bi-box-seam-fill"></i></span>
+          <button type="button" class="vc_reminder_bar_dismiss" (click)="dismissOrderPopup()"
+            aria-label="Đóng thông báo">×</button>
+        </div>
+        <p class="vc_reminder_bar_text">{{ orderBannerLine }}</p>
+        <a href="#" class="vc_reminder_bar_btn" (click)="goToOrderFromPopup($event)">Xem đơn hàng</a>
       </div>
-      <p class="vc_reminder_bar_text">{{ reminderBannerLine }}</p>
-      <a href="#" class="vc_reminder_bar_btn" (click)="openRemindFromPopup($event)"
-        [class.vc_reminder_bar_btn--loading]="reminderMarkingComplete">
-        {{ reminderMarkingComplete ? 'Đang xử lý...' : 'Ghi nhận đã uống' }}
-      </a>
     </div>
-  </div>
 
-  <!-- Popup thông báo đơn thuốc — hiện sau 5s, tự đóng 3s, dưới popup nhắc thuốc -->
-  <div class="vc_reminder_bar vc_notify_bar--prescription"
-    *ngIf="(showPrescriptionPopup || prescriptionPopupClosing) && prescriptionNoticeList.length > 0"
-    [class.vc_reminder_bar--closing]="prescriptionPopupClosing" role="region" aria-label="Thông báo đơn thuốc">
-    <div class="vc_reminder_bar_inner">
-      <div class="vc_reminder_bar_top">
-        <span class="vc_reminder_bar_icon" aria-hidden="true"><i class="bi bi-file-earmark-medical"></i></span>
-        <button type="button" class="vc_reminder_bar_dismiss" (click)="dismissPrescriptionPopup()"
-          aria-label="Đóng thông báo">×</button>
+    <!-- Đơn thuốc (giữa) -->
+    <div class="vc_reminder_bar vc_notify_bar--prescription"
+      *ngIf="(showPrescriptionPopup || prescriptionPopupClosing) && prescriptionNoticeList.length > 0"
+      [class.vc_reminder_bar--closing]="prescriptionPopupClosing" role="region" aria-label="Thông báo đơn thuốc">
+      <div class="vc_reminder_bar_inner">
+        <div class="vc_reminder_bar_top">
+          <span class="vc_reminder_bar_icon" aria-hidden="true"><i class="bi bi-file-earmark-medical"></i></span>
+          <button type="button" class="vc_reminder_bar_dismiss" (click)="dismissPrescriptionPopup()"
+            aria-label="Đóng thông báo">×</button>
+        </div>
+        <p class="vc_reminder_bar_text">{{ prescriptionBannerLine }}</p>
+        <a href="#" class="vc_reminder_bar_btn" (click)="goToPrescriptionFromPopup($event)">Xem đơn thuốc</a>
       </div>
-      <p class="vc_reminder_bar_text">{{ prescriptionBannerLine }}</p>
-      <a href="#" class="vc_reminder_bar_btn" (click)="goToPrescriptionFromPopup($event)">Xem đơn thuốc</a>
     </div>
-  </div>
 
-  <!-- Popup thông báo đơn hàng — hiện sau 6s, tự đóng 3s, dưới popup đơn thuốc -->
-  <div class="vc_reminder_bar vc_notify_bar--order"
-    *ngIf="(showOrderPopup || orderPopupClosing) && orderNoticeList.length > 0"
-    [class.vc_reminder_bar--closing]="orderPopupClosing" role="region" aria-label="Thông báo đơn hàng">
-    <div class="vc_reminder_bar_inner">
-      <div class="vc_reminder_bar_top">
-        <span class="vc_reminder_bar_icon" aria-hidden="true"><i class="bi bi-box-seam-fill"></i></span>
-        <button type="button" class="vc_reminder_bar_dismiss" (click)="dismissOrderPopup()"
-          aria-label="Đóng thông báo">×</button>
+    <!-- Nhắc uống thuốc (dưới cùng) -->
+    <div class="vc_reminder_bar" *ngIf="(showReminderPopup || reminderPopupClosing) && medicationDueList.length > 0"
+      [class.vc_reminder_bar--closing]="reminderPopupClosing" role="region" aria-label="Nhắc uống thuốc">
+      <div class="vc_reminder_bar_inner">
+        <div class="vc_reminder_bar_top">
+          <span class="vc_reminder_bar_icon" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
+          <button type="button" class="vc_reminder_bar_dismiss" (click)="dismissReminderPopup()"
+            aria-label="Đóng thông báo">×</button>
+        </div>
+        <p class="vc_reminder_bar_text">{{ reminderBannerLine }}</p>
+        <a href="#" class="vc_reminder_bar_btn" (click)="openRemindFromPopup($event)"
+          [class.vc_reminder_bar_btn--loading]="reminderMarkingComplete">
+          {{ reminderMarkingComplete ? 'Đang xử lý...' : 'Ghi nhận đã uống' }}
+        </a>
       </div>
-      <p class="vc_reminder_bar_text">{{ orderBannerLine }}</p>
-      <a href="#" class="vc_reminder_bar_btn" (click)="goToOrderFromPopup($event)">Xem đơn hàng</a>
     </div>
   </div>

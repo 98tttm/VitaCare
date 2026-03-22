@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ChatService, type ChatTurn } from '../../core/services/chat.service';
 import { ReminderBadgeService } from '../../core/services/reminder-badge.service';
 import { Coin } from '../coin/coin';
@@ -19,7 +19,7 @@ import { Coin } from '../coin/coin';
 @Component({
   selector: 'app-floating-actions',
   standalone: true,
-  imports: [CommonModule, FormsModule, Coin],
+  imports: [CommonModule, FormsModule, Coin, RouterLink],
   templateUrl: './floating-actions.html',
   styleUrl: './floating-actions.css',
 })
@@ -52,8 +52,9 @@ export class FloatingActionsComponent implements AfterViewInit, OnDestroy {
     this.reminderBadge.initPopupAckedFromSession();
   }
 
+  /** Cùng route với menu Cá nhân → Nhắc lịch uống thuốc (`account.ts` map path này → remind). */
   goToReminder(): void {
-    this.router.navigate(['/account'], { queryParams: { menu: 'remind' } });
+    void this.router.navigate(['/health', 'nhac-lich-uong-thuoc']);
   }
 
   ngOnDestroy(): void {

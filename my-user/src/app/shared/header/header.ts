@@ -73,13 +73,13 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   medicationDueList: NoticeItem[] = [];
   /** Đang gửi "ghi nhận đã uống" để tránh double submit */
   reminderMarkingComplete = false;
-  /** Popup đơn thuốc — hiện sau 5s, đóng sau 3s, dưới popup nhắc thuốc */
+  /** Popup đơn thuốc — hiện sau 5s, đóng sau 3s; trên UI xếp giữa (dưới đơn hàng, trên nhắc uống thuốc) */
   prescriptionNoticeList: NoticeItem[] = [];
   showPrescriptionPopup = false;
   prescriptionPopupClosing = false;
   private prescriptionPopupTimeout: ReturnType<typeof setTimeout> | null = null;
   private prescriptionPopupAutoCloseTimeout: ReturnType<typeof setTimeout> | null = null;
-  /** Popup đơn hàng — hiện sau 6s, đóng sau 3s, dưới popup đơn thuốc */
+  /** Popup đơn hàng — hiện sau 6s, đóng sau 3s; trên UI nằm trên cùng trong cột thông báo bên phải */
   orderNoticeList: NoticeItem[] = [];
   showOrderPopup = false;
   orderPopupClosing = false;
@@ -95,8 +95,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private cartUpdatedSub?: Subscription;
   private reminderPopupTimeout: ReturnType<typeof setTimeout> | null = null;
   private reminderPopupAutoCloseTimeout: ReturnType<typeof setTimeout> | null = null;
-  private readonly REMINDER_POPUP_AUTO_CLOSE_MS = 5000;
-  private readonly REMINDER_POPUP_CLOSE_DURATION_MS = 280;
+  /** Mỗi khung tím hiển thị ~6s rồi tự gọi dismiss (trượt ra phải). Khoảng 5–7s. */
+  private readonly NOTIFY_BAR_VISIBLE_MS = 6000;
+  /** Khớp với `vc_reminder_bar_out` trong header.css — chờ hết trượt mới gỡ *ngIf. */
+  private readonly NOTIFY_BAR_SLIDE_OUT_MS = 580;
 
   isHeaderCompact = false;
   private headerEl: HTMLElement | null = null;
@@ -264,6 +266,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => {
         this.applyCompactState(this.lastScrollY);
         this.syncBodyPaddingTop();
+        this.syncNotifyBarsOffset();
       }, 0);
       window.addEventListener('scroll', this.onWindowScroll, { passive: true });
       window.addEventListener('resize', this.onWindowResize, { passive: true });
@@ -302,6 +305,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.rafId) cancelAnimationFrame(this.rafId);
     if (this.resizeTimer) clearTimeout(this.resizeTimer);
     document.body.style.paddingTop = '';
+    document.documentElement.style.removeProperty('--vc-notify-bars-top');
   }
 
   private onWindowScroll = (): void => {
@@ -317,6 +321,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.resizeTimer) clearTimeout(this.resizeTimer);
     this.resizeTimer = setTimeout(() => {
       this.syncBodyPaddingTop();
+      this.syncNotifyBarsOffset();
     }, 80);
   };
 
@@ -351,6 +356,17 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.headerEl.classList.remove('vc_header_compact');
     }
+    this.syncNotifyBarsOffset();
+  }
+
+  /** Căn khối thông báo tím bên phải ngay dưới mép dưới header (full / compact). */
+  private syncNotifyBarsOffset(): void {
+    if (!this.headerEl) return;
+    requestAnimationFrame(() => {
+      if (!this.headerEl) return;
+      const bottom = Math.ceil(this.headerEl.getBoundingClientRect().bottom);
+      document.documentElement.style.setProperty('--vc-notify-bars-top', `${bottom + 10}px`);
+    });
   }
 
   private syncBodyPaddingTop(): void {
@@ -364,6 +380,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     if (wasCompact) {
       this.headerEl.classList.add('vc_header_compact');
     }
+    this.syncNotifyBarsOffset();
   }
 
   updateActivePill(url: string): void {
@@ -495,7 +512,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.notificationsError = null;
     this.showReminderPopup = false;
     this.medicationDueList = [];
-    this.reminderBadgeService.setReminderDueCount(0);
+    this.reminderBadgeService.setReminderDueCount(0, []);
     this.showPrescriptionPopup = false;
     this.prescriptionNoticeList = [];
     this.showOrderPopup = false;
@@ -559,7 +576,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       this.reminderPopupClosing = false;
       callback?.();
       this.cdr.markForCheck();
-    }, this.REMINDER_POPUP_CLOSE_DURATION_MS);
+    }, this.NOTIFY_BAR_SLIDE_OUT_MS);
   }
 
   dismissReminderPopup(): void {
@@ -596,7 +613,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       this.prescriptionPopupClosing = false;
       callback?.();
       this.cdr.markForCheck();
-    }, this.REMINDER_POPUP_CLOSE_DURATION_MS);
+    }, this.NOTIFY_BAR_SLIDE_OUT_MS);
   }
 
   dismissPrescriptionPopup(): void {
@@ -638,7 +655,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       this.orderPopupClosing = false;
       callback?.();
       this.cdr.markForCheck();
-    }, this.REMINDER_POPUP_CLOSE_DURATION_MS);
+    }, this.NOTIFY_BAR_SLIDE_OUT_MS);
   }
 
   dismissOrderPopup(): void {
@@ -694,7 +711,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.reminderPopupAutoCloseTimeout = setTimeout(() => {
           this.reminderPopupAutoCloseTimeout = null;
           this.dismissReminderPopup();
-        }, this.REMINDER_POPUP_AUTO_CLOSE_MS);
+        }, this.NOTIFY_BAR_VISIBLE_MS);
       }, 4000);
     }
     if (this.prescriptionNoticeList.length > 0 && !this.getPrescriptionPopupAckSession()) {
@@ -710,7 +727,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.prescriptionPopupAutoCloseTimeout = setTimeout(() => {
           this.prescriptionPopupAutoCloseTimeout = null;
           this.dismissPrescriptionPopup();
-        }, this.REMINDER_POPUP_AUTO_CLOSE_MS);
+        }, this.NOTIFY_BAR_VISIBLE_MS);
       }, this.PRESCRIPTION_POPUP_DELAY_MS);
     }
     if (this.orderNoticeList.length > 0 && !this.getOrderPopupAckSession()) {
@@ -726,7 +743,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.orderPopupAutoCloseTimeout = setTimeout(() => {
           this.orderPopupAutoCloseTimeout = null;
           this.dismissOrderPopup();
-        }, this.REMINDER_POPUP_AUTO_CLOSE_MS);
+        }, this.NOTIFY_BAR_VISIBLE_MS);
       }, this.ORDER_POPUP_DELAY_MS);
     }
     if (didSchedule) {
@@ -984,7 +1001,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           this.notificationsLimit = 5;
           this.unreadNotifyCount = 0;
           this.medicationDueList = [];
-          this.reminderBadgeService.setReminderDueCount(0);
+          this.reminderBadgeService.setReminderDueCount(0, []);
           this.prescriptionNoticeList = [];
           this.orderNoticeList = [];
           this.cdr.markForCheck();
@@ -999,7 +1016,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           const dueMedUnread = dueMed.filter((n) => !n.read);
           const dueMedWithinWindow = this.filterReminderWithin60Minutes(dueMedUnread);
           this.medicationDueList = dueMedWithinWindow;
-          this.reminderBadgeService.setReminderDueCount(dueMedWithinWindow.length);
+          this.reminderBadgeService.setReminderDueCount(
+            dueMedWithinWindow.length,
+            dueMedWithinWindow.map((n) => this.formatReminderDueTooltipLine(n))
+          );
           const bellItems = items.filter((n) => !this.isReminderNotice(n));
           const prescriptionItems = bellItems.filter(
             (n) => n.type === 'prescription_created' || n.type === 'prescription_updated'
@@ -1040,12 +1060,56 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           this.notificationsLimit = 5;
           this.unreadNotifyCount = 0;
           this.medicationDueList = [];
-          this.reminderBadgeService.setReminderDueCount(0);
+          this.reminderBadgeService.setReminderDueCount(0, []);
           this.prescriptionNoticeList = [];
           this.orderNoticeList = [];
         }
         this.cdr.markForCheck();
       });
+  }
+
+  /** Tên thuốc / nhãn hiển thị từ thông báo nhắc (meta "HH:mm · tên", meta_label, hoặc phần trước "—" trong message). */
+  private extractReminderMedDisplayName(n: NoticeItem): string {
+    const meta = (n.meta || '').trim();
+    const mMeta = meta.match(/^\d{1,2}:\d{2}\s*·\s*(.+)$/);
+    if (mMeta?.[1]) {
+      const name = mMeta[1].trim();
+      if (name) return name;
+    }
+    const ml = (n.meta_label || '').trim();
+    if (ml) return ml;
+
+    const msg = (n.message || '').replace(/\s+/g, ' ').trim();
+    if (msg) {
+      const em = msg.indexOf('—');
+      if (em > 0) {
+        const name = msg.slice(0, em).trim();
+        if (name) return name;
+      }
+      const hy = msg.search(/\s-\s/);
+      if (hy > 0) {
+        const name = msg.slice(0, hy).trim();
+        if (name) return name;
+      }
+    }
+
+    const title = (n.title || '').trim();
+    if (title && title !== 'Nhắc uống thuốc') return title;
+
+    return 'Thuốc';
+  }
+
+  /** Một dòng cho tooltip FAB viên thuốc (đồng bộ danh sách đang đến hạn trong cửa sổ ±60 phút). */
+  private formatReminderDueTooltipLine(n: NoticeItem): string {
+    const timeStr = this.getReminderScheduledTime(n);
+    let med = this.extractReminderMedDisplayName(n);
+    if (med.length > 80) med = `${med.slice(0, 77)}…`;
+    if (timeStr) return `${timeStr} — ${med}`;
+    const metaT = (n.meta || '').trim().match(/^(\d{1,2}:\d{2})/);
+    if (metaT?.[1]) return `${metaT[1]} — ${med}`;
+    const t = (n.time || '').trim();
+    if (t) return `${t} — ${med}`;
+    return med;
   }
 
   canLoadMoreNotifications(): boolean {

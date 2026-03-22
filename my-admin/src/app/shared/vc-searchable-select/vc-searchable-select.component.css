@@ -3,8 +3,13 @@
   position: relative;
   width: 100%;
   --vc-ss-brand: #00589f;
-  --vc-ss-border: #c2c2c2;
-  --vc-ss-radius: 8px;
+  --vc-ss-border: #d8dee6;
+  --vc-ss-border-soft: rgba(0, 88, 159, 0.22);
+  --vc-ss-radius: 10px;
+}
+
+.vc-ss--open {
+  z-index: 50;
 }
 
 .vc-ss__trigger {
@@ -60,15 +65,88 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% + 4px);
-  z-index: 1050;
+  top: calc(100% + 6px);
+  z-index: 2;
   display: flex;
   flex-direction: column;
   max-height: min(320px, 60vh);
   background: #fff;
+  border: 1px solid var(--vc-ss-border-soft);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 12px rgba(0, 88, 159, 0.08),
+    0 12px 32px rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+}
+
+/* Combobox: cùng chiều cao form-control, bo góc đồng bộ modal */
+.vc-ss__combobox {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 42px;
+  background: #fff;
   border: 1px solid var(--vc-ss-border);
   border-radius: var(--vc-ss-radius);
-  box-shadow: 0 8px 24px rgba(10, 10, 10, 0.12);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.vc-ss--combobox.vc-ss--open .vc-ss__combobox,
+.vc-ss__combobox:focus-within {
+  border-color: var(--vc-ss-brand);
+  box-shadow: 0 0 0 3px rgba(0, 88, 159, 0.12);
+}
+
+.vc-ss--disabled .vc-ss__combobox {
+  opacity: 0.55;
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.vc-ss__combobox-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px 8px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: #0a0a0a;
+  background: transparent;
+  border: none;
+  border-radius: var(--vc-ss-radius) 0 0 var(--vc-ss-radius);
+  outline: none;
+}
+
+.vc-ss__combobox-input::placeholder {
+  color: #757575;
+}
+
+.vc-ss__combobox-input:disabled {
+  cursor: not-allowed;
+}
+
+.vc-ss__combobox-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  padding: 0;
+  border: none;
+  border-left: 1px solid var(--vc-ss-border);
+  border-radius: 0 var(--vc-ss-radius) var(--vc-ss-radius) 0;
+  background: #f4f7fb;
+  color: var(--vc-ss-brand);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.vc-ss__combobox-toggle:hover:not(:disabled) {
+  background: #e8f0f8;
+}
+
+.vc-ss__combobox-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .vc-ss__filter {
@@ -112,8 +190,8 @@
 }
 
 .vc-ss__option:hover {
-  background: var(--vc-ss-brand);
-  color: #fff;
+  background: rgba(0, 88, 159, 0.1);
+  color: var(--vc-ss-brand);
 }
 
 .vc-ss__option--selected {
@@ -121,6 +199,6 @@
 }
 
 .vc-ss__option--selected:not(:hover) {
-  background: #daecff;
-  color: #0a0a0a;
+  background: #e8f4fc;
+  color: var(--vc-ss-brand);
 }

@@ -1,16 +1,53 @@
-<div class="vc-ss" [class.vc-ss--open]="open" [class.vc-ss--disabled]="disabled">
-  <button
-    type="button"
-    class="vc-ss__trigger"
-    [disabled]="disabled"
-    (click)="toggle($event)"
-    [attr.aria-expanded]="open"
-  >
-    <span class="vc-ss__value" [class.vc-ss__placeholder]="!value">{{ selectedLabel || placeholder }}</span>
-    <i class="bi bi-chevron-down vc-ss__caret" aria-hidden="true"></i>
-  </button>
+<div
+  class="vc-ss"
+  [class.vc-ss--open]="open"
+  [class.vc-ss--disabled]="disabled"
+  [class.vc-ss--combobox]="allowCustomValue"
+>
+  <!-- Chế độ nút + filter trong panel -->
+  <ng-container *ngIf="!allowCustomValue">
+    <button
+      type="button"
+      class="vc-ss__trigger"
+      [disabled]="disabled"
+      (click)="toggle($event)"
+      [attr.aria-expanded]="open"
+    >
+      <span class="vc-ss__value" [class.vc-ss__placeholder]="!value">{{ selectedLabel || placeholder }}</span>
+      <i class="bi bi-chevron-down vc-ss__caret" aria-hidden="true"></i>
+    </button>
+  </ng-container>
+
+  <!-- Combobox: nhập tự do, sổ gợi ý HTML (CSS đầy đủ) -->
+  <div *ngIf="allowCustomValue" class="vc-ss__combobox">
+    <input
+      type="text"
+      class="vc-ss__combobox-input"
+      [ngModel]="value"
+      (ngModelChange)="onComboboxValueChange($event)"
+      (focus)="onComboboxFocus()"
+      (blur)="onComboboxBlur()"
+      [disabled]="disabled"
+      [placeholder]="placeholder"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+    />
+    <button
+      type="button"
+      class="vc-ss__combobox-toggle"
+      [disabled]="disabled"
+      tabindex="-1"
+      aria-label="Mở gợi ý"
+      (mousedown)="onToggleMouseDown($event)"
+    >
+      <i class="bi bi-chevron-down vc-ss__caret" aria-hidden="true"></i>
+    </button>
+  </div>
+
   <div class="vc-ss__panel" *ngIf="open" (click)="$event.stopPropagation()" role="listbox">
     <input
+      *ngIf="!allowCustomValue"
       type="text"
       class="vc-ss__filter"
       [(ngModel)]="filterText"
@@ -27,7 +64,7 @@
         class="vc-ss__option"
         [class.vc-ss__option--selected]="opt.value === value"
         role="option"
-        (click)="selectOption(opt, $event)"
+        (mousedown)="onOptionMouseDown(opt, $event)"
       >
         {{ opt.label }}
       </li>

@@ -11,7 +11,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
 }
 
 .content-title {
@@ -144,35 +144,36 @@
     transform: none !important;
 }
 
-/* Unified Stats Grid */
+/* Unified Stats Grid — compact để dành chỗ cho bảng đơn */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 8px;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 0;
 }
 
 .stat-card {
     background-color: var(--color-bg-secondary);
-    padding: 24px 16px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 8px 10px 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--color-neutral-30);
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    min-height: 0;
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
     border-color: var(--color-primary-light);
 }
 
@@ -183,17 +184,19 @@
 }
 
 .stat-label {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--color-text-secondary);
     text-transform: uppercase;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    letter-spacing: 0.35px;
+    line-height: 1.25;
 }
 
 .stat-value {
-    font-size: 32px;
+    font-size: 22px;
     font-weight: 800;
+    line-height: 1.1;
     color: var(--color-text-primary);
     transition: color 0.3s;
 }
@@ -250,13 +253,14 @@
 /* End of Stats Cards */
 
 
-/* Filter Bar */
+/* Filter Bar — sát thẻ thống kê và bảng */
 .filter-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
-    padding: 10px 0;
+    padding: 4px 0 8px;
+    margin-top: 0;
 }
 
 .search-wrapper {
@@ -646,6 +650,15 @@
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     border: 1px solid var(--color-neutral-30);
+    margin-top: 0;
+}
+
+.order-manage-container thead th {
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.order-manage-container tbody td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 table {

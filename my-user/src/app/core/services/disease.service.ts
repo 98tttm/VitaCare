@@ -80,11 +80,55 @@ export class DiseaseService {
     );
   }
 
+  /** Sửa câu hỏi hỏi đáp bệnh (chỉ chủ userId). */
+  patchDiseaseConsultationQuestion(data: {
+    sku: string;
+    questionId: string;
+    question: string;
+    userId: string;
+  }): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/consultations/disease/question`, data).pipe(
+      catchError((err) => {
+        console.error('Patch disease consultation question error:', err);
+        throw err;
+      })
+    );
+  }
+
+  /** Xóa câu hỏi hỏi đáp bệnh (chỉ chủ userId). */
+  deleteDiseaseConsultationQuestion(sku: string, questionId: string, userId: string): Observable<any> {
+    const params = new HttpParams()
+      .set('sku', sku)
+      .set('questionId', questionId)
+      .set('userId', userId);
+    return this.http.delete<any>(`${this.apiUrl}/consultations/disease/question`, { params }).pipe(
+      catchError((err) => {
+        console.error('Delete disease consultation question error:', err);
+        throw err;
+      })
+    );
+  }
+
   /** Toggle "Hữu ích" trên câu hỏi về bệnh. */
   likeDiseaseConsultation(data: { sku: string; questionId: string; userId: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/consultations/disease/like`, data).pipe(
       catchError((err) => {
         console.error('Like disease consultation error:', err);
+        throw err;
+      })
+    );
+  }
+
+  /** Toggle "Hữu ích" trên một phản hồi trong hỏi đáp bệnh. */
+  likeDiseaseConsultationReply(data: {
+    sku: string;
+    questionId: string;
+    replyId: string;
+    userId: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/consultations/disease/reply/like`, data).pipe(
+      catchError((err) => {
+        console.error('Like disease consultation reply error:', err);
         throw err;
       })
     );
@@ -137,6 +181,42 @@ export class DiseaseService {
     return this.http.post<any>(`${this.apiUrl}/consultations/disease/reply`, data).pipe(
       catchError((err) => {
         console.error('Reply disease consultation error:', err);
+        throw err;
+      })
+    );
+  }
+
+  /** Sửa phản hồi trong hỏi đáp bệnh (chỉ chủ userId). */
+  patchDiseaseConsultationReply(data: {
+    sku: string;
+    questionId: string;
+    replyId: string;
+    content: string;
+    userId: string;
+  }): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/consultations/disease/reply`, data).pipe(
+      catchError((err) => {
+        console.error('Patch disease consultation reply error:', err);
+        throw err;
+      })
+    );
+  }
+
+  /** Xóa phản hồi trong hỏi đáp bệnh (chỉ chủ userId). */
+  deleteDiseaseConsultationReply(
+    sku: string,
+    questionId: string,
+    replyId: string,
+    userId: string
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('sku', sku)
+      .set('questionId', questionId)
+      .set('replyId', replyId)
+      .set('userId', userId);
+    return this.http.delete<any>(`${this.apiUrl}/consultations/disease/reply`, { params }).pipe(
+      catchError((err) => {
+        console.error('Delete disease consultation reply error:', err);
         throw err;
       })
     );

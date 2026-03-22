@@ -88,7 +88,7 @@
           </span>
           <i class="bi bi-chevron-right"></i>
         </button>
-        <div class="cart-sidebar-vitaxu-row">
+        <div class="cart-sidebar-vitaxu-row" [class.cart-sidebar-vitaxu-row--guest]="isGuest()">
           <div class="cart-sidebar-vitaxu-left">
             <i class="bi bi-coin"></i>
             <div class="cart-sidebar-vitaxu-meta">
@@ -97,9 +97,10 @@
             </div>
           </div>
           <div class="cart-sidebar-vitaxu-right">
-            <span class="cart-sidebar-vitaxu-amount" *ngIf="useVitaXu()">-{{ vitaXuDiscount() | number:'1.0-0' }}₫</span>
-            <label class="cart-sidebar-vitaxu-switch">
-              <input type="checkbox" [checked]="useVitaXu()" (change)="toggleUseVitaXu($any($event.target).checked)" />
+            <span class="cart-sidebar-vitaxu-amount" *ngIf="useVitaXu() && !isGuest()">-{{ vitaXuDiscount() | number:'1.0-0' }}₫</span>
+            <label class="cart-sidebar-vitaxu-switch" [attr.aria-disabled]="isGuest()">
+              <input type="checkbox" [checked]="useVitaXu() && !isGuest()" [disabled]="isGuest()"
+                (change)="toggleUseVitaXu($any($event.target).checked)" />
               <span class="slider"></span>
             </label>
           </div>
