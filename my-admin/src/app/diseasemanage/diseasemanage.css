@@ -113,9 +113,9 @@
 }
 
 .action-btn.active {
-    background-color: #EEF2FF !important;
-    color: #4A55A2 !important;
-    border-color: #4A55A2 !important;
+    background-color: var(--color-primary) !important;
+    color: white !important;
+    border-color: var(--color-primary) !important;
 }
 
 /* Filter Bar — giống blogmanage.css */
@@ -352,6 +352,119 @@
     padding: 2px 6px;
     border-radius: 10px;
     font-weight: 700;
+}
+
+/* Sort dropdown — giống quản lý sản phẩm */
+.sort-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    z-index: 1000;
+    width: max-content;
+    min-width: 0;
+    max-width: min(280px, 92vw);
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.sort-options-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.compact-sort-list {
+    padding: 6px 0;
+}
+
+.sort-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sort-row:last-child {
+    border-bottom: none;
+}
+
+.sort-row.row-active {
+    background-color: var(--color-primary-bg, rgba(0, 88, 159, 0.08));
+}
+
+.sort-row-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-align: left;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.sort-row-label:hover {
+    background-color: #daecff;
+    color: var(--color-primary);
+}
+
+.sort-row-label i {
+    font-size: 16px;
+    color: var(--color-primary-light);
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.sort-row-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 4px 6px 4px 4px;
+}
+
+.sort-arrow-btn {
+    width: 32px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-neutral-40);
+    border-radius: 6px;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.15s;
+}
+
+.sort-arrow-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: #fff;
+}
+
+.sort-arrow-btn.dir-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.sort-arrow-btn i {
+    font-size: 14px;
+    line-height: 1;
 }
 
 /* Bảng — dùng class global .table-scrollable (utilities.css) giống Quản lý blog */

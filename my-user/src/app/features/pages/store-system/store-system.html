@@ -42,39 +42,34 @@
 
           <div class="divider-or" style="color: #00589F;">hoặc lọc theo</div>
 
-          <!-- Province dropdown -->
-          <div class="loc-select" (click)="toggleDropdown('tinh')">
-            <span>{{ selectedTinh }}</span>
-            <span class="material-symbols-rounded">{{ showDropdown ? 'expand_less' : 'expand_more' }}</span>
-          </div>
-          <div class="loc-dropdown" [class.open]="showDropdown">
-            <div class="loc-item" *ngFor="let tinh of tinhThanhList" [class.sel]="selectedTinh === tinh"
-              (click)="selectTinh(tinh)">{{ tinh }}</div>
-          </div>
+          <vc-searchable-select
+            class="store-loc-vc-select"
+            [(ngModel)]="selectedTinh"
+            [options]="tinhStoreOptions"
+            placeholder="Chọn Tỉnh/Thành phố"
+            (ngModelChange)="selectTinh($event)"
+          />
 
-          <!-- District dropdown (shown when province selected) -->
           <ng-container *ngIf="selectedTinh !== 'Tất cả'">
-            <div class="loc-select" style="margin-top: 10px;" (click)="toggleDropdown('quan')">
-              <span>{{ selectedQuan }}</span>
-              <span class="material-symbols-rounded">{{ showQuanDropdown ? 'expand_less' : 'expand_more' }}</span>
-            </div>
-            <div class="loc-dropdown" [class.open]="showQuanDropdown">
-              <div class="loc-item" [class.sel]="selectedQuan === 'Tất cả'" (click)="selectQuan('Tất cả')">Tất cả</div>
-              <div class="loc-item" *ngFor="let q of availableQuans" [class.sel]="selectedQuan === q.ten"
-                (click)="selectQuan(q.ten)">{{ q.ten }}</div>
-            </div>
+            <vc-searchable-select
+              class="store-loc-vc-select"
+              style="margin-top: 10px;"
+              [(ngModel)]="selectedQuan"
+              [options]="quanStoreOptions"
+              placeholder="Chọn Quận/Huyện"
+              (ngModelChange)="selectQuan($event)"
+            />
           </ng-container>
 
-          <!-- Ward dropdown (shown when district selected) -->
           <ng-container *ngIf="selectedQuan !== 'Tất cả'">
-            <div class="loc-select" style="margin-top: 10px;" (click)="toggleDropdown('phuong')">
-              <span>{{ selectedPhuong }}</span>
-              <span class="material-symbols-rounded">{{ showPhuongDropdown ? 'expand_less' : 'expand_more' }}</span>
-            </div>
-            <div class="loc-dropdown" [class.open]="showPhuongDropdown">
-              <div class="loc-item" *ngFor="let p of availablePhuongs" [class.sel]="selectedPhuong === p"
-                (click)="selectPhuong(p)">{{ p }}</div>
-            </div>
+            <vc-searchable-select
+              class="store-loc-vc-select"
+              style="margin-top: 10px;"
+              [(ngModel)]="selectedPhuong"
+              [options]="phuongStoreOptions"
+              placeholder="Chọn Phường/Xã"
+              (ngModelChange)="selectPhuong($event)"
+            />
           </ng-container>
         </div>
 

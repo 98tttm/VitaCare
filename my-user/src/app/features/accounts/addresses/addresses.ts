@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { VcSearchableSelectComponent } from '../../../shared/vc-searchable-select/vc-searchable-select.component';
 
 const API = '/api';
 
@@ -48,7 +49,7 @@ interface Address {
 @Component({
   selector: 'app-addresses',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, VcSearchableSelectComponent],
   templateUrl: './addresses.html',
   styleUrl: './addresses.css',
 })
@@ -101,6 +102,18 @@ export class Addresses implements OnInit {
 
   ngOnInit(): void {
     this.loadProvinces();
+  }
+
+  get provinceSelectOptions(): { value: string; label: string }[] {
+    return this.provinces.map((p) => ({ value: p.code, label: p.name_with_type }));
+  }
+
+  get districtSelectOptions(): { value: string; label: string }[] {
+    return this.districts.map((d) => ({ value: d.code, label: d.name_with_type }));
+  }
+
+  get wardSelectOptions(): { value: string; label: string }[] {
+    return this.wards.map((w) => ({ value: w.code, label: w.name_with_type }));
   }
 
   /** Gọi lại khi user bấm "Thử lại" sau lỗi tải */

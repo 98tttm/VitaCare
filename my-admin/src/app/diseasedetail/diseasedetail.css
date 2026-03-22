@@ -242,16 +242,301 @@
     border-left-color: #EF4444;
 }
 
-/* Dark Mode Overrides (if any) */
+/* FAQ: màu nhận diện admin (--color-primary), không dùng Bootstrap .text-primary / .btn-outline-primary (xanh mặc định) */
+.faq-section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.faq-section-title i {
+    color: var(--color-primary);
+    font-size: 1.15rem;
+}
+
+.btn-add-faq {
+    background: transparent !important;
+    border: 1px solid var(--color-primary) !important;
+    color: var(--color-primary) !important;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: none !important;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-add-faq:hover {
+    background: var(--color-primary) !important;
+    color: #fff !important;
+    border-color: var(--color-primary) !important;
+}
+
+.btn-add-faq:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* FAQ: label trái — nút xóa phải (class top-2/end-2 không có trong Bootstrap → trước đây nút đè lên chữ) */
+.faq-item-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.faq-item-heading-row label {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-remove-faq {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    color: #ef4444;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: 50%;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-remove-faq:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+}
+
+.btn-remove-faq:focus-visible {
+    outline: 2px solid var(--color-primary, #4a55a2);
+    outline-offset: 2px;
+}
+
+.btn-remove-faq i {
+    font-size: 1.35rem;
+}
+
+/* Tiêu đề khối trong card */
+.disease-subcard-title {
+    font-size: 20px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.disease-related-title {
+    font-size: 17px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+/* Chữ phụ / gợi ý — luôn đủ tương phản (class text-neutral-* không có global) */
+.disease-hint-text {
+    color: #64748b;
+}
+
+.disease-empty-panel {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+}
+
+.disease-related-empty {
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+.disease-detail-page .faq-item {
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-neutral-30);
+}
+
+/* Dropdown tìm bệnh liên quan */
+.related-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.related-dropdown-row {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.15s;
+    color: var(--color-text-primary);
+}
+
+.related-dropdown-row:last-child {
+    border-bottom: none;
+}
+
+.related-dropdown-icon {
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+/* Dark Mode — tránh chữ trắng trên nền trắng (:focus, inline, kế thừa) */
+body.dark-mode .disease-detail-page .disease-hint-text,
+body.dark-mode .disease-detail-page .disease-empty-panel.disease-hint-text {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode .disease-detail-page .disease-empty-panel {
+    background: rgba(15, 23, 42, 0.55);
+    border-color: #475569 !important;
+}
+
+body.dark-mode .disease-detail-page .disease-subcard-title,
+body.dark-mode .disease-detail-page .disease-related-title {
+    border-bottom-color: #475569;
+}
+
+body.dark-mode .disease-detail-page .form-label-bold {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .disease-detail-page .faq-item-heading-row label,
+body.dark-mode .disease-detail-page .faq-item .form-group > label.text-xs {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .disease-detail-page .faq-item {
+    background: rgba(15, 23, 42, 0.55) !important;
+    border-color: #475569 !important;
+}
+
+body.dark-mode .disease-detail-page .btn-back {
+    background: #1e293b;
+    color: #cbd5e1;
+}
+
+body.dark-mode .disease-detail-page .btn-back:hover {
+    color: #fff;
+}
+
+body.dark-mode .disease-detail-page .image-upload-box {
+    background: #1e293b;
+    border-color: #475569;
+}
+
+body.dark-mode .disease-detail-page .image-upload-box:hover {
+    background: #334155;
+    border-color: var(--color-primary);
+}
+
+body.dark-mode .disease-detail-page .upload-placeholder p {
+    color: #e2e8f0;
+}
+
+body.dark-mode .disease-detail-page .related-dropdown-panel {
+    background: #1e293b;
+    border-color: #475569;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-mode .disease-detail-page .related-dropdown-row {
+    color: #f1f5f9;
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .disease-detail-page .related-option:hover {
+    background: #334155 !important;
+}
+
+body.dark-mode .disease-detail-page .notification-toast {
+    background: #1e293b;
+    color: #f8fafc;
+    border: 1px solid #475569;
+}
+
 body.dark-mode .disease-detail-form,
-body.dark-mode .card-premium {
+body.dark-mode .disease-detail-page .card-premium {
     background-color: var(--color-bg-secondary);
     border-color: var(--color-neutral-30);
 }
 
-body.dark-mode .form-input-premium,
-body.dark-mode .knowledge-textarea {
-    background-color: #1e293b;
+body.dark-mode .disease-detail-page .detail-header-card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-neutral-30);
+}
+
+body.dark-mode .disease-detail-page .form-input-premium,
+body.dark-mode .disease-detail-page .form-select-premium,
+body.dark-mode .disease-detail-page .knowledge-textarea {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+}
+
+body.dark-mode .disease-detail-page .form-input-premium::placeholder,
+body.dark-mode .disease-detail-page .form-select-premium::placeholder,
+body.dark-mode .disease-detail-page .knowledge-textarea::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+/* Quan trọng: base CSS đặt :focus background white → gây chữ trắng trên nền trắng */
+body.dark-mode .disease-detail-page .form-input-premium:focus,
+body.dark-mode .disease-detail-page .form-select-premium:focus {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 3px rgba(142, 153, 243, 0.25);
+}
+
+body.dark-mode .disease-detail-page .knowledge-textarea:focus {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 3px rgba(142, 153, 243, 0.2);
+}
+
+body.dark-mode .disease-detail-page select.form-select-premium option {
+    background: #1e293b;
     color: #f8fafc;
-    border-color: #334155;
+}
+
+/* Modal thư viện ảnh */
+body.dark-mode .disease-detail-page .modal-content-wrapper {
+    background: #1e293b;
+    color: #f1f5f9;
+    border: 1px solid #475569;
+}
+
+body.dark-mode .disease-detail-page .modal-header {
+    border-bottom-color: #475569;
+}
+
+body.dark-mode .disease-detail-page .modal-title {
+    color: #f8fafc;
+}
+
+body.dark-mode .disease-detail-page .modal-body {
+    color: #e2e8f0;
+}
+
+body.dark-mode .disease-detail-page .upload-box {
+    border-color: #475569 !important;
+    background: rgba(15, 23, 42, 0.4);
+}
+
+body.dark-mode .disease-detail-page .upload-box p {
+    color: #e2e8f0;
 }

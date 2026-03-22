@@ -36,6 +36,10 @@ export const routes: Routes = [
         loadComponent: () => import('./customermanage/customermanage').then((m) => m.Customermanage)
       },
       {
+        path: 'customers/create',
+        loadComponent: () => import('./customerdetail/customerdetail').then((m) => m.Customerdetail)
+      },
+      {
         path: 'customers/detail/:id',
         loadComponent: () => import('./customerdetail/customerdetail').then((m) => m.Customerdetail)
       },

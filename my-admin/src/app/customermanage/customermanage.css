@@ -14,6 +14,42 @@
     margin-bottom: var(--spacing-4);
 }
 
+.customer-page-header-card.page-header {
+    margin-bottom: 20px;
+}
+
+/* Gi?ng n˙t ThÍm s?n ph?m */
+.btn-add-action {
+    background: linear-gradient(135deg, #4A55A2 0%, #3C4690 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 10px 28px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    box-shadow: 0 4px 12px rgba(74, 85, 162, 0.35) !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    font-family: var(--font-family-base) !important;
+    min-width: 220px !important;
+}
+
+.btn-add-action:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(74, 85, 162, 0.45) !important;
+    filter: brightness(1.1);
+}
+
+.btn-add-action i {
+    font-size: 1.35rem !important;
+    line-height: 1 !important;
+}
+
 .content-title {
     font-family: var(--font-content-title-family);
     font-size: var(--font-content-title-size);
@@ -594,7 +630,7 @@ input[type="checkbox"] {
     }
 }
 
-/* Tier Pills - Premium Membership Badge Colors */
+/* Member tier colors: .tier-dong / .tier-bac / .tier-vang (tierSlug) */
 .tier-pill {
     display: inline-flex;
     align-items: center;
@@ -605,48 +641,68 @@ input[type="checkbox"] {
     font-weight: 700;
     letter-spacing: 0.3px;
     white-space: nowrap;
-}
-
-/* –?ng - Bronze */
-.tier-d?ng {
-    background: linear-gradient(135deg, #b87333, #d28a52, #e1a869, #b87333);
-    color: white;
+    background: transparent;
     border: none;
-    box-shadow: 0 2px 8px rgba(184, 115, 51, 0.3);
+    box-shadow: none;
 }
 
-/* B?c - Silver */
-.tier-b?c {
-    background: linear-gradient(135deg, #c0c0c0, #e0e0e0, #f8f8f8, #b0b0b0);
-    color: #1a5a04;
-    border: none;
-    box-shadow: 0 2px 8px rgba(192, 192, 192, 0.3);
+.tier-dong {
+    color: #c06c35;
+    text-shadow: 0 0 1px rgba(192, 108, 53, 0.35);
 }
 
-/* V‡ng - Gold */
-.tier-v‡ng {
-    background: linear-gradient(135deg, #ffd700, #ffec8b, #f5d142, #ffd700);
-    color: #1a5a04;
-    border: none;
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+.tier-bac {
+    color: #8b9cb3;
+    text-shadow: 0 0 1px rgba(139, 156, 179, 0.4);
 }
 
-/* Kim cuong - Diamond */
-.tier-kim\.cuong,
-[class*="tier-kim"] {
-    background: linear-gradient(135deg, #a8edea, #c2e9fb, #a8edea, #74ebd5);
-    color: #1a3a5c;
-    border: none;
-    box-shadow: 0 2px 8px rgba(116, 235, 213, 0.3);
+.tier-vang {
+    color: #c9a017;
+    text-shadow: 0 0 1px rgba(212, 165, 25, 0.45);
 }
 
-/* Th‡nh viÍn - Member */
-.tier-th‡nh\.viÍn,
-[class*="tier-th‡nh"] {
-    background: var(--color-bg-light);
+/* Dark mode: brighter metallic + soft glow */
+:host-context(body.dark-mode) .tier-dong {
+    color: #ffb07a;
+    text-shadow:
+        0 0 10px rgba(255, 160, 110, 0.55),
+        0 0 2px rgba(0, 0, 0, 0.8);
+}
+
+:host-context(body.dark-mode) .tier-bac {
+    color: #e8eef7;
+    text-shadow:
+        0 0 8px rgba(200, 215, 235, 0.4),
+        0 0 2px rgba(0, 0, 0, 0.7);
+}
+
+:host-context(body.dark-mode) .tier-vang {
+    color: #ffe566;
+    text-shadow:
+        0 0 12px rgba(255, 220, 90, 0.5),
+        0 0 2px rgba(0, 0, 0, 0.75);
+}
+
+:host-context(body.dark-mode) .tier-kimcuong {
+    color: #5eead4;
+    text-shadow: 0 0 10px rgba(94, 234, 212, 0.35);
+}
+
+.tier-kimcuong {
+    color: #0e7490;
+    font-weight: 700;
+}
+
+.tier-thanhvien {
     color: var(--color-text-secondary);
-    border: 1px solid var(--color-neutral-30);
+    font-weight: 600;
 }
+
+.tier-tier-default {
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
 
 /* ===================== DROPDOWN & FILTER ===================== */
 .dropdown-container {
@@ -846,7 +902,7 @@ input[type="checkbox"] {
     transform: none !important;
 }
 
-/* Sort dropdown */
+/* Sort dropdown (??ng b? qu?n lù s?n ph?m) */
 .sort-dropdown-menu {
     position: absolute;
     top: 100%;
@@ -856,7 +912,9 @@ input[type="checkbox"] {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     z-index: 1000;
-    min-width: 200px;
+    width: max-content;
+    min-width: 0;
+    max-width: min(280px, 92vw);
     margin-top: 8px;
     overflow: hidden;
 }
@@ -864,6 +922,97 @@ input[type="checkbox"] {
 .sort-options-list {
     display: flex;
     flex-direction: column;
+}
+
+.compact-sort-list {
+    padding: 6px 0;
+}
+
+.sort-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sort-row:last-child {
+    border-bottom: none;
+}
+
+.sort-row.row-active {
+    background-color: var(--color-primary-bg, rgba(0, 88, 159, 0.08));
+}
+
+.sort-row-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-align: left;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.sort-row-label:hover {
+    background-color: #daecff;
+    color: var(--color-primary);
+}
+
+.sort-row-label i {
+    font-size: 16px;
+    color: var(--color-primary-light);
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.sort-row-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 4px 6px 4px 4px;
+}
+
+.sort-arrow-btn {
+    width: 32px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-neutral-40);
+    border-radius: 6px;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.15s;
+}
+
+.sort-arrow-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: #fff;
+}
+
+.sort-arrow-btn.dir-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.sort-arrow-btn i {
+    font-size: 14px;
+    line-height: 1;
 }
 
 .sort-option-btn {

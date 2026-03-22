@@ -123,77 +123,33 @@
                 </a>
               </div>
               <div class="order-pharmacy-selects" style="grid-template-columns: 1fr 1fr 1fr;">
-                <div class="order-custom-dropdown" [class.disabled]="!allPharmacyLocations.length"
-                  (click)="togglePharmacyProvinceDropdown($event)">
-                  <input type="hidden" [(ngModel)]="pharmacyProvince" name="pharmacy_province" />
-                  <div class="order-custom-dropdown-selected" [class.placeholder]="!pharmacyProvince">
-                    <span>
-                      {{ pharmacyProvince ? getPharmacyProvinceLabel(pharmacyProvince) : 'Chọn Tỉnh/Thành phố' }}
-                    </span>
-                    <svg class="order-custom-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9L1 4h10z" />
-                    </svg>
-                  </div>
-                  @if (showPharmacyProvinceDropdown) {
-                  <ul class="order-custom-dropdown-list" (click)="$event.stopPropagation()">
-                    @for (p of allPharmacyLocations; track p.tinh) {
-                    <li class="order-custom-dropdown-item" [class.selected]="pharmacyProvince === p.tinh"
-                      (click)="selectPharmacyProvince(p.tinh, $event)">
-                      {{ p.tinh }}
-                    </li>
-                    }
-                  </ul>
-                  }
-                </div>
-
-                <div class="order-custom-dropdown" [class.disabled]="!pharmacyProvince"
-                  (click)="togglePharmacyDistrictDropdown($event)">
-                  <input type="hidden" [(ngModel)]="pharmacyDistrict" name="pharmacy_district" />
-                  <div class="order-custom-dropdown-selected" [class.placeholder]="!pharmacyDistrict">
-                    <span>
-                      {{ pharmacyDistrict ? getPharmacyDistrictLabel(pharmacyDistrict) : 'Chọn Quận/Huyện' }}
-                    </span>
-                    <svg class="order-custom-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9L1 4h10z" />
-                    </svg>
-                  </div>
-                  @if (showPharmacyDistrictDropdown) {
-                  <ul class="order-custom-dropdown-list" (click)="$event.stopPropagation()">
-                    @for (d of availableDistricts; track d.ten) {
-                    <li class="order-custom-dropdown-item" [class.selected]="pharmacyDistrict === d.ten"
-                      (click)="selectPharmacyDistrict(d.ten, $event)">
-                      {{ d.ten }}
-                    </li>
-                    }
-                  </ul>
-                  }
-                </div>
-
-                <div class="order-custom-dropdown" [class.disabled]="!pharmacyDistrict"
-                  (click)="togglePharmacyWardDropdown($event)">
-                  <input type="hidden" [(ngModel)]="pharmacyWard" name="pharmacy_ward" />
-                  <div class="order-custom-dropdown-selected" [class.placeholder]="!pharmacyWard">
-                    <span>
-                      {{ pharmacyWard ? getPharmacyWardLabel(pharmacyWard) : 'Chọn Phường/Xã' }}
-                    </span>
-                    <svg class="order-custom-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9L1 4h10z" />
-                    </svg>
-                  </div>
-                  @if (showPharmacyWardDropdown) {
-                  <ul class="order-custom-dropdown-list" (click)="$event.stopPropagation()">
-                    @for (w of availableWards; track w) {
-                    <li class="order-custom-dropdown-item" [class.selected]="pharmacyWard === w"
-                      (click)="selectPharmacyWard(w, $event)">
-                      {{ w }}
-                    </li>
-                    }
-                  </ul>
-                  }
-                </div>
+                <vc-searchable-select
+                  class="order-addr-vc-select"
+                  [(ngModel)]="pharmacyProvince"
+                  name="pharmacy_province"
+                  [options]="pharmacyProvinceSelectOptions"
+                  [disabled]="!allPharmacyLocations.length"
+                  placeholder="Chọn Tỉnh/Thành phố"
+                  (ngModelChange)="onPharmacyProvinceChange($event)"
+                />
+                <vc-searchable-select
+                  class="order-addr-vc-select"
+                  [(ngModel)]="pharmacyDistrict"
+                  name="pharmacy_district"
+                  [options]="pharmacyDistrictSelectOptions"
+                  [disabled]="!pharmacyProvince"
+                  placeholder="Chọn Quận/Huyện"
+                  (ngModelChange)="onPharmacyDistrictChange($event)"
+                />
+                <vc-searchable-select
+                  class="order-addr-vc-select"
+                  [(ngModel)]="pharmacyWard"
+                  name="pharmacy_ward"
+                  [options]="pharmacyWardSelectOptions"
+                  [disabled]="!pharmacyDistrict"
+                  placeholder="Chọn Phường/Xã"
+                  (ngModelChange)="onPharmacyWardChange($event)"
+                />
               </div>
 
               <!-- Stores List (Only display when Ward is selected) -->
@@ -589,97 +545,39 @@
             <div class="order-addr-form-grid order-addr-form-grid-2">
               <div class="order-addr-form-group">
                 <label class="order-addr-form-label">Tỉnh/Thành phố <span class="order-addr-required">*</span></label>
-                <div
-                  class="order-custom-dropdown"
-                  [class.disabled]="!provinces.length"
-                  (click)="toggleProvinceDropdown($event)">
-                  <input type="hidden" [(ngModel)]="addressForm.provinceCode" name="addr_province" />
-                  <div
-                    class="order-custom-dropdown-selected"
-                    [class.placeholder]="!addressForm.provinceCode">
-                    <span>
-                      {{ addressForm.provinceCode ? getProvinceLabel(addressForm.provinceCode) : 'Chọn Tỉnh/Thành phố *' }}
-                    </span>
-                    <svg class="order-custom-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9L1 4h10z" />
-                    </svg>
-                  </div>
-                  @if (showProvinceDropdown) {
-                  <ul class="order-custom-dropdown-list" (click)="$event.stopPropagation()">
-                    @for (p of provinces; track p.code) {
-                    <li class="order-custom-dropdown-item"
-                      [class.selected]="addressForm.provinceCode === p.code"
-                      (click)="selectProvince(p.code, $event)">
-                      {{ p.name_with_type }}
-                    </li>
-                    }
-                  </ul>
-                  }
-                </div>
+                <vc-searchable-select
+                  class="order-addr-vc-select"
+                  [(ngModel)]="addressForm.provinceCode"
+                  name="addr_province"
+                  [options]="provinceSelectOptions"
+                  [disabled]="!provinces.length"
+                  placeholder="Chọn Tỉnh/Thành phố *"
+                  (ngModelChange)="onAddressFormProvinceChange($event)"
+                />
               </div>
               <div class="order-addr-form-group">
                 <label class="order-addr-form-label">Quận/Huyện <span class="order-addr-required">*</span></label>
-                <div
-                  class="order-custom-dropdown"
-                  [class.disabled]="!addressForm.provinceCode"
-                  (click)="toggleDistrictDropdown($event)">
-                  <input type="hidden" [(ngModel)]="addressForm.districtCode" name="addr_district" />
-                  <div
-                    class="order-custom-dropdown-selected"
-                    [class.placeholder]="!addressForm.districtCode">
-                    <span>
-                      {{ addressForm.districtCode ? getDistrictLabel(addressForm.districtCode) : 'Chọn Quận/Huyện *' }}
-                    </span>
-                    <svg class="order-custom-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9L1 4h10z" />
-                    </svg>
-                  </div>
-                  @if (showDistrictDropdown) {
-                  <ul class="order-custom-dropdown-list" (click)="$event.stopPropagation()">
-                    @for (d of districts; track d.code) {
-                    <li class="order-custom-dropdown-item"
-                      [class.selected]="addressForm.districtCode === d.code"
-                      (click)="selectDistrict(d.code, $event)">
-                      {{ d.name_with_type }}
-                    </li>
-                    }
-                  </ul>
-                  }
-                </div>
+                <vc-searchable-select
+                  class="order-addr-vc-select"
+                  [(ngModel)]="addressForm.districtCode"
+                  name="addr_district"
+                  [options]="districtSelectOptions"
+                  [disabled]="!addressForm.provinceCode"
+                  placeholder="Chọn Quận/Huyện *"
+                  (ngModelChange)="onAddressFormDistrictChange($event)"
+                />
               </div>
             </div>
             <div class="order-addr-form-group">
               <label class="order-addr-form-label">Phường/Xã <span class="order-addr-required">*</span></label>
-              <div
-                class="order-custom-dropdown"
-                [class.disabled]="!addressForm.districtCode"
-                (click)="toggleWardDropdown($event)">
-                <input type="hidden" [(ngModel)]="addressForm.wardCode" name="addr_ward" />
-                <div
-                  class="order-custom-dropdown-selected"
-                  [class.placeholder]="!addressForm.wardCode">
-                  <span>
-                    {{ addressForm.wardCode ? getWardLabel(addressForm.wardCode) : 'Chọn Phường/Xã *' }}
-                  </span>
-                  <svg class="order-custom-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 9L1 4h10z" />
-                  </svg>
-                </div>
-                @if (showWardDropdown) {
-                <ul class="order-custom-dropdown-list" (click)="$event.stopPropagation()">
-                  @for (w of wards; track w.code) {
-                  <li class="order-custom-dropdown-item"
-                    [class.selected]="addressForm.wardCode === w.code"
-                    (click)="selectWard(w.code, $event)">
-                    {{ w.name_with_type }}
-                  </li>
-                  }
-                </ul>
-                }
-              </div>
+              <vc-searchable-select
+                class="order-addr-vc-select"
+                [(ngModel)]="addressForm.wardCode"
+                name="addr_ward"
+                [options]="wardSelectOptions"
+                [disabled]="!addressForm.districtCode"
+                placeholder="Chọn Phường/Xã *"
+              />
             </div>
             <div class="order-addr-form-group">
               <label class="order-addr-form-label">Địa chỉ cụ thể <span class="order-addr-required">*</span></label>

@@ -64,7 +64,7 @@
 
             <div class="dropdown-container">
                 <button class="btn btn-sm action-btn icon-text"
-                    [class.active]="isFilterDropdownOpen || filterStatus !== 'all'" (click)="toggleFilterDropdown()">
+                    [class.active]="isFilterDropdownOpen || filterStatus !== 'all'" (click)="toggleFilterDropdown($event)">
                     <i class="bi bi-sliders"></i> Lọc
                     <span class="selected-badge" *ngIf="filterStatus !== 'all'">1</span>
                 </button>
@@ -110,31 +110,103 @@
             </button>
 
             <div class="dropdown-container" style="position: relative;">
-                <button class="btn btn-sm action-btn icon-text" (click)="toggleSortDropdown()">
+                <button class="btn btn-sm action-btn icon-text" (click)="toggleSortDropdown($event)"
+                    [class.active]="isSortDropdownOpen || sortKind !== 'start_date' || sortDirection !== 'desc'">
                     <i class="bi bi-arrow-down-up"></i> Sắp xếp
                 </button>
                 <div class="dropdown-popup sort-dropdown-menu" *ngIf="isSortDropdownOpen"
                     (click)="$event.stopPropagation()">
-                    <div class="sort-options-list">
-                        <button (click)="sortCriteria = 'date'; sortDirection = 'desc'; applySort()"
-                            class="sort-option-btn"
-                            [class.active]="sortCriteria === 'date' && sortDirection === 'desc'">
-                            <i class="bi bi-calendar-event"></i> Ngày bắt đầu: Mới nhất
-                        </button>
-                        <button (click)="sortCriteria = 'date'; sortDirection = 'asc'; applySort()"
-                            class="sort-option-btn" [class.active]="sortCriteria === 'date' && sortDirection === 'asc'">
-                            <i class="bi bi-calendar"></i> Ngày bắt đầu: Cũ nhất
-                        </button>
-                        <button (click)="sortCriteria = 'usage'; sortDirection = 'desc'; applySort()"
-                            class="sort-option-btn"
-                            [class.active]="sortCriteria === 'usage' && sortDirection === 'desc'">
-                            <i class="bi bi-sort-numeric-down-alt"></i> Lượt sử dụng: Cao nhất
-                        </button>
-                        <button (click)="sortCriteria = 'usage'; sortDirection = 'asc'; applySort()"
-                            class="sort-option-btn"
-                            [class.active]="sortCriteria === 'usage' && sortDirection === 'asc'">
-                            <i class="bi bi-sort-numeric-down"></i> Lượt sử dụng: Thấp nhất
-                        </button>
+                    <div class="sort-options-list compact-sort-list">
+                        <div class="sort-row" [class.row-active]="sortKind === 'start_date'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('start_date')">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Ngày bắt đầu</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="Cũ → mới"
+                                    [class.dir-active]="sortKind === 'start_date' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('start_date', 'asc', $event)">
+                                    <i class="bi bi-sort-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Mới → cũ"
+                                    [class.dir-active]="sortKind === 'start_date' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('start_date', 'desc', $event)">
+                                    <i class="bi bi-sort-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-row" [class.row-active]="sortKind === 'end_date'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('end_date')">
+                                <i class="bi bi-calendar2-week"></i>
+                                <span>Ngày kết thúc</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="Sớm → muộn"
+                                    [class.dir-active]="sortKind === 'end_date' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('end_date', 'asc', $event)">
+                                    <i class="bi bi-sort-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Muộn → sớm"
+                                    [class.dir-active]="sortKind === 'end_date' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('end_date', 'desc', $event)">
+                                    <i class="bi bi-sort-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-row" [class.row-active]="sortKind === 'usage'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('usage')">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <span>Lượt sử dụng</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="Ít → nhiều"
+                                    [class.dir-active]="sortKind === 'usage' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('usage', 'asc', $event)">
+                                    <i class="bi bi-sort-numeric-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Nhiều → ít"
+                                    [class.dir-active]="sortKind === 'usage' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('usage', 'desc', $event)">
+                                    <i class="bi bi-sort-numeric-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-row" [class.row-active]="sortKind === 'name'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('name')">
+                                <i class="bi bi-fonts"></i>
+                                <span>Tên khuyến mãi</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="A → Z"
+                                    [class.dir-active]="sortKind === 'name' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('name', 'asc', $event)">
+                                    <i class="bi bi-sort-alpha-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Z → A"
+                                    [class.dir-active]="sortKind === 'name' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('name', 'desc', $event)">
+                                    <i class="bi bi-sort-alpha-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-row" [class.row-active]="sortKind === 'banner'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('banner')">
+                                <i class="bi bi-columns-gap"></i>
+                                <span>Vị trí hiển thị</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="Thứ tự slot tăng"
+                                    [class.dir-active]="sortKind === 'banner' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('banner', 'asc', $event)">
+                                    <i class="bi bi-sort-numeric-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Thứ tự slot giảm"
+                                    [class.dir-active]="sortKind === 'banner' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('banner', 'desc', $event)">
+                                    <i class="bi bi-sort-numeric-down"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -154,7 +226,7 @@
                     <th>Trạng thái</th>
                     <th>Bắt đầu</th>
                     <th>Kết thúc</th>
-                    <th>Cập nhật gần nhất</th>
+                    <th>Vị trí hiển thị</th>
                 </tr>
             </thead>
             <tbody>
@@ -177,7 +249,7 @@
                     </td>
                     <td>{{ p.start_date | date:'dd/MM/yyyy' }}</td>
                     <td>{{ p.end_date | date:'dd/MM/yyyy' }}</td>
-                    <td>{{ p.updated_at | date:'dd/MM/yyyy' }}</td>
+                    <td class="banner-slot-cell">{{ getBannerSlotLabel(p) }}</td>
                 </tr>
                 <tr *ngIf="filteredPromotions.length === 0">
                     <td colspan="7" class="text-center"

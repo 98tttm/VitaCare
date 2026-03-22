@@ -3,6 +3,8 @@ import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/comm
 import { Router } from '@angular/router';
 import { OrderService } from '../services/order.service';
 import { FormsModule } from '@angular/forms';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
+import { VcSearchableSelectComponent } from '../shared/vc-searchable-select/vc-searchable-select.component';
 
 interface Order {
   id: string; // The real _id or order_id
@@ -23,7 +25,7 @@ interface Order {
 
 @Component({
   selector: 'app-ordermanage',
-  imports: [CommonModule, CurrencyPipe, DatePipe, DecimalPipe, FormsModule],
+  imports: [CommonModule, CurrencyPipe, DatePipe, DecimalPipe, FormsModule, AdminMascotLoadingComponent, VcSearchableSelectComponent],
   providers: [OrderService],
   templateUrl: './ordermanage.html',
   styleUrl: './ordermanage.css',
@@ -118,6 +120,18 @@ export class Ordermanage implements OnInit {
   ngOnInit() {
     this.fetchOrders();
     this.fetchLocations();
+  }
+
+  get citySelectOptions(): { value: string; label: string }[] {
+    return (this.cities || []).map((c: any) => ({ value: c.name_with_type, label: c.name_with_type }));
+  }
+
+  get districtSelectOptions(): { value: string; label: string }[] {
+    return (this.districts || []).map((d: any) => ({ value: d.name_with_type, label: d.name_with_type }));
+  }
+
+  get wardSelectOptions(): { value: string; label: string }[] {
+    return (this.wards || []).map((w: any) => ({ value: w.name_with_type, label: w.name_with_type }));
   }
 
   showNotification(message: string, type: 'success' | 'error' | 'warning' = 'success') {

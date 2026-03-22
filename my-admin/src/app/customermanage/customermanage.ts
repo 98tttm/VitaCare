@@ -3,11 +3,14 @@ import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/comm
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CustomerService } from '../services/customer.service';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
+
+export type CustomerSortKind = 'name' | 'registerdate' | 'totalspent';
 
 @Component({
   selector: 'app-customermanage',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, AdminMascotLoadingComponent],
   providers: [CustomerService],
   templateUrl: './customermanage.html',
   styleUrls: ['./customermanage.css']
@@ -22,18 +25,15 @@ export class Customermanage implements OnInit {
 
   isFilterOpen: boolean = false;
   advancedFilters: any = {
-    tier: { 'Đồng': false, 'Bạc': false, 'Vàng': false, 'Kim cương': false, 'Thành viên': false },
+    tier: { 'Đồng': false, 'Bạc': false, 'Vàng': false },
+    customer_group: {} as Record<string, boolean>,
     spending_range: { min: null as number | null, max: null as number | null }
   };
 
-  // Group State
+  // Group State (MongoDB collection `customer_groups`)
   isGroupModalOpen = false;
   groupName = '';
-  existingGroups: any[] = [
-    { id: 1, name: 'Khách hàng VIP 2024', count: 15, date: '2024-01-15' },
-    { id: 2, name: 'Nhóm ưu tiên khu vực HCM', count: 42, date: '2024-02-20' },
-    { id: 3, name: 'Khách hàng tiềm năng thuốc gan', count: 8, date: '2024-03-01' }
-  ];
+  existingGroups: any[] = [];
 
   notification = {
     show: false,
@@ -61,12 +61,66 @@ export class Customermanage implements OnInit {
     this.fetchGroups();
   }
 
+  goCreateCustomer(): void {
+    this.router.navigate(['/admin/customers/create']);
+  }
+
+  /**
+   * ID nhóm cho checkbox lọc — dùng arrow để trackBy của *ngFor không mất `this`
+   * (Angular gọi trackBy như hàm thuần, method thường sẽ làm this.groupFilterKey undefined).
+   */
+  groupFilterKey = (g: { _id?: unknown; id?: unknown }): string => String(g._id ?? g.id ?? '');
+
+  trackByGroupId = (_index: number, g: { _id?: unknown; id?: unknown }): string =>
+    String(g._id ?? g.id ?? '');
+
+  tierSlug(tier: string | undefined | null): string {
+    const key = (tier ?? '').trim().toLowerCase();
+    switch (key) {
+      case 'đồng':
+        return 'dong';
+      case 'bạc':
+        return 'bac';
+      case 'vàng':
+        return 'vang';
+      case 'kim cương':
+        return 'kimcuong';
+      case 'thành viên':
+        return 'thanhvien';
+      default:
+        return 'tier-default';
+    }
+  }
+
   fetchGroups() {
     this.customerService.getGroups().subscribe({
       next: (res) => {
-        if (res.success) this.existingGroups = res.data;
+        if (!res.success) return;
+        this.existingGroups = res.data || [];
+        const cg = { ...(this.advancedFilters.customer_group || {}) };
+        for (const g of this.existingGroups) {
+          const id = String(g._id || g.id || '');
+          if (id && !(id in cg)) cg[id] = false;
+        }
+        this.advancedFilters.customer_group = cg;
+        this.syncCustomerGroupMembership();
+        if (this.customers.length) this.applyFilters();
       }
     });
+  }
+
+  /** Gắn memberGroupIds theo nhóm trong `customer_groups` + customerIds. */
+  syncCustomerGroupMembership(): void {
+    for (const c of this.customers) {
+      const keys = [String(c._id || ''), String(c.user_id || '')].filter(k => k.length > 0);
+      const gids: string[] = [];
+      for (const g of this.existingGroups) {
+        const gid = String(g._id || g.id || '');
+        const ids = (g.customerIds || []).map((x: unknown) => String(x));
+        if (keys.some(k => ids.includes(k))) gids.push(gid);
+      }
+      c.memberGroupIds = gids;
+    }
   }
 
   fetchCustomers() {
@@ -80,6 +134,7 @@ export class Customermanage implements OnInit {
             selected: false,
             addressString: c.address && c.address.length > 0 ? c.address.join(', ') : 'Chưa cập nhật'
           }));
+          this.syncCustomerGroupMembership();
           this.applyFilters();
           this.cdr.markForCheck(); // Force immediate view update
         }
@@ -122,11 +177,19 @@ export class Customermanage implements OnInit {
         if (sr.max !== null && spending > sr.max) matchesSpending = false;
       }
 
-      return matchesTier && matchesSpending;
+      // 3. Nhóm khách (collection customer_groups)
+      const gf = this.advancedFilters.customer_group || {};
+      const hasGroupFilter = Object.values(gf).some(v => v);
+      let matchesGroup = true;
+      if (hasGroupFilter) {
+        const memberIds: string[] = c.memberGroupIds || [];
+        matchesGroup = memberIds.some(gid => gf[gid]);
+      }
+
+      return matchesTier && matchesSpending && matchesGroup;
     });
 
-    // Default sort: newest first
-    this.filteredProducts_sort();
+    this.applyCustomerSort();
 
     this.updateSelection();
   }
@@ -151,6 +214,8 @@ export class Customermanage implements OnInit {
     Object.keys(this.advancedFilters).forEach(type => {
       if (type === 'spending_range') {
         if (this.advancedFilters.spending_range.min !== null || this.advancedFilters.spending_range.max !== null) count++;
+      } else if (type === 'customer_group') {
+        Object.values(this.advancedFilters.customer_group || {}).forEach(v => { if (v) count++; });
       } else {
         Object.values(this.advancedFilters[type]).forEach(v => { if (v) count++; });
       }
@@ -159,8 +224,14 @@ export class Customermanage implements OnInit {
   }
 
   clearAllFilters() {
+    const cg: Record<string, boolean> = {};
+    for (const g of this.existingGroups) {
+      const id = String(g._id || g.id || '');
+      if (id) cg[id] = false;
+    }
     this.advancedFilters = {
-      tier: { 'Đồng': false, 'Bạc': false, 'Vàng': false, 'Kim cương': false, 'Thành viên': false },
+      tier: { 'Đồng': false, 'Bạc': false, 'Vàng': false },
+      customer_group: cg,
       spending_range: { min: null, max: null }
     };
     this.applyFilters();
@@ -306,6 +377,9 @@ export class Customermanage implements OnInit {
       next: (res) => {
         if (res.success) {
           this.existingGroups.unshift(res.data);
+          const nid = String(res.data._id || res.data.id || '');
+          if (nid) this.advancedFilters.customer_group[nid] = false;
+          this.syncCustomerGroupMembership();
           this.isGroupModalOpen = false;
           this.groupName = '';
           this.customers.forEach(c => c.selected = false);
@@ -326,6 +400,9 @@ export class Customermanage implements OnInit {
       next: (res) => {
         if (res.success) {
           this.existingGroups = this.existingGroups.filter(g => String(g._id || g.id) !== id);
+          delete this.advancedFilters.customer_group[id];
+          this.syncCustomerGroupMembership();
+          this.applyFilters();
           this.showNotification('Đã xóa nhóm khách hàng', 'success');
           this.cdr.markForCheck();
         } else {
@@ -341,9 +418,9 @@ export class Customermanage implements OnInit {
     this.groupName = '';
   }
 
-  // === SORT ===
-  isSortDropdownOpen: boolean = false;
-  sortColumn: string = 'registerdate';
+  // === SORT (cùng pattern quản lý sản phẩm) ===
+  isSortDropdownOpen = false;
+  sortKind: CustomerSortKind = 'registerdate';
   sortDirection: 'asc' | 'desc' = 'desc';
 
   toggleSortDropdown(event: Event) {
@@ -352,30 +429,58 @@ export class Customermanage implements OnInit {
     this.isFilterOpen = false;
   }
 
-  onSortSelect(column: string, direction: 'asc' | 'desc') {
-    this.sortColumn = column;
-    this.sortDirection = direction;
-
-    this.filteredProducts_sort(); // reuse logic
-    this.isSortDropdownOpen = false;
-    this.showNotification(`Đã sắp xếp khách hàng`);
+  private defaultDirectionForKind(kind: CustomerSortKind): 'asc' | 'desc' {
+    switch (kind) {
+      case 'name':
+        return 'asc';
+      case 'registerdate':
+        return 'desc';
+      case 'totalspent':
+        return 'desc';
+      default:
+        return 'desc';
+    }
   }
 
-  filteredProducts_sort() {
-    this.filteredCustomers.sort((a, b) => {
-      let valA: any = a[this.sortColumn as keyof typeof a] || 0;
-      let valB: any = b[this.sortColumn as keyof typeof b] || 0;
+  /** Click nhãn hàng: cùng tiêu chí → đảo hướng; khác → hướng mặc định. */
+  onSortRowClick(kind: CustomerSortKind): void {
+    if (this.sortKind === kind) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKind = kind;
+      this.sortDirection = this.defaultDirectionForKind(kind);
+    }
+    this.applyCustomerSort();
+  }
 
-      if (this.sortColumn === 'registerdate') {
-        valA = new Date(valA).getTime() || 0;
-        valB = new Date(valB).getTime() || 0;
-      } else if (this.sortColumn === 'total_spending') {
-        valA = Number(a.total_spending || a.totalspent || 0);
-        valB = Number(b.total_spending || b.totalspent || 0);
-      } else {
-        // String comparison
-        if (typeof valA === 'string') valA = valA.toLowerCase();
-        if (typeof valB === 'string') valB = valB.toLowerCase();
+  setSortDirection(kind: CustomerSortKind, direction: 'asc' | 'desc', event?: Event): void {
+    event?.stopPropagation();
+    this.sortKind = kind;
+    this.sortDirection = direction;
+    this.applyCustomerSort();
+  }
+
+  applyCustomerSort(): void {
+    this.filteredCustomers.sort((a, b) => {
+      let valA: number | string;
+      let valB: number | string;
+
+      switch (this.sortKind) {
+        case 'name':
+          valA = String(a.full_name || a.fullname || '').toLowerCase();
+          valB = String(b.full_name || b.fullname || '').toLowerCase();
+          break;
+        case 'registerdate':
+          valA = new Date(a.registerdate).getTime() || 0;
+          valB = new Date(b.registerdate).getTime() || 0;
+          break;
+        case 'totalspent':
+          valA = Number(a.total_spending ?? a.totalspent ?? 0);
+          valB = Number(b.total_spending ?? b.totalspent ?? 0);
+          break;
+        default:
+          valA = 0;
+          valB = 0;
       }
 
       if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;

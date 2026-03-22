@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Store } from '../../../core/models/store.model';
 import { StoreService, StoreFilter, LocationItem } from '../../../core/services/store.service';
+import { VcSearchableSelectComponent } from '../../../shared/vc-searchable-select/vc-searchable-select.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -21,7 +22,7 @@ const TINH_THANH_LIST = [
 @Component({
     selector: 'app-store-system',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, RouterLink, VcSearchableSelectComponent],
     templateUrl: './store-system.html',
     styleUrl: './store-system.css',
 })
@@ -35,9 +36,6 @@ export class StoreSystemComponent implements OnInit, OnDestroy {
     selectedTinh = 'Tất cả';
     selectedQuan = 'Tất cả';
     selectedPhuong = 'Tất cả';
-    showDropdown = false;
-    showQuanDropdown = false;
-    showPhuongDropdown = false;
     activeTab = 'search';
 
     currentPage = 1;
@@ -143,15 +141,22 @@ export class StoreSystemComponent implements OnInit, OnDestroy {
         this.keywordSubject.next(this.keyword);
     }
 
-    toggleDropdown(type: 'tinh' | 'quan' | 'phuong'): void {
-        if (type === 'tinh') this.showDropdown = !this.showDropdown;
-        if (type === 'quan') this.showQuanDropdown = !this.showQuanDropdown;
-        if (type === 'phuong') this.showPhuongDropdown = !this.showPhuongDropdown;
+    get tinhStoreOptions(): { value: string; label: string }[] {
+        return (this.tinhThanhList || []).map((t) => ({ value: t, label: t }));
+    }
+
+    get quanStoreOptions(): { value: string; label: string }[] {
+        const head = { value: 'Tất cả', label: 'Tất cả' };
+        if (this.selectedTinh === 'Tất cả') return [head];
+        return [head, ...this.availableQuans.map((q: { ten: string }) => ({ value: q.ten, label: q.ten }))];
+    }
+
+    get phuongStoreOptions(): { value: string; label: string }[] {
+        return (this.availablePhuongs || []).map((p) => ({ value: p, label: p }));
     }
 
     selectTinh(tinh: string): void {
         this.selectedTinh = tinh;
-        this.showDropdown = false;
         this.selectedQuan = 'Tất cả';
         this.selectedPhuong = 'Tất cả';
         this.availableQuans = [];
@@ -170,7 +175,6 @@ export class StoreSystemComponent implements OnInit, OnDestroy {
 
     selectQuan(quan: string): void {
         this.selectedQuan = quan;
-        this.showQuanDropdown = false;
         this.selectedPhuong = 'Tất cả';
         this.availablePhuongs = [];
 
@@ -187,7 +191,6 @@ export class StoreSystemComponent implements OnInit, OnDestroy {
 
     selectPhuong(phuong: string): void {
         this.selectedPhuong = phuong;
-        this.showPhuongDropdown = false;
         this.currentPage = 1;
         this.loadStores();
     }

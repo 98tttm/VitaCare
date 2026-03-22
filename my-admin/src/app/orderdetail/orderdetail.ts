@@ -13,11 +13,13 @@ import {
   buildProductIdsByGroupId,
   CartLikeItem,
 } from '../utils/applicable-promotions';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
+import { VcSearchableSelectComponent } from '../shared/vc-searchable-select/vc-searchable-select.component';
 
 @Component({
   selector: 'app-orderdetail',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule],
+  imports: [CommonModule, DatePipe, FormsModule, AdminMascotLoadingComponent, VcSearchableSelectComponent],
   providers: [OrderService, ProductService, PromotionService],
   templateUrl: './orderdetail.html',
   styleUrl: './orderdetail.css',
@@ -83,6 +85,18 @@ export class Orderdetail implements OnInit {
     { value: 'Banking', label: 'Chuyển khoản' },
   ];
 
+  get citySelectOptions(): { value: string; label: string }[] {
+    return (this.cities || []).map((c: any) => ({ value: c.name_with_type, label: c.name_with_type }));
+  }
+
+  get districtSelectOptions(): { value: string; label: string }[] {
+    return (this.districts || []).map((d: any) => ({ value: d.name_with_type, label: d.name_with_type }));
+  }
+
+  get wardSelectOptions(): { value: string; label: string }[] {
+    return (this.wards || []).map((w: any) => ({ value: w.name_with_type, label: w.name_with_type }));
+  }
+
   constructor(
     private location: Location,
     private route: ActivatedRoute,
@@ -93,16 +107,21 @@ export class Orderdetail implements OnInit {
     private cdr: ChangeDetectorRef
   ) { }
 
-  @HostListener('document:click')
-  closeCreateSelectOnOutside() {
+  @HostListener('document:click', ['$event'])
+  closeCreateSelectOnOutside(ev: MouseEvent) {
+    const t = ev.target as HTMLElement;
+    if (t.closest('.od-custom-select')) return;
+    if (t.closest('vc-searchable-select')) return;
     this.openCreateSelect = null;
   }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    /** Route leaf path ổn định hơn `router.url` (tránh kẹt isLoading khi URL chưa sync). */
+    const routePath = this.route.snapshot.routeConfig?.path || '';
     this.fetchPromotions(); // Always fetch for both modes
 
-    if (this.router.url.includes('/orders/edit')) {
+    if (routePath.startsWith('orders/edit')) {
       this.isCreateMode = true; // We use the create layout for edit
       this.isEditMode = true;
       this.isLoading = true;
@@ -110,7 +129,7 @@ export class Orderdetail implements OnInit {
       this.prefetchAllProducts();
       this.fetchPromoSupportData();
       if (id) this.fetchOrderDetailForEdit(id);
-    } else if (this.router.url.includes('/orders/create')) {
+    } else if (routePath === 'orders/create') {
       this.isCreateMode = true;
       this.isLoading = false;
       this.fetchLocations();
@@ -118,6 +137,8 @@ export class Orderdetail implements OnInit {
       this.fetchPromoSupportData();
     } else if (id) {
       this.fetchOrderDetail(id);
+    } else {
+      this.isLoading = false;
     }
   }
 
@@ -538,29 +559,7 @@ export class Orderdetail implements OnInit {
 
   toggleCreateSelect(key: string, event: MouseEvent) {
     event.stopPropagation();
-    if (key === 'district' && !this.newOrder.shippingInfo.city) return;
-    if (key === 'ward' && !this.newOrder.shippingInfo.district) return;
     this.openCreateSelect = this.openCreateSelect === key ? null : key;
-  }
-
-  pickCity(city: any, event: MouseEvent) {
-    event.stopPropagation();
-    this.newOrder.shippingInfo.city = city.name_with_type;
-    this.onCityChange();
-    this.openCreateSelect = null;
-  }
-
-  pickDistrict(d: any, event: MouseEvent) {
-    event.stopPropagation();
-    this.newOrder.shippingInfo.district = d.name_with_type;
-    this.onDistrictChange();
-    this.openCreateSelect = null;
-  }
-
-  pickWard(w: any, event: MouseEvent) {
-    event.stopPropagation();
-    this.newOrder.shippingInfo.ward = w.name_with_type;
-    this.openCreateSelect = null;
   }
 
   pickPayment(value: string, event: MouseEvent) {
@@ -750,8 +749,14 @@ export class Orderdetail implements OnInit {
       }
     }
     this.calculateTotal();
+    const pm = String(this.newOrder.paymentMethod || 'cod').toLowerCase();
+    const payload = {
+      ...this.newOrder,
+      paymentMethod: pm === 'banking' ? 'banking' : 'cod',
+      atPharmacy: Boolean(this.newOrder.atPharmacy),
+    };
     this.isLoading = true;
-    this.orderService.createOrder(this.newOrder).subscribe({
+    this.orderService.createOrder(payload).subscribe({
       next: (res) => {
         if (res.success) {
           this.showNotification('Tạo đơn hàng thành công!', 'success');

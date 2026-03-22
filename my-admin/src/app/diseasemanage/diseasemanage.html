@@ -94,38 +94,56 @@
                 <i class="bi bi-trash"></i> Xóa
             </button>
             <div class="dropdown-container">
-                <button class="btn btn-sm action-btn icon-text" (click)="toggleSortDropdown($event)">
+                <button class="btn btn-sm action-btn icon-text" (click)="toggleSortDropdown($event)"
+                    [class.active]="isSortDropdownOpen || sortKind !== 'date' || sortDirection !== 'desc'">
                     <i class="bi bi-arrow-down-up"></i> Sắp xếp
                 </button>
-                <div class="dropdown-menu-multilevel" *ngIf="isSortDropdownOpen" (click)="$event.stopPropagation()">
-                    <div class="dropdown-option" (click)="onSortSelect('newest')"
-                        [class.active]="sortColumn === 'created_at' && sortDirection === 'desc'">
-                        <i class="bi bi-sort-numeric-down-alt"></i> Mới nhất
-                    </div>
-                    <div class="dropdown-option" (click)="onSortSelect('oldest')"
-                        [class.active]="sortColumn === 'created_at' && sortDirection === 'asc'">
-                        <i class="bi bi-sort-numeric-down"></i> Cũ nhất
-                    </div>
-                    <div class="dropdown-option" (click)="onSortSelect('nameAsc')"
-                        [class.active]="sortColumn === 'name' && sortDirection === 'asc'">
-                        <i class="bi bi-sort-alpha-down"></i> Tựa đề (A-Z)
-                    </div>
-                    <div class="dropdown-option" (click)="onSortSelect('nameDesc')"
-                        [class.active]="sortColumn === 'name' && sortDirection === 'desc'">
-                        <i class="bi bi-sort-alpha-down-alt"></i> Tựa đề (Z-A)
+                <div class="dropdown-popup sort-dropdown-menu" *ngIf="isSortDropdownOpen"
+                    (click)="$event.stopPropagation()">
+                    <div class="sort-options-list compact-sort-list">
+                        <div class="sort-row" [class.row-active]="sortKind === 'date'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('date')">
+                                <i class="bi bi-clock-history"></i>
+                                <span>Ngày đăng</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="Cũ → mới (tăng dần)"
+                                    [class.dir-active]="sortKind === 'date' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('date', 'asc', $event)">
+                                    <i class="bi bi-sort-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Mới → cũ (giảm dần)"
+                                    [class.dir-active]="sortKind === 'date' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('date', 'desc', $event)">
+                                    <i class="bi bi-sort-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-row" [class.row-active]="sortKind === 'title'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('title')">
+                                <i class="bi bi-fonts"></i>
+                                <span>Tựa đề</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="A → Z"
+                                    [class.dir-active]="sortKind === 'title' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('title', 'asc', $event)">
+                                    <i class="bi bi-sort-alpha-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Z → A"
+                                    [class.dir-active]="sortKind === 'title' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('title', 'desc', $event)">
+                                    <i class="bi bi-sort-alpha-down"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-2 text-secondary">Đang tải dữ liệu...</p>
-    </div>
+    <app-admin-mascot-loading *ngIf="isLoading" message="Đang tải danh sách bệnh…" />
 
     <!-- Table Container with Scroll -->
     <div class="table-scrollable" *ngIf="!isLoading">

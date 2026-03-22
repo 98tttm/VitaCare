@@ -3,11 +3,15 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { DiseaseService, DiseaseResponse } from '../services/disease.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
+
+/** Tiêu chí sắp xếp UI → map sang sortColumn API (created_at | name) */
+type DiseaseSortKind = 'date' | 'title';
 
 @Component({
   selector: 'app-diseasemanage',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule],
+  imports: [CommonModule, DatePipe, FormsModule, AdminMascotLoadingComponent],
   providers: [DiseaseService],
   templateUrl: './diseasemanage.html',
   styleUrl: './diseasemanage.css',
@@ -31,7 +35,8 @@ export class Diseasemanage implements OnInit {
 
   isFilterOpen: boolean = false;
   isSortDropdownOpen: boolean = false;
-  sortColumn: string = 'created_at';
+  /** Mặc định: mới đăng trước */
+  sortKind: DiseaseSortKind = 'date';
   sortDirection: 'asc' | 'desc' = 'desc';
 
   isConfirmModalOpen: boolean = false;
@@ -60,7 +65,7 @@ export class Diseasemanage implements OnInit {
       search: this.searchTerm,
       groupIds: this.selectedGroupIds.join(','),
       status: this.selectedStatus,
-      sortColumn: this.sortColumn,
+      sortColumn: this.diseaseSortApiColumn(),
       sortDirection: this.sortDirection
     };
     this.diseaseService.getDiseases(page, 20, filters).subscribe({
@@ -187,22 +192,36 @@ export class Diseasemanage implements OnInit {
     this.isFilterOpen = false;
   }
 
-  onSortSelect(sortOption: string) {
-    if (sortOption === 'newest') {
-      this.sortColumn = 'created_at';
-      this.sortDirection = 'desc';
-    } else if (sortOption === 'oldest') {
-      this.sortColumn = 'created_at';
-      this.sortDirection = 'asc';
-    } else if (sortOption === 'nameAsc') {
-      this.sortColumn = 'name';
-      this.sortDirection = 'asc';
-    } else if (sortOption === 'nameDesc') {
-      this.sortColumn = 'name';
-      this.sortDirection = 'desc';
+  private diseaseSortApiColumn(): string {
+    return this.sortKind === 'date' ? 'created_at' : 'name';
+  }
+
+  private defaultDirectionForDiseaseKind(kind: DiseaseSortKind): 'asc' | 'desc' {
+    switch (kind) {
+      case 'date':
+        return 'desc';
+      case 'title':
+        return 'asc';
+      default:
+        return 'desc';
     }
-    this.filterDiseases();
-    this.isSortDropdownOpen = false;
+  }
+
+  onSortRowClick(kind: DiseaseSortKind): void {
+    if (this.sortKind === kind) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKind = kind;
+      this.sortDirection = this.defaultDirectionForDiseaseKind(kind);
+    }
+    this.loadDiseases(1);
+  }
+
+  setSortDirection(kind: DiseaseSortKind, direction: 'asc' | 'desc', event?: Event): void {
+    event?.stopPropagation();
+    this.sortKind = kind;
+    this.sortDirection = direction;
+    this.loadDiseases(1);
   }
 
   toggleGroup(id: string) {

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DiseaseService } from '../services/disease.service';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
 
 @Component({
     selector: 'app-diseasedetail',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, AdminMascotLoadingComponent],
     providers: [DiseaseService],
     templateUrl: './diseasedetail.html',
     styleUrl: './diseasedetail.css'

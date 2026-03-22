@@ -1,0 +1,35 @@
+<div
+  class="admin-mascot-loading"
+  [class.admin-mascot-loading--overlay]="overlay"
+  [class.admin-mascot-loading--block]="!overlay"
+  role="status"
+  aria-live="polite">
+  <div class="admin-mascot-loading__inner">
+    <div class="success-logo">
+      <img src="assets/favicon/Favicon.png" alt="VitaCare" />
+    </div>
+    <p class="admin-mascot-loading__hint">{{ message }}</p>
+    <div class="loading-container">
+      <ng-container *ngIf="indeterminate; else determinate">
+        <div class="mascot-shipping mascot-shipping--indeterminate">
+          <img src="assets/images/mascot/shipping.png" alt="" />
+        </div>
+        <div class="loading-bar-container">
+          <div class="loading-bar-fill loading-bar-fill--indeterminate"></div>
+        </div>
+      </ng-container>
+      <ng-template #determinate>
+        <div
+          class="mascot-shipping mascot-shipping--determinate"
+          [style.left.%]="progressPercent">
+          <img src="assets/images/mascot/shipping.png" alt="" />
+        </div>
+        <div class="loading-bar-container">
+          <div
+            class="loading-bar-fill admin-mascot-loading__fill-determinate"
+            [style.width.%]="progressPercent"></div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

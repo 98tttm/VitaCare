@@ -1,44 +1,153 @@
 <div class="container customer-detail-container" *ngIf="customer">
     <!-- Breadcrumb -->
     <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
-        Quản lý khách hàng <span class="mx-1">/</span> <span style="color: var(--color-primary);">Hồ sơ khách
-            hàng</span>
+        Quản lý khách hàng <span class="mx-1">/</span>
+        <span style="color: var(--color-primary);">{{ isCreateMode ? 'Tạo khách hàng' : 'Hồ sơ khách hàng' }}</span>
     </div>
 
     <!-- Header -->
-    <div class="page-header py-4 mb-4"
+    <div class="page-header py-4 mb-4 customer-detail-page-header"
         style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm);">
-        <h1 class="content-title"
-            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
-            Hồ sơ
-            khách hàng</h1>
+        <div class="customer-detail-header-row">
+            <h1 class="content-title customer-detail-title">
+                {{ isCreateMode ? 'Tạo khách hàng' : 'Hồ sơ khách hàng' }}</h1>
+            <div class="customer-detail-header-actions">
+                <button type="button" class="btn-back" (click)="goBack()">
+                    <i class="bi bi-arrow-return-left"></i> Quay lại
+                </button>
+                <button *ngIf="isCreateMode" type="button" class="btn-save-create-header" (click)="saveCreateCustomer()"
+                    [disabled]="saving">
+                    <i class="bi bi-check-lg"></i> {{ saving ? 'Đang lưu…' : 'Lưu khách hàng' }}
+                </button>
+            </div>
+        </div>
+        <p *ngIf="isCreateMode && saveError" class="customer-detail-save-error">{{ saveError }}</p>
     </div>
 
     <div class="grid-layout">
         <!-- Left Column -->
         <div class="left-col">
             <!-- Profile Card -->
-            <div class="card profile-card mb-4" style="display: flex; gap: 24px; align-items: center;">
-                <div class="avatar-box">
-                    <img *ngIf="customer.avatar" [src]="customer.avatar" alt="Avatar"
-                        style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                    <i *ngIf="!customer.avatar" class="bi bi-person-fill" style="font-size: 40px; color: #A0A0A0;"></i>
-                </div>
-                <div class="profile-info" style="flex: 1;">
-                    <h2 class="name">{{ customer.full_name | uppercase }}</h2>
-                    <div class="info-row"><span class="label">Mã khách hàng:</span> <span class="value">{{
-                            customer.user_id }}</span></div>
-                    <div class="info-row"><span class="label">Giới tính:</span> <span class="value">{{ customer.gender
-                            === 'Male' ? 'Nam' : (customer.gender === 'Female' ? 'Nữ' : 'Khác') }}</span></div>
-                    <div class="info-row"><span class="label">Email:</span> <span class="value">{{ customer.email ||
-                            'Chưa cập nhật' }}</span></div>
-                    <div class="info-row"><span class="label">Ngày sinh:</span> <span class="value">{{ customer.birthday
-                            ? (customer.birthday | date:'dd/MM/yyyy') : 'Chưa cập nhật' }}</span></div>
-                </div>
+            <div class="card profile-card mb-4" [class.profile-card--create]="isCreateMode">
+                <ng-container *ngIf="!isCreateMode">
+                    <div class="avatar-box">
+                        <img *ngIf="customerAvatarUrl && !avatarBroken" [src]="customerAvatarUrl"
+                            alt="" (error)="onAvatarError()"
+                            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        <i *ngIf="!customerAvatarUrl || avatarBroken" class="bi bi-person-fill"
+                            style="font-size: 40px; color: #A0A0A0;"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h2 class="name">{{ customer.full_name | uppercase }}</h2>
+                        <div class="info-row"><span class="label">Mã khách hàng:</span> <span class="value">{{
+                                customer.user_id }}</span></div>
+                        <div class="info-row"><span class="label">Giới tính:</span> <span class="value">{{ customer.gender
+                                === 'Male' ? 'Nam' : (customer.gender === 'Female' ? 'Nữ' : 'Khác') }}</span></div>
+                        <div class="info-row"><span class="label">Email:</span> <span class="value">{{ customer.email ||
+                                'Chưa cập nhật' }}</span></div>
+                        <div class="info-row"><span class="label">Ngày sinh:</span> <span class="value">{{ customer.birthday
+                                ? (customer.birthday | date:'dd/MM/yyyy') : 'Chưa cập nhật' }}</span></div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="isCreateMode">
+                    <div class="profile-create-head">
+                        <div class="avatar-box">
+                            <i class="bi bi-person-plus-fill" style="font-size: 40px; color: var(--color-primary-light);"></i>
+                        </div>
+                        <h2 class="name profile-create-title">Thông tin cơ bản</h2>
+                    </div>
+                    <div class="profile-info customer-create-form">
+                        <div class="form-row-admin">
+                            <label>Họ và tên <span class="req">*</span></label>
+                            <input type="text" class="form-control-admin" [(ngModel)]="customer.full_name" placeholder="Họ và tên">
+                        </div>
+                        <div class="form-row-admin">
+                            <label>Mã khách hàng</label>
+                            <input type="text" class="form-control-admin" [value]="customer.user_id" readonly tabindex="-1">
+                        </div>
+                        <div class="form-row-admin">
+                            <label>Số điện thoại <span class="req">*</span></label>
+                            <input type="tel" class="form-control-admin" [(ngModel)]="customer.phone" placeholder="VD: 0901234567">
+                        </div>
+                        <div class="form-row-admin">
+                            <label>Email</label>
+                            <input type="email" class="form-control-admin" [(ngModel)]="customer.email" placeholder="email@example.com">
+                        </div>
+                        <div class="form-row-admin">
+                            <label>Giới tính</label>
+                            <div class="vc-custom-select">
+                                <button type="button" class="vc-select-trigger" (click)="toggleSelect('gender', $event)">
+                                    <span>{{ customer.gender }}</span>
+                                    <i class="bi bi-chevron-down vc-select-chevron"></i>
+                                </button>
+                                <ul class="vc-select-panel" *ngIf="activeSelect === 'gender'">
+                                    <li *ngFor="let g of genderOptions" class="vc-select-option"
+                                        [class.vc-select-option--active]="customer.gender === g"
+                                        (click)="pickGender(g, $event)">{{ g }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-row-admin">
+                            <label>Ngày sinh</label>
+                            <div class="vc-birth-picker">
+                                <button type="button" class="vc-birth-trigger" (click)="openBirthCalendar($event)">
+                                    <span [class.vc-birth-placeholder]="!birthdayDisplayLabel">{{ birthdayDisplayLabel || 'dd/mm/yyyy' }}</span>
+                                    <i class="bi bi-calendar3 vc-birth-cal-icon"></i>
+                                </button>
+                                <div class="vc-cal-popup" *ngIf="showBirthCalendar" (click)="$event.stopPropagation()">
+                                    <div class="vc-cal-head">
+                                        <button type="button" class="vc-cal-nav" (click)="calPrevMonth($event)" aria-label="Tháng trước"
+                                            [disabled]="!canCalPrevMonth()">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </button>
+                                        <span class="vc-cal-title">{{ calTitle }}</span>
+                                        <button type="button" class="vc-cal-nav" (click)="calNextMonth($event)" aria-label="Tháng sau"
+                                            [disabled]="!canCalNextMonth()">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <div class="vc-cal-weekdays">
+                                        <span *ngFor="let w of calWeekdayHeaders">{{ w }}</span>
+                                    </div>
+                                    <div class="vc-cal-grid">
+                                        <ng-container *ngFor="let row of calRows">
+                                            <button *ngFor="let c of row" type="button" class="vc-cal-day"
+                                                [class.vc-cal-day--muted]="!c.inMonth"
+                                                [class.vc-cal-day--selected]="c.isSelected"
+                                                [disabled]="!c.inMonth || isFutureCalDay(c.day)"
+                                                (click)="pickCalendarDay(c, $event)">{{ c.day }}</button>
+                                        </ng-container>
+                                    </div>
+                                    <button type="button" class="vc-cal-clear" (click)="clearBirthday($event)">Xóa ngày sinh</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row-admin">
+                            <label>Hạng thành viên</label>
+                            <div class="vc-custom-select">
+                                <button type="button" class="vc-select-trigger" (click)="toggleSelect('tier', $event)">
+                                    <span>{{ customer.tiering }}</span>
+                                    <i class="bi bi-chevron-down vc-select-chevron"></i>
+                                </button>
+                                <ul class="vc-select-panel" *ngIf="activeSelect === 'tier'">
+                                    <li *ngFor="let t of tierOptions" class="vc-select-option"
+                                        [class.vc-select-option--active]="customer.tiering === t"
+                                        (click)="pickTier(t, $event)">{{ t }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-row-admin">
+                            <label>Mật khẩu đăng nhập (tùy chọn)</label>
+                            <input type="password" class="form-control-admin" [(ngModel)]="tempPassword"
+                                placeholder="Để trống → hệ thống gán mật khẩu tạm VitaCare#Admin1">
+                        </div>
+                        <p class="hint-admin">Khách có thể đổi mật khẩu sau khi đăng nhập app. Mật khẩu được băm (bcrypt) trước khi lưu; để trống thì server gán mật khẩu tạm.</p>
+                    </div>
+                </ng-container>
             </div>
 
             <!-- Stats Row -->
-            <div class="stats-row mb-4">
+            <div class="stats-row mb-4" *ngIf="!isCreateMode">
                 <div class="stat-box">
                     <div class="stat-label">ĐƠN HÀNG GẦN NHẤT</div>
                     <div class="stat-value">{{ cachedLastOrderDate ? (cachedLastOrderDate | date:'dd/MM/yyyy') : 'N/A'
@@ -53,35 +162,48 @@
                     <div class="stat-value">{{ totalOrders }}</div>
                 </div>
             </div>
+            <div class="stats-row mb-4" *ngIf="isCreateMode">
+                <div class="stat-box">
+                    <div class="stat-label">ĐƠN HÀNG</div>
+                    <div class="stat-value">—</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">TỔNG CHI</div>
+                    <div class="stat-value">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">SỐ ĐƠN</div>
+                    <div class="stat-value">0</div>
+                </div>
+            </div>
 
             <!-- Membership -->
-            <div class="card membership-card mb-4" style="display: flex; align-items: center; gap: 16px;">
+            <div class="card membership-card mb-4" style="display: flex; align-items: center; gap: 16px;" *ngIf="!isCreateMode">
                 <span style="font-weight: 600; color: var(--color-text-primary);">Hạng thành viên:</span>
-                <span class="tier-pill tier-{{customer.tiering | lowercase}}">{{ customer.tiering }}</span>
+                <span class="tier-pill" [ngClass]="'tier-' + tierSlug(customer.tiering)">{{ customer.tiering }}</span>
             </div>
 
             <!-- Orders -->
-            <div class="card orders-card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="card orders-card" *ngIf="!isCreateMode">
+                <div class="card-header orders-card-header">
                     <h3 style="margin: 0; font-size: 16px; font-weight: bold; color: var(--color-primary);">Đơn hàng
                         <span style="font-size: 13px; font-weight: normal; color: var(--color-text-secondary);">({{ orders.length }})</span>
                     </h3>
-                    <button *ngIf="orders.length > 3" (click)="toggleShowAllOrders()"
-                        style="background: none; border: none; color: var(--color-primary); font-size: 13px; cursor: pointer; padding: 0;">
-                        {{ showAllOrders ? 'Thu gọn' : 'Xem tất cả' }}
-                    </button>
                 </div>
 
                 <div *ngIf="isLoadingRelated" style="text-align: center; color: var(--color-text-tertiary); padding: 20px;">
                     Đang tải đơn hàng...
                 </div>
-                <div *ngIf="!isLoadingRelated && orders.length > 0">
-                    <div class="order-item" *ngFor="let o of displayedOrders">
+                <div *ngIf="!isLoadingRelated && orders.length > 0" class="orders-list-scroll">
+                    <div class="order-item order-item--clickable" *ngFor="let o of orders" role="button" tabindex="0"
+                        (click)="goToOrderDetail(o)"
+                        (keydown.enter)="goToOrderDetail(o)"
+                        (keydown.space)="$event.preventDefault(); goToOrderDetail(o)">
                         <div class="order-header"
                             style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-neutral-30); padding-bottom: 8px; margin-bottom: 8px;">
                             <span style="font-weight: bold; color: var(--color-text-primary);">Đơn hàng #{{ o.order_id
                                 ||
-                                o._id.substring(o._id.length - 6) }}</span>
+                                (o._id && (o._id.length > 6 ? o._id.substring(o._id.length - 6) : o._id)) }}</span>
                             <span style="font-weight: 600; font-size: 13px; color: var(--color-success);">{{ o.status ||
                                 'Đã giao'
                                 }}</span>
@@ -126,7 +248,7 @@
         <!-- Right Column -->
         <div class="right-col">
             <!-- Contact Info -->
-            <div class="card contact-card mb-4" style="font-size: 14px; color: var(--color-text-primary);">
+            <div class="card contact-card mb-4" style="font-size: 14px; color: var(--color-text-primary);" *ngIf="!isCreateMode">
                 <h3 style="margin: 0 0 16px 0; font-size: 16px; font-weight: bold; color: var(--color-primary);">Thông
                     tin liên hệ</h3>
                 <div class="mb-2"><a href="mailto:{{customer.email}}"
@@ -135,59 +257,134 @@
                 </div>
                 <div class="mb-2"><span style="color: var(--color-text-secondary);">Số điện thoại:</span> {{
                     customer.phone }}</div>
-                <div class="mb-4"><span style="color: var(--color-text-secondary);">Ngày tham gia:</span> {{
+                <div class="mb-0"><span style="color: var(--color-text-secondary);">Ngày tham gia:</span> {{
                     customer.registerdate |
                     date:'dd/MM/yyyy' }}</div>
-
-                <hr style="border: 0; border-top: 1px solid var(--color-neutral-30); margin: 16px 0;">
-                <div style="color: var(--color-text-secondary); font-size: 13px; margin-bottom: 8px;">Không đồng ý nhận
-                    email quảng cáo
-                </div>
-                <div style="color: var(--color-text-secondary); font-size: 13px;">Chưa có tài khoản</div>
             </div>
 
             <!-- Delivery Address -->
             <div class="card address-card">
                 <h3 style="margin: 0 0 16px 0; font-size: 16px; font-weight: bold; color: var(--color-primary);">Địa chỉ
                     giao hàng
-                    <span style="font-size: 13px; font-weight: normal; color: var(--color-text-secondary);">({{ addressList.length }})</span>
+                    <span style="font-size: 13px; font-weight: normal; color: var(--color-text-secondary);">
+                        ({{ isCreateMode ? pendingAddresses.length : addressList.length }})</span>
                 </h3>
-                <div *ngIf="isLoadingRelated" style="text-align: center; color: var(--color-text-tertiary); padding: 16px; font-size: 13px;">
-                    Đang tải địa chỉ giao hàng...
-                </div>
-                <div class="address-box" *ngFor="let addr of !isLoadingRelated ? addressList : []; let i = index">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
-                        <span style="font-weight: 600; color: var(--color-text-primary);">
-                            {{ loadedAddresses[i]?.name || customer.full_name }}
-                            <span *ngIf="loadedAddresses[i]?.phone" style="font-weight: 400; color: var(--color-text-secondary); font-size: 13px; margin-left: 6px;">
-                                — {{ loadedAddresses[i].phone }}
-                            </span>
-                        </span>
-                        <span class="badge-default" *ngIf="loadedAddresses[i]?.isDefault || i === 0">Mặc định</span>
+
+                <ng-container *ngIf="isCreateMode">
+                    <button type="button" class="btn-add-address-admin" (click)="openAddressModal()">
+                        <i class="bi bi-plus-lg"></i> Thêm địa chỉ (giống sổ địa chỉ user)
+                    </button>
+                    <div class="address-box" *ngFor="let a of pendingAddresses; let i = index">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                            <span style="font-weight: 600;">{{ a.name }} — {{ a.phone }}</span>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <span class="badge-default" *ngIf="a.isDefault">Mặc định</span>
+                                <button type="button" class="btn-link-remove" (click)="removePendingAddress(i)">Xóa</button>
+                            </div>
+                        </div>
+                        <div style="color: var(--color-text-secondary); font-size: 14px;">{{ a.fullAddress }}</div>
                     </div>
-                    <div style="color: var(--color-text-secondary); font-size: 14px;">{{ addr }}</div>
-                </div>
-                <div *ngIf="!isLoadingRelated && (addressList.length === 0 || (addressList.length === 1 && addressList[0] === 'Chưa cập nhật'))"
-                    style="text-align: center; color: var(--color-text-tertiary); padding: 16px; font-size: 13px;">
-                    Chưa có địa chỉ giao hàng
-                </div>
+                    <div *ngIf="pendingAddresses.length === 0" class="addr-empty-hint">
+                        Chưa thêm địa chỉ. Có thể bỏ qua và bổ sung sau trên hồ sơ khách.
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="!isCreateMode">
+                    <div *ngIf="isLoadingRelated" style="text-align: center; color: var(--color-text-tertiary); padding: 16px; font-size: 13px;">
+                        Đang tải địa chỉ giao hàng...
+                    </div>
+                    <div class="address-box" *ngFor="let addr of !isLoadingRelated ? addressList : []; let i = index">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                            <span style="font-weight: 600; color: var(--color-text-primary);">
+                                {{ loadedAddresses[i]?.name || customer.full_name }}
+                                <span *ngIf="loadedAddresses[i]?.phone" style="font-weight: 400; color: var(--color-text-secondary); font-size: 13px; margin-left: 6px;">
+                                    — {{ loadedAddresses[i].phone }}
+                                </span>
+                            </span>
+                            <span class="badge-default" *ngIf="loadedAddresses[i]?.isDefault || i === 0">Mặc định</span>
+                        </div>
+                        <div style="color: var(--color-text-secondary); font-size: 14px;">{{ addr }}</div>
+                    </div>
+                    <div *ngIf="!isLoadingRelated && (addressList.length === 0 || (addressList.length === 1 && addressList[0] === 'Chưa cập nhật'))"
+                        style="text-align: center; color: var(--color-text-tertiary); padding: 16px; font-size: 13px;">
+                        Chưa có địa chỉ giao hàng
+                    </div>
+                </ng-container>
             </div>
         </div>
     </div>
 
-    <button class="btn-back mt-4" (click)="goBack()">
-        <i class="bi bi-arrow-return-left"></i> BACK
-    </button>
+</div>
+
+<!-- Address modal (create) -->
+<div class="admin-addr-modal-backdrop" *ngIf="showAddressModal" (click)="closeAddressModal()"></div>
+<div class="admin-addr-modal" *ngIf="showAddressModal" (click)="$event.stopPropagation()">
+    <div class="admin-addr-modal-header">
+        <h4>Thêm địa chỉ giao hàng</h4>
+        <button type="button" class="admin-addr-close" (click)="closeAddressModal()" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="admin-addr-modal-body">
+        <div class="form-row-admin">
+            <label>Họ tên người nhận <span class="req">*</span></label>
+            <input type="text" class="form-control-admin" [(ngModel)]="addressForm.name">
+        </div>
+        <div class="form-row-admin">
+            <label>Số điện thoại <span class="req">*</span></label>
+            <input type="tel" class="form-control-admin" [(ngModel)]="addressForm.phone">
+            <span *ngIf="addressFormPhoneError" class="field-error">{{ addressFormPhoneError }}</span>
+        </div>
+        <div class="form-row-admin">
+            <label>Email</label>
+            <input type="email" class="form-control-admin" [(ngModel)]="addressForm.email">
+        </div>
+        <div class="form-row-admin">
+            <label>Tỉnh/Thành phố <span class="req">*</span></label>
+            <vc-searchable-select
+                [(ngModel)]="addressForm.provinceCode"
+                [options]="addrProvinceOptions"
+                [disabled]="!provinces.length"
+                placeholder="Chọn tỉnh/thành"
+                (ngModelChange)="onProvinceChange($event)"
+            />
+        </div>
+        <div class="form-row-admin">
+            <label>Quận/Huyện <span class="req">*</span></label>
+            <vc-searchable-select
+                [(ngModel)]="addressForm.districtCode"
+                [options]="addrDistrictOptions"
+                [disabled]="!addressForm.provinceCode"
+                placeholder="Chọn quận/huyện"
+                (ngModelChange)="onDistrictChange($event)"
+            />
+        </div>
+        <div class="form-row-admin">
+            <label>Phường/Xã <span class="req">*</span></label>
+            <vc-searchable-select
+                [(ngModel)]="addressForm.wardCode"
+                [options]="addrWardOptions"
+                [disabled]="!addressForm.districtCode"
+                placeholder="Chọn phường/xã"
+            />
+        </div>
+        <div class="form-row-admin">
+            <label>Địa chỉ chi tiết <span class="req">*</span></label>
+            <input type="text" class="form-control-admin" [(ngModel)]="addressForm.detail" placeholder="Số nhà, tên đường…">
+        </div>
+        <label class="admin-checkbox-row">
+            <input type="checkbox" [(ngModel)]="addressForm.isDefault"> Đặt làm địa chỉ mặc định
+        </label>
+    </div>
+    <div class="admin-addr-modal-footer">
+        <button type="button" class="btn-cancel-modal" (click)="closeAddressModal()">Hủy</button>
+        <button type="button" class="btn-confirm-modal" (click)="submitAddressModal()">Lưu địa chỉ</button>
+    </div>
 </div>
 
 <!-- Loading State -->
-<div *ngIf="isLoading" class="text-center py-5"
-    style="display:flex; justify-content:center; align-items:center; height: 100vh;">
-    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-</div>
+<app-admin-mascot-loading *ngIf="isLoading && !isCreateMode" message="Đang tải thông tin khách hàng…" />
 
 <!-- Error State -->
-<div *ngIf="!isLoading && !customer" class="text-center py-5"
+<div *ngIf="!isLoading && !customer && !isCreateMode" class="text-center py-5"
     style="display:flex; justify-content:center; align-items:center; flex-direction:column; height: 60vh;">
     <i class="bi bi-exclamation-triangle-fill"
         style="font-size: 48px; color: var(--color-danger); margin-bottom: 16px;"></i>

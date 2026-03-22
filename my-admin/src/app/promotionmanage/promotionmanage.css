@@ -521,7 +521,7 @@ body.dark-mode .page-header {
     font-size: 16px;
 }
 
-/* Sort dropdown specific styles */
+/* Sort dropdown (cùng pattern quản lý sản phẩm) */
 .sort-dropdown-menu {
     position: absolute;
     top: 100%;
@@ -531,7 +531,9 @@ body.dark-mode .page-header {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     z-index: 1000;
-    min-width: 200px;
+    width: max-content;
+    min-width: 0;
+    max-width: min(300px, 92vw);
     margin-top: 8px;
     overflow: hidden;
 }
@@ -539,6 +541,97 @@ body.dark-mode .page-header {
 .sort-options-list {
     display: flex;
     flex-direction: column;
+}
+
+.compact-sort-list {
+    padding: 6px 0;
+}
+
+.sort-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sort-row:last-child {
+    border-bottom: none;
+}
+
+.sort-row.row-active {
+    background-color: var(--color-primary-bg, rgba(0, 88, 159, 0.08));
+}
+
+.sort-row-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-align: left;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.sort-row-label:hover {
+    background-color: #daecff;
+    color: var(--color-primary);
+}
+
+.sort-row-label i {
+    font-size: 16px;
+    color: var(--color-primary-light);
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.sort-row-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 4px 6px 4px 4px;
+}
+
+.sort-arrow-btn {
+    width: 32px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-neutral-40);
+    border-radius: 6px;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.15s;
+}
+
+.sort-arrow-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: #fff;
+}
+
+.sort-arrow-btn.dir-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.sort-arrow-btn i {
+    font-size: 14px;
+    line-height: 1;
 }
 
 
@@ -553,6 +646,12 @@ body.dark-mode .page-header {
 .actions-group .action-btn:hover {
     background-color: var(--color-primary);
     color: white !important;
+}
+
+.actions-group .action-btn.active {
+    background-color: var(--color-primary);
+    color: white !important;
+    border-color: var(--color-primary) !important;
 }
 
 /* Table */
@@ -575,13 +674,14 @@ table {
 thead th {
     background-color: var(--color-primary);
     padding: var(--spacing-4);
-    text-align: left;
+    text-align: center;
     font-size: var(--font-size-xs);
     font-weight: 700;
     color: white !important;
     text-transform: uppercase;
     border-bottom: none;
     letter-spacing: 0.5px;
+    vertical-align: middle;
 }
 
 tbody tr {
@@ -673,6 +773,13 @@ input[type="checkbox"] {
 .promo-code {
     font-size: 12px;
     color: var(--color-text-secondary);
+}
+
+.banner-slot-cell {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
 }
 
 /* MODAL STYLES */

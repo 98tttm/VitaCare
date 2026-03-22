@@ -24,13 +24,7 @@
         </div>
     </div>
 
-    <!-- Improved Loading State -->
-    <div class="loading-overlay" *ngIf="isLoading">
-        <div class="spinner-group">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p>Đang kết nối MongoDB...</p>
-        </div>
-    </div>
+    <app-admin-mascot-loading *ngIf="isLoading" message="Đang tải dữ liệu tổng quan…" />
 
     <div class="content-wrapper" *ngIf="!isLoading">
         <!-- Main Row: Revenue & Primary Metrics -->

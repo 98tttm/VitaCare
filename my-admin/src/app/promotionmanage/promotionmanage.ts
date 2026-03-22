@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Inject, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PromotionService } from '../services/promotion.service';
@@ -39,6 +39,8 @@ interface Promotion {
   typeBanner?: string;
 }
 
+export type PromotionSortKind = 'start_date' | 'end_date' | 'usage' | 'name' | 'banner';
+
 @Component({
   selector: 'app-promotionmanage',
   standalone: true,
@@ -67,7 +69,7 @@ export class Promotionmanage implements OnInit {
   isDeleteConfirmModalOpen: boolean = false;
 
   filterStatus: string = 'all';
-  sortCriteria: string = 'date';
+  sortKind: PromotionSortKind = 'start_date';
   sortDirection: 'desc' | 'asc' = 'desc';
 
   // Target Options
@@ -117,6 +119,15 @@ export class Promotionmanage implements OnInit {
     @Inject(CustomerService) private customerService: CustomerService,
     private cdr: ChangeDetectorRef
   ) { }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown-container') && !target.closest('.dropdown-popup')) {
+      this.isFilterDropdownOpen = false;
+      this.isSortDropdownOpen = false;
+    }
+  }
 
   ngOnInit(): void {
     this.fetchData();
@@ -301,15 +312,27 @@ export class Promotionmanage implements OnInit {
       );
     }
     list.sort((a, b) => {
-      let valA, valB;
-      if (this.sortCriteria === 'date') {
-        valA = new Date(a.start_date).getTime();
-        valB = new Date(b.start_date).getTime();
-      } else {
-        valA = a.usage_count || 0;
-        valB = b.usage_count || 0;
+      let cmp = 0;
+      switch (this.sortKind) {
+        case 'start_date':
+          cmp = this.safeDateMs(a.start_date) - this.safeDateMs(b.start_date);
+          break;
+        case 'end_date':
+          cmp = this.safeDateMs(a.end_date) - this.safeDateMs(b.end_date);
+          break;
+        case 'usage':
+          cmp = (a.usage_count || 0) - (b.usage_count || 0);
+          break;
+        case 'name':
+          cmp = (a.name || '').localeCompare(b.name || '', 'vi', { sensitivity: 'base' });
+          break;
+        case 'banner':
+          cmp = this.bannerSlotSortIndex(a) - this.bannerSlotSortIndex(b);
+          break;
+        default:
+          cmp = 0;
       }
-      return this.sortDirection === 'asc' ? (valA - valB) : (valB - valA);
+      return this.sortDirection === 'asc' ? cmp : -cmp;
     });
     this.filteredPromotions = [...list];
     this.updateSelectionCount();
@@ -337,11 +360,64 @@ export class Promotionmanage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  toggleFilterDropdown() { this.isFilterDropdownOpen = !this.isFilterDropdownOpen; }
-  toggleSortDropdown() { this.isSortDropdownOpen = !this.isSortDropdownOpen; }
+  toggleFilterDropdown(event: Event): void {
+    event.stopPropagation();
+    this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
+    this.isSortDropdownOpen = false;
+  }
 
-  applyFilter() { this.applyFiltersAndSort(); this.isFilterDropdownOpen = false; }
-  applySort() { this.applyFiltersAndSort(); this.isSortDropdownOpen = false; }
+  toggleSortDropdown(event: Event): void {
+    event.stopPropagation();
+    this.isSortDropdownOpen = !this.isSortDropdownOpen;
+    this.isFilterDropdownOpen = false;
+  }
+
+  applyFilter(): void {
+    this.applyFiltersAndSort();
+    this.isFilterDropdownOpen = false;
+  }
+
+  private defaultDirectionForKind(kind: PromotionSortKind): 'asc' | 'desc' {
+    switch (kind) {
+      case 'start_date':
+      case 'end_date':
+      case 'usage':
+        return 'desc';
+      case 'name':
+      case 'banner':
+        return 'asc';
+      default:
+        return 'desc';
+    }
+  }
+
+  onSortRowClick(kind: PromotionSortKind): void {
+    if (this.sortKind === kind) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKind = kind;
+      this.sortDirection = this.defaultDirectionForKind(kind);
+    }
+    this.applyFiltersAndSort();
+  }
+
+  setSortDirection(kind: PromotionSortKind, direction: 'asc' | 'desc', event?: Event): void {
+    event?.stopPropagation();
+    this.sortKind = kind;
+    this.sortDirection = direction;
+    this.applyFiltersAndSort();
+  }
+
+  private safeDateMs(d: string | undefined | null): number {
+    const t = d ? new Date(d).getTime() : 0;
+    return Number.isFinite(t) ? t : 0;
+  }
+
+  private bannerSlotSortIndex(p: Promotion): number {
+    const raw = p.typeBanner != null && String(p.typeBanner).trim() !== '' ? String(p.typeBanner).trim() : 'none';
+    const idx = this.bannerSlots.findIndex(s => s.id === raw);
+    return idx >= 0 ? idx : this.bannerSlots.length;
+  }
 
   onDeleteClick() {
     if (this.selectedCount === 0) {
@@ -529,6 +605,15 @@ export class Promotionmanage implements OnInit {
 
   isBannerSlotSelected(slotId: string): boolean {
     return this.currentPromotion.typeBanner === slotId;
+  }
+
+  /** Cột danh sách: đổi typeBanner → tên vị trí (cùng bảng bannerSlots). */
+  getBannerSlotLabel(p: { typeBanner?: string | null } | null | undefined): string {
+    const id = (p?.typeBanner != null && String(p.typeBanner).trim() !== '')
+      ? String(p.typeBanner).trim()
+      : 'none';
+    const slot = this.bannerSlots.find(s => s.id === id);
+    return slot?.name ?? id;
   }
 
   // --- Category multi-select helpers cho UI chip/popup ---

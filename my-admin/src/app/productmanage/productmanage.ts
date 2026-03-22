@@ -3,6 +3,7 @@ import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ProductService } from '../services/product.service';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
 
 /** Khóa sắp xếp trong UI (map sang field Mongo khi gọi API) */
 type SortKind = 'updated' | 'price' | 'name' | 'stock' | 'sold';
@@ -29,7 +30,7 @@ interface Product {
 @Component({
   selector: 'app-productmanage',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AdminMascotLoadingComponent],
   providers: [ProductService],
   templateUrl: './productmanage.html',
   styleUrl: './productmanage.css',

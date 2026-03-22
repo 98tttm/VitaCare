@@ -23,8 +23,11 @@ export class OrderService {
         return this.http.get<any>('http://localhost:3000/api/tree_complete');
     }
 
+    /**
+     * Tạo đơn — backend chỉ expose POST /api/orders (không có POST /api/admin/orders).
+     */
     createOrder(order: any): Observable<any> {
-        return this.http.post<any>(this.apiUrl, order);
+        return this.http.post<any>('http://localhost:3000/api/orders', order);
     }
 
     updateOrder(id: string, orderData: any): Observable<any> {

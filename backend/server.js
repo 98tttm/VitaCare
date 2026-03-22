@@ -61,7 +61,10 @@ const BlogModel = mongoose.model('admin_blogs', genericSchema, 'blog'); // Sửa
 const PromotionModel = mongoose.model('promotions', genericSchema, 'promotion_promotions'); // Sửa 'promotions' thành 'promotion_promotions'
 const PromotionUsage = mongoose.model('promotion_usage', genericSchema, 'promotion_usage');
 const PromotionTarget = mongoose.model('promotion_target', genericSchema, 'promotion_promotion_target');
-const CustomerGroup = mongoose.model('customer_groups', genericSchema, 'customer_groups');
+/**
+ * Nhóm khách hàng (admin). Collection thực tế trên MongoDB: `customer_groups` (số nhiều — trùng Compass / dữ liệu cũ).
+ */
+const CustomerGroup = mongoose.model('customer_group', genericSchema, 'customer_groups');
 const ProductGroup = mongoose.model('product_groups', genericSchema, 'product_groups');
 const Pharmacist = mongoose.model('pharmacists', genericSchema, 'pharmacists');
 const ConsultationProductModel = mongoose.model('admin_consultations_product', genericSchema, 'consultations_product');
@@ -1279,11 +1282,12 @@ app.post('/api/orders', async (req, res) => {
     const orderId = `ORD${String(count + 1).padStart(6, '0')}`;
     const now = new Date().toISOString();
 
+    const pmNorm = String(paymentMethod || 'cod').trim().toLowerCase();
     const orderDoc = {
       order_id: orderId,
       user_id: uid || null,
-      paymentMethod: paymentMethod || 'cod',
-      statusPayment: (paymentMethod && paymentMethod !== 'cod') ? 'paid' : (statusPayment || 'unpaid'),
+      paymentMethod: pmNorm || 'cod',
+      statusPayment: (pmNorm && pmNorm !== 'cod') ? 'paid' : (statusPayment || 'unpaid'),
       atPharmacy: Boolean(atPharmacy),
       pharmacyAddress: pharmacyAddress || '',
       subtotal: Number(subtotal) || 0,
@@ -9018,6 +9022,16 @@ app.get('/api/admin/users', async (req, res) => {
       spendingMap[String(row._id)] = Number(row.totalspent) || 0;
     });
 
+    const ordersAgg = await OrderModel.aggregate([
+      { $match: { user_id: { $exists: true, $nin: [null, ''] } } },
+      { $group: { _id: '$user_id', total_orders: { $sum: 1 } } }
+    ]);
+    const ordersMap = {};
+    ordersAgg.forEach((row) => {
+      if (!row || row._id == null) return;
+      ordersMap[String(row._id)] = Number(row.total_orders) || 0;
+    });
+
     // 3. Gán lại totalspent + tiering cho từng user (và đồng bộ vào DB)
     const bulkOps = [];
     const data = users.map((u) => {
@@ -9026,6 +9040,7 @@ app.get('/api/admin/users', async (req, res) => {
       const totalspent = typeof u.totalspent === 'number' ? u.totalspent : aggSpent;
       const finalTotal = Math.max(totalspent, aggSpent);
       const tiering = getTierFromTotalSpent(finalTotal);
+      const total_orders = ordersMap[uid] ?? 0;
 
       // Chuẩn bị bulk update để lưu lại
       if (uid) {
@@ -9040,7 +9055,8 @@ app.get('/api/admin/users', async (req, res) => {
       return {
         ...u,
         totalspent: finalTotal,
-        tiering
+        tiering,
+        total_orders
       };
     });
 
@@ -9102,6 +9118,103 @@ app.post('/api/admin/users', async (req, res) => {
     const data = await item.save();
     res.status(201).json({ success: true, data });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+/** Mã khách hàng tiếp theo (CUS + 6 số), đồng bộ với POST tạo khách. */
+async function computeNextCustomerUserId() {
+  const lastUser = await usersCollection().find().sort({ user_id: -1 }).limit(1).toArray();
+  let nextNum = 1;
+  if (lastUser.length > 0) {
+    const m = (lastUser[0].user_id || '').match(/CUS0*(\d+)/i);
+    if (m) nextNum = parseInt(m[1], 10) + 1;
+  }
+  return 'CUS' + String(nextNum).padStart(6, '0');
+}
+
+app.get('/api/admin/customers/next-user-id', async (req, res) => {
+  try {
+    const user_id = await computeNextCustomerUserId();
+    res.json({ success: true, user_id });
+  } catch (error) {
+    console.error('[GET /api/admin/customers/next-user-id]', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/** Tạo khách hàng từ admin: mã CUS tự tăng, mật khẩu tạm nếu không gửi (đủ rule). */
+app.post('/api/admin/customers', async (req, res) => {
+  try {
+    const {
+      full_name,
+      email,
+      phone,
+      gender,
+      birthday,
+      dob,
+      tiering,
+      password,
+    } = req.body || {};
+
+    const nameStr = String(full_name || '').trim();
+    if (!nameStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu họ tên.' });
+    }
+
+    const p = normalizePhone(phone);
+    if (!p || p.length < 9 || p.length > 11) {
+      return res.status(400).json({ success: false, message: 'Số điện thoại không hợp lệ.' });
+    }
+
+    const existing = await usersCollection().findOne({
+      $or: [{ phone: p }, { phone: String(phone || '').trim() }],
+    });
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'Số điện thoại đã tồn tại.' });
+    }
+
+    const user_id = await computeNextCustomerUserId();
+
+    const pwdRaw = password != null && String(password).trim() !== '' ? String(password).trim() : 'VitaCare#Admin1';
+    if (!isValidPassword(pwdRaw)) {
+      return res.status(400).json({ success: false, message: PASSWORD_RULE_MSG });
+    }
+    const passwordHash = await bcrypt.hash(pwdRaw, 10);
+
+    let genderVal = 'Other';
+    if (gender === 'Nam' || gender === 'Male') genderVal = 'Male';
+    else if (gender === 'Nữ' || gender === 'Female') genderVal = 'Female';
+
+    const tier = ['Đồng', 'Bạc', 'Vàng'].includes(String(tiering || '').trim())
+      ? String(tiering).trim()
+      : 'Đồng';
+
+    const bday = birthday || dob || null;
+
+    const newUser = {
+      user_id,
+      avatar: null,
+      full_name: nameStr,
+      email: String(email || '').trim(),
+      password: passwordHash,
+      phone: p,
+      birthday: bday,
+      gender: genderVal,
+      address: [],
+      registerdate: new Date().toISOString(),
+      totalspent: 0,
+      tiering: tier,
+    };
+
+    const ins = await usersCollection().insertOne(newUser);
+    await cartsCollection().insertOne({ user_id, items: [] }).catch(() => { });
+
+    const { password: _pw, ...safe } = newUser;
+    const data = { ...safe, _id: ins.insertedId };
+    res.status(201).json({ success: true, data });
+  } catch (error) {
+    console.error('[POST /api/admin/customers]', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.put('/api/admin/users/:id', async (req, res) => {

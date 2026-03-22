@@ -50,34 +50,39 @@
         <div class="address-modal-grid address-modal-grid-2">
           <div class="address-form-group">
             <label class="address-form-label">Tỉnh/Thành phố <span class="required">*</span></label>
-            <select class="address-input" [(ngModel)]="form.provinceCode" name="province" required
-              (ngModelChange)="onProvinceChange($event)">
-              <option value="" disabled selected>Chọn Tỉnh/Thành phố *</option>
-              <option *ngFor="let p of provinces" [value]="p.code">
-                {{ p.name_with_type }}
-              </option>
-            </select>
+            <vc-searchable-select
+              class="address-vc-select"
+              [(ngModel)]="form.provinceCode"
+              name="province"
+              [options]="provinceSelectOptions"
+              [disabled]="!provinces.length"
+              placeholder="Chọn Tỉnh/Thành phố *"
+              (ngModelChange)="onProvinceChange($event)"
+            />
           </div>
           <div class="address-form-group">
             <label class="address-form-label">Quận/Huyện <span class="required">*</span></label>
-            <select class="address-input" [(ngModel)]="form.districtCode" name="district" required
-              (ngModelChange)="onDistrictChange($event)" [disabled]="!form.provinceCode">
-              <option value="" disabled selected>Chọn Quận/Huyện *</option>
-              <option *ngFor="let d of districts" [value]="d.code">
-                {{ d.name_with_type }}
-              </option>
-            </select>
+            <vc-searchable-select
+              class="address-vc-select"
+              [(ngModel)]="form.districtCode"
+              name="district"
+              [options]="districtSelectOptions"
+              [disabled]="!form.provinceCode"
+              placeholder="Chọn Quận/Huyện *"
+              (ngModelChange)="onDistrictChange($event)"
+            />
           </div>
         </div>
         <div class="address-form-group">
           <label class="address-form-label">Phường/Xã <span class="required">*</span></label>
-          <select class="address-input" [(ngModel)]="form.wardCode" name="ward" required
-            [disabled]="!form.districtCode">
-            <option value="" disabled selected>Chọn Phường/Xã *</option>
-            <option *ngFor="let w of wards" [value]="w.code">
-              {{ w.name_with_type }}
-            </option>
-          </select>
+          <vc-searchable-select
+            class="address-vc-select"
+            [(ngModel)]="form.wardCode"
+            name="ward"
+            [options]="wardSelectOptions"
+            [disabled]="!form.districtCode"
+            placeholder="Chọn Phường/Xã *"
+          />
         </div>
         <div class="address-form-group">
           <label class="address-form-label">Địa chỉ cụ thể <span class="required">*</span></label>

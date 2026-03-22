@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BlogService } from '../services/blog.service';
 import { AuthService } from '../services/auth.service';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
 
 @Component({
     selector: 'app-blogdetail',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, AdminMascotLoadingComponent],
     providers: [BlogService],
     templateUrl: './blogdetail.html',
     styleUrl: './blogdetail.css'

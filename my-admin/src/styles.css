@@ -1,5 +1,6 @@
 @import './styles/variables.css';
 @import './styles/utilities.css';
+@import './styles/admin-mascot-loading.css';
 
 a {
     text-decoration: underline;

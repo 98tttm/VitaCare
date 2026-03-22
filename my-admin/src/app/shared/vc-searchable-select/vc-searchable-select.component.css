@@ -1,0 +1,126 @@
+/* VitaCare — dropdown địa chỉ dùng chung: nền trắng, chữ đen, hover xanh nhận diện */
+.vc-ss {
+  position: relative;
+  width: 100%;
+  --vc-ss-brand: #00589f;
+  --vc-ss-border: #c2c2c2;
+  --vc-ss-radius: 8px;
+}
+
+.vc-ss__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  text-align: left;
+  font: inherit;
+  color: #0a0a0a;
+  background: #fff;
+  border: 1px solid var(--vc-ss-border);
+  border-radius: var(--vc-ss-radius);
+  cursor: pointer;
+}
+
+.vc-ss__trigger:hover:not(:disabled) {
+  border-color: var(--vc-ss-brand);
+}
+
+.vc-ss--disabled .vc-ss__trigger,
+.vc-ss__trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+.vc-ss__value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vc-ss__placeholder {
+  color: #757575;
+}
+
+.vc-ss__caret {
+  flex-shrink: 0;
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.vc-ss--open .vc-ss__caret {
+  transform: rotate(180deg);
+}
+
+.vc-ss__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  max-height: min(320px, 60vh);
+  background: #fff;
+  border: 1px solid var(--vc-ss-border);
+  border-radius: var(--vc-ss-radius);
+  box-shadow: 0 8px 24px rgba(10, 10, 10, 0.12);
+}
+
+.vc-ss__filter {
+  flex-shrink: 0;
+  margin: 8px 8px 0;
+  padding: 8px 10px;
+  font: inherit;
+  color: #0a0a0a;
+  background: #fff;
+  border: 1px solid var(--vc-ss-border);
+  border-radius: 6px;
+  outline: none;
+}
+
+.vc-ss__filter:focus {
+  border-color: var(--vc-ss-brand);
+  box-shadow: 0 0 0 2px rgba(0, 88, 159, 0.15);
+}
+
+.vc-ss__list {
+  margin: 8px 0 0;
+  padding: 0 0 8px;
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.vc-ss__empty {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #616161;
+}
+
+.vc-ss__option {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #0a0a0a;
+  background: #fff;
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.vc-ss__option:hover {
+  background: var(--vc-ss-brand);
+  color: #fff;
+}
+
+.vc-ss__option--selected {
+  font-weight: 600;
+}
+
+.vc-ss__option--selected:not(:hover) {
+  background: #daecff;
+  color: #0a0a0a;
+}

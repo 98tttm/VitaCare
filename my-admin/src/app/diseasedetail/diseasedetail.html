@@ -1,4 +1,4 @@
-<div class="container h-full flex flex-col pt-4">
+<div class="container disease-detail-page h-full flex flex-col pt-4">
     <!-- Breadcrumb -->
     <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
         <span class="cursor-pointer" (click)="goBack()">Blog & tin tức</span> / <span class="cursor-pointer" (click)="goBack()">Quản lý bệnh</span> / Chi tiết bệnh
@@ -26,12 +26,7 @@
         </div>
     </div>
 
-    <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-2 text-secondary">Đang tải dữ liệu....</p>
-    </div>
+    <app-admin-mascot-loading *ngIf="isLoading" message="Đang tải thông tin bệnh…" />
 
     <div *ngIf="!isLoading" class="disease-detail-form pb-5">
         <!-- Sidebar Column (Meta data) -->
@@ -46,7 +41,7 @@
                     </div>
                 </div>
                 <input type="file" id="primaryDiseaseImageUpload" (change)="onPrimaryImageSelected($event)" (click)="$event.stopPropagation()" accept="image/*" style="display: none;">
-                <div class="text-xs text-neutral-40 text-center mb-0">Hỗ trợ JPG, PNG (Max 5MB)</div>
+                <div class="text-xs text-center mb-0 disease-hint-text">Hỗ trợ JPG, PNG (Max 5MB)</div>
             </div>
 
             <div class="card-premium">
@@ -60,7 +55,7 @@
                 <div class="form-group">
                     <label class="form-label-bold">Slug (Link):</label>
                     <input type="text" class="form-input-premium" [(ngModel)]="diseaseData.slug" placeholder="benh/ten-benh.html">
-                    <small class="text-xs text-neutral-40" style="margin-top: 4px; display: block;">Link tự động tạo từ tên bệnh</small>
+                    <small class="text-xs disease-hint-text" style="margin-top: 4px; display: block;">Link tự động tạo từ tên bệnh</small>
                 </div>
 
                 <div class="form-group">
@@ -96,7 +91,7 @@
         <!-- Main Column (Long Text Content) -->
         <div class="main-column flex flex-col gap-5">
             <div class="card-premium">
-                <h3 class="header-title" style="font-size: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 25px;">
+                <h3 class="header-title disease-subcard-title">
                     <i class="bi bi-journal-medical"></i> CHI TIẾT KIẾN THỨC BỆNH
                 </h3>
                 
@@ -161,25 +156,28 @@
                 </div>
 
                 <div class="faq-section mt-5">
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-lg font-bold text-primary m-0"><i class="bi bi-question-circle"></i> CÂU HỎI THƯỜNG GẶP (FAQs)</h4>
-                        <button class="btn btn-sm btn-outline-primary" (click)="addFaq()">+ Thêm câu hỏi</button>
+                    <div class="flex justify-between items-center mb-3 faq-section-header">
+                        <h4 class="faq-section-title m-0"><i class="bi bi-question-circle" aria-hidden="true"></i> CÂU HỎI THƯỜNG GẶP (FAQs)</h4>
+                        <button type="button" class="btn btn-sm btn-add-faq" (click)="addFaq()">+ Thêm câu hỏi</button>
                     </div>
                     <div class="faq-list flex flex-col gap-4">
-                        <div *ngFor="let faq of diseaseData.faqs; let i = index" class="faq-item p-4 border rounded-xl bg-neutral-5 relative">
-                            <button class="btn-remove-faq position-absolute top-2 end-2" (click)="removeFaq(i)" style="border: none; background: transparent; color: #ef4444;">
-                                <i class="bi bi-x-circle-fill"></i>
-                            </button>
-                            <div class="form-group mb-2">
+                        <div *ngFor="let faq of diseaseData.faqs; let i = index" class="faq-item p-4 border rounded-xl">
+                            <div class="faq-item-heading-row">
                                 <label class="text-xs font-bold text-neutral-50">CÂU HỎI {{ i + 1 }}:</label>
-                                <input type="text" class="form-input-premium bg-white border-neutral-20" [(ngModel)]="faq.question" placeholder="Nhập câu hỏi...">
+                                <button type="button" class="btn-remove-faq" (click)="removeFaq(i)"
+                                    aria-label="Xóa câu hỏi">
+                                    <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input type="text" class="form-input-premium" [(ngModel)]="faq.question" placeholder="Nhập câu hỏi...">
                             </div>
                             <div class="form-group mb-0">
                                 <label class="text-xs font-bold text-neutral-50">CÂU TRẢ LỜI:</label>
-                                <textarea class="knowledge-textarea bg-white border-neutral-20" style="min-height: 80px;" [(ngModel)]="faq.answer_text" placeholder="Nhập câu trả lời..."></textarea>
+                                <textarea class="knowledge-textarea" style="min-height: 80px;" [(ngModel)]="faq.answer_text" placeholder="Nhập câu trả lời..."></textarea>
                             </div>
                         </div>
-                        <div *ngIf="!diseaseData.faqs || diseaseData.faqs.length === 0" class="text-center py-4 text-neutral-40 bg-neutral-5 rounded-xl border border-dashed">
+                        <div *ngIf="!diseaseData.faqs || diseaseData.faqs.length === 0" class="text-center py-4 rounded-xl border border-dashed disease-empty-panel disease-hint-text">
                             Chưa có câu hỏi nào. Nhấn "+ Thêm câu hỏi" để bắt đầu.
                         </div>
                     </div>
@@ -187,7 +185,7 @@
             </div>
             <!-- Related Diseases -->
             <div class="card-premium">
-                <h3 class="header-title" style="font-size: 17px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 class="header-title disease-related-title">
                     <i class="bi bi-diagram-3"></i> BỆNH LIÊN QUAN
                 </h3>
                 <div class="form-group" style="position: relative;">
@@ -200,12 +198,11 @@
                         <span *ngIf="isSearchingRelated" class="spinner-border spinner-border-sm text-primary" style="flex-shrink: 0;"></span>
                     </div>
                     <div *ngIf="showRelatedDropdown && relatedSearchResults.length > 0"
-                        style="position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; overflow: hidden;">
+                        class="related-dropdown-panel">
                         <div *ngFor="let r of relatedSearchResults"
-                            class="related-option"
-                            (click)="addRelatedDisease(r)"
-                            style="padding: 10px 16px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; transition: background 0.15s;">
-                            <i class="bi bi-plus-circle text-primary"></i>
+                            class="related-option related-dropdown-row"
+                            (click)="addRelatedDisease(r)">
+                            <i class="bi bi-plus-circle related-dropdown-icon"></i>
                             <span>{{ r.name }}</span>
                         </div>
                     </div>
@@ -221,7 +218,7 @@
                             title="Xóa">×</button>
                     </span>
                 </div>
-                <div *ngIf="!diseaseData.related_diseases || diseaseData.related_diseases.length === 0" class="text-center py-3 text-neutral-40 bg-neutral-5 rounded-xl border border-dashed" style="border-color: #e2e8f0; background: #f8fafc; font-size: 13px; margin-top: 12px;">
+                <div *ngIf="!diseaseData.related_diseases || diseaseData.related_diseases.length === 0" class="text-center py-3 rounded-xl border border-dashed disease-empty-panel disease-hint-text disease-related-empty">
                     Chưa có bệnh liên quan. Tìm kiếm và thêm phía trên.
                 </div>
             </div>

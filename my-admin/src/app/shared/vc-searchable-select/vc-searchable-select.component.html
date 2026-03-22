@@ -1,0 +1,36 @@
+<div class="vc-ss" [class.vc-ss--open]="open" [class.vc-ss--disabled]="disabled">
+  <button
+    type="button"
+    class="vc-ss__trigger"
+    [disabled]="disabled"
+    (click)="toggle($event)"
+    [attr.aria-expanded]="open"
+  >
+    <span class="vc-ss__value" [class.vc-ss__placeholder]="!value">{{ selectedLabel || placeholder }}</span>
+    <i class="bi bi-chevron-down vc-ss__caret" aria-hidden="true"></i>
+  </button>
+  <div class="vc-ss__panel" *ngIf="open" (click)="$event.stopPropagation()" role="listbox">
+    <input
+      type="text"
+      class="vc-ss__filter"
+      [(ngModel)]="filterText"
+      [placeholder]="filterPlaceholder"
+      (click)="onFilterInput($event)"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+    />
+    <ul class="vc-ss__list">
+      <li *ngIf="filteredOptions.length === 0" class="vc-ss__empty">{{ emptyFilterMessage }}</li>
+      <li
+        *ngFor="let opt of filteredOptions"
+        class="vc-ss__option"
+        [class.vc-ss__option--selected]="opt.value === value"
+        role="option"
+        (click)="selectOption(opt, $event)"
+      >
+        {{ opt.label }}
+      </li>
+    </ul>
+  </div>
+</div>

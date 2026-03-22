@@ -646,6 +646,8 @@ input:checked+.slider:before {
     padding: 30px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    min-height: 0;
 }
 
 /* Header Profile Container */

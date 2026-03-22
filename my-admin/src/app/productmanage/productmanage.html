@@ -279,10 +279,7 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="spinner-container">
-        <div class="spinner-border" role="status"></div>
-        <p>Đang tải dữ liệu...</p>
-    </div>
+    <app-admin-mascot-loading *ngIf="isLoading" message="Đang tải danh sách sản phẩm…" />
 
     <!-- Table -->
     <div class="table-scrollable" *ngIf="!isLoading">

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef, signal, computed, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef, signal, computed } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ import { CoinService } from '../../../core/services/coin.service';
 import { HOME_URL } from '../../../core/constants/navigation.constants';
 
 import { StoreService, StoreFilter } from '../../../core/services/store.service';
+import { VcSearchableSelectComponent } from '../../../shared/vc-searchable-select/vc-searchable-select.component';
 import { Store } from '../../../core/models/store.model';
 
 interface AddressItem {
@@ -40,20 +41,10 @@ interface LocationItem {
   name_with_type: string;
 }
 
-// Fallback interfaces if the API still uses them, but we will mostly use the StoreService tree
-interface PharmacyProvince {
-  code: string;
-  name: string;
-}
-interface PharmacyWard {
-  ward: string;
-  district: string;
-}
-
 @Component({
   selector: 'app-order',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, VcSearchableSelectComponent],
   templateUrl: './order.html',
   styleUrl: './order.css',
 })
@@ -102,13 +93,6 @@ export class Order implements OnInit, OnDestroy {
   districts: LocationItem[] = [];
   wards: LocationItem[] = [];
 
-  // Custom dropdown (province/district/ward)
-  showProvinceDropdown = false;
-  showDistrictDropdown = false;
-  showWardDropdown = false;
-  showPharmacyProvinceDropdown = false;
-  showPharmacyDistrictDropdown = false;
-  showPharmacyWardDropdown = false;
   addressForm = {
     name: '', phone: '', email: '', provinceCode: '', districtCode: '', wardCode: '', detail: '', isDefault: false,
   };
@@ -192,30 +176,6 @@ export class Order implements OnInit, OnDestroy {
   promotionLoading = false;
   selectedPromotionId: string | null = null;
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement | null;
-    // Close only when clicking outside any custom dropdown wrapper.
-    if (target && target.closest('.order-custom-dropdown')) return;
-    this.showProvinceDropdown = false;
-    this.showDistrictDropdown = false;
-    this.showWardDropdown = false;
-    this.showPharmacyProvinceDropdown = false;
-    this.showPharmacyDistrictDropdown = false;
-    this.showPharmacyWardDropdown = false;
-  }
-
-  private closeAddressDropdowns(): void {
-    this.showProvinceDropdown = false;
-    this.showDistrictDropdown = false;
-    this.showWardDropdown = false;
-  }
-
-  private closePharmacyDropdowns(): void {
-    this.showPharmacyProvinceDropdown = false;
-    this.showPharmacyDistrictDropdown = false;
-    this.showPharmacyWardDropdown = false;
-  }
 
   getProvinceLabel(code: string): string {
     return this.provinces.find((p) => p.code === code)?.name_with_type || '';
@@ -229,64 +189,36 @@ export class Order implements OnInit, OnDestroy {
     return this.wards.find((w) => w.code === code)?.name_with_type || '';
   }
 
-  getPharmacyProvinceLabel(name: string): string {
-    return name || '';
+  get provinceSelectOptions(): { value: string; label: string }[] {
+    return (this.provinces || []).map((p) => ({ value: p.code, label: p.name_with_type }));
   }
 
-  getPharmacyDistrictLabel(name: string): string {
-    return name || '';
+  get districtSelectOptions(): { value: string; label: string }[] {
+    return (this.districts || []).map((d) => ({ value: d.code, label: d.name_with_type }));
   }
 
-  getPharmacyWardLabel(name: string): string {
-    return name || '';
+  get wardSelectOptions(): { value: string; label: string }[] {
+    return (this.wards || []).map((w) => ({ value: w.code, label: w.name_with_type }));
   }
 
-  toggleProvinceDropdown(e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!this.provinces?.length) return;
-    this.showProvinceDropdown = !this.showProvinceDropdown;
-    if (this.showProvinceDropdown) {
-      this.showDistrictDropdown = false;
-      this.showWardDropdown = false;
-    }
+  get pharmacyProvinceSelectOptions(): { value: string; label: string }[] {
+    return (this.allPharmacyLocations || []).map((p: { tinh: string }) => ({
+      value: p.tinh,
+      label: p.tinh,
+    }));
   }
 
-  toggleDistrictDropdown(e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!this.addressForm.provinceCode || !this.districts?.length) return;
-    this.showDistrictDropdown = !this.showDistrictDropdown;
-    if (this.showDistrictDropdown) this.showWardDropdown = false;
+  get pharmacyDistrictSelectOptions(): { value: string; label: string }[] {
+    return (this.availableDistricts || []).map((d: { ten: string }) => ({
+      value: d.ten,
+      label: d.ten,
+    }));
   }
 
-  toggleWardDropdown(e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!this.addressForm.districtCode || !this.wards?.length) return;
-    this.showWardDropdown = !this.showWardDropdown;
+  get pharmacyWardSelectOptions(): { value: string; label: string }[] {
+    return (this.availableWards || []).map((w) => ({ value: w, label: w }));
   }
 
-  selectProvince(code: string, e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.onAddressFormProvinceChange(code);
-    this.closeAddressDropdowns();
-  }
-
-  selectDistrict(code: string, e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.onAddressFormDistrictChange(code);
-    this.closeAddressDropdowns();
-  }
-
-  selectWard(code: string, e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.addressForm.wardCode = code;
-    this.closeAddressDropdowns();
-  }
   appliedPromotionName = '';
   /** Thông tin khuyến mãi từ giỏ hàng (nếu có) */
   summaryPromotionId: string | null = null;
@@ -839,7 +771,6 @@ export class Order implements OnInit, OnDestroy {
   closeAddressFormModal(): void {
     this.showAddressFormModal = false;
     this.resetAddressForm();
-    this.closeAddressDropdowns();
     this.cdr.detectChanges();
   }
 
@@ -847,7 +778,6 @@ export class Order implements OnInit, OnDestroy {
     this.addressForm = { name: '', phone: '', email: '', provinceCode: '', districtCode: '', wardCode: '', detail: '', isDefault: false };
     this.districts = [];
     this.wards = [];
-    this.closeAddressDropdowns();
   }
 
   private loadProvinces(): void {
@@ -887,7 +817,6 @@ export class Order implements OnInit, OnDestroy {
     this.pharmacyProvince = tinh;
     this.pharmacyDistrict = '';
     this.pharmacyWard = '';
-    this.closePharmacyDropdowns();
     this.availableDistricts = [];
     this.availableWards = [];
     this.availableStores = [];
@@ -906,7 +835,6 @@ export class Order implements OnInit, OnDestroy {
   onPharmacyDistrictChange(quan: string): void {
     this.pharmacyDistrict = quan;
     this.pharmacyWard = '';
-    this.closePharmacyDropdowns();
     this.availableWards = [];
     this.availableStores = [];
     this.selectedStore = null;
@@ -923,55 +851,10 @@ export class Order implements OnInit, OnDestroy {
 
   onPharmacyWardChange(phuong: string): void {
     this.pharmacyWard = phuong;
-    this.closePharmacyDropdowns();
     this.selectedStore = null;
     this.availableStores = [];
     this.cdr.detectChanges();
     this.loadAvailableStores();
-  }
-
-  togglePharmacyProvinceDropdown(e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!this.allPharmacyLocations?.length) return;
-    this.showPharmacyProvinceDropdown = !this.showPharmacyProvinceDropdown;
-    if (this.showPharmacyProvinceDropdown) {
-      this.showPharmacyDistrictDropdown = false;
-      this.showPharmacyWardDropdown = false;
-    }
-  }
-
-  togglePharmacyDistrictDropdown(e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!this.pharmacyProvince || !this.availableDistricts?.length) return;
-    this.showPharmacyDistrictDropdown = !this.showPharmacyDistrictDropdown;
-    if (this.showPharmacyDistrictDropdown) this.showPharmacyWardDropdown = false;
-  }
-
-  togglePharmacyWardDropdown(e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!this.pharmacyDistrict || !this.availableWards?.length) return;
-    this.showPharmacyWardDropdown = !this.showPharmacyWardDropdown;
-  }
-
-  selectPharmacyProvince(tinh: string, e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.onPharmacyProvinceChange(tinh);
-  }
-
-  selectPharmacyDistrict(quan: string, e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.onPharmacyDistrictChange(quan);
-  }
-
-  selectPharmacyWard(phuong: string, e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.onPharmacyWardChange(phuong);
   }
 
   loadAvailableStores(): void {

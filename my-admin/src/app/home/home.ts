@@ -26,13 +26,14 @@ import {
   type DashboardExportInput
 } from '../services/dashboard-export.service';
 import { DashboardPreloadService } from '../services/dashboard-preload.service';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
 
 declare var Chart: any;
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AdminMascotLoadingComponent],
   providers: [DecimalPipe],
   templateUrl: './home.html',
   styleUrl: './home.css',

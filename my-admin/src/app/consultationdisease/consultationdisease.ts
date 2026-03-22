@@ -148,22 +148,59 @@ export class Consultationdisease implements OnInit {
     this.consultationService.getDiseaseConsultations().subscribe({
       next: (res) => {
         if (res.success) {
-          const foundDisease = res.data.find((d: any) => d.sku === disease.sku);
+          const foundDisease = this.findDiseaseRowBySku(res.data, disease.sku);
           if (foundDisease) {
-            this.questions = foundDisease.questions.map((q: any) => ({
+            const resolvedName =
+              disease?.productName ||
+              disease?.name ||
+              foundDisease.productName ||
+              foundDisease.name;
+            this.selectedDisease = {
+              ...disease,
+              productName: resolvedName,
+              name: disease?.name || resolvedName
+            };
+            const rawQuestions = Array.isArray(foundDisease.questions) ? foundDisease.questions : [];
+            this.questions = rawQuestions.map((q: any) => ({
               ...q,
               productSku: foundDisease.sku,
-              productName: foundDisease.productName
+              productName: resolvedName || foundDisease.productName
             }));
             this.applyFiltersAndSort();
+          } else {
+            this.questions = [];
+            this.filteredQuestions = [];
           }
         }
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  /** SKU bệnh có thể khác nhẹ (string/number hoặc hậu tố .html) so với bản trong API. */
+  private findDiseaseRowBySku(rows: any[] | undefined, sku: unknown): any | undefined {
+    if (!Array.isArray(rows)) return undefined;
+    const norm = (v: unknown) =>
+      String(v ?? '')
+        .trim()
+        .toLowerCase()
+        .replace(/\.html$/i, '');
+    const want = norm(sku);
+    let row = rows.find((d) => norm(d?.sku) === want);
+    if (row) return row;
+    const s = String(sku ?? '').trim();
+    row = rows.find((d) => String(d?.sku ?? '').trim() === s);
+    if (row) return row;
+    const n = Number(s);
+    if (!Number.isNaN(n) && s !== '') {
+      row = rows.find((d) => d?.sku === n || String(d?.sku ?? '').trim() === s);
+    }
+    return row;
   }
 
   goBackToDiseases() {
@@ -326,13 +363,25 @@ export class Consultationdisease implements OnInit {
   }
 
   getDiseaseName(disease: any): string {
-    return String(
-      disease?.name ||
-      disease?.productName ||
-      disease?.diseaseName ||
-      disease?.title ||
-      'Chưa cập nhật'
-    );
+    const looksLikePathOrSlug = (s: string) => {
+      const t = String(s || '').trim();
+      return /\.html(\s|$)/i.test(t) || /^benh\//i.test(t) || t.includes('/');
+    };
+
+    const candidates = [
+      disease?.productName,
+      disease?.name,
+      disease?.diseaseName,
+      disease?.title
+    ].map((x) => String(x || '').trim());
+
+    const readable = candidates.find((t) => t && !looksLikePathOrSlug(t));
+    if (readable) return readable;
+
+    const anyName = candidates.find((t) => !!t);
+    if (anyName) return anyName;
+
+    return 'Chưa cập nhật';
   }
 
   getDiseaseCategory(disease: any): string {
@@ -359,7 +408,9 @@ export class Consultationdisease implements OnInit {
       const detail = detailBySku.get(sku);
       return {
         ...stat,
-        name: stat?.name || detail?.name || stat?.productName || detail?.productName,
+        // Ưu tiên tên từ stats (đã join bảng bệnh), tránh ghi đè bằng productName cũ trong consultations_disease
+        name: stat?.productName || stat?.name || detail?.productName || detail?.name,
+        productName: stat?.productName || stat?.name || detail?.productName || detail?.name,
         categories: Array.isArray(detail?.categories) ? detail.categories : stat?.categories
       };
     });

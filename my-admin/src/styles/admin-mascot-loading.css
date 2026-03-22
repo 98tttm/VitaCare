@@ -1,0 +1,140 @@
+/**
+ * Loading mascot + progress bar — dùng chung (trang con admin, giống overlay sau đăng nhập).
+ * Phiên bản indeterminate: không cần progress$ từ API.
+ */
+
+/* Phủ toàn vùng .content-body (cần position: relative trên cha) */
+.admin-mascot-loading {
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.admin-mascot-loading--overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  min-height: 100%;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.admin-mascot-loading--block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  min-height: 280px;
+}
+
+.admin-mascot-loading__inner {
+  width: 100%;
+  max-width: 320px;
+}
+
+.admin-mascot-loading .success-logo {
+  margin-bottom: 24px;
+}
+
+.admin-mascot-loading .success-logo img {
+  height: 80px;
+  width: auto;
+  animation: admin-mascot-logo-bounce 2s infinite ease-in-out;
+}
+
+.admin-mascot-loading .admin-mascot-loading__hint {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 16px 0;
+}
+
+.admin-mascot-loading .loading-container {
+  width: 100%;
+  position: relative;
+  padding-top: 50px;
+}
+
+.admin-mascot-loading .mascot-shipping {
+  position: absolute;
+  bottom: 10px;
+  left: 10%;
+  width: 60px;
+  z-index: 2;
+  transform: translateX(-50%);
+}
+
+.admin-mascot-loading .mascot-shipping img {
+  width: 100%;
+  height: auto;
+}
+
+/* Chỉ trái → phải, lặp lại (không quay ngược) */
+.admin-mascot-loading .mascot-shipping--indeterminate {
+  animation: admin-mascot-ride 2.2s linear infinite;
+}
+
+.admin-mascot-loading .mascot-shipping--determinate {
+  transition: left 0.35s ease-out;
+}
+
+.admin-mascot-loading .admin-mascot-loading__fill-determinate {
+  width: 0;
+  transition: width 0.35s ease-out;
+}
+
+.admin-mascot-loading .loading-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-neutral-20, #e9ecef);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.admin-mascot-loading .loading-bar-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #a5b4fc, #c4b5fd);
+  border-radius: 10px;
+}
+
+.admin-mascot-loading .loading-bar-fill--indeterminate {
+  width: 38%;
+  animation: admin-mascot-bar-slide 2.2s linear infinite;
+}
+
+@keyframes admin-mascot-logo-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.03);
+  }
+}
+
+@keyframes admin-mascot-ride {
+  0% {
+    left: 8%;
+  }
+  100% {
+    left: 92%;
+  }
+}
+
+@keyframes admin-mascot-bar-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}

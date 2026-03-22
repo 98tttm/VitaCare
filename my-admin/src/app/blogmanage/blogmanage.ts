@@ -3,11 +3,15 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { BlogService, BlogResponse } from '../services/blog.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
+
+/** Tiêu chí sắp xếp trong UI (map sang field bài viết khi sort client-side) */
+type BlogSortKind = 'published' | 'title';
 
 @Component({
   selector: 'app-blogmanage',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule],
+  imports: [CommonModule, DatePipe, FormsModule, AdminMascotLoadingComponent],
   providers: [BlogService],
   templateUrl: './blogmanage.html',
   styleUrl: './blogmanage.css',
@@ -173,17 +177,15 @@ export class Blogmanage implements OnInit {
 
     this.filteredBlogs = [...results];
 
-    // Sắp xếp
+    // Sắp xếp (giống logic quản lý sản phẩm: tiêu chí + hướng)
     this.filteredBlogs.sort((a, b) => {
-      const valA = a[this.sortColumn as keyof typeof a] || 0;
-      const valB = b[this.sortColumn as keyof typeof b] || 0;
-      if (this.sortColumn === 'publishedAt' || this.sortColumn === 'createdAt') {
-        const timeA = new Date(valA || a.createdAt).getTime() || 0;
-        const timeB = new Date(valB || b.createdAt).getTime() || 0;
+      if (this.sortKind === 'published') {
+        const timeA = new Date(a.publishedAt || a.createdAt).getTime() || 0;
+        const timeB = new Date(b.publishedAt || b.createdAt).getTime() || 0;
         return this.sortDirection === 'asc' ? timeA - timeB : timeB - timeA;
       }
-      const sA = String(valA).toLowerCase();
-      const sB = String(valB).toLowerCase();
+      const sA = String(a.title || '').toLowerCase();
+      const sB = String(b.title || '').toLowerCase();
       return this.sortDirection === 'asc' ? sA.localeCompare(sB) : sB.localeCompare(sA);
     });
 
@@ -214,32 +216,44 @@ export class Blogmanage implements OnInit {
   }
 
   isSortDropdownOpen: boolean = false;
-  sortColumn: string = 'publishedAt';
+  /** Mặc định: ngày đăng mới nhất trước */
+  sortKind: BlogSortKind = 'published';
   sortDirection: 'asc' | 'desc' = 'desc';
+
+  private defaultDirectionForBlogKind(kind: BlogSortKind): 'asc' | 'desc' {
+    switch (kind) {
+      case 'published':
+        return 'desc';
+      case 'title':
+        return 'asc';
+      default:
+        return 'desc';
+    }
+  }
+
+  /** Click nhãn hàng: cùng tiêu chí → đảo hướng; khác tiêu chí → hướng mặc định */
+  onSortRowClick(kind: BlogSortKind): void {
+    if (this.sortKind === kind) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKind = kind;
+      this.sortDirection = this.defaultDirectionForBlogKind(kind);
+    }
+    this.filterBlogs();
+  }
+
+  /** Click mũi tên: chọn tiêu chí + hướng cụ thể */
+  setSortDirection(kind: BlogSortKind, direction: 'asc' | 'desc', event?: Event): void {
+    event?.stopPropagation();
+    this.sortKind = kind;
+    this.sortDirection = direction;
+    this.filterBlogs();
+  }
 
   toggleSortDropdown(event?: Event) {
     if (event) event.stopPropagation();
     this.isSortDropdownOpen = !this.isSortDropdownOpen;
     this.isFilterOpen = false;
-  }
-
-  onSortSelect(sortOption: string) {
-    if (sortOption === 'publishedAtDesc') {
-      this.sortColumn = 'publishedAt';
-      this.sortDirection = 'desc';
-    } else if (sortOption === 'publishedAtAsc') {
-      this.sortColumn = 'publishedAt';
-      this.sortDirection = 'asc';
-    } else if (sortOption === 'titleDesc') {
-      this.sortColumn = 'title';
-      this.sortDirection = 'desc';
-    } else if (sortOption === 'titleAsc') {
-      this.sortColumn = 'title';
-      this.sortDirection = 'asc';
-    }
-
-    this.filterBlogs();
-    this.isSortDropdownOpen = false;
   }
 
   viewDetail(id: string) {
@@ -299,6 +313,57 @@ export class Blogmanage implements OnInit {
     this.selectedStatus = '';
     this.searchTerm = '';
     this.filterBlogs();
+  }
+
+  /**
+   * Tất cả chuyên mục hiển thị trên bảng (không gộp +N).
+   */
+  blogCategoryRows(b: any): { parentName?: string; name: string }[] {
+    const rows: { parentName?: string; name: string }[] = [];
+    const seen = new Set<string>();
+
+    const add = (name: string, parentName?: string) => {
+      const n = String(name || '').trim();
+      if (!n) return;
+      const p = parentName ? String(parentName).trim() : '';
+      const k = `${p}|${n}`.toLowerCase();
+      if (seen.has(k)) return;
+      seen.add(k);
+      rows.push(p ? { parentName: p, name: n } : { name: n });
+    };
+
+    if (Array.isArray(b.categories)) {
+      for (const cat of b.categories) {
+        if (!cat) continue;
+        const nm = cat.name || cat.category?.name || '';
+        const p =
+          cat.parentCategory?.name ||
+          cat.parent?.name ||
+          cat.category?.parentCategory?.name ||
+          '';
+        if (p && nm) {
+          add(nm, p);
+        } else {
+          add(nm);
+        }
+      }
+    }
+
+    const mainName = b.category?.name ? String(b.category.name).trim() : '';
+    const mainParent = String(b.parentCategory?.name || '').trim();
+    if (mainName) {
+      if (mainParent) {
+        add(mainName, mainParent);
+      } else {
+        add(mainName);
+      }
+    }
+
+    return rows;
+  }
+
+  hasBlogCategoryRows(b: any): boolean {
+    return this.blogCategoryRows(b).length > 0;
   }
 
   deleteSelected() {

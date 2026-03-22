@@ -254,10 +254,7 @@
 
 
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="spinner-container">
-        <div class="spinner-border" role="status"></div>
-        <p>Đang tải dữ liệu...</p>
-    </div>
+    <app-admin-mascot-loading *ngIf="isLoading" message="Đang tải danh sách đơn hàng…" />
 
     <!-- Data Table -->
     <div class="table-scrollable" *ngIf="!isLoading">
@@ -332,24 +329,18 @@
                 </div>
 
                 <label class="form-label">Địa chỉ giao hàng</label>
-                <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <select class="form-control" [(ngModel)]="newOrder.shippingInfo.city" (change)="onCityChange()">
-                        <option value="" disabled selected>Chọn Tỉnh/Thành phố</option>
-                        <option *ngFor="let city of cities" [value]="city.name_with_type">{{ city.name_with_type }}
-                        </option>
-                    </select>
-                    <select class="form-control" [(ngModel)]="newOrder.shippingInfo.district"
-                        (change)="onDistrictChange()" [disabled]="!newOrder.shippingInfo.city">
-                        <option value="" disabled selected>Chọn Quận/Huyện</option>
-                        <option *ngFor="let d of districts" [value]="d.name_with_type">{{ d.name_with_type }}</option>
-                    </select>
+                <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <vc-searchable-select style="flex: 1; min-width: 160px;" [(ngModel)]="newOrder.shippingInfo.city"
+                        [options]="citySelectOptions" [disabled]="!cities?.length" placeholder="Chọn Tỉnh/Thành phố"
+                        (ngModelChange)="onCityChange()" />
+                    <vc-searchable-select style="flex: 1; min-width: 160px;" [(ngModel)]="newOrder.shippingInfo.district"
+                        [options]="districtSelectOptions" [disabled]="!newOrder.shippingInfo.city"
+                        placeholder="Chọn Quận/Huyện" (ngModelChange)="onDistrictChange()" />
                 </div>
                 <div class="form-group">
-                    <select class="form-control" [(ngModel)]="newOrder.shippingInfo.ward" style="margin-bottom: 10px;"
-                        [disabled]="!newOrder.shippingInfo.district">
-                        <option value="" disabled selected>Chọn Phường/Xã</option>
-                        <option *ngFor="let w of wards" [value]="w.name_with_type">{{ w.name_with_type }}</option>
-                    </select>
+                    <vc-searchable-select style="margin-bottom: 10px; display: block;" [(ngModel)]="newOrder.shippingInfo.ward"
+                        [options]="wardSelectOptions" [disabled]="!newOrder.shippingInfo.district"
+                        placeholder="Chọn Phường/Xã" />
                     <input type="text" class="form-control" [(ngModel)]="newOrder.shippingInfo.address"
                         placeholder="Số nhà, tên đường...">
                 </div>

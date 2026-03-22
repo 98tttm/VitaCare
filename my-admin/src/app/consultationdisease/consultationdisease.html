@@ -3,7 +3,7 @@
     <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
         Quản lý Tư vấn <span class="mx-1">/</span>
         <span style="color: var(--color-primary);">
-            {{ selectedDisease ? selectedDisease.sku : 'Tư vấn bệnh' }}
+            {{ selectedDisease ? getDiseaseName(selectedDisease) : 'Tư vấn bệnh' }}
         </span>
     </div>
 
@@ -12,7 +12,7 @@
         style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
         <h1 class="content-title"
             style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
-            {{ selectedDisease ? selectedDisease.sku : 'Tư vấn bệnh' }}
+            {{ selectedDisease ? getDiseaseName(selectedDisease) : 'Tư vấn bệnh' }}
         </h1>
     </div>
 
@@ -89,7 +89,7 @@
     <ng-container *ngIf="selectedDisease">
         <div class="selected-product-info" style="margin-bottom: 20px;">
             <div class="product-details">
-                <h2 style="color: #6a1b9a;">Bệnh: {{ selectedDisease.productName }}</h2>
+                <h2 style="color: #6a1b9a;">Bệnh: {{ getDiseaseName(selectedDisease) }}</h2>
                 <span>Mã: {{ selectedDisease.sku }} • {{ selectedDisease.unansweredCount }} câu hỏi mới</span>
             </div>
             <button (click)="goBackToDiseases()" class="btn-back-main">

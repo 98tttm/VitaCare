@@ -6,12 +6,16 @@
     </div>
 
     <!-- Header -->
-    <div class="page-header py-4"
+    <div class="page-header py-4 customer-page-header-card"
         style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
         <h1 class="content-title"
             style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
             Danh sách
             khách hàng</h1>
+        <button type="button" class="btn-add-action" (click)="goCreateCustomer()">
+            <i class="bi bi-plus-lg"></i>
+            Tạo khách hàng
+        </button>
     </div>
 
     <!-- Filter & Toolbar -->
@@ -63,16 +67,28 @@
                                     (change)="toggleAdvancedFilter('tier', 'Vàng')">
                                 <span>Vàng</span>
                             </label>
-                            <label class="dropdown-option">
-                                <input type="checkbox" [checked]="isFilterSelected('tier', 'Kim cương')"
-                                    (change)="toggleAdvancedFilter('tier', 'Kim cương')">
-                                <span>Kim cương</span>
-                            </label>
-                            <label class="dropdown-option">
-                                <input type="checkbox" [checked]="isFilterSelected('tier', 'Thành viên')"
-                                    (change)="toggleAdvancedFilter('tier', 'Thành viên')">
-                                <span>Thành viên</span>
-                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Nhóm khách hàng (MongoDB: customer_groups) -->
+                    <div class="dropdown-item-parent">
+                        <div class="dropdown-item">
+                            <span>Nhóm khách hàng</span>
+                            <span style="font-size: 10px; color: #ccc;">›</span>
+                        </div>
+                        <div class="dropdown-submenu">
+                            <ng-container *ngIf="existingGroups.length > 0; else noGroupsTpl">
+                                <label class="dropdown-option" *ngFor="let g of existingGroups; trackBy: trackByGroupId">
+                                    <input type="checkbox" [checked]="isFilterSelected('customer_group', groupFilterKey(g))"
+                                        (change)="toggleAdvancedFilter('customer_group', groupFilterKey(g))">
+                                    <span>{{ g.name }}</span>
+                                </label>
+                            </ng-container>
+                            <ng-template #noGroupsTpl>
+                                <div class="dropdown-option text-muted" style="cursor: default; font-size: 12px;">
+                                    Chưa có nhóm — dùng nút <strong>Nhóm</strong> để tạo.
+                                </div>
+                            </ng-template>
                         </div>
                     </div>
 
@@ -118,28 +134,67 @@
                 <i class="bi bi-trash"></i> Xóa
             </button>
             <div class="dropdown-container" style="position: relative;">
-                <button class="btn btn-sm action-btn icon-text" (click)="toggleSortDropdown($event)">
+                <button class="btn btn-sm action-btn icon-text" (click)="toggleSortDropdown($event)"
+                    [class.active]="isSortDropdownOpen || sortKind !== 'registerdate' || sortDirection !== 'desc'">
                     <i class="bi bi-arrow-down-up"></i> Sắp xếp
                 </button>
                 <div class="dropdown-popup sort-dropdown-menu" *ngIf="isSortDropdownOpen"
                     (click)="$event.stopPropagation()">
-                    <div class="sort-options-list">
-                        <button (click)="onSortSelect('registerdate', 'desc')" class="sort-option-btn"
-                            [class.active]="sortColumn === 'registerdate' && sortDirection === 'desc'">
-                            <i class="bi bi-calendar-event"></i> Ngày tạo: Mới nhất
-                        </button>
-                        <button (click)="onSortSelect('registerdate', 'asc')" class="sort-option-btn"
-                            [class.active]="sortColumn === 'registerdate' && sortDirection === 'asc'">
-                            <i class="bi bi-calendar"></i> Ngày tạo: Cũ nhất
-                        </button>
-                        <button (click)="onSortSelect('total_spending', 'desc')" class="sort-option-btn"
-                            [class.active]="sortColumn === 'total_spending' && sortDirection === 'desc'">
-                            <i class="bi bi-sort-numeric-down-alt"></i> Đã chi: Cao nhất
-                        </button>
-                        <button (click)="onSortSelect('total_spending', 'asc')" class="sort-option-btn"
-                            [class.active]="sortColumn === 'total_spending' && sortDirection === 'asc'">
-                            <i class="bi bi-sort-numeric-down"></i> Đã chi: Thấp nhất
-                        </button>
+                    <div class="sort-options-list compact-sort-list">
+                        <div class="sort-row" [class.row-active]="sortKind === 'name'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('name')">
+                                <i class="bi bi-fonts"></i>
+                                <span>Tên</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="A → Z"
+                                    [class.dir-active]="sortKind === 'name' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('name', 'asc', $event)">
+                                    <i class="bi bi-sort-alpha-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Z → A"
+                                    [class.dir-active]="sortKind === 'name' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('name', 'desc', $event)">
+                                    <i class="bi bi-sort-alpha-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-row" [class.row-active]="sortKind === 'registerdate'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('registerdate')">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Ngày tạo</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="Cũ → mới"
+                                    [class.dir-active]="sortKind === 'registerdate' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('registerdate', 'asc', $event)">
+                                    <i class="bi bi-sort-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Mới → cũ"
+                                    [class.dir-active]="sortKind === 'registerdate' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('registerdate', 'desc', $event)">
+                                    <i class="bi bi-sort-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-row" [class.row-active]="sortKind === 'totalspent'">
+                            <button type="button" class="sort-row-label" (click)="onSortRowClick('totalspent')">
+                                <i class="bi bi-cash-stack"></i>
+                                <span>Tổng chi</span>
+                            </button>
+                            <div class="sort-row-arrows">
+                                <button type="button" class="sort-arrow-btn" title="Chi thấp → cao"
+                                    [class.dir-active]="sortKind === 'totalspent' && sortDirection === 'asc'"
+                                    (click)="setSortDirection('totalspent', 'asc', $event)">
+                                    <i class="bi bi-sort-numeric-up"></i>
+                                </button>
+                                <button type="button" class="sort-arrow-btn" title="Chi cao → thấp"
+                                    [class.dir-active]="sortKind === 'totalspent' && sortDirection === 'desc'"
+                                    (click)="setSortDirection('totalspent', 'desc', $event)">
+                                    <i class="bi bi-sort-numeric-down"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,10 +202,7 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="spinner-container">
-        <div class="spinner-border" role="status"></div>
-        <p>Đang tải dữ liệu...</p>
-    </div>
+    <app-admin-mascot-loading *ngIf="isLoading" message="Đang tải danh sách khách hàng…" />
 
     <!-- Table -->
     <div class="table-scrollable" *ngIf="!isLoading">
@@ -165,7 +217,7 @@
                     <th>Khách hàng</th>
                     <th>Địa chỉ</th>
                     <th class="text-center">Hạng thành viên</th>
-                    <th class="text-right">Tổng đơn</th>
+                    <th class="text-right">Tổng chi</th>
                 </tr>
             </thead>
             <tbody>
@@ -178,11 +230,11 @@
                     <td class="font-bold">{{ c.full_name }}</td>
                     <td>{{ c.addressString }}</td>
                     <td class="text-center">
-                        <span class="tier-pill" [ngClass]="'tier-' + (c.tiering | lowercase)">
+                        <span class="tier-pill" [ngClass]="'tier-' + tierSlug(c.tiering)">
                             {{ c.tiering }}
                         </span>
                     </td>
-                    <td class="price text-right">{{ c.totalspent | currency : 'VND' }}</td>
+                    <td class="text-right price">{{ c.totalspent | currency:'VND' }}</td>
                 </tr>
                 <tr *ngIf="filteredCustomers.length === 0">
                     <td colspan="7" class="text-center text-secondary py-5">
@@ -244,11 +296,9 @@
                 <div class="form-group">
                     <label class="form-label"><i class="bi bi-award"></i> Hạng thành viên</label>
                     <select class="form-control" [(ngModel)]="editingCustomer.tiering">
-                        <option value="Thành viên">Thành viên</option>
                         <option value="Đồng">Đồng</option>
                         <option value="Bạc">Bạc</option>
                         <option value="Vàng">Vàng</option>
-                        <option value="Kim cương">Kim cương</option>
                     </select>
                 </div>
             </div>

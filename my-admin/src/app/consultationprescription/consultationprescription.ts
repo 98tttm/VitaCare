@@ -404,8 +404,9 @@ export class Consultationprescription implements OnInit {
     }
   }
 
-  formatDate(dateString: string): string {
-    return this.datePipe.transform(dateString, 'dd/MM/yyyy') || '';
+  formatDate(dateString: string | Date | undefined | null): string {
+    if (dateString == null || dateString === '') return '';
+    return this.datePipe.transform(dateString, 'dd/MM/yyyy HH:mm') || '';
   }
 
   openDetailModal(item: any) {
@@ -448,7 +449,8 @@ export class Consultationprescription implements OnInit {
       status_history: originalHistory
     };
 
-    // Admin: chỉ được phân công dược sĩ, không thay đổi trạng thái.
+    // Admin: phân công dược sĩ; nếu đơn đang chờ xử lý thì chuyển sang "Đang tư vấn"
+    // để dược sĩ có thể cập nhật "Đã tư vấn" / "Chưa thể liên hệ".
     if (this.isAdmin) {
       if (!this.editedPharmacistId) {
         this.isSaving = false;
@@ -461,12 +463,50 @@ export class Consultationprescription implements OnInit {
         this.showNotification('Không tìm thấy thông tin dược sĩ', 'error');
         return;
       }
+
+      let adminActor = 'Admin';
+      try {
+        const adminData = localStorage.getItem('admin');
+        if (adminData) {
+          const admin = JSON.parse(adminData);
+          adminActor =
+            admin.adminname ||
+            admin.adminName ||
+            admin.fullname ||
+            admin.pharmacistName ||
+            'Admin';
+        }
+      } catch {
+        /* ignore */
+      }
+
+      const nowIso = new Date().toISOString();
+
+      let nextStatus = originalStatus;
+      let nextCurrentStatus = originalCurrentStatus;
+      let nextHistory = [...originalHistory];
+
+      // Đơn còn "Chờ xử lý" → sau phân công phải sang "Đang tư vấn" (kể cả trùng dược sĩ — tránh kẹt pending).
+      if (originalStatus === 'pending') {
+        nextStatus = 'waiting';
+        const historyEntry = {
+          status: 'waiting' as const,
+          changedAt: nowIso,
+          changedBy: adminActor,
+        };
+        nextCurrentStatus = historyEntry;
+        nextHistory = [...nextHistory, historyEntry];
+      }
+
       payload = {
         ...payload,
+        status: nextStatus,
+        current_status: nextCurrentStatus,
+        status_history: nextHistory,
         pharmacist_id: this.editedPharmacistId,
         pharmacistId: this.editedPharmacistId,
         pharmacistName: pharmacist.pharmacistName,
-        pharmacistPhone: pharmacist.pharmacistPhone
+        pharmacistPhone: pharmacist.pharmacistPhone,
       };
     } else {
       // Pharmacist: chỉ được cập nhật trạng thái, giữ nguyên người được phân công.
@@ -523,7 +563,9 @@ export class Consultationprescription implements OnInit {
 
         const finalMessage = successMessage ||
           (this.isAdmin
-            ? 'Đã phân công đơn thuốc cho dược sĩ.'
+            ? (originalStatus === 'pending' && payload.status === 'waiting'
+              ? 'Đã phân công dược sĩ và chuyển đơn sang Đang tư vấn.'
+              : 'Đã phân công đơn thuốc cho dược sĩ.')
             : (payload.status === 'waiting'
               ? 'Đã nhận xử lý đơn thuốc.'
               : `Đã cập nhật trạng thái đơn thuốc sang ${this.getStatusLabel(payload.status)}.`));

@@ -186,22 +186,41 @@ export class Consultationproduct implements OnInit {
     this.consultationService.getProductConsultationsByRole(this.currentRole, this.currentPharmacistId, this.currentPharmacistEmail, this.currentPharmacistName).subscribe({
       next: (res) => {
         if (res.success) {
-          const foundProduct = res.data.find((p: any) => p.sku === product.sku);
+          const foundProduct = this.findConsultationRowBySku(res.data, product.sku);
           if (foundProduct) {
-            this.questions = foundProduct.questions.map((q: any) => ({
+            const rawQuestions = Array.isArray(foundProduct.questions) ? foundProduct.questions : [];
+            this.questions = rawQuestions.map((q: any) => ({
               ...q,
               productSku: foundProduct.sku,
               productName: foundProduct.productName
             }));
             this.applyFiltersAndSort();
+          } else {
+            this.questions = [];
+            this.filteredQuestions = [];
           }
         }
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  /** SKU trong DB có thể là number hoặc string — so sánh === thường không khớp. */
+  private findConsultationRowBySku(rows: any[] | undefined, sku: unknown): any | undefined {
+    if (!Array.isArray(rows)) return undefined;
+    const want = String(sku ?? '').trim();
+    let row = rows.find((p) => String(p?.sku ?? '').trim() === want);
+    if (row) return row;
+    const n = Number(want);
+    if (!Number.isNaN(n) && want !== '') {
+      row = rows.find((p) => p?.sku === n || String(p?.sku ?? '').trim() === want);
+    }
+    return row;
   }
 
   goBackToProducts() {
@@ -272,8 +291,10 @@ export class Consultationproduct implements OnInit {
     let result = [...(this.questions || [])];
 
     const getQuestionState = (q: any): 'pending' | 'assigned' | 'answered' => {
-      if (q?.status === 'answered' && q?.answer) return 'answered';
       if (q?.status === 'assigned') return 'assigned';
+      const hasAnswer = !!(q?.answer && String(q.answer).trim());
+      if (hasAnswer) return 'answered';
+      if (q?.status === 'answered') return 'answered';
       return 'pending';
     };
 

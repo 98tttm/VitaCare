@@ -38,6 +38,21 @@ export class CustomerService {
         return this.http.delete<any>(`${this.apiUrl}/${id}`);
     }
 
+    /** Mã khách hàng dự kiến (CUS######) — GET /api/admin/customers/next-user-id */
+    previewNextCustomerId(): Observable<any> {
+        return this.http.get<any>('http://localhost:3000/api/admin/customers/next-user-id');
+    }
+
+    /** Tạo khách mới (admin) — POST /api/admin/customers */
+    createCustomer(body: Record<string, unknown>): Observable<any> {
+        return this.http.post<any>('http://localhost:3000/api/admin/customers', body);
+    }
+
+    /** Địa chỉ giao hàng — cùng API sổ địa chỉ user */
+    createAddress(body: Record<string, unknown>): Observable<any> {
+        return this.http.post<any>('http://localhost:3000/api/addresses', body);
+    }
+
     // Groups
     getGroups(): Observable<any> {
         return this.http.get<any>('http://localhost:3000/api/admin/customer_groups');
