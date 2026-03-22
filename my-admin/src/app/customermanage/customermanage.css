@@ -1,8 +1,9 @@
 /* Product Manage Styles - Based on Order Manage for Consistency */
-.product-manage-container {
+.product-manage-container,
+.customer-manage-container {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-6);
+    gap: 0;
     font-family: var(--font-family-base);
 }
 
@@ -11,7 +12,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
 }
 
 .content-title {
@@ -116,7 +117,9 @@
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
-    padding: 10px 0;
+    padding: 4px 0 8px;
+    margin-top: 0;
+    margin-bottom: 6px;
 }
 
 .search-wrapper {
@@ -171,6 +174,15 @@
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     border: 1px solid var(--color-neutral-30);
+    margin-top: 0;
+}
+
+.customer-manage-container thead th {
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.customer-manage-container tbody td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 table {
@@ -607,43 +619,43 @@ input[type="checkbox"] {
     white-space: nowrap;
 }
 
-/* Ð?ng - Bronze */
-.tier-d?ng {
+/* H?ng thï¿½nh viï¿½n ï¿½ class ASCII (tierPillClass trong TS) */
+.tier-dong {
     background: linear-gradient(135deg, #b87333, #d28a52, #e1a869, #b87333);
     color: white;
     border: none;
     box-shadow: 0 2px 8px rgba(184, 115, 51, 0.3);
 }
 
-/* B?c - Silver */
-.tier-b?c {
+.tier-bac {
     background: linear-gradient(135deg, #c0c0c0, #e0e0e0, #f8f8f8, #b0b0b0);
     color: #1a5a04;
     border: none;
     box-shadow: 0 2px 8px rgba(192, 192, 192, 0.3);
 }
 
-/* Vàng - Gold */
-.tier-vàng {
+.tier-vang {
     background: linear-gradient(135deg, #ffd700, #ffec8b, #f5d142, #ffd700);
     color: #1a5a04;
     border: none;
     box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
 
-/* Kim cuong - Diamond */
-.tier-kim\.cuong,
-[class*="tier-kim"] {
+.tier-kimcuong {
     background: linear-gradient(135deg, #a8edea, #c2e9fb, #a8edea, #74ebd5);
     color: #1a3a5c;
     border: none;
     box-shadow: 0 2px 8px rgba(116, 235, 213, 0.3);
 }
 
-/* Thành viên - Member */
-.tier-thành\.viên,
-[class*="tier-thành"] {
+.tier-thanhvien {
     background: var(--color-bg-light);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-neutral-30);
+}
+
+.tier-default {
+    background: var(--color-neutral-20);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-neutral-30);
 }

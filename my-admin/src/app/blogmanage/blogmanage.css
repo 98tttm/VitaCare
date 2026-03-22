@@ -1,8 +1,8 @@
-/* Product Manage Styles - Based on Order Manage for Consistency */
-.product-manage-container {
+/* Blog list — layout gọn giống đơn hàng / sản phẩm */
+.blog-manage-container {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-6);
+    gap: 0;
     font-family: var(--font-family-base);
 }
 
@@ -11,7 +11,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
 }
 
 .content-title {
@@ -139,7 +139,9 @@
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
-    padding: 10px 0;
+    padding: 4px 0 8px;
+    margin-top: 0;
+    margin-bottom: 6px;
 }
 
 .search-wrapper {
@@ -438,6 +440,15 @@
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     border: 1px solid var(--color-neutral-30);
+    margin-top: 0;
+}
+
+.blog-manage-container thead th {
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.blog-manage-container tbody td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 table {

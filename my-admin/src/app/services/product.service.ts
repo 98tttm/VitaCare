@@ -19,6 +19,8 @@ export class ProductService {
         if (filters.maxPrice) url += `&maxPrice=${filters.maxPrice}`;
         if (filters.units && filters.units.length > 0) url += `&units=${filters.units.join(',')}`;
         if (filters.stockStatus && filters.stockStatus.length > 0) url += `&stockStatus=${filters.stockStatus.join(',')}`;
+        if (filters.expiryStatus && filters.expiryStatus.length > 0) url += `&expiryStatus=${filters.expiryStatus.join(',')}`;
+        if (filters.needConsultation) url += `&needConsultation=1`;
         if (filters.sortColumn) url += `&sortColumn=${filters.sortColumn}`;
         if (filters.sortDirection) url += `&sortDirection=${filters.sortDirection}`;
         return this.http.get<any>(url);
@@ -42,6 +44,16 @@ export class ProductService {
 
     updateProduct(id: string, productData: any): Observable<any> {
         return this.http.put<any>(`${this.apiUrl}/${id}`, productData);
+    }
+
+    /** Gán categoryId hàng loạt (popup phân loại nhóm sản phẩm). */
+    bulkUpdateProductCategory(productIds: string[], categoryId: string): Observable<any> {
+        return this.http.patch<any>(`${this.apiUrl}/bulk-category`, { productIds, categoryId });
+    }
+
+    /** Gán nhiều sản phẩm vào một product_group (phục vụ KM theo nhóm). */
+    bulkAssignProductGroup(productIds: string[], groupId: string): Observable<any> {
+        return this.http.patch<any>(`${this.apiUrl}/bulk-group`, { productIds, groupId });
     }
 
     deleteProduct(id: string): Observable<any> {

@@ -15,16 +15,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-6);
+    margin-bottom: var(--spacing-2);
     background-color: var(--color-bg-light);
-    border-radius: 20px;
-    padding: 24px 32px;
+    border-radius: 16px;
+    padding: 12px 22px;
     box-shadow: var(--shadow-sm);
 }
 
 .content-title {
     font-family: var(--font-content-title-family);
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 800;
     color: var(--color-text-primary);
     text-transform: uppercase;
@@ -82,7 +82,7 @@
 
 /* Status Specific Colors */
 .summary-card:nth-child(1) {
-    border-top: 4px solid #64748b;
+    border-top: 3px solid #64748b;
 }
 
 /* Total */
@@ -101,7 +101,7 @@
 }
 
 .summary-card:nth-child(3) {
-    border-top: 4px solid #22c55e;
+    border-top: 3px solid #22c55e;
     /* Đang diễn ra - xanh lá */
 }
 
@@ -111,7 +111,7 @@
 }
 
 .summary-card:nth-child(4) {
-    border-top: 4px solid #3b82f6;
+    border-top: 3px solid #3b82f6;
     /* Sắp diễn ra - xanh biển */
 }
 
@@ -246,7 +246,9 @@ body.dark-mode .page-header {
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
-    padding: 10px 0;
+    padding: 4px 0 8px;
+    margin-top: 0;
+    margin-bottom: 6px;
 }
 
 .search-wrapper {
@@ -564,6 +566,15 @@ body.dark-mode .page-header {
     box-shadow: var(--shadow-sm);
     overflow-x: auto;
     border: 1px solid var(--color-neutral-30);
+    margin-top: 0;
+}
+
+.promotion-manage-container thead th {
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.promotion-manage-container tbody td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 table {

@@ -70,9 +70,9 @@
 
     /* ========== TYPOGRAPHY ========== */
 
-    /* Font Families */
+    /* Font Families — toàn bộ admin dùng Inter */
     --font-family-title: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-family-content: 'Arimo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-family-content: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-family-base: var(--font-family-content);
 
     /* Font Sizes */

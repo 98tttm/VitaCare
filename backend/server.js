@@ -239,6 +239,52 @@ function getId(doc) {
   return null;
 }
 
+/**
+ * Gắn categoryPath (tên cấp cha → lá) cho danh sách sản phẩm admin — đọc trực tiếp từ collection categories,
+ * chuẩn hoá id giống GET /api/categories (tránh lệch ObjectId / BSON khi chỉ resolve phía Angular).
+ */
+async function enrichAdminProductsCategoryPaths(productDocs) {
+  if (!Array.isArray(productDocs) || productDocs.length === 0) return productDocs;
+  const cats = await categoriesCollection().find({}).toArray();
+  const catById = Object.create(null);
+  for (const c of cats) {
+    const id = getId(c);
+    if (!id) continue;
+    const parentRaw = c.parentId;
+    const parentId =
+      parentRaw == null || parentRaw === ''
+        ? null
+        : getId({ _id: parentRaw }) || getId(parentRaw);
+    catById[String(id)] = { name: c.name || '', parentId: parentId ? String(parentId) : null };
+  }
+  const pathFor = (cidRaw) => {
+    const idStr = cidRaw == null ? '' : String(cidRaw);
+    if (!idStr || !catById[idStr]) return [];
+    const path = [];
+    let cur = catById[idStr];
+    let guard = 0;
+    while (cur && guard++ < 32) {
+      path.unshift(cur.name);
+      cur = cur.parentId ? catById[cur.parentId] : null;
+    }
+    return path;
+  };
+  return productDocs.map((p) => {
+    const raw = p.categoryId;
+    const cid =
+      raw == null || raw === ''
+        ? null
+        : getId(raw) || getId({ _id: raw });
+    const cidStr = cid ? String(cid) : '';
+    const categoryPath = pathFor(cidStr);
+    return {
+      ...p,
+      categoryPath,
+      categoryName: categoryPath.length ? categoryPath.join(' > ') : '',
+    };
+  });
+}
+
 // ================= HELPER: ESCAPE REGEXP & NORMALIZE (FROM STABLE OLD PROJECT) =================
 function escapeRegExp(string) {
   if (!string) return '';
@@ -370,6 +416,7 @@ app.get('/api/categories', async (req, res) => {
       name: c.name,
       slug: c.slug || '',
       parentId: c.parentId ? getId(c.parentId) : null,
+      icon: typeof c.icon === 'string' ? c.icon : '',
     }));
     res.json(items);
   } catch (err) {
@@ -8387,7 +8434,19 @@ app.get('/api/admin/admins', async (req, res) => {
 // Products with Advanced Filtering
 app.get('/api/admin/products', async (req, res) => {
   try {
-    const { page = 1, limit = 20, search, categoryId, categoryIds, minPrice, maxPrice, units, stockStatus } = req.query;
+    const {
+      page = 1,
+      limit = 20,
+      search,
+      categoryId,
+      categoryIds,
+      minPrice,
+      maxPrice,
+      units,
+      stockStatus,
+      expiryStatus,
+      needConsultation,
+    } = req.query;
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;
@@ -8455,6 +8514,76 @@ app.get('/api/admin/products', async (req, res) => {
       if (stockQueries.length > 0) andFilters.push({ $or: stockQueries });
     }
 
+    if (expiryStatus) {
+      const expiryArr = Array.isArray(expiryStatus) ? expiryStatus : String(expiryStatus).split(',');
+      const flags = expiryArr.map((s) => String(s).trim()).filter(Boolean);
+      /** Mốc “đầu ngày hôm nay” để so HSD: mặc định theo lịch Asia/Ho_Chi_Minh (UTC+7). TZ khác → nửa đêm theo máy chủ. */
+      const hsdTz = process.env.ADMIN_PRODUCT_HSD_TZ || 'Asia/Ho_Chi_Minh';
+      const MS_DAY = 86400000;
+      let startOfToday;
+      if (hsdTz === 'Asia/Ho_Chi_Minh') {
+        const ymd = new Date().toLocaleDateString('sv-SE', { timeZone: hsdTz });
+        const [y, mo, da] = ymd.split('-').map((n) => parseInt(n, 10));
+        const VN_OFFSET_MS = 7 * 60 * 60 * 1000;
+        startOfToday = new Date(Date.UTC(y, mo - 1, da, 0, 0, 0, 0) - VN_OFFSET_MS);
+      } else {
+        startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+      }
+      const endSoonWindow = new Date(startOfToday.getTime() + 11 * MS_DAY - 1);
+
+      const effectiveExpiry = {
+        $convert: {
+          input: { $ifNull: ['$expiryDate', '$expiredDate'] },
+          to: 'date',
+          onError: null,
+          onNull: null,
+        },
+      };
+
+      const orBranches = [];
+      for (const flag of flags) {
+        if (flag === 'expired') {
+          orBranches.push({
+            $expr: {
+              $and: [{ $ne: [effectiveExpiry, null] }, { $lt: [effectiveExpiry, { $literal: startOfToday }] }],
+            },
+          });
+        }
+        if (flag === 'expiring_soon') {
+          orBranches.push({
+            $expr: {
+              $and: [
+                { $ne: [effectiveExpiry, null] },
+                { $gte: [effectiveExpiry, { $literal: startOfToday }] },
+                { $lte: [effectiveExpiry, { $literal: endSoonWindow }] },
+              ],
+            },
+          });
+        }
+        if (flag === 'valid_long') {
+          orBranches.push({
+            $expr: {
+              $and: [{ $ne: [effectiveExpiry, null] }, { $gte: [effectiveExpiry, { $literal: startOfToday }] }],
+            },
+          });
+        }
+      }
+      if (orBranches.length > 0) {
+        andFilters.push({ $or: orBranches });
+      }
+    }
+
+    const needConsult = ['true', '1', 'yes'].includes(String(needConsultation || '').toLowerCase());
+    if (needConsult) {
+      andFilters.push({
+        $or: [
+          { prescriptionRequired: { $regex: 'có', $options: 'i' } },
+          { prescription: true },
+        ],
+      });
+    }
+
     if (andFilters.length > 0) {
       query.$and = andFilters;
     }
@@ -8479,11 +8608,13 @@ app.get('/api/admin/products', async (req, res) => {
       sortObj.createDate = -1;
     }
 
-    const data = await ProductModel.find(query)
+    let data = await ProductModel.find(query)
       .sort(sortObj)
       .skip(skip)
       .limit(limitNum)
       .lean();
+
+    data = await enrichAdminProductsCategoryPaths(data);
 
     res.json({
       success: true,
@@ -8522,6 +8653,114 @@ app.put('/api/admin/products/:id', async (req, res) => {
     if (!data) return res.status(404).json({ success: false, message: 'Not found' });
     res.json({ success: true, data });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+/** Gán cùng một danh mục (categoryId) cho nhiều sản phẩm — dùng popup "Nhóm sản phẩm" admin. */
+app.patch('/api/admin/products/bulk-category', async (req, res) => {
+  try {
+    const { productIds, categoryId } = req.body || {};
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      return res.status(400).json({ success: false, message: 'Cần mảng productIds' });
+    }
+    const catStr = String(categoryId || '').trim();
+    if (!catStr) {
+      return res.status(400).json({ success: false, message: 'Thiếu categoryId' });
+    }
+
+    const catQuery = [{ _id: catStr }];
+    if (mongoose.Types.ObjectId.isValid(catStr)) {
+      catQuery.push({ _id: new mongoose.Types.ObjectId(catStr) });
+    }
+    const cat = await CategoryModel.findOne({ $or: catQuery }).lean();
+    if (!cat) {
+      return res.status(400).json({ success: false, message: 'Danh mục không tồn tại' });
+    }
+
+    const idOr = [];
+    for (const raw of productIds) {
+      const id = String(raw || '').trim();
+      if (!id) continue;
+      idOr.push({ _id: id });
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        idOr.push({ _id: new mongoose.Types.ObjectId(id) });
+      }
+    }
+    if (!idOr.length) {
+      return res.status(400).json({ success: false, message: 'Không có productId hợp lệ' });
+    }
+
+    const catIdSet = mongoose.Types.ObjectId.isValid(catStr)
+      ? new mongoose.Types.ObjectId(catStr)
+      : catStr;
+
+    const result = await ProductModel.updateMany({ $or: idOr }, { $set: { categoryId: catIdSet } });
+    res.json({ success: true, modifiedCount: result.modifiedCount, matchedCount: result.matchedCount });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/** Gán sản phẩm vào nhóm khuyến mãi (product_groups.productIds + product.groupId) — dùng popup "Nhóm sản phẩm" admin. */
+app.patch('/api/admin/products/bulk-group', async (req, res) => {
+  try {
+    const { productIds, groupId } = req.body || {};
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      return res.status(400).json({ success: false, message: 'Cần mảng productIds' });
+    }
+    const gidRaw = String(groupId || '').trim();
+    if (!gidRaw) {
+      return res.status(400).json({ success: false, message: 'Thiếu groupId' });
+    }
+
+    const groupQuery = [{ _id: gidRaw }];
+    if (mongoose.Types.ObjectId.isValid(gidRaw)) {
+      groupQuery.push({ _id: new mongoose.Types.ObjectId(gidRaw) });
+    }
+    const groupDoc = await ProductGroup.findOne({ $or: groupQuery }).lean();
+    if (!groupDoc) {
+      return res.status(400).json({ success: false, message: 'Nhóm sản phẩm không tồn tại' });
+    }
+
+    const normalizedProductIds = [];
+    for (const raw of productIds) {
+      const id = String(raw || '').trim();
+      if (id) normalizedProductIds.push(id);
+    }
+    if (!normalizedProductIds.length) {
+      return res.status(400).json({ success: false, message: 'Không có productId hợp lệ' });
+    }
+
+    const groupOid = mongoose.Types.ObjectId.isValid(gidRaw)
+      ? new mongoose.Types.ObjectId(gidRaw)
+      : gidRaw;
+
+    const idOr = [];
+    for (const id of normalizedProductIds) {
+      idOr.push({ _id: id });
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        idOr.push({ _id: new mongoose.Types.ObjectId(id) });
+      }
+    }
+    if (!idOr.length) {
+      return res.status(400).json({ success: false, message: 'Không có productId hợp lệ' });
+    }
+
+    await ProductGroup.updateMany({}, { $pull: { productIds: { $in: normalizedProductIds } } });
+    await ProductGroup.findOneAndUpdate(
+      { $or: groupQuery },
+      { $addToSet: { productIds: { $each: normalizedProductIds } } }
+    );
+    const pResult = await ProductModel.updateMany({ $or: idOr }, { $set: { groupId: groupOid } });
+
+    res.json({
+      success: true,
+      groupId: String(groupOid),
+      modifiedCount: pResult.modifiedCount,
+      matchedCount: pResult.matchedCount
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.delete('/api/admin/products/:id', async (req, res) => {
@@ -9844,7 +10083,14 @@ app.delete('/api/admin/product_groups/:id', async (req, res) => {
     if (mongoose.Types.ObjectId.isValid(id)) {
       query.push({ _id: new mongoose.Types.ObjectId(id) });
     }
-    await ProductGroup.findOneAndDelete({ $or: query });
+    const removed = await ProductGroup.findOneAndDelete({ $or: query });
+    if (!removed) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy nhóm' });
+    }
+    const groupIdUnset = mongoose.Types.ObjectId.isValid(id)
+      ? [id, new mongoose.Types.ObjectId(id)]
+      : [id];
+    await ProductModel.updateMany({ groupId: { $in: groupIdUnset } }, { $unset: { groupId: 1 } });
     res.json({ success: true });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });

@@ -146,6 +146,19 @@ export class Customermanage implements OnInit {
     return !!this.advancedFilters[type][value];
   }
 
+  private static readonly tierSlugByLabel: Record<string, string> = {
+    'Đồng': 'tier-dong',
+    'Bạc': 'tier-bac',
+    'Vàng': 'tier-vang',
+    'Kim cương': 'tier-kimcuong',
+    'Thành viên': 'tier-thanhvien'
+  };
+
+  tierPillClass(tiering: string | undefined): string {
+    const key = String(tiering ?? '').trim();
+    return Customermanage.tierSlugByLabel[key] ?? 'tier-default';
+  }
+
   get activeFilterCount(): number {
     let count = 0;
     Object.keys(this.advancedFilters).forEach(type => {

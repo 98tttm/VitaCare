@@ -1,8 +1,10 @@
-import { Component, OnInit, Inject, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ProductService } from '../services/product.service';
 import { FormsModule } from '@angular/forms';
+import { QuillEditorComponent } from 'ngx-quill';
 import { ActivatedRoute } from '@angular/router';
+import { getProductCategoryIconSrc } from './productmanage-icon';
 
 /** Khóa sắp xếp trong UI (map sang field Mongo khi gọi API) */
 type SortKind = 'updated' | 'price' | 'name' | 'stock' | 'sold';
@@ -14,6 +16,8 @@ interface Product {
   unit: string;
   price: number;
   stock: number;
+  /** Lượt bán — dùng sắp xếp Bán chạy */
+  sold?: number;
   category: string;
   categoryId?: string;
   categoryName?: string;
@@ -29,16 +33,21 @@ interface Product {
 @Component({
   selector: 'app-productmanage',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, QuillEditorComponent],
   providers: [ProductService],
   templateUrl: './productmanage.html',
   styleUrl: './productmanage.css',
 })
-export class Productmanage implements OnInit {
+export class Productmanage implements OnInit, OnDestroy {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   searchTerm: string = '';
   isLoading: boolean = false;
+  /** Chỉ dùng khi bấm Lưu trong modal — tránh dùng chung isLoading (ẩn cả trang, dễ lệch trạng thái popup). */
+  isSavingProduct: boolean = false;
+
+  /** Chiều cao tối thiểu vùng soạn thảo (Quill) trong modal */
+  readonly quillEditorStyles = { minHeight: '130px', fontSize: '14px' };
 
   // Pagination
   currentPage: number = 1;
@@ -52,34 +61,73 @@ export class Productmanage implements OnInit {
   isProductModalOpen: boolean = false;
   isEditMode: boolean = false;
   currentProductId: string | null = null;
+  /** Mở từ bảng/thẻ (xem chi tiết): form khóa; toolbar "Chỉnh sửa" → mở khóa ngay */
+  isDetailViewLocked: boolean = false;
+  private detailFormSnapshot: {
+    newProduct: any;
+    modalL1Id: string;
+    modalL2Id: string;
+    modalL3Id: string;
+  } | null = null;
+
+  /** Form chi tiết đang ở chế độ chỉ xem (chưa bấm Chỉnh sửa thông tin) */
+  get productModalFieldsLocked(): boolean {
+    return this.isEditMode && this.isDetailViewLocked;
+  }
 
   // Delete Modal State
   isConfirmModalOpen: boolean = false;
 
   // Advanced Filter
   isFilterOpen: boolean = false;
+  private filterDropdownLeaveTimer: ReturnType<typeof setTimeout> | null = null;
   advancedFilters: any = {
     categoryL1: {} as { [key: string]: boolean },
     categoryL2: {} as { [key: string]: boolean },
     categoryL3: {} as { [key: string]: boolean },
     unit: { 'Hộp': false, 'Vỉ': false, 'Viên': false, 'Chai': false, 'Tuýp': false, 'Gói': false, 'Lọ': false },
     price_range: { min: null as number | null, max: null as number | null },
-    stock: { out_of_stock: false, low_stock: false, in_stock: false }
+    stock: { out_of_stock: false, low_stock: false, in_stock: false },
+    /** HSD: còn hạn (>10 ngày), sắp hết hạn (trong 10 ngày tới), quá hạn */
+    expiry: { valid_long: false, expiring_soon: false, expired: false },
   };
 
   isSortDropdownOpen: boolean = false;
+  isPriceToolbarOpen: boolean = false;
   /** Mặc định: cập nhật gần đây nhất (updatedAt desc) */
   sortKind: SortKind = 'updated';
   sortDirection: 'desc' | 'asc' = 'desc';
 
-  // Group State
+  /** Lọc SP cần tư vấn (kê đơn / prescription) — gửi needConsultation lên API */
+  filterNeedConsultation: boolean = false;
+
+  /** list = thẻ chi tiết 2 cột (product-feed); table = bảng HTML như đơn hàng */
+  viewMode: 'list' | 'table' = 'table';
+
+  get isToolbarSoldActive(): boolean {
+    return !this.filterNeedConsultation && this.sortKind === 'sold' && this.sortDirection === 'desc';
+  }
+
+  get isToolbarConsultActive(): boolean {
+    return this.filterNeedConsultation;
+  }
+
+  get isToolbarPriceActive(): boolean {
+    return !this.filterNeedConsultation && this.sortKind === 'price';
+  }
+
+  // Nhóm / phân loại: nhóm KM (product_groups) + gán categoryId (L1 → L2 → L3)
   isGroupModalOpen = false;
-  groupName = '';
-  existingGroups: any[] = [
-    { id: 1, name: 'Nhóm Vitamin Tổng Hợp', count: 12, date: '2024-01-20' },
-    { id: 2, name: 'Sản phẩm bán chạy T2', count: 8, date: '2024-02-15' },
-    { id: 3, name: 'Danh mục xả kho 2024', count: 25, date: '2024-03-01' }
-  ];
+  groupModalL1Id = '';
+  groupModalL2Id = '';
+  groupModalL3Id = '';
+  isGroupModalApplying = false;
+  productGroups: any[] = [];
+  groupModalNewName = '';
+  groupModalSelectedGroupId = '';
+  isCreatingProductGroup = false;
+  /** Đang gọi API xóa nhóm (khóa nút X theo dòng). */
+  deletingGroupId = '';
 
   // Selection
   selectAll: boolean = false;
@@ -142,18 +190,73 @@ export class Productmanage implements OnInit {
   expandedL2Ids: Set<string> = new Set();
   private pendingOpenProductId: string | null = null;
 
+  /**
+   * Lọc danh mục qua thanh ngang + mega-menu (cùng API /api/categories với storefront).
+   * Một id bất kỳ (L1/L2/L3): backend mở rộng toàn bộ nhánh con khi gọi GET /api/admin/products.
+   */
+  categoryNavId: string | null = null;
+  categoryMegaL1Id: string | null = null;
+  categoryMegaHoveredL2Id: string | null = null;
+  private categoryMegaCloseTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Thứ tự L2 cho nhánh TPCN — khớp HeaderComponent (my-user). */
+  private readonly orderedL2Names = [
+    'Vitamin & Khoáng chất',
+    'Sinh lý - Nội tiết tố',
+    'Tăng cường chức năng',
+    'Hỗ trợ điều trị',
+    'Hỗ trợ tiêu hóa',
+    'Thần kinh não',
+    'Hỗ trợ làm đẹp',
+    'Sức khoẻ tim mạch',
+    'Dinh dưỡng',
+  ];
+
   constructor(
     @Inject(ProductService) private productService: ProductService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) { }
 
+  /** Đóng panel Lọc khi chạm/click ra ngoài (class riêng — tránh nhầm với dropdown-container khác). */
+  private closeFilterIfPointerOutside(target: EventTarget | null): void {
+    let el: HTMLElement | null = null;
+    if (target instanceof HTMLElement) el = target;
+    else if (target instanceof Node && target.parentElement) el = target.parentElement;
+    if (!el) {
+      this.cancelFilterDropdownLeaveTimer();
+      this.isFilterOpen = false;
+      this.cdr.markForCheck();
+      return;
+    }
+    if (!el.closest('.pm-filter-dropdown-wrap')) {
+      this.cancelFilterDropdownLeaveTimer();
+      this.isFilterOpen = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  @HostListener('document:pointerdown', ['$event'])
+  onDocumentPointerDown(event: PointerEvent): void {
+    if (this.isFilterOpen) {
+      this.closeFilterIfPointerOutside(event.target);
+    }
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-container') && !target.closest('.dropdown-popup')) {
-      this.isFilterOpen = false;
+    this.closeFilterIfPointerOutside(target);
+    if (
+      !target.closest('.dropdown-container') &&
+      !target.closest('.dropdown-popup') &&
+      !target.closest('.pm-price-dropdown-wrap')
+    ) {
       this.isSortDropdownOpen = false;
+      this.isPriceToolbarOpen = false;
+    }
+    if (!target.closest('.pm-cat-nav-scope')) {
+      this.closeMegaNow();
     }
   }
 
@@ -180,15 +283,35 @@ export class Productmanage implements OnInit {
       }
       this.loadProducts(1);
     });
-    this.fetchGroups();
   }
 
-  fetchGroups() {
-    this.productService.getGroups().subscribe({
-      next: (res) => {
-        if (res.success) this.existingGroups = res.data;
-      }
-    });
+  ngOnDestroy(): void {
+    this.cancelCloseMega();
+    this.cancelFilterDropdownLeaveTimer();
+  }
+
+  private cancelFilterDropdownLeaveTimer(): void {
+    if (this.filterDropdownLeaveTimer !== null) {
+      clearTimeout(this.filterDropdownLeaveTimer);
+      this.filterDropdownLeaveTimer = null;
+    }
+  }
+
+  /** Mở panel lọc khi hover (và hủy hẹn giờ đóng nếu đang chạy) */
+  onFilterDropdownMouseEnter(): void {
+    this.cancelFilterDropdownLeaveTimer();
+    this.isFilterOpen = true;
+    this.isSortDropdownOpen = false;
+  }
+
+  /** Đóng khi rời khỏi nút + vùng menu (delay ngắn để kịp di vào submenu bên trái) */
+  onFilterDropdownMouseLeave(): void {
+    this.cancelFilterDropdownLeaveTimer();
+    this.filterDropdownLeaveTimer = globalThis.setTimeout(() => {
+      this.isFilterOpen = false;
+      this.filterDropdownLeaveTimer = null;
+      this.cdr.markForCheck();
+    }, 120);
   }
 
   fetchCategories() {
@@ -236,6 +359,13 @@ export class Productmanage implements OnInit {
   private refreshProductCategoryPaths(): void {
     if (!this.products?.length) return;
     this.products = this.products.map((p) => {
+      const existing = (p as any).categoryPath;
+      if (Array.isArray(existing) && existing.length > 0) {
+        return {
+          ...p,
+          categoryName: existing.join(' > '),
+        };
+      }
       let catId = (p as any).categoryId;
       if (catId && typeof catId === 'object' && (catId as any).$oid) catId = (catId as any).$oid;
       else if (catId && typeof catId === 'object' && (catId as any)._id) catId = (catId as any)._id;
@@ -263,6 +393,200 @@ export class Productmanage implements OnInit {
     return this.allCategories.filter(c => c.parentId === parentId);
   }
 
+  /** L3 con của L2 — sắp tên cho dễ chọn trong modal nhóm. */
+  getSortedL3ForL2(l2Id: string): any[] {
+    if (!l2Id) return [];
+    return [...this.getSubCategories(l2Id)].sort((a, b) =>
+      String(a.name || '').localeCompare(String(b.name || ''), 'vi')
+    );
+  }
+
+  private resetGroupModalCategoryIds(): void {
+    this.groupModalL1Id = '';
+    this.groupModalL2Id = '';
+    this.groupModalL3Id = '';
+  }
+
+  private resetGroupModalForm(): void {
+    this.resetGroupModalCategoryIds();
+    this.groupModalNewName = '';
+    this.groupModalSelectedGroupId = '';
+  }
+
+  private loadProductGroupsForModal(): void {
+    this.productService.getGroups().subscribe({
+      next: (res: any) => {
+        this.productGroups = res?.success ? res.data || [] : [];
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.productGroups = [];
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  groupRowId(g: any): string {
+    return String(g?._id ?? g?.id ?? '').trim();
+  }
+
+  groupRowName(g: any): string {
+    const n = String(g?.name ?? '').trim();
+    return n || 'Không tên';
+  }
+
+  groupProductCount(g: any): number {
+    const raw = g?.productIds ?? g?.products ?? g?.product_ids ?? g?.items;
+    return Array.isArray(raw) ? raw.length : 0;
+  }
+
+  groupModalCanSubmit(): boolean {
+    const hasCat = !!this.resolvedGroupCategoryId();
+    const hasSel = !!String(this.groupModalSelectedGroupId || '').trim();
+    const hasNew = !!String(this.groupModalNewName || '').trim();
+    return hasCat || hasSel || hasNew;
+  }
+
+  onGroupModalL1Change(): void {
+    this.groupModalL2Id = '';
+    this.groupModalL3Id = '';
+  }
+
+  onGroupModalL2Change(): void {
+    this.groupModalL3Id = '';
+  }
+
+  /** Danh mục đích: ưu tiên cấp sâu nhất đang chọn. */
+  resolvedGroupCategoryId(): string | null {
+    const l3 = String(this.groupModalL3Id || '').trim();
+    if (l3) return l3;
+    const l2 = String(this.groupModalL2Id || '').trim();
+    if (l2) return l2;
+    const l1 = String(this.groupModalL1Id || '').trim();
+    return l1 || null;
+  }
+
+  /** L2 con của L1; TPCN sắp xếp giống trang user. */
+  getSortedL2ForL1(l1Id: string | null): any[] {
+    if (!l1Id) return [];
+    const l2 = this.getSubCategories(l1Id);
+    const l1 = this.categoryMap[l1Id];
+    if (l1?.name === 'Thực phẩm chức năng') {
+      return [...l2].sort((a, b) => {
+        const idxA = this.orderedL2Names.indexOf(a.name);
+        const idxB = this.orderedL2Names.indexOf(b.name);
+        return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+      });
+    }
+    return l2;
+  }
+
+  /**
+   * Ảnh mega-menu: ưu tiên map local `productmanage-icon.ts` (đúng theo nhánh L1),
+   * vì nhiều bản ghi API dùng chung URL placeholder (icon răng). Chỉ dùng `icon` API khi không có map.
+   */
+  categoryNavIconForCategory(cat: { name?: string; icon?: string } | null | undefined): string | null {
+    if (!cat) return null;
+    const l1Name = this.categoryMegaL1Id
+      ? this.categoryMap[this.categoryMegaL1Id]?.name
+      : undefined;
+    const mapped = getProductCategoryIconSrc(l1Name, cat.name);
+    if (mapped) return mapped;
+
+    const raw = cat.icon;
+    if (typeof raw === 'string') {
+      const t = raw.trim();
+      if (t) return t;
+    }
+    return null;
+  }
+
+  /** nodeId có nằm trong nhánh gốc ancestorId (hoặc chính ancestorId) không. */
+  isUnderCategory(ancestorId: string, nodeId: string | null): boolean {
+    if (!ancestorId || !nodeId) return false;
+    let cur: any = this.categoryMap[nodeId];
+    while (cur) {
+      if (String(cur._id) === String(ancestorId)) return true;
+      cur = cur.parentId ? this.categoryMap[String(cur.parentId)] : null;
+    }
+    return false;
+  }
+
+  isL1PillActive(l1Id: string): boolean {
+    if (this.categoryMegaL1Id === l1Id) return true;
+    if (this.categoryNavId && this.isUnderCategory(l1Id, this.categoryNavId)) return true;
+    return false;
+  }
+
+  onCategoryNavMouseEnter(): void {
+    this.cancelCloseMega();
+  }
+
+  onCategoryNavMouseLeave(): void {
+    this.scheduleCloseMega();
+  }
+
+  private scheduleCloseMega(): void {
+    this.cancelCloseMega();
+    this.categoryMegaCloseTimer = setTimeout(() => {
+      this.categoryMegaL1Id = null;
+      this.categoryMegaHoveredL2Id = null;
+      this.categoryMegaCloseTimer = null;
+      this.cdr.markForCheck();
+    }, 240);
+  }
+
+  private cancelCloseMega(): void {
+    if (this.categoryMegaCloseTimer) {
+      clearTimeout(this.categoryMegaCloseTimer);
+      this.categoryMegaCloseTimer = null;
+    }
+  }
+
+  private closeMegaNow(): void {
+    this.cancelCloseMega();
+    this.categoryMegaL1Id = null;
+    this.categoryMegaHoveredL2Id = null;
+  }
+
+  openMegaForL1(l1Id: string): void {
+    this.cancelCloseMega();
+    this.categoryMegaL1Id = l1Id;
+    const l2 = this.getSortedL2ForL1(l1Id);
+    this.categoryMegaHoveredL2Id = l2.length ? l2[0]._id : null;
+    this.cdr.markForCheck();
+  }
+
+  onL1PillClick(l1: { _id: string }, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.categoryMegaL1Id === l1._id) {
+      this.closeMegaNow();
+    } else {
+      this.openMegaForL1(l1._id);
+    }
+  }
+
+  selectCategoryFromNav(id: string): void {
+    this.categoryNavId = id;
+    this.advancedFilters.categoryL1 = {};
+    this.advancedFilters.categoryL2 = {};
+    this.advancedFilters.categoryL3 = {};
+    this.closeMegaNow();
+    this.loadProducts(1);
+  }
+
+  clearCategoryNav(): void {
+    this.categoryNavId = null;
+    this.closeMegaNow();
+    this.loadProducts(1);
+  }
+
+  get categoryNavPath(): string[] {
+    if (!this.categoryNavId || !this.categoryMap[this.categoryNavId]) return [];
+    return this.getCategoryPathSteps(this.categoryNavId);
+  }
+
   loadProducts(page: number = 1) {
     this.isLoading = true;
     this.currentPage = page;
@@ -276,8 +600,10 @@ export class Productmanage implements OnInit {
       maxPrice: this.advancedFilters.price_range.max,
       units: Object.keys(this.advancedFilters.unit).filter(k => this.advancedFilters.unit[k]),
       stockStatus: Object.keys(this.advancedFilters.stock).filter(k => this.advancedFilters.stock[k]),
+      expiryStatus: Object.keys(this.advancedFilters.expiry).filter(k => this.advancedFilters.expiry[k]),
       sortColumn: this.apiSortColumn(),
-      sortDirection: this.sortDirection
+      sortDirection: this.sortDirection,
+      needConsultation: this.filterNeedConsultation,
     };
 
     this.productService.getProducts(this.currentPage, this.ITEMS_PER_PAGE, filterParams).subscribe({
@@ -302,14 +628,19 @@ export class Productmanage implements OnInit {
             if (catId && typeof catId === 'object' && catId.$oid) catId = catId.$oid;
             else if (catId && typeof catId === 'object' && catId._id) catId = catId._id;
 
-            const pathSteps = this.getCategoryPathSteps(String(catId || ''));
+            const fromApi = item.categoryPath;
+            const pathSteps =
+              Array.isArray(fromApi) && fromApi.length > 0
+                ? [...fromApi]
+                : this.getCategoryPathSteps(String(catId || ''));
             return {
               ...item,
               image: item.image || (item.gallery && item.gallery.length > 0 ? item.gallery[0] : ''),
               categoryPath: pathSteps,
-              categoryName: pathSteps.join(' > ') || 'Chưa phân loại',
+              categoryName: pathSteps.length ? pathSteps.join(' > ') : 'Chưa phân loại',
               importDate: parseMongoDate(item.created_at) || parseMongoDate(item.createDate) || new Date(),
               expiryDate: parseMongoDate(item.expiryDate) || parseMongoDate(item.expiredDate) || null,
+              sold: Number(item?.sold ?? 0),
               selected: this.selectedIds.has(safeId),
               _id: safeId
             };
@@ -334,6 +665,7 @@ export class Productmanage implements OnInit {
   }
 
   getSelectedCategoryId(): string {
+    if (this.categoryNavId) return this.categoryNavId;
     // Keep hierarchy by only sending the deepest selected category in each branch.
     const selectedL1 = Object.keys(this.advancedFilters.categoryL1).filter(k => this.advancedFilters.categoryL1[k]);
     const selectedL2 = Object.keys(this.advancedFilters.categoryL2).filter(k => this.advancedFilters.categoryL2[k]);
@@ -444,9 +776,68 @@ export class Productmanage implements OnInit {
    */
   setSortDirection(kind: SortKind, direction: 'asc' | 'desc', event?: Event): void {
     event?.stopPropagation();
+    this.filterNeedConsultation = false;
     this.sortKind = kind;
     this.sortDirection = direction;
     this.loadProducts(1);
+  }
+
+  applyToolbarSortSold(event?: Event): void {
+    event?.stopPropagation();
+    this.filterNeedConsultation = false;
+    this.isPriceToolbarOpen = false;
+    this.sortKind = 'sold';
+    this.sortDirection = 'desc';
+    this.loadProducts(1);
+  }
+
+  applyToolbarSortConsult(event?: Event): void {
+    event?.stopPropagation();
+    this.isPriceToolbarOpen = false;
+    this.filterNeedConsultation = true;
+    this.sortKind = 'updated';
+    this.sortDirection = 'desc';
+    this.loadProducts(1);
+  }
+
+  togglePriceToolbarDropdown(event: Event): void {
+    event.stopPropagation();
+    this.isPriceToolbarOpen = !this.isPriceToolbarOpen;
+    this.isFilterOpen = false;
+    this.isSortDropdownOpen = false;
+  }
+
+  applyToolbarPriceSort(direction: 'asc' | 'desc', event?: Event): void {
+    event?.stopPropagation();
+    this.filterNeedConsultation = false;
+    this.isPriceToolbarOpen = false;
+    this.sortKind = 'price';
+    this.sortDirection = direction;
+    this.loadProducts(1);
+  }
+
+  setViewMode(mode: 'list' | 'table', event?: Event): void {
+    event?.stopPropagation();
+    this.viewMode = mode;
+  }
+
+  /** Badge tồn kho (màu giống cột trạng thái đơn hàng) */
+  productStockBadgeClass(p: Product): string {
+    if (p.stock === 0) return 'status-red';
+    if (p.stock > 0 && p.stock < 10) return 'status-yellow';
+    return 'status-green';
+  }
+
+  productStockBadgeLabel(p: Product): string {
+    if (p.stock === 0) return 'Hết hàng';
+    if (p.stock > 0 && p.stock < 10) return 'Sắp hết';
+    return 'Còn hàng';
+  }
+
+  /** Cùng ngưỡng bộ lọc Tồn kho (low_stock): 0 < stock < 10 */
+  isLowStockProduct(p: Pick<Product, 'stock'>): boolean {
+    const n = Number(p?.stock);
+    return n > 0 && n < 10;
   }
 
   sortResults() { } // Handled by server or can be added as query param later
@@ -454,6 +845,7 @@ export class Productmanage implements OnInit {
   // --- Filter Actions ---
   toggleFilterDropdown(event: Event) {
     event.stopPropagation();
+    this.cancelFilterDropdownLeaveTimer();
     this.isFilterOpen = !this.isFilterOpen;
     this.isSortDropdownOpen = false;
   }
@@ -485,10 +877,30 @@ export class Productmanage implements OnInit {
     return !!this.advancedFilters[type][value];
   }
 
+  /** Mục menu Lọc đang có tiêu chí bật — highlight + hover xanh đậm hơn. */
+  isFilterSectionActive(section: 'unit' | 'price' | 'stock' | 'expiry'): boolean {
+    switch (section) {
+      case 'unit':
+        return Object.values(this.advancedFilters.unit).some((v) => !!v);
+      case 'price':
+        return (
+          this.advancedFilters.price_range.min !== null ||
+          this.advancedFilters.price_range.max !== null
+        );
+      case 'stock':
+        return Object.values(this.advancedFilters.stock).some((v) => !!v);
+      case 'expiry':
+        return Object.values(this.advancedFilters.expiry).some((v) => !!v);
+      default:
+        return false;
+    }
+  }
+
   get activeFilterCount(): number {
     let count = 0;
     // Check categories (count as 1 if any category is selected)
     const hasCategory =
+      !!this.categoryNavId ||
       Object.values(this.advancedFilters.categoryL1).some(v => v) ||
       Object.values(this.advancedFilters.categoryL2).some(v => v) ||
       Object.values(this.advancedFilters.categoryL3).some(v => v);
@@ -498,18 +910,23 @@ export class Productmanage implements OnInit {
     if (this.advancedFilters.price_range.min !== null || this.advancedFilters.price_range.max !== null) count++;
     Object.values(this.advancedFilters.unit).forEach(v => { if (v) count++; });
     Object.values(this.advancedFilters.stock).forEach(v => { if (v) count++; });
+    Object.values(this.advancedFilters.expiry).forEach(v => { if (v) count++; });
 
     return count;
   }
 
   clearAllFilters() {
+    this.filterNeedConsultation = false;
+    this.categoryNavId = null;
+    this.closeMegaNow();
     this.advancedFilters = {
       categoryL1: {},
       categoryL2: {},
       categoryL3: {},
       unit: { 'Hộp': false, 'Vỉ': false, 'Viên': false, 'Chai': false, 'Tuýp': false, 'Gói': false, 'Lọ': false },
       price_range: { min: null, max: null },
-      stock: { out_of_stock: false, low_stock: false, in_stock: false }
+      stock: { out_of_stock: false, low_stock: false, in_stock: false },
+      expiry: { valid_long: false, expiring_soon: false, expired: false },
     };
     this.loadProducts(1);
   }
@@ -541,57 +958,182 @@ export class Productmanage implements OnInit {
 
   onGroupClick() {
     if (this.selectedIds.size < 2) {
-      this.showNotification('Vui lòng chọn ít nhất 2 sản phẩm để tạo nhóm', 'warning');
+      this.showNotification('Vui lòng chọn ít nhất 2 sản phẩm để phân loại nhóm', 'warning');
       return;
     }
-    this.groupName = '';
+    this.resetGroupModalForm();
+    this.loadProductGroupsForModal();
     this.isGroupModalOpen = true;
   }
 
-  confirmGroup() {
-    if (!this.groupName.trim()) {
-      this.showNotification('Vui lòng nhập tên nhóm', 'warning');
+  onDeleteProductGroupClick(g: any, ev: MouseEvent): void {
+    ev.preventDefault();
+    ev.stopPropagation();
+    const id = this.groupRowId(g);
+    if (!id || this.isGroupModalApplying) return;
+    const name = this.groupRowName(g);
+    if (
+      !confirm(
+        `Xóa nhóm "${name}"?\nSản phẩm đang gắn nhóm này sẽ được gỡ khỏi nhóm (không xóa sản phẩm).`,
+      )
+    ) {
       return;
     }
-
-    const newGroup = {
-      group_id: 'PG-' + Date.now().toString().slice(-6),
-      name: this.groupName,
-      productIds: Array.from(this.selectedIds),
-      count: this.selectedIds.size,
-      date: new Date().toISOString()
-    };
-
-    this.productService.createGroup(newGroup).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.existingGroups.unshift(res.data);
-          this.showNotification(`Đã tạo nhóm "${this.groupName}" với ${this.selectedIds.size} sản phẩm!`, 'success');
-          this.isGroupModalOpen = false;
-          this.groupName = '';
-          this.selectedIds.clear();
-          this.applyFilters();
+    this.deletingGroupId = id;
+    this.productService.deleteGroup(id).subscribe({
+      next: (res: any) => {
+        this.deletingGroupId = '';
+        if (!res?.success) {
+          this.showNotification(res?.message || 'Không xóa được nhóm', 'error');
+          return;
         }
+        if (String(this.groupModalSelectedGroupId || '').trim() === id) {
+          this.groupModalSelectedGroupId = '';
+        }
+        this.loadProductGroupsForModal();
+        this.showNotification('Đã xóa nhóm.', 'success');
+        this.cdr.markForCheck();
       },
-      error: () => this.showNotification('Lỗi khi lưu nhóm', 'error')
+      error: (err) => {
+        this.deletingGroupId = '';
+        this.showNotification(err?.error?.message || 'Lỗi khi xóa nhóm', 'error');
+        this.cdr.markForCheck();
+      },
     });
   }
 
-  deleteGroup(groupId: string) {
-    this.productService.deleteGroup(groupId).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.existingGroups = this.existingGroups.filter(g => g._id !== groupId);
-          this.showNotification('Đã xóa nhóm sản phẩm', 'success');
+  onCreateProductGroupClick(): void {
+    const name = String(this.groupModalNewName || '').trim();
+    if (!name) {
+      this.showNotification('Nhập tên nhóm mới', 'warning');
+      return;
+    }
+    this.isCreatingProductGroup = true;
+    this.productService.createGroup({ name }).subscribe({
+      next: (res: any) => {
+        this.isCreatingProductGroup = false;
+        const gid = res?.data?._id != null ? String(res.data._id) : '';
+        if (!res?.success || !gid) {
+          this.showNotification(res?.message || 'Không tạo được nhóm', 'error');
+          return;
         }
+        this.loadProductGroupsForModal();
+        this.groupModalSelectedGroupId = gid;
+        this.groupModalNewName = '';
+        this.showNotification('Đã tạo nhóm. Bấm Áp dụng để gán các sản phẩm đã chọn vào nhóm.', 'success');
+        this.cdr.markForCheck();
       },
-      error: () => this.showNotification('Lỗi khi xóa nhóm', 'error')
+      error: (err) => {
+        this.isCreatingProductGroup = false;
+        this.showNotification(err?.error?.message || 'Lỗi tạo nhóm', 'error');
+      },
     });
+  }
+
+  confirmGroup() {
+    const categoryId = this.resolvedGroupCategoryId();
+    const productIds = Array.from(this.selectedIds);
+    const selectedGid = String(this.groupModalSelectedGroupId || '').trim();
+    const newName = String(this.groupModalNewName || '').trim();
+    const hasCategory = !!categoryId;
+    const hasGroupPick = !!selectedGid;
+    const hasNewName = !!newName;
+
+    if (!hasCategory && !hasGroupPick && !hasNewName) {
+      this.showNotification(
+        'Chọn nhóm có sẵn, hoặc nhập tên nhóm mới, hoặc chọn danh mục (ít nhất một mục).',
+        'warning',
+      );
+      return;
+    }
+
+    this.isGroupModalApplying = true;
+
+    const finishOk = (msg: string) => {
+      this.isGroupModalApplying = false;
+      this.showNotification(msg, 'success');
+      this.isGroupModalOpen = false;
+      this.resetGroupModalForm();
+      this.unselectAll();
+      this.loadProducts(this.currentPage);
+      this.cdr.markForCheck();
+    };
+
+    const fail = (msg: string) => {
+      this.isGroupModalApplying = false;
+      this.showNotification(msg, 'error');
+      this.cdr.markForCheck();
+    };
+
+    const runCategory = (onDone: () => void) => {
+      if (!hasCategory || !categoryId) {
+        onDone();
+        return;
+      }
+      this.productService.bulkUpdateProductCategory(productIds, categoryId).subscribe({
+        next: (res) => {
+          if (!res.success) {
+            fail(res.message || 'Không cập nhật được phân loại.');
+            return;
+          }
+          onDone();
+        },
+        error: (err) => fail(err?.error?.message || 'Lỗi khi cập nhật phân loại'),
+      });
+    };
+
+    const runBulkGroup = (gid: string, onDone: () => void) => {
+      this.productService.bulkAssignProductGroup(productIds, gid).subscribe({
+        next: (res) => {
+          if (!res.success) {
+            fail(res.message || 'Không gán được nhóm sản phẩm.');
+            return;
+          }
+          onDone();
+        },
+        error: (err) => fail(err?.error?.message || 'Lỗi khi gán nhóm sản phẩm'),
+      });
+    };
+
+    if (hasGroupPick) {
+      runBulkGroup(selectedGid, () =>
+        runCategory(() => {
+          const parts: string[] = [];
+          parts.push('Đã gán nhóm khuyến mãi');
+          if (hasCategory) parts.push('và cập nhật phân loại danh mục');
+          finishOk(`${parts.join(' ')}.`);
+        }),
+      );
+      return;
+    }
+
+    if (hasNewName) {
+      this.productService.createGroup({ name: newName }).subscribe({
+        next: (res: any) => {
+          const gid = res?.data?._id != null ? String(res.data._id) : '';
+          if (!res?.success || !gid) {
+            fail(res?.message || 'Không tạo được nhóm');
+            return;
+          }
+          runBulkGroup(gid, () =>
+            runCategory(() => {
+              const parts: string[] = ['Đã tạo nhóm và gán sản phẩm'];
+              if (hasCategory) parts.push('đồng thời cập nhật phân loại');
+              finishOk(`${parts.join(', ')}.`);
+            }),
+          );
+        },
+        error: (err) => fail(err?.error?.message || 'Lỗi tạo nhóm'),
+      });
+      return;
+    }
+
+    runCategory(() => finishOk('Đã cập nhật phân loại danh mục.'));
   }
 
   closeGroupModal() {
     this.isGroupModalOpen = false;
-    this.groupName = '';
+    this.resetGroupModalForm();
   }
 
   onDeleteClick() {
@@ -657,17 +1199,21 @@ export class Productmanage implements OnInit {
   openAddProductModal() {
     this.isEditMode = false;
     this.currentProductId = null;
+    this.isDetailViewLocked = false;
+    this.detailFormSnapshot = null;
+    this.isSavingProduct = false;
     this.resetForm();
     this.isProductModalOpen = true;
   }
 
-  openEditProductModal() {
-    if (this.selectedIds.size !== 1) {
-      this.showNotification('Vui lòng chọn đúng 1 sản phẩm để chỉnh sửa', 'warning');
-      return;
-    }
+  /**
+   * Luôn gọi API getProductById để lấy bản mới nhất từ server (đồng bộ MongoDB).
+   * @param startLocked true khi mở từ tên SP/thẻ (chỉ xem); false khi mở từ toolbar Chỉnh sửa.
+   */
+  private loadProductModalFromApi(id: string, startLocked: boolean) {
     this.isLoading = true;
-    const id = Array.from(this.selectedIds)[0];
+    this.isSavingProduct = false;
+    this.detailFormSnapshot = null;
 
     this.productService.getProductById(id).subscribe({
       next: (res: any) => {
@@ -684,7 +1230,6 @@ export class Productmanage implements OnInit {
           const catId = res.data.categoryId || '';
           this.newProduct.categoryId = catId;
 
-          // Determine initial Level selections for editing
           this.modalL1Id = '';
           this.modalL2Id = '';
           this.modalL3Id = '';
@@ -706,10 +1251,13 @@ export class Productmanage implements OnInit {
           if (this.newProduct.manufactureDate) this.newProduct.manufactureDate = new Date(this.newProduct.manufactureDate).toISOString().split('T')[0];
           if (this.newProduct.expiryDate) this.newProduct.expiryDate = new Date(this.newProduct.expiryDate).toISOString().split('T')[0];
 
+          this.normalizeRichTextFields(this.newProduct);
+
           this.isEditMode = true;
           this.currentProductId = id;
+          this.isDetailViewLocked = startLocked;
           this.isProductModalOpen = true;
-          this.cdr.markForCheck(); // Force immediate modal render
+          this.cdr.markForCheck();
         }
       },
       error: () => {
@@ -719,20 +1267,58 @@ export class Productmanage implements OnInit {
     });
   }
 
+  /** Plain text / HTML lẫn lộn từ DB → HTML hợp lệ cho Quill */
+  private normalizeRichTextFields(p: any): void {
+    for (const key of ['description', 'usage', 'ingredients', 'warnings'] as const) {
+      p[key] = this.plainTextToQuillHtml(p[key]);
+    }
+  }
+
+  private plainTextToQuillHtml(raw: unknown): string {
+    if (raw == null) return '';
+    const s = String(raw).trim();
+    if (!s) return '';
+    if (/^<\s*[a-z!/]/i.test(s)) return String(raw);
+    const esc = (t: string) =>
+      t
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    const normalized = s.replace(/\r\n/g, '\n');
+    const blocks = normalized.split(/\n\n+/).filter(Boolean);
+    const html = blocks.map((block) => `<p>${esc(block).replace(/\n/g, '<br>')}</p>`).join('');
+    return html || '';
+  }
+
+  openEditProductModal() {
+    if (this.selectedIds.size !== 1) {
+      this.showNotification('Vui lòng chọn đúng 1 sản phẩm để chỉnh sửa', 'warning');
+      return;
+    }
+    const id = String(Array.from(this.selectedIds)[0]);
+    this.loadProductModalFromApi(id, false);
+  }
+
   closeProductModal() {
     this.isProductModalOpen = false;
+    this.isDetailViewLocked = false;
+    this.detailFormSnapshot = null;
+    this.isSavingProduct = false;
+    this.cdr.markForCheck();
   }
 
   openProductDetail(product: any, event: MouseEvent) {
     // If user clicked inside a checkbox or another button, don't trigger row click
     const target = event.target as HTMLElement;
     if (target.tagName === 'INPUT' || target.closest('button')) return;
+    if (!product?._id) return;
 
     this.selectedIds.clear();
-    this.selectedIds.add(product._id);
+    this.selectedIds.add(String(product._id));
     this.updateSelectionCount();
-    this.products.forEach(p => p.selected = (p._id === product._id));
-    this.openEditProductModal();
+    this.products.forEach(p => p.selected = (String(p._id) === String(product._id)));
+    this.loadProductModalFromApi(String(product._id), true);
   }
 
   private openProductDetailById(id: string) {
@@ -741,41 +1327,87 @@ export class Productmanage implements OnInit {
     this.selectedIds.add(String(id));
     this.updateSelectionCount();
     this.products.forEach(p => p.selected = (String(p._id) === String(id)));
-    this.openEditProductModal();
+    this.loadProductModalFromApi(String(id), true);
+  }
+
+  startDetailEdit() {
+    this.detailFormSnapshot = {
+      newProduct: JSON.parse(JSON.stringify(this.newProduct)),
+      modalL1Id: this.modalL1Id,
+      modalL2Id: this.modalL2Id,
+      modalL3Id: this.modalL3Id,
+    };
+    this.isDetailViewLocked = false;
+    this.cdr.markForCheck();
+  }
+
+  cancelDetailEdit() {
+    if (this.detailFormSnapshot) {
+      const s = this.detailFormSnapshot;
+      this.newProduct = JSON.parse(JSON.stringify(s.newProduct));
+      this.modalL1Id = s.modalL1Id;
+      this.modalL2Id = s.modalL2Id;
+      this.modalL3Id = s.modalL3Id;
+      this.detailFormSnapshot = null;
+    }
+    this.isDetailViewLocked = true;
+    this.cdr.markForCheck();
+  }
+
+  openEditProductFromCard(product: any, event: Event) {
+    event.stopPropagation();
+    if (!product?._id) return;
+    this.openProductDetailById(String(product._id));
+  }
+
+  promptDeleteProduct(product: any, event: Event) {
+    event.stopPropagation();
+    if (!product?._id) return;
+    this.selectedIds.clear();
+    this.selectedIds.add(String(product._id));
+    this.updateSelectionCount();
+    this.isConfirmModalOpen = true;
   }
 
   saveProduct() {
+    if (this.isEditMode && this.isDetailViewLocked) {
+      this.showNotification('Nhấn "Chỉnh sửa thông tin" để có thể lưu thay đổi', 'warning');
+      return;
+    }
     // Validate
     if (!this.newProduct.name || !this.newProduct.sku) {
       this.showNotification('Vui lòng nhập tên và SKU', 'warning');
       return;
     }
 
-    this.isLoading = true;
+    this.isSavingProduct = true;
     if (this.isEditMode && this.currentProductId) {
       this.productService.updateProduct(this.currentProductId, this.newProduct).subscribe({
-        next: (res: any) => {
-          this.isLoading = false;
+        next: () => {
+          this.pendingOpenProductId = null;
+          this.detailFormSnapshot = null;
           this.showNotification('Cập nhật sản phẩm thành công');
           this.closeProductModal();
           this.fetchProducts();
         },
         error: (err) => {
-          this.isLoading = false;
-          this.showNotification('Lỗi cập nhật: ' + err.message, 'error');
+          this.isSavingProduct = false;
+          this.showNotification('Lỗi cập nhật: ' + (err?.error?.message || err?.message || 'Không xác định'), 'error');
+          this.cdr.markForCheck();
         }
       });
     } else {
       this.productService.createProduct(this.newProduct).subscribe({
-        next: (res: any) => {
-          this.isLoading = false;
+        next: () => {
+          this.pendingOpenProductId = null;
           this.showNotification('Thêm sản phẩm thành công');
           this.closeProductModal();
           this.goToPage(1); // Go to page 1 to see the newly added product
         },
         error: (err) => {
-          this.isLoading = false;
-          this.showNotification('Lỗi thêm mới: ' + err.message, 'error');
+          this.isSavingProduct = false;
+          this.showNotification('Lỗi thêm mới: ' + (err?.error?.message || err?.message || 'Không xác định'), 'error');
+          this.cdr.markForCheck();
         }
       });
     }
@@ -840,6 +1472,7 @@ export class Productmanage implements OnInit {
 
 
   onFileSelected(event: any) {
+    if (this.productModalFieldsLocked) return;
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -871,6 +1504,7 @@ export class Productmanage implements OnInit {
   }
 
   triggerGallerySlot(index: number) {
+    if (this.productModalFieldsLocked) return;
     const fileInput = document.getElementById('imageUploadInput') as HTMLInputElement;
     if (fileInput) {
       (fileInput as any)._slotIndex = index;
@@ -889,6 +1523,7 @@ export class Productmanage implements OnInit {
   }
 
   removeGalleryImage(index: number) {
+    if (this.productModalFieldsLocked) return;
     if (!this.newProduct.gallery) return;
     this.newProduct.gallery.splice(index, 1);
     this.newProduct.image = this.newProduct.gallery[0] || '';

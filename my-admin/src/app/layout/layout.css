@@ -15,7 +15,7 @@
     --bg-light: #F4F6FB;
     --white: #FFFFFF;
     --text-primary: #FFFFFF;
-    --sidebar-width: 260px;
+    --sidebar-width: 218px;
     --sidebar-collapsed-width: 70px;
     --danger: #FF4D4F;
     --success: #4CAF50;
@@ -56,7 +56,7 @@
     height: 70px;
     display: flex;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 14px;
     overflow: hidden;
     white-space: nowrap;
     transition: padding 0.3s;
@@ -130,13 +130,13 @@
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 14px 24px;
+    padding: 12px 14px;
     text-decoration: none;
     color: var(--white);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 500;
     transition: all 0.2s;
-    gap: 16px;
+    gap: 12px;
     opacity: 0.85;
     position: relative;
     overflow: hidden;
@@ -175,8 +175,8 @@
 
 .submenu-link {
     display: block;
-    padding: 10px 24px 10px 60px;
-    /* Indent to match text, 60px = 24px + 24px icon + 12px gap */
+    padding: 10px 14px 10px 52px;
+    /* Thụt theo icon + padding nav hẹp hơn */
     color: var(--white);
     text-decoration: none;
     font-size: 0.85rem;
@@ -360,6 +360,8 @@
     overflow: hidden;
     position: relative;
     background-color: var(--bg-light);
+    min-width: 0;
+    /* flex item mặc định min-width:auto khiến cột chính không co — bảng rộng bị tràn viewport */
 }
 
 .top-bar {
@@ -371,7 +373,10 @@
     padding: 0 24px;
     color: var(--white);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    z-index: 90;
+    /* Cao hơn thanh danh mục / filter trong trang con (vd. productmanage z-index ~100–1000)
+       để popup & backdrop thông báo (app-notice) không bị đè; vẫn thấp hơn modal layout (2000). */
+    position: relative;
+    z-index: 1600;
 }
 
 .header-left {
@@ -643,9 +648,13 @@ input:checked+.slider:before {
 .content-body {
     flex: 1;
     overflow-y: auto;
+    overflow-x: auto;
     padding: 30px;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Header Profile Container */

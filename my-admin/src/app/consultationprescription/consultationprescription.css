@@ -7,7 +7,7 @@
 .breadcrumb {
     font-size: 14px;
     color: var(--color-neutral-60);
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 
 .breadcrumb .current {
@@ -17,9 +17,9 @@
 
 .page-header {
     background-color: var(--color-bg-light);
-    padding: 20px 30px;
-    border-radius: 20px;
-    margin-bottom: 20px;
+    padding: 12px 22px;
+    border-radius: 16px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     box-shadow: var(--shadow-sm);
@@ -27,7 +27,7 @@
 
 .page-title {
     margin: 0;
-    font-size: 28px;
+    font-size: 22px;
     font-weight: bold;
     color: var(--color-primary);
     text-transform: uppercase;
@@ -73,24 +73,26 @@
 }
 
 .stat-label {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--color-text-secondary);
     text-transform: uppercase;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    letter-spacing: 0.35px;
+    line-height: 1.25;
 }
 
 .stat-value {
-    font-size: 32px;
+    font-size: 22px;
     font-weight: 800;
+    line-height: 1.1;
     color: var(--color-text-primary);
     transition: color 0.3s;
 }
 
 /* Status Specific Colors (Top Border & Text Only) */
 .stat-card.stat-all {
-    border-top: 4px solid #64748b;
+    border-top: 3px solid #64748b;
 }
 
 .stat-card.stat-all .stat-value {
@@ -98,7 +100,7 @@
 }
 
 .stat-card.stat-pending {
-    border-top: 4px solid #f59e0b;
+    border-top: 3px solid #f59e0b;
 }
 
 .stat-card.stat-pending .stat-value {
@@ -106,7 +108,7 @@
 }
 
 .stat-card.stat-waiting {
-    border-top: 4px solid #3b82f6;
+    border-top: 3px solid #3b82f6;
 }
 
 .stat-card.stat-waiting .stat-value {
@@ -114,7 +116,7 @@
 }
 
 .stat-card.stat-unreachable {
-    border-top: 4px solid #f97316;
+    border-top: 3px solid #f97316;
 }
 
 .stat-card.stat-unreachable .stat-value {
@@ -122,7 +124,7 @@
 }
 
 .stat-card.stat-advised {
-    border-top: 4px solid #8b5cf6;
+    border-top: 3px solid #8b5cf6;
 }
 
 .stat-card.stat-advised .stat-value {
@@ -130,7 +132,7 @@
 }
 
 .stat-card.stat-cancelled {
-    border-top: 4px solid #94a3b8;
+    border-top: 3px solid #94a3b8;
 }
 
 .stat-card.stat-cancelled .stat-value {
@@ -203,6 +205,11 @@
     font-weight: 500;
     vertical-align: middle;
     border-bottom: 1px solid var(--color-neutral-30);
+}
+
+.consultation-prescription-container .data-table th,
+.consultation-prescription-container .data-table td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 .data-table tbody tr {
@@ -463,7 +470,8 @@
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
-    margin-bottom: 20px;
+    padding: 4px 0 8px;
+    margin-bottom: 8px;
     position: relative;
     z-index: 100;
 }
@@ -557,58 +565,6 @@
     opacity: 0.45;
     cursor: not-allowed;
     transform: none !important;
-}
-
-/* Filter Bar */
-.filter-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: transparent;
-    padding: 10px 0;
-}
-
-.search-wrapper {
-    position: relative;
-    width: 320px;
-}
-
-.search-input {
-    width: 100%;
-    padding: var(--input-padding-y) var(--input-padding-x);
-    padding-right: 40px;
-    border: 1px solid var(--color-neutral-40);
-    border-radius: var(--radius-md);
-    font-size: var(--input-font-size);
-    background: var(--color-bg-secondary);
-    font-family: var(--font-family-base);
-    transition: border-color 0.2s;
-}
-
-.search-input:focus {
-    border-color: var(--color-primary);
-    outline: none;
-    box-shadow: 0 0 0 3px var(--color-primary-bg);
-}
-
-.search-icon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-primary-light);
-}
-
-.selection-info {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-}
-
-.actions-group {
-    display: flex;
-    gap: var(--spacing-3);
-    align-items: center;
-    justify-content: center;
 }
 
 /* Multilevel Dropdown Styles */

@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, HostListener, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { OrderService } from '../services/order.service';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +23,7 @@ interface Order {
 
 @Component({
   selector: 'app-ordermanage',
-  imports: [CommonModule, CurrencyPipe, DatePipe, DecimalPipe, FormsModule],
+  imports: [CommonModule, DatePipe, DecimalPipe, FormsModule],
   providers: [OrderService],
   templateUrl: './ordermanage.html',
   styleUrl: './ordermanage.css',

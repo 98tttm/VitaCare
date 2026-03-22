@@ -4,7 +4,7 @@
     "name": "Chăm sóc cá nhân",
     "slug": "cham-soc-ca-nhan",
     "parentId": null,
-    "icon": "",
+    "icon": "assets/icon/chamsoccanhan/dodunggiadinh.png",
     "display_order": null,
     "updatedAt": {
       "$date": "2025-11-06T18:03:49.637Z"
@@ -254,7 +254,7 @@
     "name": "Dược mỹ phẩm",
     "slug": "duoc-my-pham",
     "parentId": null,
-    "icon": ""
+    "icon": "assets/icon/duocmypham/chamsoccothe.png"
   },
   {
     "_id": "a6265af969c7623bfa8844e5",
@@ -555,7 +555,7 @@
     "name": "Thực phẩm chức năng",
     "slug": "thuc-pham-chuc-nang",
     "parentId": null,
-    "icon": ""
+    "icon": "assets/icon/thucphamchucnang/dekhang.png"
   },
   {
     "_id": "da3ccd8a88f4be2ff5ccf003",
@@ -919,7 +919,7 @@
     "name": "Thuốc",
     "slug": "thuoc",
     "parentId": null,
-    "icon": ""
+    "icon": "assets/icon/thuoc/thuocbovavitamin.png"
   },
   {
     "_id": "d550dbd6e8c7f759d0430a7f",
@@ -1752,7 +1752,7 @@
     "name": "Thiết bị y tế",
     "slug": "trang-thiet-bi-y-te",
     "parentId": null,
-    "icon": ""
+    "icon": "assets/icon/thietbiyte/dungcuyte.png"
   },
   {
     "_id": "fc5505ec8967df8e41450124",

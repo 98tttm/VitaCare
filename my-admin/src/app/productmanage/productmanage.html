@@ -1,26 +1,89 @@
 <div class="container product-manage-container">
-    <!-- Breadcrumb -->
-    <div class="breadcrumb text-sm mb-2 font-medium" style="color: var(--color-neutral-60);">
+    <div class="breadcrumb text-sm mb-1 font-medium" style="color: var(--color-neutral-60);">
         Quản lý Sản phẩm <span class="mx-1">/</span> <span style="color: var(--color-primary);">Danh sách sản
             phẩm</span>
     </div>
 
-    <!-- Header -->
-    <div class="page-header py-4"
-        style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
-        <h1 class="content-title"
-            style="margin: 0; font-size: 28px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
-            Danh sách sản phẩm
-        </h1>
+    <!-- Tiêu đề danh sách + nút thêm cùng một hàng -->
+    <div class="product-list-toolbar product-list-toolbar--title-with-action">
+        <h2 class="product-list-toolbar__title">Danh sách sản phẩm</h2>
         <button class="btn-add-action" (click)="openAddProductModal()">
             <i class="bi bi-plus-lg"></i>
             Thêm sản phẩm
         </button>
     </div>
 
+    <!-- Thanh danh mục cấp 1 + mega-menu L2/L3 (cùng /api/categories với trang user) -->
+    <div class="pm-cat-nav-scope" (mouseenter)="onCategoryNavMouseEnter()" (mouseleave)="onCategoryNavMouseLeave()">
+        <div class="pm-cat-nav-inner">
+            <div class="pm-cat-pills-row-wrap">
+                <span class="pm-cat-section-label">Danh mục sản phẩm</span>
+                <div class="pm-cat-pills-row" role="tablist" aria-label="Danh mục sản phẩm cấp 1">
+                    <button type="button" class="pm-cat-pill" [class.pm-cat-pill--active]="!categoryNavId"
+                        (click)="clearCategoryNav()">Tất cả</button>
+                    <button type="button" class="pm-cat-pill" *ngFor="let l1 of categoriesL1"
+                        [class.pm-cat-pill--active]="isL1PillActive(l1._id)" (mouseenter)="openMegaForL1(l1._id)"
+                        (click)="onL1PillClick(l1, $event)">
+                        {{ l1.name }}
+                    </button>
+                </div>
+            </div>
+            <div class="pm-cat-mega" *ngIf="categoryMegaL1Id">
+                <div class="pm-cat-mega-inner" (mouseenter)="onCategoryNavMouseEnter()">
+                    <div class="pm-cat-mega-body">
+                        <div class="pm-cat-mega-left">
+                            <div *ngFor="let l2 of getSortedL2ForL1(categoryMegaL1Id)" class="pm-cat-l2-row"
+                                [class.pm-cat-l2-row--active]="categoryMegaHoveredL2Id === l2._id"
+                                (mouseenter)="categoryMegaHoveredL2Id = l2._id"
+                                (click)="selectCategoryFromNav(l2._id)">
+                                <span class="pm-cat-l2-icon" aria-hidden="true">
+                                    <ng-container *ngIf="categoryNavIconForCategory(l2) as l2Icon; else megaL2IconFallback">
+                                        <img [src]="l2Icon" alt="" class="pm-cat-nav-icon-img" />
+                                    </ng-container>
+                                    <ng-template #megaL2IconFallback><i class="bi bi-grid-3x3-gap"></i></ng-template>
+                                </span>
+                                <span class="pm-cat-l2-text">{{ l2.name }}</span>
+                                <i class="bi bi-chevron-right pm-cat-l2-chev" *ngIf="getSubCategories(l2._id).length"></i>
+                            </div>
+                            <p *ngIf="!getSortedL2ForL1(categoryMegaL1Id).length" class="pm-cat-mega-empty pm-cat-mega-empty--pad">
+                                Chưa có danh mục con cấp 2.</p>
+                        </div>
+                        <div class="pm-cat-mega-right">
+                            <div class="pm-cat-l3-grid"
+                                *ngIf="categoryMegaHoveredL2Id && getSubCategories(categoryMegaHoveredL2Id).length">
+                                <button type="button" class="pm-cat-l3-card"
+                                    *ngFor="let l3 of getSubCategories(categoryMegaHoveredL2Id)"
+                                    (click)="selectCategoryFromNav(l3._id)">
+                                    <span class="pm-cat-l3-icon" aria-hidden="true">
+                                        <ng-container *ngIf="categoryNavIconForCategory(l3) as l3Icon; else megaL3IconFallback">
+                                            <img [src]="l3Icon" alt="" class="pm-cat-nav-icon-img pm-cat-nav-icon-img--l3" />
+                                        </ng-container>
+                                        <ng-template #megaL3IconFallback><i class="bi bi-tag"></i></ng-template>
+                                    </span>
+                                    <span class="pm-cat-l3-name">{{ l3.name }}</span>
+                                </button>
+                            </div>
+                            <p *ngIf="categoryMegaHoveredL2Id && !getSubCategories(categoryMegaHoveredL2Id).length"
+                                class="pm-cat-mega-empty">
+                                Nhóm này không có danh mục con — bấm dòng cấp 2 để lọc cả nhánh đó.
+                            </p>
+                            <p *ngIf="!categoryMegaHoveredL2Id" class="pm-cat-mega-empty">
+                                Chọn nhóm bên trái để xem danh mục chi tiết (cấp 3).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pm-cat-hint" *ngIf="categoryNavPath.length">
+            <span class="pm-cat-hint-label">Đang lọc:</span>
+            <span class="pm-cat-hint-path">{{ categoryNavPath.join(' › ') }}</span>
+            <button type="button" class="pm-cat-hint-clear" (click)="clearCategoryNav()">Bỏ lọc danh mục</button>
+        </div>
+    </div>
+
     <!-- Filter & Toolbar -->
-    <div class="filter-bar py-4">
-        <div class="flex items-center gap-4" style="display: flex; gap: 16px; align-items: center;">
+    <div class="filter-bar pm-filter-bar">
+        <div class="pm-filter-bar-start flex items-center gap-4">
             <div class="search-wrapper">
                 <input type="text" class="search-input" placeholder="Tìm kiếm tên, SKU..." (input)="onSearch($event)">
                 <i class="bi bi-search search-icon"></i>
@@ -31,14 +94,15 @@
         </div>
 
         <div class="actions-group">
-            <button class="btn btn-sm action-btn icon-text" (click)="openEditProductModal()"
-                [disabled]="selectedCount !== 1" [class.disabled]="selectedCount !== 1">
+            <button type="button" class="btn btn-sm action-btn icon-text" (click)="openEditProductModal()"
+                [disabled]="selectedCount !== 1" [class.disabled]="selectedCount !== 1" title="Chỉnh sửa sản phẩm đang chọn">
                 <i class="bi bi-pencil"></i> Chỉnh
             </button>
-
-            <!-- Multilevel Filter Dropdown -->
-            <div class="dropdown-container">
-                <button class="btn btn-sm action-btn icon-text" [class.active]="isFilterOpen || activeFilterCount > 0"
+            <!-- Multilevel Filter Dropdown (hover mở / rời vùng đóng; click vẫn bật-tắt cho mobile) -->
+            <div class="dropdown-container pm-filter-dropdown-wrap"
+                (mouseenter)="onFilterDropdownMouseEnter()"
+                (mouseleave)="onFilterDropdownMouseLeave()">
+                <button type="button" class="btn btn-sm action-btn icon-text" [class.active]="isFilterOpen || activeFilterCount > 0"
                     (click)="toggleFilterDropdown($event)">
                     <i class="bi bi-sliders"></i> Lọc
                     <span class="selected-badge" *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</span>
@@ -46,54 +110,8 @@
 
                 <div class="dropdown-menu-multilevel" *ngIf="isFilterOpen" [class.show]="isFilterOpen"
                     (click)="$event.stopPropagation()">
-                    <!-- Category Filter: hover L1 → L2 → L3 -->
-                    <div class="dropdown-item-parent">
-                        <div class="dropdown-item">
-                            <span>Lọc theo danh mục</span>
-                            <span style="font-size: 10px; color: #ccc;">›</span>
-                        </div>
-                        <div class="dropdown-submenu cat-submenu-l1">
-                            <div class="dropdown-item-parent" *ngFor="let l1 of categoriesL1">
-                                <div class="dropdown-item">
-                                    <label class="flex items-center gap-2" (click)="$event.stopPropagation()">
-                                        <input type="checkbox" [checked]="isFilterSelected('categoryL1', l1._id)"
-                                            (change)="toggleAdvancedFilter('categoryL1', l1._id)">
-                                        <span>{{ l1.name }}</span>
-                                    </label>
-                                    <span class="submenu-arrow" *ngIf="getSubCategories(l1._id).length > 0">›</span>
-                                </div>
-                                <!-- Level 2 -->
-                                <div class="dropdown-submenu cat-submenu-l2"
-                                    *ngIf="getSubCategories(l1._id).length > 0">
-                                    <div class="dropdown-item-parent" *ngFor="let l2 of getSubCategories(l1._id)">
-                                        <div class="dropdown-item">
-                                            <label class="flex items-center gap-2" (click)="$event.stopPropagation()">
-                                                <input type="checkbox"
-                                                    [checked]="isFilterSelected('categoryL2', l2._id)"
-                                                    (change)="toggleAdvancedFilter('categoryL2', l2._id)">
-                                                <span>{{ l2.name }}</span>
-                                            </label>
-                                            <span class="submenu-arrow"
-                                                *ngIf="getSubCategories(l2._id).length > 0">›</span>
-                                        </div>
-                                        <!-- Level 3 -->
-                                        <div class="dropdown-submenu cat-submenu-l3"
-                                            *ngIf="getSubCategories(l2._id).length > 0">
-                                            <label class="dropdown-option" *ngFor="let l3 of getSubCategories(l2._id)">
-                                                <input type="checkbox"
-                                                    [checked]="isFilterSelected('categoryL3', l3._id)"
-                                                    (change)="toggleAdvancedFilter('categoryL3', l3._id)">
-                                                <span>{{ l3.name }}</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Unit Submenu -->
-                    <div class="dropdown-item-parent">
+                    <div class="dropdown-item-parent" [class.dropdown-item-parent--filtered]="isFilterSectionActive('unit')">
                         <div class="dropdown-item">
                             <span>Đơn vị tính</span>
                             <span style="font-size: 10px; color: #ccc;">›</span>
@@ -108,7 +126,7 @@
                     </div>
 
                     <!-- Price Range Submenu -->
-                    <div class="dropdown-item-parent">
+                    <div class="dropdown-item-parent" [class.dropdown-item-parent--filtered]="isFilterSectionActive('price')">
                         <div class="dropdown-item">
                             <span>Khoảng giá (VNĐ)</span>
                             <span style="font-size: 10px; color: #ccc;">›</span>
@@ -130,7 +148,7 @@
                     </div>
 
                     <!-- Stock Submenu -->
-                    <div class="dropdown-item-parent">
+                    <div class="dropdown-item-parent" [class.dropdown-item-parent--filtered]="isFilterSectionActive('stock')">
                         <div class="dropdown-item">
                             <span>Tồn kho</span>
                             <span style="font-size: 10px; color: #ccc;">›</span>
@@ -154,126 +172,151 @@
                         </div>
                     </div>
 
+                    <!-- Hạn sử dụng (HSD) -->
+                    <div class="dropdown-item-parent" [class.dropdown-item-parent--filtered]="isFilterSectionActive('expiry')">
+                        <div class="dropdown-item">
+                            <span>Hạn sử dụng</span>
+                            <span style="font-size: 10px; color: #ccc;">›</span>
+                        </div>
+                        <div class="dropdown-submenu">
+                            <label class="dropdown-option">
+                                <input type="checkbox" [checked]="isFilterSelected('expiry', 'valid_long')"
+                                    (change)="toggleAdvancedFilter('expiry', 'valid_long')">
+                                <span>Còn hạn sử dụng</span>
+                            </label>
+                            <label class="dropdown-option">
+                                <input type="checkbox" [checked]="isFilterSelected('expiry', 'expiring_soon')"
+                                    (change)="toggleAdvancedFilter('expiry', 'expiring_soon')">
+                                <span>Sắp hết hạn (≤ 10 ngày)</span>
+                            </label>
+                            <label class="dropdown-option">
+                                <input type="checkbox" [checked]="isFilterSelected('expiry', 'expired')"
+                                    (change)="toggleAdvancedFilter('expiry', 'expired')">
+                                <span>Quá hạn</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-actions">
                         <button class="btn btn-sm btn-clear-filter" (click)="clearAllFilters()">
                             <i class="bi bi-trash"></i> Xóa lọc
                         </button>
-                        <button class="btn btn-sm btn-close-filter" (click)="isFilterOpen = false">
+                        <button type="button" class="btn btn-sm btn-close-filter" (click)="isFilterOpen = false">
                             <i class="bi bi-x-lg"></i> Đóng
                         </button>
                     </div>
                 </div>
             </div>
 
+            <button type="button" class="btn btn-sm action-btn icon-text" (click)="onDeleteClick()"
+                [disabled]="selectedCount === 0" [class.disabled]="selectedCount === 0" title="Xóa sản phẩm đã chọn">
+                <i class="bi bi-trash"></i> Xóa
+            </button>
+
             <button class="btn btn-sm action-btn icon-text" (click)="onGroupClick()" [disabled]="selectedCount < 2"
                 [class.disabled]="selectedCount < 2" title="Nhóm sản phẩm">
                 <i class="bi bi-collection"></i> Nhóm
             </button>
-            <button class="btn btn-sm action-btn icon-text" (click)="onDeleteClick()" [disabled]="selectedCount === 0"
-                [class.disabled]="selectedCount === 0">
-                <i class="bi bi-trash"></i> Xóa
-            </button>
             <div class="dropdown-container" style="position: relative;">
-                <button class="btn btn-sm action-btn icon-text" (click)="toggleSortDropdown($event)"
-                    [class.active]="isSortDropdownOpen || sortKind !== 'updated' || sortDirection !== 'desc'">
+                <button type="button" class="btn btn-sm pm-sort-trigger-btn icon-text" (click)="toggleSortDropdown($event)"
+                    [class.pm-sort-trigger-btn--open]="isSortDropdownOpen"
+                    [class.pm-sort-trigger-btn--dirty]="sortKind !== 'updated' || sortDirection !== 'desc'">
                     <i class="bi bi-arrow-down-up"></i> Sắp xếp
                 </button>
-                <div class="dropdown-popup sort-dropdown-menu" *ngIf="isSortDropdownOpen"
+                <div class="dropdown-popup pm-sort-menu-v3" *ngIf="isSortDropdownOpen"
                     (click)="$event.stopPropagation()">
-                    <div class="sort-options-list compact-sort-list">
-                        <div class="sort-row" [class.row-active]="sortKind === 'updated'">
-                            <button type="button" class="sort-row-label" (click)="onSortRowClick('updated')">
-                                <i class="bi bi-clock-history"></i>
-                                <span>Cập nhật</span>
-                            </button>
-                            <div class="sort-row-arrows">
-                                <button type="button" class="sort-arrow-btn" title="Cũ → mới (tăng dần)"
-                                    [class.dir-active]="sortKind === 'updated' && sortDirection === 'asc'"
-                                    (click)="setSortDirection('updated', 'asc', $event)">
-                                    <i class="bi bi-sort-up"></i>
-                                </button>
-                                <button type="button" class="sort-arrow-btn" title="Mới → cũ (giảm dần)"
-                                    [class.dir-active]="sortKind === 'updated' && sortDirection === 'desc'"
-                                    (click)="setSortDirection('updated', 'desc', $event)">
-                                    <i class="bi bi-sort-down"></i>
-                                </button>
-                            </div>
+                    <div class="pm-sort-menu-v3__row" [class.pm-sort-menu-v3__row--active]="sortKind === 'updated'">
+                        <div class="pm-sort-menu-v3__left">
+                            <i class="bi bi-clock-history pm-sort-menu-v3__icon" aria-hidden="true"></i>
+                            <span class="pm-sort-menu-v3__label">Cập nhật</span>
                         </div>
-                        <div class="sort-row" [class.row-active]="sortKind === 'price'">
-                            <button type="button" class="sort-row-label" (click)="onSortRowClick('price')">
-                                <i class="bi bi-tag"></i>
-                                <span>Giá</span>
+                        <div class="pm-sort-menu-v3__arrows">
+                            <button type="button" class="pm-sort-dir-btn" title="Cũ → mới"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'updated' && sortDirection === 'asc'"
+                                (click)="setSortDirection('updated', 'asc', $event)">
+                                <i class="bi bi-sort-up"></i>
                             </button>
-                            <div class="sort-row-arrows">
-                                <button type="button" class="sort-arrow-btn" title="Giá thấp → cao"
-                                    [class.dir-active]="sortKind === 'price' && sortDirection === 'asc'"
-                                    (click)="setSortDirection('price', 'asc', $event)">
-                                    <i class="bi bi-sort-numeric-up"></i>
-                                </button>
-                                <button type="button" class="sort-arrow-btn" title="Giá cao → thấp"
-                                    [class.dir-active]="sortKind === 'price' && sortDirection === 'desc'"
-                                    (click)="setSortDirection('price', 'desc', $event)">
-                                    <i class="bi bi-sort-numeric-down"></i>
-                                </button>
-                            </div>
+                            <button type="button" class="pm-sort-dir-btn" title="Mới → cũ"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'updated' && sortDirection === 'desc'"
+                                (click)="setSortDirection('updated', 'desc', $event)">
+                                <i class="bi bi-sort-down"></i>
+                            </button>
                         </div>
-                        <div class="sort-row" [class.row-active]="sortKind === 'name'">
-                            <button type="button" class="sort-row-label" (click)="onSortRowClick('name')">
-                                <i class="bi bi-fonts"></i>
-                                <span>Tên</span>
-                            </button>
-                            <div class="sort-row-arrows">
-                                <button type="button" class="sort-arrow-btn" title="A → Z"
-                                    [class.dir-active]="sortKind === 'name' && sortDirection === 'asc'"
-                                    (click)="setSortDirection('name', 'asc', $event)">
-                                    <i class="bi bi-sort-alpha-up"></i>
-                                </button>
-                                <button type="button" class="sort-arrow-btn" title="Z → A"
-                                    [class.dir-active]="sortKind === 'name' && sortDirection === 'desc'"
-                                    (click)="setSortDirection('name', 'desc', $event)">
-                                    <i class="bi bi-sort-alpha-down"></i>
-                                </button>
-                            </div>
+                    </div>
+                    <div class="pm-sort-menu-v3__row" [class.pm-sort-menu-v3__row--active]="sortKind === 'price'">
+                        <div class="pm-sort-menu-v3__left">
+                            <i class="bi bi-tag pm-sort-menu-v3__icon" aria-hidden="true"></i>
+                            <span class="pm-sort-menu-v3__label">Giá</span>
                         </div>
-                        <div class="sort-row" [class.row-active]="sortKind === 'stock'">
-                            <button type="button" class="sort-row-label" (click)="onSortRowClick('stock')">
-                                <i class="bi bi-box-seam"></i>
-                                <span>Tồn</span>
+                        <div class="pm-sort-menu-v3__arrows">
+                            <button type="button" class="pm-sort-dir-btn" title="Giá thấp → cao"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'price' && sortDirection === 'asc'"
+                                (click)="setSortDirection('price', 'asc', $event)">
+                                <span class="pm-sort-dir-btn__stack" aria-hidden="true"><span>1</span><span>9</span></span>
+                                <i class="bi bi-arrow-up-short"></i>
                             </button>
-                            <div class="sort-row-arrows">
-                                <button type="button" class="sort-arrow-btn" title="Tồn ít → nhiều"
-                                    [class.dir-active]="sortKind === 'stock' && sortDirection === 'asc'"
-                                    (click)="setSortDirection('stock', 'asc', $event)">
-                                    <i class="bi bi-sort-numeric-up"></i>
-                                </button>
-                                <button type="button" class="sort-arrow-btn" title="Tồn nhiều → ít"
-                                    [class.dir-active]="sortKind === 'stock' && sortDirection === 'desc'"
-                                    (click)="setSortDirection('stock', 'desc', $event)">
-                                    <i class="bi bi-sort-numeric-down"></i>
-                                </button>
-                            </div>
+                            <button type="button" class="pm-sort-dir-btn" title="Giá cao → thấp"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'price' && sortDirection === 'desc'"
+                                (click)="setSortDirection('price', 'desc', $event)">
+                                <span class="pm-sort-dir-btn__stack" aria-hidden="true"><span>9</span><span>1</span></span>
+                                <i class="bi bi-arrow-down-short"></i>
+                            </button>
                         </div>
-                        <div class="sort-row" [class.row-active]="sortKind === 'sold'">
-                            <button type="button" class="sort-row-label" (click)="onSortRowClick('sold')">
-                                <i class="bi bi-fire"></i>
-                                <span>Bán chạy</span>
+                    </div>
+                    <div class="pm-sort-menu-v3__row" [class.pm-sort-menu-v3__row--active]="sortKind === 'name'">
+                        <div class="pm-sort-menu-v3__left">
+                            <span class="pm-sort-menu-v3__icon pm-sort-menu-v3__icon--text" aria-hidden="true">T</span>
+                            <span class="pm-sort-menu-v3__label">Tên</span>
+                        </div>
+                        <div class="pm-sort-menu-v3__arrows">
+                            <button type="button" class="pm-sort-dir-btn" title="A → Z"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'name' && sortDirection === 'asc'"
+                                (click)="setSortDirection('name', 'asc', $event)">
+                                <span class="pm-sort-dir-btn__stack" aria-hidden="true"><span>A</span><span>Z</span></span>
+                                <i class="bi bi-arrow-up-short"></i>
                             </button>
-                            <div class="sort-row-arrows">
-                                <button type="button" class="sort-arrow-btn" title="Đã bán ít → nhiều"
-                                    [class.dir-active]="sortKind === 'sold' && sortDirection === 'asc'"
-                                    (click)="setSortDirection('sold', 'asc', $event)">
-                                    <i class="bi bi-sort-numeric-up"></i>
-                                </button>
-                                <button type="button" class="sort-arrow-btn" title="Đã bán nhiều → ít"
-                                    [class.dir-active]="sortKind === 'sold' && sortDirection === 'desc'"
-                                    (click)="setSortDirection('sold', 'desc', $event)">
-                                    <i class="bi bi-sort-numeric-down"></i>
-                                </button>
-                            </div>
+                            <button type="button" class="pm-sort-dir-btn" title="Z → A"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'name' && sortDirection === 'desc'"
+                                (click)="setSortDirection('name', 'desc', $event)">
+                                <span class="pm-sort-dir-btn__stack" aria-hidden="true"><span>Z</span><span>A</span></span>
+                                <i class="bi bi-arrow-down-short"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="pm-sort-menu-v3__row" [class.pm-sort-menu-v3__row--active]="sortKind === 'sold'">
+                        <div class="pm-sort-menu-v3__left">
+                            <i class="bi bi-graph-up-arrow pm-sort-menu-v3__icon" aria-hidden="true"></i>
+                            <span class="pm-sort-menu-v3__label">Bán chạy</span>
+                        </div>
+                        <div class="pm-sort-menu-v3__arrows">
+                            <button type="button" class="pm-sort-dir-btn" title="Ít bán → nhiều bán"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'sold' && sortDirection === 'asc'"
+                                (click)="setSortDirection('sold', 'asc', $event)">
+                                <span class="pm-sort-dir-btn__stack" aria-hidden="true"><span>0</span><span>9</span></span>
+                                <i class="bi bi-arrow-up-short"></i>
+                            </button>
+                            <button type="button" class="pm-sort-dir-btn" title="Bán chạy nhất (nhiều → ít)"
+                                [class.pm-sort-dir-btn--active]="sortKind === 'sold' && sortDirection === 'desc'"
+                                (click)="setSortDirection('sold', 'desc', $event)">
+                                <span class="pm-sort-dir-btn__stack" aria-hidden="true"><span>9</span><span>0</span></span>
+                                <i class="bi bi-arrow-down-short"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="pm-view-toggle pm-view-toggle--gradient" role="group"
+                aria-label="Chế độ xem: bảng hoặc danh sách chi tiết (2 cột)">
+                <button type="button" class="pm-view-toggle__btn" [class.pm-view-toggle__btn--active]="viewMode === 'table'"
+                    (click)="setViewMode('table', $event)" title="Dạng bảng" [attr.aria-pressed]="viewMode === 'table'">
+                    <i class="bi bi-table" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="pm-view-toggle__btn" [class.pm-view-toggle__btn--active]="viewMode === 'list'"
+                    (click)="setViewMode('list', $event)" title="Danh sách chi tiết (2 cột)" [attr.aria-pressed]="viewMode === 'list'">
+                    <i class="bi bi-columns-gap" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -284,75 +327,178 @@
         <p>Đang tải dữ liệu...</p>
     </div>
 
-    <!-- Table -->
-    <div class="table-scrollable" *ngIf="!isLoading">
-        <table>
+    <div class="product-list-body" *ngIf="!isLoading">
+    <!-- Danh sách chi tiết 2 cột: greybox + tồn kho / nhập / HSD + danh mục + sửa xóa -->
+    <div class="product-feed" *ngIf="viewMode === 'list'">
+        <div class="product-feed-batch" *ngIf="products.length > 0">
+            <label class="product-feed-batch__all">
+                <input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll($event)">
+                <span>Chọn tất cả trên trang này</span>
+            </label>
+        </div>
+        <ul class="product-feed-list" *ngIf="products.length > 0">
+            <li *ngFor="let p of products" class="product-feed-item"
+                [class.product-feed-item--selected]="p.selected"
+                [class.product-feed-item--low-stock]="isLowStockProduct(p)"
+                (click)="openProductDetail(p, $event)">
+                <div class="product-feed-item__card">
+                    <label class="product-feed-item__check" (click)="$event.stopPropagation()">
+                        <input type="checkbox" [(ngModel)]="p.selected" (change)="onSelectChange(p)">
+                    </label>
+                    <div class="product-feed-item__img">
+                        <img *ngIf="p.image" [src]="p.image" alt="">
+                        <i *ngIf="!p.image" class="bi bi-image" aria-hidden="true"></i>
+                    </div>
+                    <div class="product-feed-item__body">
+                        <div class="product-feed-item__greybox">
+                            <h3 class="product-feed-item__name">{{ p.name }}</h3>
+                            <div class="product-feed-item__price-row">
+                                <span class="product-feed-item__price">{{ p.price | currency : 'VND' }}</span>
+                                <span class="product-feed-item__price-unit" *ngIf="p.unit">/ {{ p.unit }}</span>
+                                <span class="product-feed-item__stock-hint" *ngIf="isLowStockProduct(p)">
+                                    <i class="bi bi-fire" aria-hidden="true"></i> Còn {{ p.stock }}
+                                </span>
+                            </div>
+                            <div class="product-meta-row product-feed-item__meta-line">
+                                <span class="product-sku">SKU {{ p.sku }}</span>
+                                <span class="product-unit-badge" *ngIf="p.unit">{{ p.unit }}</span>
+                            </div>
+                        </div>
+                        <div class="product-feed-item__grid">
+                            <div class="product-feed-kv product-feed-kv--stock"
+                                [class.product-feed-kv--stock-warn]="isLowStockProduct(p)"
+                                [class.product-feed-kv--stock-danger]="p.stock === 0">
+                                <span class="product-feed-kv__k">Tồn kho</span>
+                                <span class="product-feed-kv__v" [class.product-feed-kv__v--warn]="isLowStockProduct(p)"
+                                    [class.product-feed-kv__v--danger]="p.stock === 0"><strong>{{ p.stock }}</strong></span>
+                            </div>
+                            <div class="product-feed-kv">
+                                <span class="product-feed-kv__k">Nhập kho</span>
+                                <span class="product-feed-kv__v">{{ p.importDate | date:'dd-MM-yyyy' }}</span>
+                            </div>
+                            <div class="product-feed-kv">
+                                <span class="product-feed-kv__k">HSD</span>
+                                <span class="product-feed-kv__v">{{ p.expiryDate ? (p.expiryDate | date:'dd-MM-yyyy') : 'N/A' }}</span>
+                            </div>
+                            <div class="product-feed-kv product-feed-kv--wide">
+                                <span class="product-feed-kv__k">Danh mục</span>
+                                <div class="product-feed-kv__cat-actions">
+                                    <div class="product-feed-kv__v product-feed-kv__v--cat">
+                                        <div class="category-display-enhanced" *ngIf="p.categoryPath && p.categoryPath.length > 0">
+                                            <span class="category-pill-main category-pill-main--feed">
+                                                <i class="bi bi-tag-fill" aria-hidden="true"></i>
+                                                {{ p.categoryPath[p.categoryPath.length - 1] }}
+                                            </span>
+                                            <div class="category-path-steps" *ngIf="p.categoryPath.length > 1">
+                                                <span *ngFor="let step of p.categoryPath.slice(0, -1)">
+                                                    {{ step }} <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span *ngIf="!p.categoryPath || p.categoryPath.length === 0" class="category-none category-none--feed">
+                                            <i class="bi bi-slash-circle" aria-hidden="true"></i> Chưa phân loại
+                                        </span>
+                                    </div>
+                                    <div class="product-feed-item__actions" (click)="$event.stopPropagation()">
+                                        <button type="button" class="pm-product-card-icon-btn pm-product-card-icon-btn--compact"
+                                            (click)="openEditProductFromCard(p, $event)" title="Chỉnh sửa">
+                                            <i class="bi bi-pencil" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="pm-product-card-icon-btn pm-product-card-icon-btn--compact pm-product-card-icon-btn--danger"
+                                            (click)="promptDeleteProduct(p, $event)" title="Xóa">
+                                            <i class="bi bi-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="product-feed-empty" *ngIf="products.length === 0">
+            Không có sản phẩm nào.
+        </div>
+    </div>
+
+    <!-- Chế độ bảng: cùng phong cách bảng đơn hàng (header xanh, hàng kẻ, badge chấm tròn) -->
+    <div class="table-scrollable product-table-embed pm-product-table-host" *ngIf="viewMode === 'table'">
+        <table *ngIf="products.length > 0">
             <thead>
                 <tr>
-                    <th style="width: 40px;">
+                    <th class="col-check text-left">
                         <input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll($event)">
                     </th>
-                    <th>Sản phẩm</th>
-                    <th>Đơn vị tính</th>
-                    <th>Giá</th>
-                    <th>Tồn kho</th>
-                    <th>Danh mục</th>
-                    <th>Nhập kho</th>
-                    <th>HSD</th>
+                    <th class="col-pm-thumb text-center">Ảnh</th>
+                    <th class="col-pm-sku text-left">SKU</th>
+                    <th class="col-product text-left">Tên sản phẩm</th>
+                    <th class="col-pm-unit text-left">ĐVT</th>
+                    <th class="col-pm-price text-right">Giá bán</th>
+                    <th class="col-pm-stock text-left">Tồn kho</th>
+                    <th class="col-category text-left">Danh mục</th>
+                    <th class="col-expiry text-left">HSD</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let p of products" [class.selected]="p.selected" (click)="openProductDetail(p, $event)"
-                    style="cursor: pointer;">
-                    <td>
+                <tr *ngFor="let p of products" class="cursor-pointer" [class.pm-product-row--selected]="p.selected"
+                    [class.pm-product-row--low-stock]="isLowStockProduct(p)"
+                    (click)="openProductDetail(p, $event)">
+                    <td class="col-check" (click)="$event.stopPropagation()">
                         <input type="checkbox" [(ngModel)]="p.selected" (change)="onSelectChange(p)">
                     </td>
-                    <td>
-                        <div class="product-info">
-                            <div class="img-placeholder" style="overflow: hidden;">
-                                <img *ngIf="p.image" [src]="p.image"
-                                    style="width: 100%; height: 100%; object-fit: cover;" alt="product">
-                                <i *ngIf="!p.image" class="bi bi-image"></i>
-                            </div>
-                            <div class="text-info">
-                                <span class="product-name">{{ p.name }}</span>
-                                <span class="product-sku">{{ p.sku }}</span>
-                            </div>
+                    <td class="col-pm-thumb">
+                        <img *ngIf="p.image" [src]="p.image" alt="" class="pm-product-table-thumb-img">
+                        <div *ngIf="!p.image" class="img-placeholder pm-product-table-thumb-placeholder" aria-hidden="true">
+                            <i class="bi bi-image"></i>
                         </div>
                     </td>
-                    <td>{{ p.unit }}</td>
-                    <td class="price">{{ p.price | currency : 'VND' }}</td>
-                    <td>{{ p.stock }}</td>
-                    <td>
+                    <td class="col-pm-sku"><span class="pm-product-table-sku">{{ p.sku }}</span></td>
+                    <td class="col-product">
+                        <div class="product-name pm-product-table-name">{{ p.name }}</div>
+                        <div class="pm-product-table-sold-line">Đã bán: {{ (p.sold ?? 0) | number }}</div>
+                    </td>
+                    <td class="col-pm-unit">
+                        <span class="pm-product-table-unit-pill">{{ p.unit || '—' }}</span>
+                    </td>
+                    <td class="col-pm-price text-right">
+                        <span class="pm-product-table-price">{{ p.price | currency : 'VND' }}</span>
+                    </td>
+                    <td class="col-pm-stock">
+                        <div class="status-badge pm-product-stock-badge" [ngClass]="productStockBadgeClass(p)">
+                            <span class="pm-product-stock-top">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                <strong>{{ p.stock }}</strong>
+                            </span>
+                            <span class="status-text pm-product-stock-label">{{ productStockBadgeLabel(p) }}</span>
+                        </div>
+                    </td>
+                    <td class="col-category">
                         <div class="category-display-enhanced" *ngIf="p.categoryPath && p.categoryPath.length > 0">
-                            <span class="category-pill-main">
-                                <i class="bi bi-tag-fill" style="font-size: 10px; margin-right: 4px;"></i>
+                            <span class="category-pill-main category-pill-main--feed">
+                                <i class="bi bi-tag-fill" aria-hidden="true"></i>
                                 {{ p.categoryPath[p.categoryPath.length - 1] }}
                             </span>
                             <div class="category-path-steps" *ngIf="p.categoryPath.length > 1">
-                                <span *ngFor="let step of p.categoryPath.slice(0, -1); let last = last">
-                                    {{ step }} <i class="bi bi-chevron-right"></i>
+                                <span *ngFor="let step of p.categoryPath.slice(0, -1)">
+                                    {{ step }} <i class="bi bi-chevron-right" aria-hidden="true"></i>
                                 </span>
                             </div>
                         </div>
-                        <span *ngIf="!p.categoryPath || p.categoryPath.length === 0" class="category-none">
-                            <i class="bi bi-slash-circle"></i> Chưa phân loại
+                        <span *ngIf="!p.categoryPath || p.categoryPath.length === 0" class="category-none category-none--feed">
+                            <i class="bi bi-slash-circle" aria-hidden="true"></i> Chưa phân loại
                         </span>
                     </td>
-                    <td>{{ p.importDate | date:'dd-MM-yyyy' }}</td>
-                    <td>{{ p.expiryDate ? (p.expiryDate | date:'dd-MM-yyyy') : 'N/A' }}</td>
-                </tr>
-                <tr *ngIf="products.length === 0">
-                    <td colspan="8" class="text-center"
-                        style="padding: 40px; text-align: center; color: var(--color-text-tertiary);">
-                        Không có sản phẩm nào.
-                    </td>
+                    <td class="col-expiry">{{ p.expiryDate ? (p.expiryDate | date:'dd/MM/yyyy') : '—' }}</td>
                 </tr>
             </tbody>
         </table>
+        <div *ngIf="products.length === 0" class="text-center py-5 text-secondary">
+            Không có sản phẩm nào.
+        </div>
+    </div>
 
         <!-- Pagination Controls -->
-        <div class="pagination-controls"
+        <div class="pagination-controls pm-pagination"
             style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid var(--color-neutral-30);">
             <div style="font-size: 14px; color: var(--color-text-secondary);">
                 Trang {{ currentPage }} / {{ totalPages }}
@@ -374,13 +520,14 @@
     <!-- Add/Edit Product Modal -->
     <div class="modal-wrapper" *ngIf="isProductModalOpen">
         <div class="modal-backdrop" (click)="closeProductModal()"></div>
-        <div class="modal-content-wrapper modal-lg">
+        <div class="modal-content-wrapper modal-lg pm-product-modal">
             <div class="modal-header">
                 <h5 class="modal-title">{{ isEditMode ? 'CHI TIẾT SẢN PHẨM' : 'THÊM SẢN PHẨM MỚI' }}</h5>
                 <button type="button" class="close-btn" (click)="closeProductModal()">&times;</button>
             </div>
             <div class="modal-body scrollable">
-                <div class="form-grid">
+                <fieldset class="pm-product-form-fieldset" [disabled]="productModalFieldsLocked">
+                <div class="form-grid" [class.pm-modal-gallery-locked]="productModalFieldsLocked">
                     <div class="form-group full-width">
                         <label class="form-label">Tên sản phẩm:</label>
                         <input type="text" class="form-control" [(ngModel)]="newProduct.name"
@@ -463,29 +610,48 @@
                         <input type="number" class="form-control" [(ngModel)]="newProduct.rating" step="0.1" readonly>
                     </div>
 
-                    <div class="form-group full-width">
-                        <label class="form-label">Mô tả sản phẩm:</label>
-                        <textarea class="form-control" [(ngModel)]="newProduct.description" rows="3"
-                            placeholder="Mô tả sản phẩm"></textarea>
+                </div>
+                </fieldset>
+
+                <!-- Quill ngoài fieldset: tránh fieldset disabled làm editor không render toolbar đúng -->
+                <div class="form-grid pm-quill-editor-section" [class.pm-modal-gallery-locked]="productModalFieldsLocked">
+
+                    <div class="form-group full-width pm-quill-field">
+                        <label class="form-label">Mô tả sản phẩm <span class="pm-quill-hint">(soạn thảo định dạng)</span></label>
+                        <quill-editor class="pm-quill-editor" theme="snow" format="html"
+                            [(ngModel)]="newProduct.description" [readOnly]="productModalFieldsLocked"
+                            [styles]="quillEditorStyles"
+                            placeholder="Mô tả — in đậm, danh sách, màu chữ, liên kết…"></quill-editor>
                     </div>
 
-                    <div class="form-group full-width">
-                        <label class="form-label">Hướng dẫn sử dụng:</label>
-                        <textarea class="form-control" [(ngModel)]="newProduct.usage" rows="2"
-                            placeholder="Hướng dẫn sử dụng"></textarea>
+                    <div class="form-group full-width pm-quill-field">
+                        <label class="form-label">Hướng dẫn sử dụng <span class="pm-quill-hint">(soạn thảo định dạng)</span></label>
+                        <quill-editor class="pm-quill-editor" theme="snow" format="html"
+                            [(ngModel)]="newProduct.usage" [readOnly]="productModalFieldsLocked"
+                            [styles]="quillEditorStyles"
+                            placeholder="Cách dùng, liều lượng, lưu ý khi dùng…"></quill-editor>
                     </div>
 
-                    <div class="form-group full-width">
-                        <label class="form-label">Thành phần:</label>
-                        <textarea class="form-control" [(ngModel)]="newProduct.ingredients" rows="2"
-                            placeholder="Thành phần"></textarea>
+                    <div class="form-group full-width pm-quill-field">
+                        <label class="form-label">Thành phần <span class="pm-quill-hint">(soạn thảo định dạng)</span></label>
+                        <quill-editor class="pm-quill-editor" theme="snow" format="html"
+                            [(ngModel)]="newProduct.ingredients" [readOnly]="productModalFieldsLocked"
+                            [styles]="quillEditorStyles"
+                            placeholder="Hoạt chất, tá dược, hàm lượng…"></quill-editor>
                     </div>
 
-                    <div class="form-group full-width">
-                        <label class="form-label">Cảnh báo và chống chỉ định:</label>
-                        <textarea class="form-control" [(ngModel)]="newProduct.warnings" rows="2"
-                            placeholder="Cảnh báo và chống chỉ định"></textarea>
+                    <div class="form-group full-width pm-quill-field">
+                        <label class="form-label">Cảnh báo và chống chỉ định <span class="pm-quill-hint">(soạn thảo định dạng)</span></label>
+                        <quill-editor class="pm-quill-editor" theme="snow" format="html"
+                            [(ngModel)]="newProduct.warnings" [readOnly]="productModalFieldsLocked"
+                            [styles]="quillEditorStyles"
+                            placeholder="Tác dụng phụ, chống chỉ định, cảnh báo…"></quill-editor>
                     </div>
+
+                </div>
+
+                <fieldset class="pm-product-form-fieldset" [disabled]="productModalFieldsLocked">
+                <div class="form-grid" [class.pm-modal-gallery-locked]="productModalFieldsLocked">
 
                     <div class="form-group">
                         <label class="form-label">Cần kê đơn?</label>
@@ -566,13 +732,33 @@
                     </div>
 
                 </div>
+                </fieldset>
             </div>
-            <div class="modal-footer product-modal-footer">
+            <div class="modal-footer product-modal-footer" *ngIf="!isEditMode">
                 <button type="button" class="btn btn-cancel-light" (click)="closeProductModal()">
                     HUỶ
                 </button>
-                <button type="button" class="btn btn-submit-premium" (click)="saveProduct()">
-                    LƯU THAY ĐỔI
+                <button type="button" class="btn btn-submit-premium" (click)="saveProduct()"
+                    [disabled]="isSavingProduct">
+                    {{ isSavingProduct ? 'ĐANG LƯU…' : 'LƯU THAY ĐỔI' }}
+                </button>
+            </div>
+            <div class="modal-footer product-modal-footer" *ngIf="isEditMode && isDetailViewLocked">
+                <button type="button" class="btn btn-cancel-light" (click)="closeProductModal()">
+                    ĐÓNG
+                </button>
+                <button type="button" class="btn btn-submit-premium" (click)="startDetailEdit()">
+                    CHỈNH SỬA THÔNG TIN
+                </button>
+            </div>
+            <div class="modal-footer product-modal-footer" *ngIf="isEditMode && !isDetailViewLocked">
+                <button type="button" class="btn btn-cancel-light" (click)="cancelDetailEdit()"
+                    [disabled]="isSavingProduct">
+                    HỦY CHỈNH SỬA
+                </button>
+                <button type="button" class="btn btn-submit-premium" (click)="saveProduct()"
+                    [disabled]="isSavingProduct">
+                    {{ isSavingProduct ? 'ĐANG LƯU…' : 'LƯU THAY ĐỔI' }}
                 </button>
             </div>
         </div>
@@ -605,74 +791,100 @@
         </div>
     </div>
 
-    <!-- Group Naming Modal -->
-    <div class="modal-wrapper" *ngIf="isGroupModalOpen" style="z-index: 2500;">
+    <!-- Nhóm sản phẩm: nhóm KM (product_groups) + gán danh mục L1–L3 -->
+    <div class="modal-wrapper pm-group-modal-wrap" *ngIf="isGroupModalOpen">
         <div class="modal-backdrop" (click)="closeGroupModal()"></div>
-        <div class="modal-content-wrapper compact grouping-modal">
-            <div class="modal-header group-header">
-                <div class="header-main" style="display: flex; align-items: center; gap: 10px;">
-                    <i class="bi bi-collection-fill" style="color: var(--color-primary); font-size: 1.2rem;"></i>
-                    <h5 class="modal-title" style="margin: 0; font-weight: 800;">NHÓM SẢN PHẨM</h5>
+        <div class="modal-content-wrapper grouping-modal">
+            <div class="modal-header pm-group-modal-header">
+                <div class="pm-group-modal-header-main">
+                    <i class="bi bi-collection-fill pm-group-modal-header-icon" aria-hidden="true"></i>
+                    <h5 class="modal-title pm-group-modal-title">NHÓM SẢN PHẨM</h5>
                 </div>
-                <button type="button" class="close-btn" (click)="closeGroupModal()">&times;</button>
+                <button type="button" class="close-btn" (click)="closeGroupModal()" aria-label="Đóng">&times;</button>
             </div>
-            <div class="modal-body" style="padding: 20px;">
-                <!-- Create New Section -->
-                <div class="group-form-section" style="margin-bottom: 24px;">
-                    <label class="form-label"
-                        style="font-weight: 700; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 8px; display: block;">Tên
-                        nhóm mới:</label>
-                    <div class="input-with-action" style="display: flex; gap: 8px;">
-                        <input type="text" class="form-control" [(ngModel)]="groupName"
-                            placeholder="VD: Nhóm Vitamin T3/2024" (keyup.enter)="confirmGroup()" style="flex: 1;">
-                        <button class="btn btn-primary" (click)="confirmGroup()"
-                            style="padding: 0 20px; border-radius: 8px; font-weight: 700;">
-                            TẠO
+            <div class="modal-body pm-group-modal-body scrollable">
+                <p class="pm-group-modal-lead">
+                    Gán <strong>{{ selectedCount }}</strong> sản phẩm đã chọn vào <strong>nhóm khuyến mãi</strong> (để tạo KM theo nhóm sản phẩm)
+                    và/hoặc cập nhật <strong>phân loại danh mục</strong> bên dưới.
+                </p>
+
+                <div class="pm-group-section">
+                    <label class="pm-group-label" for="pm-new-group-name">Tên nhóm mới</label>
+                    <div class="pm-group-new-row">
+                        <input id="pm-new-group-name" type="text" class="form-control pm-group-input"
+                            [(ngModel)]="groupModalNewName" placeholder="VD: Nhóm Vitamin T3/2024" autocomplete="off" />
+                        <button type="button" class="btn btn-primary pm-group-btn-create" (click)="onCreateProductGroupClick()"
+                            [disabled]="isCreatingProductGroup || isGroupModalApplying || !groupModalNewName.trim()">
+                            {{ isCreatingProductGroup ? '…' : 'TẠO' }}
                         </button>
                     </div>
                 </div>
 
-                <div class="divider"
-                    style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--color-text-tertiary); font-size: 11px; font-weight: 800;">
-                    <div style="flex: 1; height: 1px; background: #eee;"></div>
+                <div class="pm-group-divider" role="presentation">
                     <span>HOẶC CHỌN NHÓM CÓ SẴN</span>
-                    <div style="flex: 1; height: 1px; background: #eee;"></div>
                 </div>
 
-                <!-- Existing Groups List -->
-                <div class="existing-groups-container"
-                    style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
-                    <div class="group-card" *ngFor="let group of existingGroups"
-                        style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px; border: 1px solid #edf2f7;">
-                        <div class="group-icon"
-                            style="width: 40px; height: 40px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--color-primary); border: 1px solid #e2e8f0;">
-                            <i class="bi bi-folder2-open"></i>
-                        </div>
-                        <div class="group-details" style="flex: 1;">
-                            <span class="g-name"
-                                style="display: block; font-weight: 700; font-size: 14px; color: var(--color-text-primary);">{{
-                                group.name }}</span>
-                            <div class="g-meta"
-                                style="font-size: 12px; color: var(--color-text-tertiary); display: flex; align-items: center; gap: 6px;">
-                                <span><i class="bi bi-box-seam"></i> {{ group.count }} SP</span>
-                                <span class="dot">·</span>
-                                <span>{{ group.date | date:'dd/MM/yyyy' }}</span>
-                            </div>
-                        </div>
-                        <div class="group-actions" style="display: flex; gap: 6px;">
-                            <button class="action-btn" title="Xem chi tiết"
-                                style="padding: 6px; min-width: auto; border: none; background: transparent; color: var(--color-primary);"><i
-                                    class="bi bi-eye"></i></button>
-                            <button class="action-btn" title="Xóa nhóm" (click)="deleteGroup(group.id)"
-                                style="padding: 6px; min-width: auto; border: none; background: transparent; color: var(--color-danger);"><i
-                                    class="bi bi-trash"></i></button>
-                        </div>
+                <div class="pm-group-section pm-group-pick-list">
+                    <p *ngIf="!productGroups.length" class="pm-group-empty">Chưa có nhóm — nhập tên và bấm TẠO, hoặc tạo khi áp dụng.</p>
+                    <div *ngFor="let g of productGroups" class="pm-group-pick-row">
+                        <label class="pm-group-radio-row"
+                            [class.pm-group-radio-row--selected]="groupModalSelectedGroupId === groupRowId(g)">
+                            <input type="radio" name="pm-product-group-pick" [value]="groupRowId(g)"
+                                [(ngModel)]="groupModalSelectedGroupId" />
+                            <span class="pm-group-radio-label">
+                                <span class="pm-group-radio-name">{{ groupRowName(g) }}</span>
+                                <span class="pm-group-radio-meta" *ngIf="groupProductCount(g)">{{ groupProductCount(g) }} SP trong nhóm</span>
+                            </span>
+                        </label>
+                        <button type="button" class="pm-group-row-delete"
+                            (click)="onDeleteProductGroupClick(g, $event)"
+                            [disabled]="deletingGroupId === groupRowId(g) || isGroupModalApplying"
+                            title="Xóa nhóm" aria-label="Xóa nhóm {{ groupRowName(g) }}">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pm-group-divider pm-group-divider--subtle" role="presentation">
+                    <span>PHÂN LOẠI THEO DANH MỤC (TUỲ CHỌN)</span>
+                </div>
+
+                <p class="pm-group-modal-hint">
+                    Chọn danh mục để gán lại <strong>categoryId</strong> cho các sản phẩm đã chọn.
+                    Hệ thống dùng mục sâu nhất (cấp 3 → 2 → 1).
+                </p>
+                <div class="group-category-fields">
+                    <div>
+                        <label class="pm-group-label">Danh mục cấp 1</label>
+                        <select class="form-control pm-group-select" [(ngModel)]="groupModalL1Id" (ngModelChange)="onGroupModalL1Change()">
+                            <option value="">— Chọn cấp 1 —</option>
+                            <option *ngFor="let c of categoriesL1" [value]="c._id">{{ c.name }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="pm-group-label">Danh mục cấp 2</label>
+                        <select class="form-control pm-group-select" [(ngModel)]="groupModalL2Id" (ngModelChange)="onGroupModalL2Change()"
+                            [disabled]="!groupModalL1Id">
+                            <option value="">— Chọn cấp 2 —</option>
+                            <option *ngFor="let c of getSortedL2ForL1(groupModalL1Id)" [value]="c._id">{{ c.name }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="pm-group-label">Danh mục cấp 3</label>
+                        <select class="form-control pm-group-select" [(ngModel)]="groupModalL3Id"
+                            [disabled]="!groupModalL2Id">
+                            <option value="">— Chọn cấp 3 (nếu có) —</option>
+                            <option *ngFor="let c of getSortedL3ForL2(groupModalL2Id)" [value]="c._id">{{ c.name }}</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer" style="padding: 15px 20px;">
-                <button type="button" class="btn-cancel-light" (click)="closeGroupModal()"
-                    style="width: 100%; text-transform: uppercase;">ĐÓNG</button>
+            <div class="modal-footer pm-group-modal-footer">
+                <button type="button" class="btn-cancel-light pm-group-footer-btn" (click)="closeGroupModal()">ĐÓNG</button>
+                <button type="button" class="btn btn-primary pm-group-footer-btn pm-group-footer-btn--primary" (click)="confirmGroup()"
+                    [disabled]="isGroupModalApplying || !groupModalCanSubmit()">
+                    {{ isGroupModalApplying ? 'Đang lưu…' : 'ÁP DỤNG' }}
+                </button>
             </div>
         </div>
     </div>
