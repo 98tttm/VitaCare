@@ -8,8 +8,8 @@
     </div>
 
     <!-- Page Header: title + Quay lại khi đang xem chi tiết -->
-    <div class="page-header py-4 consultation-page-header"
-        style="background: var(--color-bg-light); border-radius: 20px; padding: 20px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+    <div class="page-header py-2 consultation-page-header"
+        style="background: var(--color-bg-light); border-radius: 16px; padding: 12px 22px; box-shadow: var(--shadow-sm); margin-bottom: 12px;">
         <div class="consultation-page-header-row">
             <h1 class="content-title consultation-page-header-title"
                 [ngClass]="selectedProduct ? 'consultation-detail-title' : 'consultation-list-page-title'">
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Stats: tổng hệ thống trên danh sách; chỉ sản phẩm đang xem khi vào chi tiết -->
-    <div class="stats-container">
+    <div class="stats-grid stats-grid--consultation">
         <div class="stat-card stat-all" (click)="filterByStatus('')" [class.active-filter]="currentFilter === ''"
             style="cursor: pointer;">
             <span class="stat-label">TỔNG CÂU HỎI</span>

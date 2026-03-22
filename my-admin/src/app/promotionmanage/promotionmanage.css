@@ -10,124 +10,118 @@
     color: var(--color-neutral-60);
 }
 
-/* Header */
+/* Header — khớp quản lý đơn hàng (padding/radius từ inline HTML) */
 .page-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-6);
-    background-color: var(--color-bg-light);
-    border-radius: 20px;
-    padding: 24px 32px;
-    box-shadow: var(--shadow-sm);
 }
 
 .content-title {
     font-family: var(--font-content-title-family);
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--color-text-primary);
+    font-size: var(--font-content-title-size);
+    font-weight: var(--font-content-title-weight);
+    color: var(--color-primary);
     text-transform: uppercase;
     margin: 0;
 }
 
-/* Unified Summary Cards (Stat Cards) */
-.summary-cards {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+/* Thẻ thống kê — cùng token với ordermanage (.stats-grid / .stat-card) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 0;
 }
 
-.summary-card {
-    flex: 1;
-    min-width: 140px;
+.stats-grid--promo {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.promotion-manage-container .stat-card {
     background-color: var(--color-bg-secondary);
-    padding: 24px 16px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 8px 10px 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--color-neutral-30);
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    min-height: 82px;
 }
 
-.summary-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+.promotion-manage-container .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
     border-color: var(--color-primary-light);
 }
 
-.summary-card-title {
-    font-size: 13px;
+.promotion-manage-container .stat-card.active {
+    border: 2px solid var(--color-primary) !important;
+    background-color: var(--color-bg-light);
+    box-shadow: 0 0 0 4px rgba(0, 88, 159, 0.05);
+}
+
+.promotion-manage-container .stat-label {
+    font-size: 11px;
     font-weight: 600;
     color: var(--color-text-secondary);
     text-transform: uppercase;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    letter-spacing: 0.35px;
+    line-height: 1.25;
 }
 
-.summary-card-value {
-    font-size: 32px;
+.promotion-manage-container .stat-value {
+    font-size: 22px;
     font-weight: 800;
+    line-height: 1.1;
     color: var(--color-text-primary);
     transition: color 0.3s;
 }
 
-/* Status Specific Colors — design tokens: color-system.css */
-.summary-card:nth-child(1) {
+.stat-card.stat-promo-total {
     border-top: 4px solid var(--vc-info-main);
 }
 
-/* Total */
-.summary-card:nth-child(1) .summary-card-value {
+.stat-card.stat-promo-total .stat-value {
     color: var(--vc-info-hover);
 }
 
-.summary-card:nth-child(2) {
+.stat-card.stat-promo-ended {
     border-top: 4px solid var(--vc-danger-main);
-    /* Đã kết thúc */
 }
 
-/* Ended */
-.summary-card:nth-child(2) .summary-card-value {
+.stat-card.stat-promo-ended .stat-value {
     color: var(--vc-danger-main);
 }
 
-.summary-card:nth-child(3) {
+.stat-card.stat-promo-ongoing {
     border-top: 4px solid var(--vc-primary-main);
-    /* Đang diễn ra */
 }
 
-/* Ongoing */
-.summary-card:nth-child(3) .summary-card-value {
+.stat-card.stat-promo-ongoing .stat-value {
     color: var(--vc-primary-main);
 }
 
-.summary-card:nth-child(4) {
+.stat-card.stat-promo-upcoming {
     border-top: 4px solid var(--vc-primary-light);
-    /* Sắp diễn ra */
 }
 
-/* Upcoming */
-.summary-card:nth-child(4) .summary-card-value {
+.stat-card.stat-promo-upcoming .stat-value {
     color: var(--vc-primary-light);
 }
 
-/* Dark mode forced specifics */
-body.dark-mode .summary-card {
+body.dark-mode .promotion-manage-container .stat-card {
     background-color: var(--color-bg-secondary) !important;
     border-color: var(--color-neutral-30) !important;
-}
-
-body.dark-mode .page-header {
-    background-color: var(--color-bg-light) !important;
 }
 
 /* Premium Buttons */
@@ -240,13 +234,14 @@ body.dark-mode .page-header {
     transform: translateY(-1px);
 }
 
-/* Filter Bar */
+/* Filter Bar — sát thẻ thống kê và bảng như quản lý đơn hàng */
 .filter-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
-    padding: 10px 0;
+    padding: 4px 0 8px;
+    margin-top: 0;
 }
 
 .search-wrapper {
@@ -288,8 +283,9 @@ body.dark-mode .page-header {
 
 .actions-group {
     display: flex;
-    gap: var(--spacing-2);
+    gap: var(--spacing-3);
     align-items: center;
+    justify-content: center;
 }
 
 /* Dropdown specific for filtering/sorting */
@@ -670,11 +666,20 @@ table {
     border-collapse: collapse;
 }
 
-/* UPDATE THEAD TO PRIMARY BLUE */
+/* Bảng — giống quản lý đơn hàng: header xanh, chữ trắng, căn trái */
+.promotion-manage-container thead th {
+    padding: var(--spacing-2) var(--spacing-3);
+    text-align: left;
+}
+
+.promotion-manage-container thead th:first-child {
+    text-align: center;
+}
+
 thead th {
     background-color: var(--color-primary);
     padding: var(--spacing-4);
-    text-align: center;
+    text-align: left;
     font-size: var(--font-size-xs);
     font-weight: 700;
     color: white !important;
@@ -692,6 +697,10 @@ tbody tr {
 tbody tr:hover {
     background-color: var(--color-bg-light) !important;
     cursor: pointer;
+}
+
+.promotion-manage-container tbody td {
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 td {

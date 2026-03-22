@@ -40,7 +40,7 @@
 
 .consultation-list-page-title {
     margin: 0;
-    font-size: 28px;
+    font-size: 22px;
     text-transform: uppercase;
     color: var(--color-primary);
     font-weight: bold;
@@ -95,19 +95,23 @@
     text-transform: uppercase;
 }
 
-/* Unified Stats Container */
-.stats-container {
-    display: flex;
+/* Thẻ thống kê — cùng grid/gap như quản lý đơn hàng; card cao hơn một chút */
+.stats-grid {
+    display: grid;
     gap: 10px;
     margin-bottom: 10px;
-    flex-wrap: wrap;
+    padding-bottom: 0;
 }
 
-.stat-card {
+.stats-grid--consultation {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.consultation-product-container .stat-card {
     flex: 1;
-    min-width: 140px;
+    min-width: 0;
     background-color: var(--color-bg-secondary);
-    padding: 8px 10px 10px;
+    padding: 16px 14px 18px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     display: flex;
@@ -120,7 +124,7 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    min-height: 0;
+    min-height: 96px;
 }
 
 .stat-card:hover {
@@ -190,7 +194,7 @@
     display: flex;
     justify-content: space-between;
     padding: 4px 0 8px;
-    margin-bottom: 8px;
+    margin-bottom: 0;
     gap: 16px;
 }
 

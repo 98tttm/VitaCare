@@ -402,7 +402,7 @@
                                 <vc-searchable-select
                                     [(ngModel)]="newOrder.shippingInfo.city"
                                     [options]="citySelectOptions"
-                                    [disabled]="!cities?.length"
+                                    [disabled]="!cities.length"
                                     placeholder="Chọn Tỉnh/Thành phố"
                                     (ngModelChange)="onCityChange()"
                                 />
