@@ -11035,8 +11035,8 @@ app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
       }
     }
 
-    // Gửi email cho dược sĩ được phân công nhưng không chặn response
-    if (normalizedPharmacistId) {
+    // Chỉ gửi email khi thực sự đổi người được phân công, tránh gửi lại khi chỉ cập nhật trạng thái.
+    if (assignJustChanged && normalizedPharmacistId) {
       (async () => {
         try {
           const pharmacistQuery = [{ _id: String(normalizedPharmacistId) }];

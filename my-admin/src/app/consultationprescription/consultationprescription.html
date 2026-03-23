@@ -501,8 +501,9 @@
 </div>
 
     <!-- Dialog chọn trạng thái khi đang tư vấn -->
-    <div #statusDialogPortal class="status-dialog-backdrop" *ngIf="statusDialog.show">
-        <div class="status-dialog-card">
+    <div #statusDialogPortal class="modal-wrapper status-dialog-wrapper" *ngIf="statusDialog.show">
+        <div class="modal-backdrop" (click)="closeStatusDialog()"></div>
+        <div class="status-dialog-card status-dialog-card--modal">
             <h4 class="status-dialog-title">Cập nhật trạng thái đơn thuốc</h4>
             <p class="status-dialog-message">
                 Vui lòng chọn kết quả sau khi liên hệ với khách hàng cho đơn
@@ -521,8 +522,9 @@
     </div>
 
     <!-- Sau lần liên hệ thứ 2 (unreachable): hoàn thành vs thất bại -->
-    <div #outcomeDialogPortal class="status-dialog-backdrop status-dialog-backdrop--outcome" *ngIf="unreachableOutcomeDialog.show">
-        <div class="status-dialog-card">
+    <div #outcomeDialogPortal class="modal-wrapper status-dialog-wrapper status-dialog-wrapper--outcome" *ngIf="unreachableOutcomeDialog.show">
+        <div class="modal-backdrop" (click)="closeUnreachableOutcomeDialog()"></div>
+        <div class="status-dialog-card status-dialog-card--modal">
             <h4 class="status-dialog-title">Kết quả sau lần liên hệ thứ hai</h4>
             <p class="status-dialog-message">
                 Chọn kết quả cho đơn <strong>{{ selectedPrescription?.prescriptionId }}</strong>.

@@ -1427,26 +1427,12 @@
 }
 
 /* Dialog chọn trạng thái — phải cao hơn lớp modal chi tiết đơn */
-.status-dialog-backdrop {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(15, 23, 42, 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-<<<<<<< HEAD
-    z-index: 270000;
+.status-dialog-wrapper {
+    z-index: 270000 !important;
 }
 
-.status-dialog-backdrop--outcome {
-    z-index: 270100;
-=======
-    z-index: 2147483647;
-}
-
-.status-dialog-backdrop--outcome {
-    z-index: 2147483647;
->>>>>>> 166a0e6273f2fd2990e5eef497528340d62cef24
+.status-dialog-wrapper--outcome {
+    z-index: 270100 !important;
 }
 
 .status-dialog-card {
@@ -1457,6 +1443,10 @@
     max-width: 460px;
     width: 90%;
     box-shadow: 0 22px 55px rgba(15, 23, 42, 0.5);
+}
+
+.status-dialog-card--modal {
+    z-index: 1;
 }
 
 .status-dialog-title {
