@@ -1426,7 +1426,7 @@
     justify-content: center;
 }
 
-/* Dialog chọn trạng thái — phải cao hơn .modal-wrapper (2500) để nổi trên popup chi tiết đơn */
+/* Dialog chọn trạng thái — phải cao hơn lớp modal chi tiết đơn */
 .status-dialog-backdrop {
     position: fixed;
     inset: 0;
@@ -1434,11 +1434,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     z-index: 270000;
 }
 
 .status-dialog-backdrop--outcome {
     z-index: 270100;
+=======
+    z-index: 2147483647;
+}
+
+.status-dialog-backdrop--outcome {
+    z-index: 2147483647;
+>>>>>>> 166a0e6273f2fd2990e5eef497528340d62cef24
 }
 
 .status-dialog-card {

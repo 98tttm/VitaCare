@@ -106,19 +106,19 @@ export class Footer implements OnInit {
   }
 
   goBusinessLicense(): void {
-    this.router.navigate(['/chinh-sach/giay-phep-kinh-doanh']);
+    this.router.navigate(['/policy/giay-phep-kinh-doanh']);
   }
 
   goRegulationBusiness(): void {
-    this.router.navigate(['/chinh-sach/quy-che-hoat-dong']);
+    this.router.navigate(['/policy/quy-che-hoat-dong']);
   }
 
   goPolicyIntro(): void {
-    this.router.navigate(['/chinh-sach/gioi-thieu']);
+    this.router.navigate(['/policy/gioi-thieu']);
   }
 
   goWarrantyCenters(): void {
-    this.router.navigate(['/chinh-sach/thong-tin-trung-tam-bao-hanh']);
+    this.router.navigate(['/policy/thong-tin-trung-tam-bao-hanh']);
   }
 
   goBlog(): void {

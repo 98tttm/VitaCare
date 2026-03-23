@@ -157,6 +157,7 @@ export class Blog implements OnInit {
         this.blogs = data.map((b) => this.normalizeBlog(b));
         if (this.blogs.length === 0) this.setFallbackBlogs();
         this.hydrateCategoryCardsFromBlogs();
+        this.backfillEmptyCategoryCards();
 
         setTimeout(() => {
           this.loading = false;
@@ -205,6 +206,35 @@ export class Blog implements OnInit {
     this.elderlyCardArticles = this.pickByCategory('Người cao tuổi');
   }
 
+  /**
+   * Nếu load payload chung chưa đủ bài cho 1 section (do phân trang / dữ liệu lệch category),
+   * gọi API theo từng category để bù dữ liệu hiển thị.
+   */
+  private backfillEmptyCategoryCards(): void {
+    const sections: Array<{ category: string; getCurrent: () => BlogItem[]; assign: (items: BlogItem[]) => void }> = [
+      { category: 'Phòng bệnh & Sống khoẻ', getCurrent: () => this.preventionCardArticles, assign: (items) => (this.preventionCardArticles = items) },
+      { category: 'Dinh dưỡng', getCurrent: () => this.nutritionCardArticles, assign: (items) => (this.nutritionCardArticles = items) },
+      { category: 'Mẹ & bé', getCurrent: () => this.momBabyCardArticles, assign: (items) => (this.momBabyCardArticles = items) },
+      { category: 'Khỏe đẹp', getCurrent: () => this.beautyCardArticles, assign: (items) => (this.beautyCardArticles = items) },
+      { category: 'Giới tính', getCurrent: () => this.genderCardArticles, assign: (items) => (this.genderCardArticles = items) },
+      { category: 'Tin tức sức khỏe', getCurrent: () => this.healthNewsCardArticles, assign: (items) => (this.healthNewsCardArticles = items) },
+      { category: 'Người cao tuổi', getCurrent: () => this.elderlyCardArticles, assign: (items) => (this.elderlyCardArticles = items) },
+    ];
+
+    sections.forEach((section) => {
+      if (section.getCurrent().length > 0) return;
+
+      this.blogService.getBlogs({ category: section.category, limit: 5, page: 1 }).subscribe({
+        next: (res) => {
+          const data = this.extractBlogList(res);
+          if (!Array.isArray(data) || data.length === 0) return;
+          section.assign(data.map((b) => this.normalizeBlog(b)));
+          this.cdr.detectChanges();
+        },
+      });
+    });
+  }
+
   /** Chuẩn hóa slug: bỏ prefix bai-viet/ hoặc /bai-viet/ để tránh URL trùng (bai-viet/bai-viet/...) */
   private normalizeSlug(raw: string): string {
     if (!raw || typeof raw !== 'string') return '';
@@ -215,7 +245,12 @@ export class Blog implements OnInit {
   }
 
   private normalizeBlog(b: any): BlogItem {
-    const categoryName = b.category?.name || b.categoryName || 'Góc sức khoẻ';
+    const categoryName =
+      (Array.isArray(b.categories) && b.categories[0]?.name) ||
+      b.category?.name ||
+      (typeof b.category === 'string' ? b.category : '') ||
+      b.categoryName ||
+      'Góc sức khoẻ';
     const slugRaw = (b.slug || b.url || '')?.trim();
     const idStr = b._id != null ? String(b._id) : '';
     const slug = this.normalizeSlug(slugRaw || '') || idStr;

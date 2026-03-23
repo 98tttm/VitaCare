@@ -504,6 +504,10 @@
   text-decoration: underline;
 }
 
+.bv-prevention-header--simple .bv-prevention-viewall {
+  margin-left: auto;
+}
+
 .bv-prevention-articles {
   display: flex;
   flex-direction: column;

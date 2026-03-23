@@ -132,7 +132,7 @@ export class Customermanage implements OnInit {
           this.customers = res.data.map((c: any) => ({
             ...c,
             selected: false,
-            addressString: c.address && c.address.length > 0 ? c.address.join(', ') : 'Chưa cập nhật'
+            addressString: this.resolveAddressString(c)
           }));
           this.syncCustomerGroupMembership();
           this.applyFilters();
@@ -143,6 +143,35 @@ export class Customermanage implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  private resolveAddressString(customer: any): string {
+    const defaultAddress = String(
+      customer?.defaultAddress ||
+      customer?.default_address ||
+      customer?.addressDefault ||
+      ''
+    ).trim();
+    if (defaultAddress) return defaultAddress;
+
+    const address = customer?.address;
+    if (Array.isArray(address) && address.length > 0) {
+      const text = address.filter(Boolean).map((item: unknown) => String(item).trim()).filter(Boolean).join(', ');
+      if (text) return text;
+    }
+
+    if (address && typeof address === 'object') {
+      const text = [
+        address.fullAddress,
+        address.detail,
+        address.ward,
+        address.district,
+        address.province
+      ].filter(Boolean).map((item: unknown) => String(item).trim()).filter(Boolean).join(', ');
+      if (text) return text;
+    }
+
+    return 'Chưa cập nhật';
   }
 
   applyFilters() {
