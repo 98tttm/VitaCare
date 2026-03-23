@@ -1025,13 +1025,13 @@
 .modal-wrapper {
     position: fixed !important;
     inset: 0 !important;
-    z-index: 2147483646 !important;
+    z-index: 260000 !important;
     isolation: isolate;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Leave enough top space so header never overlaps. */
-    padding: max(76px, calc(env(safe-area-inset-top, 0px) + 56px)) 16px max(20px, env(safe-area-inset-bottom, 0px));
+    /* Compact + centered in viewport */
+    padding: 16px;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1050,13 +1050,13 @@
     width: 500px;
     max-width: min(82vw, 500px);
     max-height: min(
-        calc(100dvh - 180px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)),
-        calc(100vh - 180px)
+        calc(100dvh - 240px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)),
+        calc(100vh - 240px)
     );
     margin: 0 auto;
     border-radius: 14px;
     position: relative !important;
-    z-index: 2147483647 !important;
+    z-index: 260001 !important;
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
@@ -1434,11 +1434,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
+    z-index: 270000;
+}
+
+.status-dialog-backdrop--outcome {
+    z-index: 270100;
+=======
     z-index: 2147483647;
 }
 
 .status-dialog-backdrop--outcome {
     z-index: 2147483647;
+>>>>>>> 166a0e6273f2fd2990e5eef497528340d62cef24
 }
 
 .status-dialog-card {

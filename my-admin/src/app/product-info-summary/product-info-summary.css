@@ -1,0 +1,462 @@
+.vc_pd_summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Reduced gap */
+}
+
+.vc_brand_origin_box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #dee2e6;
+    padding: 0 12px;
+    border-radius: 4px;
+    width: fit-content;
+    margin-top: -30px;
+    /* Adjusted from -40px to prevent overflow */
+    margin-bottom: 12px;
+    height: 26px;
+    line-height: 1;
+}
+
+.vc_origin_tag {
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-right: 12px;
+    border-right: 1px solid #adb5bd;
+}
+
+.vc_origin_tag img {
+    border-radius: 0;
+}
+
+.vc_brand_info {
+    font-size: 14px;
+}
+
+.vc_brand_info a {
+    color: #00589f !important;
+    /* Basic Blue */
+    font-weight: 700;
+}
+
+/* Scaling Titles & Meta */
+.vc_pd_main_title {
+    font-size: 20px;
+    /* Reduced from 24px */
+    font-weight: 700;
+    color: #111;
+    line-height: 1.25;
+    margin-bottom: 4px;
+}
+
+.vc_pd_meta_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11.5px;
+    /* Reduced from 13px */
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+
+.vc_meta_divider {
+    width: 3px;
+    height: 3px;
+    background: #dee2e6;
+    border-radius: 50%;
+}
+
+.vc_meta_link {
+    color: #00589f !important;
+    /* VitaCare Blue */
+    text-decoration: none;
+}
+
+.vc_meta_link:hover {
+    text-decoration: underline;
+}
+
+.vc_meta_sold_value {
+    color: #f4b400;
+}
+
+.vc_origin_filter_link {
+    color: #00589f;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.vc_origin_filter_link:hover {
+    color: #004a86;
+    text-decoration: underline;
+}
+
+/* Price Section */
+.vc_pd_price_section {
+    margin-bottom: 6px;
+}
+
+.vc_pd_price_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.vc_pd_main_price {
+    font-size: 28px;
+    /* Reduced from 32px */
+    font-weight: 700;
+    color: #00589f;
+}
+
+@keyframes fire-jump {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px) scale(1.1);
+    }
+}
+
+.low-stock-limit-badge {
+    color: #e8590c;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.low-stock-limit-badge i.bi-fire {
+    animation: fire-jump 0.8s infinite ease-in-out;
+    display: inline-block;
+}
+
+.vc_price_unit {
+    font-size: 18px;
+    /* Reduced from 20px */
+    color: #666;
+    font-weight: 500;
+}
+
+/* Selectors */
+.vc_pd_selectors_group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.vc_selector_row {
+    display: flex;
+    align-items: center;
+}
+
+.vc_label {
+    width: 140px;
+    font-size: 12.5px;
+    /* Reduced from 14px */
+    color: #495057;
+}
+
+/* Unit Selector pill */
+.btn-unit-pill {
+    border: 1px solid #dee2e6;
+    color: #333;
+    background: #fff;
+    border-radius: 50px;
+    padding: 4px 24px;
+    /* Reduced padding */
+    font-size: 14px !important;
+    /* Reduced from 16px */
+    font-weight: 500 !important;
+    position: relative;
+    overflow: hidden;
+    min-width: 80px;
+    transition: all 0.2s;
+}
+
+.btn-unit-pill.active {
+    background-color: #fff;
+    border-color: #00589f;
+    color: #00589f;
+    box-shadow: 0 0 0 1px #00589f;
+    font-weight: 700 !important;
+    padding-left: 32px !important;
+    /* Increase left padding to avoid tick overlap */
+}
+
+/* The blue corner tag with tick - Reduced size */
+.btn-unit-pill.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 22px;
+    /* Reduced from 28px */
+    height: 22px;
+    /* Reduced from 28px */
+    background: #00589f;
+    border-bottom-right-radius: 16px;
+    /* Reduced curve */
+    z-index: 1;
+}
+
+/* The Tick Icon inside the tag - Repositioned */
+.btn-unit-pill.active::after {
+    content: '\F26E';
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    top: 1px;
+    left: 3px;
+    color: #fff;
+    font-size: 10px;
+    /* Reduced from 12px */
+    z-index: 2;
+    font-weight: 900;
+}
+
+/* Qty Selector - Long Chau Style */
+.vc_qty_box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #00589f;
+    /* VitaCare Blue border */
+    border-radius: 50px;
+    height: 36px;
+    background: #fff;
+    width: 130px;
+    overflow: hidden;
+}
+
+.vc_qty_box button {
+    width: 40px;
+    height: 100%;
+    border: none;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 0;
+    line-height: 1;
+    transition: background 0.2s;
+}
+
+.vc_qty_box button:hover:not(:disabled) {
+    background-color: #f0f7ff;
+}
+
+.vc_qty_box button:disabled {
+    color: #ccc !important;
+    cursor: not-allowed;
+    background: #fafafa;
+}
+
+/* Minus Button */
+.vc_qty_box button:first-child {
+    border-right: 1px solid #00589f;
+    color: #666;
+}
+
+/* Plus Button */
+.vc_qty_box button:last-child {
+    border-left: 1px solid #00589f;
+    color: #00589f;
+    /* VitaCare Blue */
+    font-weight: 700;
+}
+
+.vc_qty_value {
+    flex: 1;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    /* Reduced from 18px */
+    color: #00589f;
+}
+
+/* Buttons Group */
+.vc_pd_btn_group {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+}
+
+.btn-buy-now {
+    flex: 1;
+    background: #00589f;
+    /* VitaCare Blue */
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 17px;
+    /* Reduced from 20px */
+    border: none;
+    height: 44px;
+    /* Slightly shorter */
+}
+
+.btn-add-cart {
+    flex: 1;
+    background: #fff;
+    color: #00589f;
+    padding: 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 17px;
+    /* Reduced from 20px */
+    border: 1px solid #00589f;
+}
+
+.btn-add-cart:hover {
+    background: #f0f7ff;
+}
+
+/* Trending Bar */
+.vc_trending_bar {
+    background: #fff9db;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.vc_trending_title {
+    font-size: 16px;
+    color: #e67e22;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+}
+
+.vc_trending_title i {
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.vc_trending_stats {
+    font-size: 14px;
+    color: #4b5563;
+    padding-left: 24px;
+    /* Align with text, not icon */
+}
+
+/* Info Table Spacing */
+.vc_pd_spec_table {
+    margin-top: 8px;
+    font-size: 13.5px;
+    /* Reduced by 1.5 units for better proportion */
+    color: #111;
+}
+
+.vc_spec_row {
+    display: flex;
+    padding: 6px 0;
+    border-bottom: 1px dashed #e9ecef;
+}
+
+.vc_spec_label {
+    width: 140px;
+    flex-shrink: 0;
+    color: #6c757d;
+}
+
+.vc_spec_value {
+    flex: 1;
+    color: #333;
+}
+
+.vc_spec_value.text-primary,
+.vc_spec_value .text-primary,
+.vc_pd_summary .text-primary {
+    color: #00589f !important;
+    /* VitaCare Blue */
+    text-decoration: none !important;
+}
+
+.vc_pd_summary .text-primary:hover {
+    color: #2b3e66 !important;
+    text-decoration: none !important;
+}
+
+.vc_spec_grid_2 {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 4px;
+    /* Reduced from 10px */
+}
+
+.vc_spec_row_stacked {
+    flex: 1;
+}
+
+/* Footer Badges */
+.vc_pd_footer_badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* Compact to fit */
+    margin-top: 16px;
+    flex-wrap: nowrap;
+}
+
+.vc_badge_item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    /* Narrow gap between icon/text */
+    flex: 1;
+}
+
+.vc_badge_icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.vc_badge_icon img {
+    width: 48px;
+    /* Bigger */
+    height: 48px;
+}
+
+.bg-blue-light {
+    background: transparent !important;
+}
+
+.vc_badge_text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    white-space: nowrap;
+    /* STOP WRAPPING */
+}
+
+.vc_badge_text strong {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.vc_badge_text span {
+    font-size: 12px;
+    color: #6c757d;
+}

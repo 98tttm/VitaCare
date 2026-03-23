@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject, HostListener, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject, HostListener, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
+import { CommonModule, DatePipe, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PromotionService } from '../services/promotion.service';
 import { OrderService } from '../services/order.service';
@@ -50,7 +50,7 @@ export type PromotionSortKind = 'start_date' | 'end_date' | 'usage' | 'name' | '
   templateUrl: './promotionmanage.html',
   styleUrl: './promotionmanage.css'
 })
-export class Promotionmanage implements OnInit {
+export class Promotionmanage implements OnInit, OnDestroy {
   readonly promotionTypeOptions = [
     { value: 'customer', label: 'Khách hàng (Customer)' },
     { value: 'category', label: 'Danh mục (Category)' },
@@ -68,6 +68,9 @@ export class Promotionmanage implements OnInit {
   promotions: Promotion[] = [];
   filteredPromotions: Promotion[] = [];
   searchTerm: string = '';
+  @ViewChild('promotionManageRoot', { read: ElementRef }) private promotionManageRoot?: ElementRef<HTMLElement>;
+  @ViewChild('promotionModalPortal') promotionModalPortal?: ElementRef<HTMLDivElement>;
+  @ViewChild('promotionDeleteModalPortal') promotionDeleteModalPortal?: ElementRef<HTMLDivElement>;
   isLoading: boolean = false;
 
   selectAll: boolean = false;
@@ -132,8 +135,20 @@ export class Promotionmanage implements OnInit {
     @Inject(OrderService) private orderService: OrderService,
     @Inject(ProductService) private productService: ProductService,
     @Inject(CustomerService) private customerService: CustomerService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    @Inject(DOCUMENT) private document: Document
   ) { }
+
+  private attachModalToBody(el?: HTMLDivElement | null): void {
+    if (!el || el.parentElement === this.document.body) return;
+    this.document.body.appendChild(el);
+  }
+
+  private restoreModalFromBody(el?: HTMLDivElement | null): void {
+    const host = this.promotionManageRoot?.nativeElement;
+    if (!el || !host || el.parentElement !== this.document.body) return;
+    host.appendChild(el);
+  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -147,6 +162,11 @@ export class Promotionmanage implements OnInit {
   ngOnInit(): void {
     this.fetchData();
     this.fetchGroups();
+  }
+
+  ngOnDestroy(): void {
+    this.restoreModalFromBody(this.promotionModalPortal?.nativeElement);
+    this.restoreModalFromBody(this.promotionDeleteModalPortal?.nativeElement);
   }
 
   fetchGroups() {
@@ -440,6 +460,8 @@ export class Promotionmanage implements OnInit {
       return;
     }
     this.isDeleteConfirmModalOpen = true;
+    this.cdr.detectChanges();
+    setTimeout(() => this.attachModalToBody(this.promotionDeleteModalPortal?.nativeElement), 0);
   }
 
   confirmDelete() {
@@ -464,9 +486,18 @@ export class Promotionmanage implements OnInit {
     });
   }
 
-  closeDeleteConfirmModal() { this.isDeleteConfirmModalOpen = false; }
+  closeDeleteConfirmModal() {
+    this.restoreModalFromBody(this.promotionDeleteModalPortal?.nativeElement);
+    this.isDeleteConfirmModalOpen = false;
+  }
 
-  openAddPromotionModal() { this.isEditMode = false; this.resetForm(); this.isModalOpen = true; }
+  openAddPromotionModal() {
+    this.isEditMode = false;
+    this.resetForm();
+    this.isModalOpen = true;
+    this.cdr.detectChanges();
+    setTimeout(() => this.attachModalToBody(this.promotionModalPortal?.nativeElement), 0);
+  }
 
   openEditPromotionModal() {
     const selected = this.filteredPromotions.filter(p => p.selected);
@@ -540,6 +571,8 @@ export class Promotionmanage implements OnInit {
       }
     });
     this.isModalOpen = true;
+    this.cdr.detectChanges();
+    setTimeout(() => this.attachModalToBody(this.promotionModalPortal?.nativeElement), 0);
   }
 
   onRowClick(promo: Promotion, event: MouseEvent) {
@@ -551,7 +584,10 @@ export class Promotionmanage implements OnInit {
     this.openPromotionDetail(promo);
   }
 
-  closeModal() { this.isModalOpen = false; }
+  closeModal() {
+    this.restoreModalFromBody(this.promotionModalPortal?.nativeElement);
+    this.isModalOpen = false;
+  }
 
   savePromotion() {
     if (!this.currentPromotion.code || !this.currentPromotion.name) {
@@ -815,7 +851,7 @@ export class Promotionmanage implements OnInit {
     return preview + more;
   }
 
-  // Hiển thị tên danh mục, cách nhau bằng " | " cho phần Danh mục sản phẩm áp dụng
+  // Hiển thị tên danh mục, cách nhau bằng " > " cho phần Danh mục sản phẩm áp dụng
   getSelectedCategorySummaryForPopup(): string {
     this.ensureArrayField('target_category_id');
     const ids: string[] = this.currentPromotion.target_category_id as string[];
@@ -854,7 +890,7 @@ export class Promotionmanage implements OnInit {
       return `${ids.length} danh mục được chọn`;
     }
 
-    return ordered.join(' | ');
+    return ordered.join(' > ');
   }
 
   // Tier selection helpers for customer promotions
