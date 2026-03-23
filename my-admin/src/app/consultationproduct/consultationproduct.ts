@@ -64,6 +64,36 @@ export class Consultationproduct implements OnInit, OnDestroy {
     return this.filters.status.length;
   }
 
+  /** Trạng thái câu hỏi — dùng chung cho lọc và card thống kê khi xem chi tiết. */
+  getProductQuestionState(q: any): 'pending' | 'assigned' | 'answered' {
+    if (q?.status === 'assigned') return 'assigned';
+    const hasAnswer = !!(q?.answer && String(q.answer).trim());
+    if (hasAnswer) return 'answered';
+    if (q?.status === 'answered') return 'answered';
+    return 'pending';
+  }
+
+  /** Card thống kê: danh sách = tổng toàn hệ thống; chi tiết = chỉ sản phẩm đang xem. */
+  get statsTotal(): number {
+    if (!this.selectedProduct) return this.totalQuestions;
+    return (this.questions || []).length;
+  }
+
+  get statsPending(): number {
+    if (!this.selectedProduct) return this.pendingCount;
+    return (this.questions || []).filter((q) => this.getProductQuestionState(q) === 'pending').length;
+  }
+
+  get statsAssigned(): number {
+    if (!this.selectedProduct) return this.assignedCount;
+    return (this.questions || []).filter((q) => this.getProductQuestionState(q) === 'assigned').length;
+  }
+
+  get statsAnswered(): number {
+    if (!this.selectedProduct) return this.answeredCount;
+    return (this.questions || []).filter((q) => this.getProductQuestionState(q) === 'answered').length;
+  }
+
   constructor(
     @Inject(ConsultationService) private consultationService: ConsultationService,
     private datePipe: DatePipe,
@@ -480,9 +510,31 @@ export class Consultationproduct implements OnInit, OnDestroy {
     return this.datePipe.transform(dateString, 'dd/MM/yyyy') || '';
   }
 
+  /**
+   * true = nút «Trả lời» — ô nhập để trống.
+   * Chuẩn hóa status (Pending/PENDING) và coi answer trùng question là chưa trả lời hợp lệ.
+   */
+  isProductQuestionReplyMode(item: any): boolean {
+    if (!item) return true;
+    const st = String(item?.status ?? '').toLowerCase().trim();
+    const answerTrim = String(item?.answer ?? '').trim();
+    const questionTrim = String(item?.question ?? '').trim();
+    const hasAnswer = answerTrim.length > 0;
+    const answerSameAsQuestion = hasAnswer && questionTrim.length > 0 && answerTrim === questionTrim;
+    return (
+      !hasAnswer ||
+      answerSameAsQuestion ||
+      st === 'unreviewed' ||
+      st === 'pending' ||
+      st === 'assigned'
+    );
+  }
+
   openDetailModal(item: any, startInEdit = false) {
     this.selectedQuestion = { ...item };
-    this.replyContent = item.answer || '';
+
+    const answerTrim = String(item?.answer ?? '').trim();
+    this.replyContent = this.isProductQuestionReplyMode(item) ? '' : answerTrim;
     if (this.isAdmin) {
       const foundPharmacist = this.pharmacists.find(
         p => String(p._id) === String(item.assignedPharmacistId || item.pharmacist_id || item.pharmacistId || '')
@@ -500,6 +552,7 @@ export class Consultationproduct implements OnInit, OnDestroy {
     this.isModalOpen = false;
     this.selectedQuestion = null;
     this.pharmacistEditMode = false;
+    this.replyContent = '';
   }
 
   saveQuestion() {

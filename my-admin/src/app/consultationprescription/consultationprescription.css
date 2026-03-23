@@ -227,9 +227,9 @@
 }
 
 .stat-card.active-filter {
-    border: 2px solid #6a1b9a !important;
-    background-color: #f8f5fa;
-    box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.05);
+    border: 2px solid var(--vc-info-hover) !important;
+    background-color: var(--vc-info-bg);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--vc-info-hover) 8%, transparent);
 }
 
 .stat-label {
@@ -250,45 +250,45 @@
     transition: color 0.3s;
 }
 
-/* Status Specific Colors (Top Border & Text Only) */
+/* Status Specific Colors (Top Border & Text Only) — design tokens: color-system.css */
 .stat-card.stat-all {
-    border-top: 3px solid #64748b;
+    border-top: 4px solid var(--vc-info-main);
 }
 
 .stat-card.stat-all .stat-value {
-    color: #64748b;
+    color: var(--vc-info-hover);
 }
 
 .stat-card.stat-pending {
-    border-top: 3px solid #f59e0b;
+    border-top: 4px solid var(--vc-warning-main);
 }
 
 .stat-card.stat-pending .stat-value {
-    color: #f59e0b;
+    color: var(--vc-warning-main);
 }
 
 .stat-card.stat-waiting {
-    border-top: 3px solid #3b82f6;
+    border-top: 4px solid var(--vc-primary-light);
 }
 
 .stat-card.stat-waiting .stat-value {
-    color: #3b82f6;
+    color: var(--vc-primary-light);
 }
 
 .stat-card.stat-unreachable {
-    border-top: 3px solid #f97316;
+    border-top: 4px solid var(--vc-warning-hover);
 }
 
 .stat-card.stat-unreachable .stat-value {
-    color: #f97316;
+    color: var(--vc-warning-hover);
 }
 
 .stat-card.stat-advised {
-    border-top: 3px solid #8b5cf6;
+    border-top: 4px solid var(--vc-info-main);
 }
 
 .stat-card.stat-advised .stat-value {
-    color: #8b5cf6;
+    color: var(--vc-info-hover);
 }
 
 .stat-card.stat-consultation-failed {
@@ -406,11 +406,11 @@
 }
 
 .stat-card.stat-cancelled {
-    border-top: 3px solid #94a3b8;
+    border-top: 4px solid var(--vc-neutral-60);
 }
 
 .stat-card.stat-cancelled .stat-value {
-    color: #94a3b8;
+    color: var(--vc-neutral-60);
 }
 
 .filter-actions {

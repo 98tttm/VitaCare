@@ -87,22 +87,21 @@
                 <!-- Actions -->
                 <div class="bmi-actions">
                     <button type="button" class="bmi-btn bmi-btn--reset" (click)="reset()">Đặt lại</button>
-                    <button type="button" class="bmi-btn bmi-btn--save" *ngIf="authService.currentUser()"
-                        (click)="save()">Lưu kết quả</button>
+                    <button type="button" class="bmi-btn bmi-btn--save" [disabled]="saveInProgress()"
+                        (click)="onSaveClick()">Lưu kết quả</button>
                 </div>
             </div>
         </div>
 
-        <!-- Góc sức khỏe - BMI -->
-        @if (bmiBlogs().length) {
+        <!-- Góc sức khỏe (gộp gợi ý BMI + BMR) -->
+        @if (healthCornerBlogs().length) {
         <section class="bmi-related-blogs">
             <div class="bmi-blogs-header">
                 <h2 class="bmi-blogs-title">Góc sức khỏe</h2>
-                <a routerLink="/tim-kiem" [queryParams]="{ s: 'BMI', type: 'article' }" class="bmi-blogs-more">Xem
-                    thêm</a>
+                <a routerLink="/blog" class="bmi-blogs-more">Xem thêm</a>
             </div>
             <div class="bmi-blogs-layout">
-                @if (bmiBlogs()[0]; as mainBlog) {
+                @if (healthCornerBlogs()[0]; as mainBlog) {
                 <a [href]="mainBlog.url" target="_blank" rel="noopener" class="bmi-blog-main">
                     <div class="bmi-blog-main-img">
                         <img [src]="getBlogImageUrl(mainBlog)" [alt]="mainBlog.title" />
@@ -115,44 +114,7 @@
                 </a>
                 }
                 <div class="bmi-blog-side">
-                    @for (blog of bmiBlogs().slice(1, 5); track blog._id || blog.url) {
-                    <a [href]="blog.url" target="_blank" rel="noopener" class="bmi-blog-side-item">
-                        <div class="bmi-blog-side-img"><img [src]="getBlogImageUrl(blog)" [alt]="blog.title" /></div>
-                        <div class="bmi-blog-side-content">
-                            <span class="bmi-blog-tag bmi-blog-tag--inline">{{ blog.categoryName || 'Sức khỏe' }}</span>
-                            <h4 class="bmi-blog-side-title">{{ blog.title }}</h4>
-                            <p class="bmi-blog-side-desc">{{ blog.shortDescription }}</p>
-                        </div>
-                    </a>
-                    }
-                </div>
-            </div>
-        </section>
-        }
-
-        <!-- Góc sức khỏe - BMR -->
-        @if (bmrBlogs().length) {
-        <section class="bmi-related-blogs">
-            <div class="bmi-blogs-header">
-                <h2 class="bmi-blogs-title">Góc sức khỏe</h2>
-                <a routerLink="/tim-kiem" [queryParams]="{ s: 'BMR', type: 'article' }" class="bmi-blogs-more">Xem
-                    thêm</a>
-            </div>
-            <div class="bmi-blogs-layout">
-                @if (bmrBlogs()[0]; as mainBlog) {
-                <a [href]="mainBlog.url" target="_blank" rel="noopener" class="bmi-blog-main">
-                    <div class="bmi-blog-main-img">
-                        <img [src]="getBlogImageUrl(mainBlog)" [alt]="mainBlog.title" />
-                        <span class="bmi-blog-tag">{{ mainBlog.categoryName || 'Sức khỏe' }}</span>
-                    </div>
-                    <div class="bmi-blog-main-body">
-                        <h3 class="bmi-blog-main-title">{{ mainBlog.title }}</h3>
-                        <p class="bmi-blog-main-desc">{{ mainBlog.shortDescription }}</p>
-                    </div>
-                </a>
-                }
-                <div class="bmi-blog-side">
-                    @for (blog of bmrBlogs().slice(1, 5); track blog._id || blog.url) {
+                    @for (blog of healthCornerBlogs().slice(1, 5); track blog._id || blog.url) {
                     <a [href]="blog.url" target="_blank" rel="noopener" class="bmi-blog-side-item">
                         <div class="bmi-blog-side-img"><img [src]="getBlogImageUrl(blog)" [alt]="blog.title" /></div>
                         <div class="bmi-blog-side-content">
@@ -167,4 +129,23 @@
         </section>
         }
     </div>
+
+    @if (showSaveSuccess()) {
+    <div class="bmi-save-success-overlay" (click)="closeSaveSuccess()">
+        <div class="bmi-save-success-modal" (click)="$event.stopPropagation()" role="dialog"
+            aria-labelledby="bmi-save-success-title">
+            <button type="button" class="bmi-save-success-close" (click)="closeSaveSuccess()" aria-label="Đóng">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="bmi-save-success-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h3 id="bmi-save-success-title" class="bmi-save-success-title">Đã lưu vào sổ sức khỏe</h3>
+            <p class="bmi-save-success-desc">
+                Chỉ số BMI và BMR của bạn đã được cập nhật. Bạn có thể xem lại trong mục <strong>Sổ sức khỏe</strong>.
+            </p>
+            <button type="button" class="bmi-save-success-btn" (click)="closeSaveSuccess()">Đóng</button>
+        </div>
+    </div>
+    }
 </div>

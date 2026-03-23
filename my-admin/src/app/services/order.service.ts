@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -21,6 +21,35 @@ export class OrderService {
 
     getLocations(): Observable<any> {
         return this.http.get<any>('http://localhost:3000/api/tree_complete');
+    }
+
+    /** Danh sách cửa hàng (hệ thống) — dùng chọn điểm nhận khi dược sĩ tạo đơn */
+    getStoresList(limit: number = 500): Observable<any> {
+        return this.http.get<any>(`http://localhost:3000/api/stores?page=1&limit=${limit}`);
+    }
+
+    /** Cây Tỉnh → Quận → Phường (giống my-user StoreService) */
+    getStoreLocationsTree(): Observable<any> {
+        return this.http.get<any>('http://localhost:3000/api/store-locations/tree');
+    }
+
+    /** Lọc cửa hàng theo địa bàn + từ khóa (giống my-user) */
+    getStoresFiltered(filter: {
+        keyword?: string;
+        tinh_thanh?: string;
+        quan_huyen?: string;
+        phuong_xa?: string;
+        page?: number;
+        limit?: number;
+    }): Observable<any> {
+        let params = new HttpParams();
+        if (filter.keyword) params = params.set('keyword', filter.keyword);
+        if (filter.tinh_thanh) params = params.set('tinh_thanh', filter.tinh_thanh);
+        if (filter.quan_huyen) params = params.set('quan_huyen', filter.quan_huyen);
+        if (filter.phuong_xa) params = params.set('phuong_xa', filter.phuong_xa);
+        if (filter.page) params = params.set('page', filter.page.toString());
+        if (filter.limit) params = params.set('limit', filter.limit.toString());
+        return this.http.get<any>('http://localhost:3000/api/stores', { params });
     }
 
     /**

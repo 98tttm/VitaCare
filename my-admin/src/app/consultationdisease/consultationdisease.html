@@ -10,7 +10,7 @@
         <h1 class="content-title cd-page-title">Tư vấn bệnh</h1>
     </div>
 
-    <!-- Stats Container -->
+    <!-- Stats: tổng hệ thống trên danh sách; chỉ bệnh đang xem khi vào chi tiết -->
     <div class="stats-container">
         <div class="stat-card stat-all" (click)="filterByStatus('')" [class.active-filter]="currentFilter === ''"
             style="cursor: pointer;">
@@ -25,7 +25,7 @@
         <div class="stat-card stat-answered" (click)="filterByStatus('answered')"
             [class.active-filter]="currentFilter === 'answered'" style="cursor: pointer;">
             <span class="stat-label">ĐÃ TRẢ LỜI</span>
-            <span class="stat-value">{{ answeredCount }}</span>
+            <span class="stat-value">{{ diseaseStatsAnswered }}</span>
         </div>
     </div>
 

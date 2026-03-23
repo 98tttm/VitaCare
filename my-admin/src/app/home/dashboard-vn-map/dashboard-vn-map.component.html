@@ -1,0 +1,276 @@
+<section class="vn-map-section" aria-label="Bản đồ Việt Nam">
+  <div class="vn-map-card">
+    <div class="vn-map-card-head">
+      <div class="vn-map-title-wrap">
+        <h4 class="vn-map-title">Bản đồ Việt Nam</h4>
+        <p class="vn-map-sub">
+          Bản đồ open source Leaflet + OpenStreetMap; bấm vòng tỉnh để xem cửa hàng hoặc thống kê đơn.
+        </p>
+      </div>
+      <div class="vn-map-mode" role="group" aria-label="Chế độ hiển thị">
+        <button
+          type="button"
+          class="vn-map-mode-btn"
+          [class.active]="mapMode === 'stores'"
+          (click)="setMode('stores')"
+        >
+          Hệ thống cửa hàng
+        </button>
+        <button
+          type="button"
+          class="vn-map-mode-btn"
+          [class.active]="mapMode === 'orders'"
+          (click)="setMode('orders')"
+        >
+          Phân bổ đơn hàng
+        </button>
+      </div>
+    </div>
+
+    <div class="vn-map-card-body" *ngIf="!loadError && !mapApiError">
+      <div class="vn-map-loading-overlay" *ngIf="loading">
+        <span>Đang tải dữ liệu tỉnh/thành…</span>
+      </div>
+
+      <div class="vn-map-col vn-map-col-map">
+        <div class="vn-map-legend">
+          <span class="vn-legend-item stores" *ngIf="mapMode === 'stores' && !selectedProvince">
+            <i class="bi bi-circle-fill"></i> Hotspot theo dữ liệu cửa hàng thực (tổng {{ totalStores }})
+          </span>
+          <span class="vn-legend-item stores" *ngIf="mapMode === 'stores' && selectedProvince">
+            <i class="bi bi-geo-alt-fill"></i> Marker = cửa hàng (tọa độ DB hoặc geocode địa chỉ đầy đủ từ OSM)
+          </span>
+          <span class="vn-legend-item orders" *ngIf="mapMode === 'orders'">
+            <i class="bi bi-circle-fill"></i> Số đơn (theo địa chỉ nhận)
+          </span>
+        </div>
+        <div class="vn-map-host-wrap">
+          <div #mapHost class="vn-map-host"></div>
+        </div>
+      </div>
+
+      <aside class="vn-map-col vn-map-col-detail">
+        <!-- Chưa chọn tỉnh -->
+        <div class="vn-detail-empty" *ngIf="!selectedProvince">
+          <i class="bi bi-geo-alt vn-detail-empty-icon"></i>
+          <p>Chọn một tỉnh/thành trên bản đồ để xem chi tiết.</p>
+          <p class="vn-detail-hint" *ngIf="mapMode === 'stores'">
+            Dữ liệu cửa hàng lấy từ <strong>API</strong> (localhost:3000). Sau khi chọn tỉnh, bản đồ hiển thị đúng vị trí từng cửa hàng.
+          </p>
+          <p class="vn-detail-hint" *ngIf="mapMode === 'orders'">
+            Đếm đơn theo tỉnh từ địa chỉ giao tận nơi hoặc địa chỉ nhà thuốc (nhận tại NT).
+          </p>
+        </div>
+
+        <!-- Đơn hàng: thống kê -->
+        <div class="vn-detail-content" *ngIf="selectedProvince && mapMode === 'orders'">
+          <div class="vn-detail-head">
+            <h5 class="vn-detail-name">{{ selectedProvince.name }}</h5>
+            <button type="button" class="vn-detail-close" (click)="clearProvinceSelection()">Đóng</button>
+          </div>
+          <ng-container *ngIf="orderDetailForSelected() as od">
+            <div class="vn-stat-grid">
+              <div class="vn-stat-pill">
+                <span class="lab">Tổng đơn</span>
+                <span class="val">{{ od.total }}</span>
+              </div>
+              <div class="vn-stat-pill home">
+                <span class="lab">Giao tận nơi</span>
+                <span class="val">{{ od.homeDelivery }}</span>
+              </div>
+              <div class="vn-stat-pill ph">
+                <span class="lab">Nhận tại NT</span>
+                <span class="val">{{ od.pharmacyPickup }}</span>
+              </div>
+            </div>
+            <h6 class="vn-mini-title">Đơn gần đây (mẫu)</h6>
+            <ul class="vn-order-list">
+              <li *ngFor="let o of od.samples" (click)="openOrderDetail(o)" class="vn-order-item-clickable">
+                <div class="vn-order-row">
+                  <span class="vn-order-id">{{ orderLabel(o) }}</span>
+                  <span class="vn-order-amt">{{ formatMoney(o?.totalAmount) }}</span>
+                </div>
+                <div class="vn-order-meta">
+                  <span class="vn-badge" [class.ph]="o?.atPharmacy">{{ deliveryLabel(o) }}</span>
+                </div>
+              </li>
+            </ul>
+          </ng-container>
+        </div>
+
+        <!-- Cửa hàng: đang tải -->
+        <div class="vn-detail-loading" *ngIf="selectedProvince && mapMode === 'stores' && storesLoading">
+          <p>Đang tải danh sách cửa hàng…</p>
+        </div>
+
+        <!-- Cửa hàng: lỗi -->
+        <div class="vn-detail-err" *ngIf="selectedProvince && mapMode === 'stores' && !storesLoading && storesError">
+          {{ storesError }}
+        </div>
+
+        <!-- Cửa hàng: danh sách (chưa chọn cửa cụ thể) -->
+        <div
+          class="vn-detail-content vn-store-list-panel"
+          *ngIf="selectedProvince && mapMode === 'stores' && !storesLoading && !storesError && !selectedStore"
+        >
+          <div class="vn-detail-head">
+            <div>
+              <h5 class="vn-detail-name">{{ selectedProvince.name }}</h5>
+              <p class="vn-detail-sub" *ngIf="usedApiTinh">Lọc theo tỉnh: {{ usedApiTinh }}</p>
+            </div>
+            <button type="button" class="vn-detail-close" (click)="clearProvinceSelection()">Đóng</button>
+          </div>
+          <p class="vn-detail-note" *ngIf="storesInProvince.length">
+            {{ storesInProvince.length }} cửa hàng — chọn một dòng hoặc điểm trên bản đồ.
+          </p>
+          <p class="vn-detail-note vn-warn" *ngIf="!storesInProvince.length">
+            Không có cửa hàng trong dữ liệu cho tỉnh này (hoặc tên tỉnh chưa khớp DB).
+          </p>
+          <ul class="vn-store-list vn-store-list-scroll">
+            <li *ngFor="let st of storesInProvince" (click)="selectStore(st)">
+              <span class="vn-store-name">{{ st.ten_cua_hang || 'VitaCare' }}</span>
+              <span class="vn-store-addr">{{ addressLine(st) }}</span>
+              <span class="vn-store-meta" *ngIf="st.giao_hang"><i class="bi bi-truck"></i> Giao hàng</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Cửa hàng: chi tiết -->
+        <div
+          class="vn-detail-content vn-store-detail-panel"
+          *ngIf="selectedProvince && mapMode === 'stores' && !storesLoading && selectedStore"
+        >
+          <button type="button" class="vn-back-list" (click)="clearStoreSelection()">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+          </button>
+
+          <div class="vn-store-detail-head">
+            <span
+              class="vn-open-badge"
+              [class.open]="isOpen(selectedStore)"
+              [class.closed]="!isOpen(selectedStore)"
+            >
+              {{ isOpen(selectedStore) ? 'Đang mở cửa' : 'Đóng cửa' }}
+            </span>
+            <h5 class="vn-detail-title">{{ selectedStore.ten_cua_hang }}</h5>
+            <div class="vn-head-right">
+              <div class="vn-head-rating" *ngIf="selectedStore.danh_gia">
+                <span class="vn-head-rating-num">{{ selectedStore.danh_gia.diem_tb | number : '1.1-1' }}</span>
+                <span class="vn-head-rating-stars">
+                  <i
+                    class="bi"
+                    *ngFor="let s of getStarArray(selectedStore.danh_gia!.diem_tb ?? 0)"
+                    [ngClass]="{
+                      'bi-star-fill': s === 'full',
+                      'bi-star-half': s === 'half',
+                      'bi-star': s === 'empty'
+                    }"
+                  ></i>
+                </span>
+              </div>
+              <div class="vn-detail-actions">
+                <button type="button" class="vn-btn-primary" (click)="openMap(selectedStore)">
+                  <i class="bi bi-navigation"></i> Chỉ đường
+                </button>
+              </div>
+            </div>
+            <span class="vn-loai-badge" *ngIf="selectedStore.loai_hinh">{{ selectedStore.loai_hinh }}</span>
+          </div>
+
+          <div class="vn-detail-map-row">
+            <div class="vn-mini-map" *ngIf="getMapUrl(selectedStore)">
+              <iframe
+                [src]="getMapUrl(selectedStore)!"
+                title="Bản đồ cửa hàng"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+            <div class="vn-mini-map vn-mini-map-fallback" *ngIf="!getMapUrl(selectedStore)">
+              <i class="bi bi-map"></i> Chưa có tọa độ bản đồ
+            </div>
+          </div>
+
+          <div class="vn-store-facts">
+            <div class="vn-fact-line">
+              <span [class.open-tag]="isOpen(selectedStore)" [class.closed-tag]="!isOpen(selectedStore)">
+                {{ isOpen(selectedStore) ? 'Đang mở' : 'Đóng cửa' }}
+              </span>
+              <span class="dot">·</span>
+              <span>{{ getTodayHours(selectedStore) }}</span>
+            </div>
+            <div class="vn-fact-row">
+              <i class="bi bi-geo-alt"></i>
+              <span>{{ addressLine(selectedStore) }}</span>
+            </div>
+            <div class="vn-fact-row" *ngIf="selectedStore.thong_tin_lien_he?.so_dien_thoai?.length">
+              <i class="bi bi-telephone"></i>
+              <span>
+                <a
+                  *ngFor="
+                    let phone of selectedStore.thong_tin_lien_he!.so_dien_thoai | slice : 0 : 2;
+                    let last = last
+                  "
+                  href="javascript:void(0)"
+                  (click)="callPhone(phone)"
+                >
+                  {{ phone }}<span *ngIf="!last">, </span>
+                </a>
+                <span *ngIf="(selectedStore.thong_tin_lien_he?.so_dien_thoai?.length || 0) > 2">...</span>
+              </span>
+            </div>
+            <div class="vn-fact-row" *ngIf="selectedStore.thong_tin_lien_he?.hotline">
+              <i class="bi bi-headset"></i>
+              <span><strong>Hotline:</strong> {{ selectedStore.thong_tin_lien_he!.hotline }}</span>
+            </div>
+            <div class="vn-fact-row" *ngIf="selectedStore.giao_hang">
+              <i class="bi bi-truck"></i>
+              <span
+                >Giao hàng trong bán kính <strong>{{ selectedStore.ban_kinh_giao_hang }} km</strong></span
+              >
+            </div>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+
+    <div class="vn-map-error" *ngIf="loadError">{{ loadError }}</div>
+    <div class="vn-map-error vn-map-error--info" *ngIf="mapApiError && !loadError">{{ mapApiError }}</div>
+  </div>
+
+  <div class="vn-order-modal-backdrop" *ngIf="selectedOrder" (click)="closeOrderDetail()">
+    <section class="vn-order-modal" (click)="$event.stopPropagation()">
+      <header class="vn-order-modal-head">
+        <h5>Chi tiết đơn {{ orderLabel(selectedOrder) }}</h5>
+        <button type="button" class="vn-order-modal-close" (click)="closeOrderDetail()">Đóng</button>
+      </header>
+      <div class="vn-order-modal-body">
+        <div class="vn-order-kv">
+          <span class="k">Khách hàng</span>
+          <span class="v">{{ orderCustomerName(selectedOrder) }}</span>
+        </div>
+        <div class="vn-order-kv">
+          <span class="k">SĐT</span>
+          <span class="v">{{ orderPhone(selectedOrder) || '—' }}</span>
+        </div>
+        <div class="vn-order-kv">
+          <span class="k">Hình thức</span>
+          <span class="v">{{ deliveryLabel(selectedOrder) }}</span>
+        </div>
+        <div class="vn-order-kv">
+          <span class="k">Địa chỉ</span>
+          <span class="v">{{ orderAddress(selectedOrder) }}</span>
+        </div>
+        <div class="vn-order-kv">
+          <span class="k">Ngày tạo</span>
+          <span class="v">{{ orderCreatedAt(selectedOrder) }}</span>
+        </div>
+        <div class="vn-order-kv">
+          <span class="k">Tổng tiền</span>
+          <span class="v">{{ formatMoney(selectedOrder?.totalAmount) }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>

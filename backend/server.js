@@ -77,7 +77,7 @@ const DiseaseGroupModel = mongoose.model('disease_groups_metadata', genericSchem
 
 // --- CUSTOMER TIERING HELPERS ---
 /**
- * Tính tiering từ tổng tiền đã chi (chỉ tính đơn đã giao thành công).
+ * Tính tiering từ tổng tiền đã chi (chỉ tính đơn trạng thái unreview).
  * Ngưỡng mặc định (có thể chỉnh lại theo business):
  *  - < 3.000.000đ: Đồng
  *  - 3.000.000 – < 10.000.000đ: Bạc
@@ -88,6 +88,72 @@ function getTierFromTotalSpent(total) {
   if (t >= 10_000_000) return 'Vàng';
   if (t >= 3_000_000) return 'Bạc';
   return 'Đồng';
+}
+
+/** Chỉ tính totalspent/tiering từ các đơn ở trạng thái unreview. */
+const SUCCESS_ORDER_STATUSES_FOR_SPENDING = ['unreview'];
+
+function normalizeUserIdForSpending(raw) {
+  if (raw == null) return '';
+  return String(raw).trim();
+}
+
+/**
+ * Recompute totalspent + tiering từ toàn bộ đơn thành công của 1 user.
+ * Dùng khi đơn đổi trạng thái để tránh lệch tier theo thời gian.
+ */
+async function recomputeUserTotalSpentAndTier(rawUserId) {
+  const rawNorm = normalizeUserIdForSpending(rawUserId);
+  if (!rawNorm) return null;
+
+  const userQuery = [{ user_id: rawNorm }, { _id: rawNorm }];
+  if (mongoose.Types.ObjectId.isValid(rawNorm)) {
+    userQuery.push({ _id: new mongoose.Types.ObjectId(rawNorm) });
+  }
+  const userDoc = await usersCollection().findOne(
+    { $or: userQuery },
+    { projection: { user_id: 1, _id: 1 } }
+  );
+
+  const userId = normalizeUserIdForSpending(userDoc?.user_id || rawNorm);
+  const candidates = Array.from(new Set([
+    rawNorm,
+    userId,
+    normalizeUserIdForSpending(userDoc?._id),
+  ].filter(Boolean)));
+
+  const rows = await ordersCollection().aggregate([
+    { $match: { status: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
+    {
+      $addFields: {
+        user_id_norm: {
+          $trim: { input: { $toString: { $ifNull: ['$user_id', ''] } } }
+        }
+      }
+    },
+    { $match: { $expr: { $in: ['$user_id_norm', candidates] } } },
+    {
+      $group: {
+        _id: null,
+        totalspent: { $sum: { $ifNull: ['$totalAmount', 0] } }
+      }
+    }
+  ]).toArray();
+
+  const totalspent = Number(rows?.[0]?.totalspent) || 0;
+  const tiering = getTierFromTotalSpent(totalspent);
+  if (userDoc?._id != null) {
+    await usersCollection().updateOne(
+      { _id: userDoc._id },
+      { $set: { totalspent, tiering } },
+    );
+  } else {
+    await usersCollection().updateOne(
+      { user_id: userId },
+      { $set: { totalspent, tiering } },
+    );
+  }
+  return { user_id: userId, totalspent, tiering };
 }
 
 const app = express();
@@ -301,6 +367,73 @@ async function backfillPrescriptionConsultAdminNoticesIfMissing() {
 /** Thông báo cho dược sĩ (vd. câu hỏi tư vấn bệnh từ user) — đọc qua GET /api/admin/notifications?role=pharmacist. */
 const pharmacistNoticeCollection = () => mongoose.connection.db.collection('pharmacist_notice');
 const noticesCollection = () => mongoose.connection.db.collection('notice');
+
+/** Bộ lọc tìm document sản phẩm theo _id (string / ObjectId / $oid JSON) */
+function productIdFiltersFromRaw(rawId) {
+  const idStr = String(rawId);
+  const filters = [{ _id: idStr }];
+  if (mongoose.Types.ObjectId.isValid(idStr)) {
+    filters.push({ _id: new mongoose.Types.ObjectId(idStr) });
+  }
+  filters.push({ '_id.$oid': idStr });
+  return filters;
+}
+
+function getProductStockFromDoc(p) {
+  if (!p) return 0;
+  if (p.stock === undefined || p.stock === null) return 99;
+  const n = Number(p.stock);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/** Kiểm tra đủ tồn kho trước khi tạo đơn (không cho âm kho khi đặt). */
+async function assertInventoryAvailableForOrderItems(items) {
+  if (!Array.isArray(items) || items.length === 0) {
+    return { ok: false, message: 'Đơn hàng chưa có sản phẩm.' };
+  }
+  for (const it of items) {
+    const rawId = it.productId || it.product_id || it._id;
+    const qty = Number(it.quantity) || 1;
+    if (!rawId || qty <= 0) continue;
+    const idStr = String(rawId);
+    const filters = productIdFiltersFromRaw(idStr);
+    const p = await productsCollection().findOne({ $or: filters }, { projection: { stock: 1, name: 1 } });
+    const available = getProductStockFromDoc(p);
+    if (available < qty) {
+      const name = (p && p.name) || it.productName || it.sku || idStr;
+      return {
+        ok: false,
+        message: `Sản phẩm "${String(name).slice(0, 100)}" chỉ còn ${available} trong kho, không đủ ${qty} sản phẩm.`,
+      };
+    }
+  }
+  return { ok: true };
+}
+
+/**
+ * Hoàn lại tồn kho + giảm lượt bán khi huỷ đơn / hoàn đơn (sold không âm).
+ */
+async function restoreInventoryForOrderLineItems(items) {
+  if (!Array.isArray(items) || items.length === 0) return;
+  for (const it of items) {
+    const rawId = it.productId || it.product_id || it._id;
+    const qty = Number(it.quantity) || 1;
+    if (!rawId || qty <= 0) continue;
+    const idStr = String(rawId);
+    const filters = productIdFiltersFromRaw(idStr);
+    await productsCollection().updateOne(
+      { $or: filters },
+      [
+        {
+          $set: {
+            stock: { $add: [{ $ifNull: ['$stock', 0] }, qty] },
+            sold: { $max: [0, { $subtract: [{ $ifNull: ['$sold', 0] }, qty] }] },
+          },
+        },
+      ],
+    );
+  }
+}
 const storeSystemCollection = () => mongoose.connection.db.collection('storesystem_full');
 const doctorsCollection = () => mongoose.connection.db.collection('doctors');
 const remindersCollection = () => mongoose.connection.db.collection('reminders');
@@ -935,6 +1068,105 @@ async function deleteAllOrphanPrescriptionAdminNoticesGlobally() {
   }
 }
 
+/**
+ * Xóa khỏi DB các admin_notice tư vấn sản phẩm mà câu hỏi gốc không còn trong consultations_product.
+ * Trả về mảng đã lọc (dùng cho GET notifications).
+ */
+async function deleteOrphanProductAdminNoticesInList(noticeDocs) {
+  if (!Array.isArray(noticeDocs) || !noticeDocs.length) return noticeDocs;
+  const productNotices = noticeDocs.filter(
+    (d) => String(d.type || '') === 'consultation_product'
+  );
+  if (!productNotices.length) return noticeDocs;
+
+  const skuList = [
+    ...new Set(
+      productNotices
+        .map((d) => {
+          const m = d.meta && typeof d.meta === 'object' ? d.meta : {};
+          return String(m.sku || '').trim();
+        })
+        .filter(Boolean)
+    ),
+  ];
+
+  // Notice thiếu sku thì coi như orphan để dọn dữ liệu rác cũ.
+  const orphanIds = [];
+  for (const d of productNotices) {
+    const m = d.meta && typeof d.meta === 'object' ? d.meta : {};
+    const sku = String(m.sku || '').trim();
+    if (!sku && d._id != null) orphanIds.push(d._id);
+  }
+  if (!skuList.length) {
+    if (orphanIds.length) {
+      await adminNoticeCollection().deleteMany({
+        _id: { $in: orphanIds },
+        type: 'consultation_product',
+      });
+    }
+    const deadOnly = new Set(orphanIds.map((id) => (id && id.toString ? id.toString() : String(id))));
+    return noticeDocs.filter((d) => {
+      const idStr = d._id && d._id.toString ? d._id.toString() : String(d._id || '');
+      return !deadOnly.has(idStr);
+    });
+  }
+
+  try {
+    const rows = await ConsultationProductModel.find({ sku: { $in: skuList } })
+      .select({ sku: 1, questions: 1 })
+      .lean();
+
+    const questionKeys = new Set();
+    const skuWithAnyQuestion = new Set();
+    for (const row of rows) {
+      const sku = String(row?.sku || '').trim();
+      if (!sku) continue;
+      const questions = Array.isArray(row?.questions) ? row.questions : [];
+      if (questions.length) skuWithAnyQuestion.add(sku);
+      for (const q of questions) {
+        const qid = String(q?.id || q?._id || '').trim();
+        if (!qid) continue;
+        questionKeys.add(`${sku}::${qid}`);
+      }
+    }
+
+    for (const d of productNotices) {
+      const m = d.meta && typeof d.meta === 'object' ? d.meta : {};
+      const sku = String(m.sku || '').trim();
+      const qid = String(m.questionId || m.question_id || '').trim();
+      if (!sku) continue;
+
+      // Có questionId thì đối chiếu chính xác theo sku+questionId.
+      if (qid) {
+        if (!questionKeys.has(`${sku}::${qid}`) && d._id != null) orphanIds.push(d._id);
+        continue;
+      }
+      // Legacy notice thiếu questionId: nếu sku không còn câu hỏi nào thì dọn.
+      if (!skuWithAnyQuestion.has(sku) && d._id != null) orphanIds.push(d._id);
+    }
+
+    if (orphanIds.length) {
+      await adminNoticeCollection().deleteMany({
+        _id: { $in: orphanIds },
+        type: 'consultation_product',
+      });
+      console.log(
+        `[cleanup] admin_notice: đã xóa ${orphanIds.length} thông báo tư vấn sản phẩm mồ côi (câu hỏi không còn trong consultations_product).`
+      );
+    }
+
+    const dead = new Set(orphanIds.map((id) => (id && id.toString ? id.toString() : String(id))));
+    return noticeDocs.filter((d) => {
+      if (String(d.type || '') !== 'consultation_product') return true;
+      const idStr = d._id && d._id.toString ? d._id.toString() : String(d._id || '');
+      return !dead.has(idStr);
+    });
+  } catch (e) {
+    console.warn('[cleanup] orphan product admin_notice:', e?.message || e);
+    return noticeDocs;
+  }
+}
+
 // GET /api/admin/notifications - DB admin_notice + đơn trả hàng + tư vấn (đơn chờ từ admin_notice khi đặt hàng)
 app.get('/api/admin/notifications', async (req, res) => {
   try {
@@ -983,6 +1215,7 @@ app.get('/api/admin/notifications', async (req, res) => {
     let adminNoticeDocs = adminNoticeDocsRaw;
     if (accountRole === 'admin') {
       adminNoticeDocs = await deleteOrphanPrescriptionAdminNoticesInList(adminNoticeDocs);
+      adminNoticeDocs = await deleteOrphanProductAdminNoticesInList(adminNoticeDocs);
     }
 
     let pharmacistDiseaseNoticeDocs = rawPharmacistDiseaseNoticeDocs;
@@ -2229,6 +2462,8 @@ app.post('/api/orders', async (req, res) => {
       user_id, paymentMethod, statusPayment, atPharmacy, pharmacyAddress,
       subtotal, directDiscount, voucherDiscount, vitaXuDiscount, shippingFee, shippingDiscount, totalAmount,
       note, requestInvoice, hideProductInfo, item, shippingInfo, promotion,
+      pharmacistWalkIn, createdByAdmin, createdByPharmacist, pickupStoreId,
+      status: bodyStatus,
     } = req.body || {};
 
     const uid = (user_id != null && user_id !== '') ? String(user_id).trim() : null;
@@ -2238,17 +2473,62 @@ app.post('/api/orders', async (req, res) => {
     if (!paymentMethod) {
       return res.status(400).json({ success: false, message: 'Chưa chọn phương thức thanh toán.' });
     }
+
+    const normCreator = (o) => {
+      if (!o || typeof o !== 'object') return null;
+      const id = o.id != null ? String(o.id).trim() : '';
+      const name = o.name != null ? String(o.name).trim() : '';
+      if (!id && !name) return null;
+      return { id: id || '', name: name || '' };
+    };
+    const normalizedPharmacist = normCreator(createdByPharmacist);
+    const normalizedAdmin = normCreator(createdByAdmin);
+    const asBool = (v) => v === true || v === 'true' || v === 1 || v === '1';
+    const atPharmacyBool = asBool(atPharmacy);
+    const walkInFlag = asBool(pharmacistWalkIn);
+    const hasPickupStore = String(pickupStoreId || '').trim() !== '';
+    /** Có người tạo là dược sĩ + nhận tại CH + mã cửa — coi như đơn quầy dù flag pharmacistWalkIn lỗi encoding */
+    const pharmacistPickup =
+      (walkInFlag && atPharmacyBool) ||
+      (atPharmacyBool && hasPickupStore && normalizedPharmacist != null);
+    // Alias cũ (lưu DB / validate địa chỉ quầy)
+    const walkInPharmacist = pharmacistPickup;
+
+    const explicitCounterComplete =
+      String(bodyStatus || '').toLowerCase() === 'delivered' &&
+      String(statusPayment || '').toLowerCase() === 'paid' &&
+      atPharmacyBool &&
+      hasPickupStore;
+    const pharmacistCounterComplete =
+      walkInPharmacist ||
+      (explicitCounterComplete && (normalizedPharmacist != null || walkInFlag));
+
     // Khách vãng lai: bắt buộc shippingInfo có fullName, phone (và address nếu giao tận nơi)
-    const ship = shippingInfo || {};
+    // Đơn tạo bởi dược sĩ (admin panel): có thể bỏ qua tên/SĐT → mặc định "Khách vãng lai", nhận tại cửa hàng
+    let ship = { ...(shippingInfo || {}) };
     if (!uid) {
-      if (!ship.fullName || !String(ship.fullName).trim()) {
-        return res.status(400).json({ success: false, message: 'Vui lòng nhập tên người nhận.' });
-      }
-      if (!ship.phone || !String(ship.phone).trim()) {
-        return res.status(400).json({ success: false, message: 'Vui lòng nhập số điện thoại.' });
-      }
-      if (!atPharmacy && (!ship.address || !String(ship.address).trim())) {
-        return res.status(400).json({ success: false, message: 'Vui lòng nhập địa chỉ giao hàng.' });
+      if (pharmacistCounterComplete) {
+        const phAddr = String(pharmacyAddress || '').trim();
+        if (!phAddr) {
+          return res.status(400).json({ success: false, message: 'Vui lòng chọn cửa hàng nhận hàng.' });
+        }
+        ship = {
+          ...ship,
+          fullName: (ship.fullName && String(ship.fullName).trim()) || 'Khách vãng lai',
+          phone: ship.phone != null ? String(ship.phone).trim() : '',
+          email: ship.email != null ? String(ship.email).trim() : '',
+          address: phAddr,
+        };
+      } else {
+        if (!ship.fullName || !String(ship.fullName).trim()) {
+          return res.status(400).json({ success: false, message: 'Vui lòng nhập tên người nhận.' });
+        }
+        if (!ship.phone || !String(ship.phone).trim()) {
+          return res.status(400).json({ success: false, message: 'Vui lòng nhập số điện thoại.' });
+        }
+        if (!atPharmacyBool && (!ship.address || !String(ship.address).trim())) {
+          return res.status(400).json({ success: false, message: 'Vui lòng nhập địa chỉ giao hàng.' });
+        }
       }
     }
 
@@ -2258,13 +2538,27 @@ app.post('/api/orders', async (req, res) => {
     const now = new Date().toISOString();
 
     const pmNorm = String(paymentMethod || 'cod').trim().toLowerCase();
+
+    /** Đơn tạo bởi dược sĩ tại quầy: coi như đã giao & đã thanh toán ngay (không qua chờ xác nhận / đang giao). */
+    const statusPaymentResolved = pharmacistCounterComplete
+      ? 'paid'
+      : ((pmNorm && pmNorm !== 'cod') ? 'paid' : (statusPayment || 'unpaid'));
+    const orderStatusResolved = pharmacistCounterComplete ? 'delivered' : 'pending';
+    const routeResolved = pharmacistCounterComplete
+      ? { pending: now, confirmed: now, shipping: now, delivered: now }
+      : { pending: now };
+
     const orderDoc = {
       order_id: orderId,
       user_id: uid || null,
       paymentMethod: pmNorm || 'cod',
-      statusPayment: (pmNorm && pmNorm !== 'cod') ? 'paid' : (statusPayment || 'unpaid'),
-      atPharmacy: Boolean(atPharmacy),
-      pharmacyAddress: pharmacyAddress || '',
+      statusPayment: statusPaymentResolved,
+      atPharmacy: atPharmacyBool,
+      pharmacyAddress: pharmacistCounterComplete ? String(pharmacyAddress || '').trim() : (pharmacyAddress || ''),
+      pharmacistWalkIn: pharmacistCounterComplete,
+      pickupStoreId: pickupStoreId != null ? String(pickupStoreId).trim() : '',
+      createdByAdmin: normalizedAdmin,
+      createdByPharmacist: normalizedPharmacist,
       subtotal: Number(subtotal) || 0,
       directDiscount: Number(directDiscount) || 0,
       voucherDiscount: Number(voucherDiscount) || 0,
@@ -2273,7 +2567,7 @@ app.post('/api/orders', async (req, res) => {
       shippingFee: Number(shippingFee) || 0,
       shippingDiscount: Number(shippingDiscount) || 0,
       totalAmount: Number(totalAmount) || 0,
-      status: 'pending',
+      status: orderStatusResolved,
       returnReason: '',
       cancelReason: '',
       note: note || '',
@@ -2290,13 +2584,17 @@ app.post('/api/orders', async (req, res) => {
         hasPromotion: Boolean(i.hasPromotion),
         image: i.image || '',
       })),
-      shippingInfo: shippingInfo || {},
-      route: {
-        pending: now,
-      },
+      shippingInfo: ship,
+      route: routeResolved,
       createdAt: now,
       updatedAt: now,
+      inventoryReleased: false,
     };
+
+    const invCheck = await assertInventoryAvailableForOrderItems(orderDoc.item);
+    if (!invCheck.ok) {
+      return res.status(400).json({ success: false, message: invCheck.message });
+    }
 
     // Vita Xu: trừ số dư + prepend history; giữ lastCompletedDate / currentStreak.
     // Dùng pipeline $concatArrays để không ghi đè nhầm history; chuẩn hoá history nếu DB lưu object thay vì array.
@@ -2415,14 +2713,10 @@ app.post('/api/orders', async (req, res) => {
           const qty = Number(it.quantity) || 1;
           if (!rawId || qty <= 0) continue;
           const idStr = String(rawId);
-          const filters = [{ _id: idStr }];
-          if (mongoose.Types.ObjectId.isValid(idStr)) {
-            filters.push({ _id: new mongoose.Types.ObjectId(idStr) });
-          }
-          filters.push({ '_id.$oid': idStr });
+          const filters = productIdFiltersFromRaw(idStr);
           await productsCollection().updateOne(
             { $or: filters },
-            { $inc: { stock: -qty } },
+            { $inc: { stock: -qty, sold: qty } },
           );
         }
       }
@@ -2458,15 +2752,28 @@ app.post('/api/orders', async (req, res) => {
       console.warn('[POST /api/orders] Cannot update stock or promotion usage:', e.message);
     }
 
+    // Đồng bộ totalspent/tiering ngay nếu đơn này đã ở trạng thái thành công.
+    if (uid && SUCCESS_ORDER_STATUSES_FOR_SPENDING.includes(String(orderDoc.status || '').toLowerCase())) {
+      try {
+        await recomputeUserTotalSpentAndTier(uid);
+      } catch (e) {
+        console.warn('[POST /api/orders] Cannot recompute customer spending:', e.message);
+      }
+    }
+
     // Tạo thông báo "đơn hàng mới" cho user (chỉ khi có user_id)
     if (uid) {
       try {
         const ncol = noticesCollection();
+        const noticeTitle = pharmacistCounterComplete ? 'Đơn hàng hoàn tất tại quầy' : 'Đặt hàng thành công';
+        const noticeMsg = pharmacistCounterComplete
+          ? `Đơn hàng ${orderId} đã giao và thanh toán tại nhà thuốc.`
+          : `Đơn hàng ${orderId} đã được tạo và đang chờ xác nhận.`;
         await ncol.insertOne({
           user_id: uid,
           type: 'order_created',
-          title: 'Đặt hàng thành công',
-          message: `Đơn hàng ${orderId} đã được tạo và đang chờ xác nhận.`,
+          title: noticeTitle,
+          message: noticeMsg,
           createdAt: now,
           read: false,
           link: '/account',
@@ -2883,15 +3190,35 @@ app.put('/api/orders/:id/cancel', async (req, res) => {
       : { order_id: id };
     const doc = await col.findOne(filter);
     if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng.' });
+    if (doc.status === 'cancelled') {
+      return res.json({ success: true, message: 'Đơn đã được huỷ trước đó.' });
+    }
     const now = new Date().toISOString();
+    if (!doc.inventoryReleased) {
+      try {
+        await restoreInventoryForOrderLineItems(doc.item || []);
+      } catch (e) {
+        console.warn('[PUT /api/orders/:id/cancel] restore inventory:', e.message);
+      }
+    }
     await col.updateOne(filter, {
       $set: {
         status: 'cancelled',
         cancelReason: reason || '',
         'route.cancelled': now,
         updatedAt: now,
+        inventoryReleased: true,
       },
     });
+    // Huỷ đơn sẽ ảnh hưởng totalspent/tiering nếu đơn trước đó từng được tính là thành công.
+    try {
+      const userId = doc.user_id || doc.userId;
+      if (userId) {
+        await recomputeUserTotalSpentAndTier(userId);
+      }
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/cancel] Cannot recompute customer spending:', e.message);
+    }
     // Tạo thông báo huỷ đơn hàng
     try {
       const userId = doc.user_id || doc.userId;
@@ -2996,6 +3323,16 @@ app.put('/api/orders/:id/confirm-received', async (req, res) => {
       },
     });
 
+    // "unreview" là đơn đã hoàn tất => cộng totalspent và xét lại tier ngay.
+    try {
+      const userId = doc.user_id || doc.userId;
+      if (userId) {
+        await recomputeUserTotalSpentAndTier(userId);
+      }
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/confirm-received] Cannot recompute customer spending:', e.message);
+    }
+
     // Tạo thông báo đã nhận hàng
     try {
       const userId = doc.user_id || doc.userId;
@@ -3026,38 +3363,54 @@ app.put('/api/orders/:id/confirm-received', async (req, res) => {
 // PUT /api/orders/:id/confirm-returned - User xác nhận đã nhận hàng hoàn trả (từ returning -> returned)
 app.put('/api/orders/:id/confirm-returned', async (req, res) => {
   try {
-    const db = mongoose.connection.db;
-    const orderId = req.params.id;
-
-    const result = await db.collection('orders').findOneAndUpdate(
-      { $or: [{ _id: orderId }, { order_id: orderId }] },
-      {
-        $set: {
-          status: 'returned',
-          'route.returned': new Date().toISOString()
-        }
+    const id = req.params.id;
+    const col = mongoose.connection.db.collection('orders');
+    const filter = mongoose.Types.ObjectId.isValid(id)
+      ? { $or: [{ _id: new mongoose.Types.ObjectId(id) }, { order_id: id }] }
+      : { order_id: id };
+    const doc = await col.findOne(filter);
+    if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+    if (doc.status === 'returned') {
+      return res.json({ success: true, message: 'Đơn hàng đã ở trạng thái hoàn trả.' });
+    }
+    const now = new Date().toISOString();
+    if (!doc.inventoryReleased) {
+      try {
+        await restoreInventoryForOrderLineItems(doc.item || []);
+      } catch (e) {
+        console.warn('[PUT /api/orders/:id/confirm-returned] restore inventory:', e.message);
+      }
+    }
+    await col.updateOne(filter, {
+      $set: {
+        status: 'returned',
+        'route.returned': now,
+        updatedAt: now,
+        inventoryReleased: true,
       },
-      { returnDocument: 'after' }
-    );
-
-    if (!result) {
-      return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+    });
+    // Hoàn trả đơn có thể làm giảm totalspent và đổi tier.
+    try {
+      const userId = doc.user_id || doc.userId;
+      if (userId) {
+        await recomputeUserTotalSpentAndTier(userId);
+      }
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/confirm-returned] Cannot recompute customer spending:', e.message);
     }
 
-    // Ghi log notice (tuỳ chọn)
     try {
-      const orderData = result.value || result;
-      const user_id = orderData.user_id || 'guest';
+      const user_id = doc.user_id || doc.userId || 'guest';
       await noticesCollection().insertOne({
         user_id,
         type: 'order_updated',
         title: 'Xác nhận nhận hàng hoàn trả',
-        message: `Bạn đã xác nhận nhận hàng hoàn trả cho đơn ${orderId} thành công.`,
-        createdAt: new Date().toISOString(),
+        message: `Bạn đã xác nhận nhận hàng hoàn trả cho đơn ${doc.order_id || id} thành công.`,
+        createdAt: now,
         read: false,
         link: '/account',
         linkLabel: 'Xem đơn hàng',
-        meta: orderId,
+        meta: doc.order_id || id,
       });
     } catch (e) {
       console.warn('[PUT /api/orders/:id/confirm-returned] Cannot create notice:', e.message);
@@ -6384,6 +6737,29 @@ app.delete('/api/consultations/:sku/:questionId', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Không tìm thấy câu hỏi để xóa.' });
     }
 
+    // Xóa thông báo admin_notice tương ứng để tab thông báo không còn item mồ côi.
+    try {
+      const qidConds = [{ 'meta.questionId': qId }, { 'meta.question_id': qId }];
+      if (mongoose.Types.ObjectId.isValid(qId)) {
+        const oid = new mongoose.Types.ObjectId(qId);
+        qidConds.push({ 'meta.questionId': oid });
+        qidConds.push({ 'meta.question_id': oid });
+      }
+      await adminNoticeCollection().deleteMany({
+        type: 'consultation_product',
+        $or: [
+          ...qidConds,
+          {
+            'meta.sku': skuStr,
+            'meta.questionId': { $exists: false },
+            'meta.question_id': { $exists: false },
+          },
+        ],
+      });
+    } catch (e) {
+      console.warn('[DELETE /api/consultations/:sku/:questionId] Cannot cleanup admin_notice:', e?.message || e);
+    }
+
     const updated = await col.findOne({ sku: skuStr });
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -8657,6 +9033,9 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+const registerOAuthRoutes = require('./oauth-social');
+registerOAuthRoutes(app, { usersCollection, cartsCollection, bcrypt, crypto });
+
 // POST /api/auth/register-otp - Bước 1: Gửi OTP cho đăng ký (kiểm tra SĐT chưa tồn tại)
 app.post('/api/auth/register-otp', async (req, res) => {
   try {
@@ -8920,6 +9299,33 @@ app.patch('/api/users/me', async (req, res) => {
   }
 });
 
+// GET /api/users/me?user_id=... - Lấy snapshot user mới nhất (không gồm mật khẩu)
+app.get('/api/users/me', async (req, res) => {
+  try {
+    const user_id = String(req.query?.user_id || '').trim();
+    if (!user_id) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+
+    const query = [{ user_id }, { _id: user_id }];
+    if (mongoose.Types.ObjectId.isValid(user_id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(user_id) });
+    }
+
+    const user = await usersCollection().findOne(
+      { $or: query },
+      { projection: { password: 0 } }
+    );
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Người dùng không tồn tại.' });
+    }
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error('Get profile error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
+  }
+});
+
 // POST /api/users/me/upload-avatar — multipart giống KM: lưu Mongo + URL ngắn, tránh gửi base64 qua JSON
 app.post('/api/users/me/upload-avatar', uploadPromoBannerImage, async (req, res) => {
   try {
@@ -9044,98 +9450,117 @@ app.patch('/api/users/me/phone', async (req, res) => {
   }
 });
 
-// POST /api/chat - Chatbot tư vấn sức khỏe + gợi ý sản phẩm từ MongoDB (Gemini API)
+// POST /api/chat — VitaBot: ngữ cảnh MongoDB + Replicate (ưu tiên) hoặc Gemini (dự phòng)
+const vitabot = require('./vitabot-chat');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODEL = process.env.GEMINI_CHAT_MODEL || 'gemini-2.0-flash';
-
-const SYSTEM_PROMPT = `Bạn là VitaBot của VitaCare - nền tảng chăm sóc sức khỏe và dược phẩm.
-Nhiệm vụ:
-- Trả lời ngắn gọn, chính xác về sức khỏe, thuốc, thực phẩm chức năng (không kê đơn).
-- Khi người dùng hỏi mua gì, cần gợi ý sản phẩm, bạn sẽ được cung cấp danh sách sản phẩm thực từ kho VitaCare. Chỉ gợi ý sản phẩm có trong danh sách đó. Với mỗi sản phẩm gợi ý, hãy kèm link xem chi tiết dạng: /product/<slug> (ví dụ: /product/collagen-da).
-- Không thay thế bác sĩ; khuyến khích đến cơ sở y tế khi cần.
-Trả lời bằng tiếng Việt.`;
-
-/** Lấy danh sách sản phẩm từ MongoDB để đưa vào ngữ cảnh chatbot (tìm theo từ khóa hoặc lấy mới nhất) */
-async function getProductContextForChat(userMessage, maxProducts = 25) {
-  if (!mongoose.connection || !mongoose.connection.db) return '';
-  const col = productsCollection();
-  const catsCol = categoriesCollection();
-  let filter = {};
-  const trimmed = String(userMessage || '').trim();
-  const words = trimmed
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .split(/\s+/)
-    .filter((w) => w.length >= 2);
-  if (words.length > 0) {
-    filter.$or = words.slice(0, 5).map((w) => ({ name: { $regex: escapeRegExp(w), $options: 'i' } }));
-  }
-  const items = await col
-    .find(filter)
-    .sort({ _id: -1 })
-    .limit(maxProducts)
-    .project({ name: 1, price: 1, slug: 1, categoryId: 1 })
-    .toArray();
-  if (!items || items.length === 0) {
-    return '';
-  }
-  const categoryIds = [...new Set(items.map((p) => p.categoryId).filter(Boolean))];
-  const categoryMap = {};
-  if (categoryIds.length > 0) {
-    const cats = await catsCol.find({ _id: { $in: categoryIds } }).project({ _id: 1, name: 1 }).toArray();
-    cats.forEach((c) => {
-      const id = getId(c);
-      if (id) categoryMap[id] = c.name || '';
-    });
-  }
-  const lines = items.map((p) => {
-    const slug = p.slug || getId(p);
-    const price = p.price != null ? Number(p.price).toLocaleString('vi-VN') : 'Liên hệ';
-    const catIdStr = p.categoryId ? getId({ _id: p.categoryId }) : null;
-    const cat = catIdStr ? categoryMap[catIdStr] || '' : '';
-    return `- ${p.name || 'Sản phẩm'} | ${price}₫ | /product/${slug}${cat ? ` | ${cat}` : ''}`;
-  });
-  return `[Danh sách sản phẩm từ kho VitaCare (tên | giá | link | danh mục)]:\n${lines.join('\n')}`;
-}
-
-function buildGeminiContents(history, newMessage, productContext = '') {
-  const contents = [];
-  if (history && Array.isArray(history)) {
-    for (const turn of history) {
-      const role = turn.role === 'model' ? 'model' : 'user';
-      const text = turn.parts?.find((p) => p.text)?.text || turn.text || '';
-      if (text) contents.push({ role, parts: [{ text }] });
-    }
-  }
-  let userText = newMessage;
-  if (contents.length === 0) {
-    userText = `${SYSTEM_PROMPT}\n\n${productContext ? productContext + '\n\n' : ''}[Người dùng]: ${newMessage}`;
-  } else if (productContext) {
-    userText = `[Cập nhật danh sách sản phẩm gợi ý]\n${productContext}\n\n[Người dùng]: ${newMessage}`;
-  }
-  contents.push({ role: 'user', parts: [{ text: userText }] });
-  return contents;
-}
+const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN || '';
+const REPLICATE_MODEL = process.env.REPLICATE_MODEL || 'qwen/qwen3-235b-a22b-instruct-2507';
 
 app.post('/api/chat', async (req, res) => {
   try {
-    if (!GEMINI_API_KEY) {
-      return res.status(503).json({
-        success: false,
-        message: 'Chatbot tạm thời chưa khả dụng. Vui lòng cấu hình GEMINI_API_KEY trong môi trường.',
-      });
-    }
     const { message, history = [] } = req.body || {};
     const text = typeof message === 'string' ? message.trim() : '';
     if (!text) {
       return res.status(400).json({ success: false, message: 'Thiếu nội dung tin nhắn.' });
     }
+
+    const explicitProduct = vitabot.userExplicitlyWantsProductCatalog(text);
+    /** Chỉ đưa catalogue vào prompt sau vài lượt hoặc khi khách hỏi mua/gợi ý rõ — tránh gợi ý SP sau 1 câu */
+    const includeProductCatalog = explicitProduct || history.length >= 4;
+
+    const frontendBase = (process.env.FRONTEND_URL || 'http://localhost:4200').replace(/\/$/, '');
+    const systemPrompt =
+      vitabot.getVitabotSystemPrompt(frontendBase) +
+      vitabot.getTriageInstructionSuffix({
+        historyLength: history.length,
+        catalogIncluded: includeProductCatalog,
+        explicitProductRequest: explicitProduct,
+      });
+
     let productContext = '';
-    try {
-      productContext = await getProductContextForChat(text, 25);
-    } catch (e) {
-      console.warn('[POST /api/chat] getProductContextForChat error:', e.message);
+    let storeContext = '';
+    let blogContext = '';
+    if (includeProductCatalog) {
+      try {
+        productContext = await vitabot.getProductContextForChat(
+          { productsCollection, categoriesCollection },
+          text,
+          25
+        );
+      } catch (e) {
+        console.warn('[POST /api/chat] getProductContextForChat error:', e.message);
+      }
     }
-    const contents = buildGeminiContents(history, text, productContext);
+    try {
+      storeContext = await vitabot.getStoreContextForChat(storeSystemCollection, 40);
+    } catch (e) {
+      console.warn('[POST /api/chat] getStoreContextForChat error:', e.message);
+    }
+    try {
+      blogContext = await vitabot.getVitaCareKnowledgeContext({
+        db: mongoose.connection?.db || null,
+        baseUrl: frontendBase,
+        maxBlogItems: 20,
+      });
+    } catch (e) {
+      console.warn('[POST /api/chat] getVitaCareKnowledgeContext error:', e.message);
+    }
+
+    const sendChatSuccess = async (replyText) => {
+      const replyAbsolutized = vitabot.absolutizeVitabotLinks(replyText, frontendBase);
+      let products = [];
+      try {
+        products = await vitabot.enrichProductCardsFromReply(replyAbsolutized, productsCollection);
+      } catch (e) {
+        console.warn('[POST /api/chat] enrichProductCardsFromReply:', e.message);
+      }
+      res.json({ success: true, reply: replyAbsolutized, products });
+    };
+
+    if (REPLICATE_API_TOKEN) {
+      try {
+        const reply = await vitabot.runReplicateChat({
+          token: REPLICATE_API_TOKEN,
+          model: REPLICATE_MODEL,
+          history,
+          message: text,
+          productContext,
+          storeContext,
+          blogContext,
+          systemPrompt,
+        });
+        await sendChatSuccess(reply);
+        return;
+      } catch (repErr) {
+        const detail = String(repErr?.message || repErr || 'unknown').slice(0, 500);
+        console.error('[POST /api/chat] Replicate error:', detail);
+        if (!GEMINI_API_KEY) {
+          return res.status(502).json({
+            success: false,
+            message: `Replicate: ${detail}`,
+          });
+        }
+        console.warn('[POST /api/chat] Fallback sang Gemini sau lỗi Replicate.');
+      }
+    }
+
+    if (!GEMINI_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        message:
+          'Chatbot chưa cấu hình. Thêm REPLICATE_API_TOKEN (Replicate) hoặc GEMINI_API_KEY (Google AI) trong backend/.env.',
+      });
+    }
+
+    const contents = vitabot.buildGeminiContents(
+      history,
+      text,
+      productContext,
+      storeContext,
+      blogContext,
+      systemPrompt
+    );
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
     const payload = {
       contents: contents.map((c) => ({ role: c.role, parts: c.parts })),
@@ -9169,7 +9594,7 @@ app.post('/api/chat', async (req, res) => {
       } else if (response.status === 429) {
         userMsg = 'Vượt giới hạn gọi API. Vui lòng thử lại sau.';
       } else if (errMsg && typeof errMsg === 'string' && errMsg.length < 120) {
-        userMsg = errMsg; /* trả về lỗi từ Gemini nếu ngắn gọn */
+        userMsg = errMsg;
       }
       return res.status(response.status >= 500 ? 502 : 400).json({
         success: false,
@@ -9179,7 +9604,7 @@ app.post('/api/chat', async (req, res) => {
     const candidate = data?.candidates?.[0];
     const part = candidate?.content?.parts?.[0];
     const replyText = part?.text?.trim() || 'Xin lỗi, tôi chưa trả lời được. Bạn thử hỏi lại nhé.';
-    res.json({ success: true, reply: replyText });
+    await sendChatSuccess(replyText);
   } catch (err) {
     console.error('[POST /api/chat] Error:', err);
     const msg = err.message || 'Lỗi máy chủ. Vui lòng thử lại.';
@@ -10160,13 +10585,43 @@ app.put('/api/admin/orders/:id', async (req, res) => {
       query.push({ _id: new mongoose.Types.ObjectId(id) });
     }
 
-    // Lấy doc cũ trước để so sánh trạng thái
+    // Lấy doc cũ trước để so sánh trạng thái + hoàn kho khi huỷ/hoàn đơn
     const oldDoc = await OrderModel.findOne({ $or: query }).lean();
-    const data = await OrderModel.findOneAndUpdate({ $or: query }, req.body, { new: true });
+    if (!oldDoc) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    const newStatus = req.body?.status;
+    const releaseStatuses = ['cancelled', 'returned', 'refunded'];
+    const body = { ...req.body };
+    if (
+      newStatus &&
+      releaseStatuses.includes(String(newStatus)) &&
+      String(newStatus) !== String(oldDoc.status || '') &&
+      !oldDoc.inventoryReleased
+    ) {
+      try {
+        await restoreInventoryForOrderLineItems(oldDoc.item || []);
+      } catch (e) {
+        console.warn('[PUT /api/admin/orders/:id] restore inventory:', e.message);
+      }
+      body.inventoryReleased = true;
+    }
+
+    const data = await OrderModel.findOneAndUpdate({ $or: query }, body, { new: true });
     if (!data) return res.status(404).json({ success: false, message: 'Order not found' });
 
+    // Nếu trạng thái thay đổi, đồng bộ lại totalspent/tiering của khách hàng tương ứng.
+    if (newStatus && oldDoc && newStatus !== oldDoc.status) {
+      try {
+        const userId = data.user_id || oldDoc.user_id;
+        if (userId) {
+          await recomputeUserTotalSpentAndTier(userId);
+        }
+      } catch (e) {
+        console.warn('[PUT /api/admin/orders/:id] Cannot recompute customer spending:', e.message);
+      }
+    }
+
     // Lưu notice cho user khi admin thay đổi trạng thái đơn hàng
-    const newStatus = req.body.status;
     if (newStatus && oldDoc && newStatus !== oldDoc.status) {
       const userId = data.user_id || oldDoc.user_id;
       if (userId) {
@@ -11358,10 +11813,18 @@ app.get('/api/admin/users', async (req, res) => {
 
     // 2. Aggregate tổng chi tiêu theo user_id chỉ với đơn đã giao thành công
     const spendingAgg = await OrderModel.aggregate([
-      { $match: { status: 'delivered' } },
+      { $match: { status: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
+      {
+        $addFields: {
+          user_id_norm: {
+            $trim: { input: { $toString: { $ifNull: ['$user_id', ''] } } }
+          }
+        }
+      },
+      { $match: { user_id_norm: { $ne: '' } } },
       {
         $group: {
-          _id: '$user_id',
+          _id: '$user_id_norm',
           totalspent: { $sum: { $ifNull: ['$totalAmount', 0] } }
         }
       }
@@ -11388,8 +11851,7 @@ app.get('/api/admin/users', async (req, res) => {
     const data = users.map((u) => {
       const uid = String(u.user_id || u._id || '');
       const aggSpent = spendingMap[uid] ?? 0;
-      const totalspent = typeof u.totalspent === 'number' ? u.totalspent : aggSpent;
-      const finalTotal = Math.max(totalspent, aggSpent);
+      const finalTotal = aggSpent;
       const tiering = getTierFromTotalSpent(finalTotal);
       const total_orders = ordersMap[uid] ?? 0;
 

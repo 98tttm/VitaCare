@@ -68,5 +68,10 @@ export class AuthApiService {
   resetPassword(req: AuthResetPasswordRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API}/auth/reset-password`, req);
   }
+
+  /** Sau redirect OAuth: đổi mã một lần lấy user (POST /api/auth/oauth/exchange) */
+  exchangeOAuthCode(code: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API}/auth/oauth/exchange`, { code });
+  }
 }
 

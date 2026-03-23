@@ -217,6 +217,14 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
   allCategories: any[] = []; // Raw flat list from API
   categoryMap: { [key: string]: any } = {};
   units = ['Hộp', 'Vỉ', 'Viên', 'Chai', 'Tuýp', 'Gói', 'Lọ'];
+  readonly prescriptionOptions = [
+    { value: false, label: 'KHÔNG' },
+    { value: true, label: 'CÓ' },
+  ];
+  readonly statusOptions = [
+    { value: 'active', label: 'Hiển thị' },
+    { value: 'hidden', label: 'Ẩn' },
+  ];
   private readonly defaultCountryOptions = ['Việt Nam', 'Mỹ', 'Nhật Bản', 'Hàn Quốc', 'Pháp'];
   countries: string[] = [...this.defaultCountryOptions];
   brands = ['Vinapharma', 'Dược Hậu Giang', 'Traphaco', 'Pfizer'];
@@ -225,6 +233,24 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
   modalL1Id: string = '';
   modalL2Id: string = '';
   modalL3Id: string = '';
+
+  get modalCategoryL1Options(): { value: string; label: string }[] {
+    return this.categoriesL1.map((cat) => ({ value: cat._id, label: cat.name }));
+  }
+
+  get modalCategoryL2Options(): { value: string; label: string }[] {
+    if (!this.modalL1Id) return [];
+    return this.getSubCategories(this.modalL1Id).map((cat) => ({ value: cat._id, label: cat.name }));
+  }
+
+  get modalCategoryL3Options(): { value: string; label: string }[] {
+    if (!this.modalL2Id) return [];
+    return this.getSubCategories(this.modalL2Id).map((cat) => ({ value: cat._id, label: cat.name }));
+  }
+
+  get unitOptions(): { value: string; label: string }[] {
+    return this.units.map((u) => ({ value: u, label: u }));
+  }
 
   // Filter UI State
   filterStep: number = 0;

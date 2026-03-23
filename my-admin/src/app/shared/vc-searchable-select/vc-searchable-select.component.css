@@ -190,8 +190,8 @@
 }
 
 .vc-ss__option:hover {
-  background: rgba(0, 88, 159, 0.1);
-  color: var(--vc-ss-brand);
+  background: rgba(0, 88, 159, 0.12);
+  color: #0a0a0a;
 }
 
 .vc-ss__option--selected {

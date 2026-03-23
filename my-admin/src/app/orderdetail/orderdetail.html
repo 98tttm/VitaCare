@@ -104,6 +104,19 @@
                         </div>
                     </div>
 
+                    <div *ngIf="showMarkPaidAfterDeliveryButton"
+                        class="od-mark-paid-row"
+                        style="margin-bottom: 20px; padding: 14px 18px; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #86efac; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                        <span style="font-size: 14px; color: #166534; line-height: 1.5;">
+                            Đơn đã giao nhưng chưa ghi nhận thanh toán. Nhấn khi khách đã thanh toán (COD / chuyển khoản sau giao…).
+                        </span>
+                        <button type="button" class="btn btn-primary" (click)="markAsPaid()"
+                            [disabled]="isLoading"
+                            style="white-space: nowrap; padding: 10px 20px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; background: var(--color-primary); color: #fff;">
+                            Đã thanh toán
+                        </button>
+                    </div>
+
                     <!-- Product List -->
                     <div class="product-list-section">
                         <div
@@ -305,7 +318,7 @@
 
                     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px;">
                         <button
-                            *ngIf="!['cancelled', 'refunded', 'delivered', 'processing_return', 'returning', 'returned', 'rejected'].includes(order.status)"
+                            *ngIf="!isPharmacistPickupComplete() && !['cancelled', 'refunded', 'delivered', 'processing_return', 'returning', 'returned', 'rejected'].includes(order.status)"
                             class="btn btn-danger" (click)="cancelOrder()"
                             style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
                             Hủy đơn
@@ -364,59 +377,266 @@
                         style="margin-top: 0; font-size: 16px; font-weight: bold; border-bottom: 1px solid var(--color-neutral-30); padding-bottom: 10px; margin-bottom: 20px;">
                         Thông tin khách hàng</h3>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Tên
-                                khách hàng <span style="color: red">*</span></label>
-                            <input type="text" [(ngModel)]="newOrder.shippingInfo.fullName"
-                                placeholder="Nhập tên khách hàng"
-                                style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
+                    <!-- Quản trị viên: bắt buộc tên/SĐT + địa chỉ giao hàng -->
+                    <ng-container *ngIf="!isPharmacistCreateOrder">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Tên
+                                    khách hàng <span style="color: red">*</span></label>
+                                <input type="text" [(ngModel)]="newOrder.shippingInfo.fullName"
+                                    placeholder="Nhập tên khách hàng"
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
+                            </div>
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Số
+                                    điện thoại <span style="color: red">*</span></label>
+                                <input type="text" [(ngModel)]="newOrder.shippingInfo.phone"
+                                    placeholder="Nhập số điện thoại"
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Số
-                                điện thoại <span style="color: red">*</span></label>
-                            <input type="text" [(ngModel)]="newOrder.shippingInfo.phone"
-                                placeholder="Nhập số điện thoại"
-                                style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
-                        </div>
-                    </div>
 
-                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 12px;">Địa chỉ giao hàng</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
-                        <div class="form-group">
-                            <vc-searchable-select
-                                [(ngModel)]="newOrder.shippingInfo.city"
-                                [options]="citySelectOptions"
-                                [disabled]="!cities.length"
-                                placeholder="Chọn Tỉnh/Thành phố"
-                                (ngModelChange)="onCityChange()"
-                            />
+                        <div class="od-delivery-method">
+                            <div class="od-delivery-method__label">Hình thức nhận hàng</div>
+                            <div class="od-delivery-method__actions">
+                                <button type="button"
+                                    class="od-delivery-method__btn"
+                                    [class.od-delivery-method__btn--active]="!newOrder.atPharmacy"
+                                    (click)="setCreateDeliveryMethod('home')">
+                                    Giao hàng tận nơi
+                                </button>
+                                <button type="button"
+                                    class="od-delivery-method__btn"
+                                    [class.od-delivery-method__btn--active]="newOrder.atPharmacy"
+                                    (click)="setCreateDeliveryMethod('pharmacy')">
+                                    Nhận tại nhà thuốc
+                                </button>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <vc-searchable-select
-                                [(ngModel)]="newOrder.shippingInfo.district"
-                                [options]="districtSelectOptions"
-                                [disabled]="!newOrder.shippingInfo.city"
-                                placeholder="Chọn Quận/Huyện"
-                                (ngModelChange)="onDistrictChange()"
-                            />
+
+                        <ng-container *ngIf="!newOrder.atPharmacy">
+                            <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 12px;">Địa chỉ giao hàng</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                                <div class="form-group">
+                                    <vc-searchable-select
+                                        [(ngModel)]="newOrder.shippingInfo.city"
+                                        [options]="citySelectOptions"
+                                        [disabled]="!cities.length"
+                                        placeholder="Chọn Tỉnh/Thành phố"
+                                        (ngModelChange)="onCityChange()"
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <vc-searchable-select
+                                        [(ngModel)]="newOrder.shippingInfo.district"
+                                        [options]="districtSelectOptions"
+                                        [disabled]="!newOrder.shippingInfo.city"
+                                        placeholder="Chọn Quận/Huyện"
+                                        (ngModelChange)="onDistrictChange()"
+                                    />
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <vc-searchable-select
+                                        [(ngModel)]="newOrder.shippingInfo.ward"
+                                        [options]="wardSelectOptions"
+                                        [disabled]="!newOrder.shippingInfo.district"
+                                        placeholder="Chọn Phường/Xã"
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" [(ngModel)]="newOrder.shippingInfo.address"
+                                        placeholder="Thêm số nhà, tên đường..."
+                                        style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="newOrder.atPharmacy">
+                            <div class="order-pharmacy-section">
+                                <div class="order-pharmacy-label">
+                                    <i class="bi bi-building"></i>
+                                    <span>Chọn nhà thuốc nhận hàng <span class="order-label-required">*</span></span>
+                                </div>
+                                <div class="order-pharmacy-selects od-pharmacy-selects-3">
+                                    <vc-searchable-select
+                                        class="order-addr-vc-select"
+                                        [(ngModel)]="pharmacyProvince"
+                                        name="od_admin_pharmacy_province"
+                                        [options]="pharmacyProvinceSelectOptions"
+                                        [disabled]="!allPharmacyLocations.length"
+                                        placeholder="Chọn Tỉnh/Thành phố"
+                                        (ngModelChange)="onPharmacyProvinceChange($event)"
+                                    />
+                                    <vc-searchable-select
+                                        class="order-addr-vc-select"
+                                        [(ngModel)]="pharmacyDistrict"
+                                        name="od_admin_pharmacy_district"
+                                        [options]="pharmacyDistrictSelectOptions"
+                                        [disabled]="!pharmacyProvince"
+                                        placeholder="Chọn Quận/Huyện"
+                                        (ngModelChange)="onPharmacyDistrictChange($event)"
+                                    />
+                                    <vc-searchable-select
+                                        class="order-addr-vc-select"
+                                        [(ngModel)]="pharmacyWard"
+                                        name="od_admin_pharmacy_ward"
+                                        [options]="pharmacyWardSelectOptions"
+                                        [disabled]="!pharmacyDistrict"
+                                        placeholder="Chọn Phường/Xã"
+                                        (ngModelChange)="onPharmacyWardChange($event)"
+                                    />
+                                </div>
+
+                                <div *ngIf="pharmacyProvince" class="od-pharmacy-stores-wrap">
+                                    <label class="od-pharmacy-stores-label">
+                                        Chọn nhà thuốc nhận hàng <span class="order-label-required">*</span>
+                                    </label>
+                                    <div class="od-pharmacy-search">
+                                        <input type="text"
+                                            [(ngModel)]="storeSearchKeyword"
+                                            name="od_admin_storeSearchKeyword"
+                                            (ngModelChange)="onStoreKeywordChange()"
+                                            placeholder="Tìm tên đường, tên nhà thuốc...">
+                                    </div>
+
+                                    <div *ngIf="availableStores.length === 0" class="od-pharmacy-empty">
+                                        Không tìm thấy nhà thuốc nào tại khu vực đã chọn.
+                                    </div>
+
+                                    <div *ngIf="availableStores.length > 0" class="od-pharmacy-store-list">
+                                        <div *ngFor="let store of availableStores"
+                                            class="store-card"
+                                            [class.selected]="selectedStore?.ma_cua_hang === store.ma_cua_hang"
+                                            (click)="selectStore(store)">
+                                            <div class="store-card-radio">
+                                                <div class="store-card-radio-outer">
+                                                    <div *ngIf="selectedStore?.ma_cua_hang === store.ma_cua_hang"
+                                                        class="store-card-radio-inner"></div>
+                                                </div>
+                                            </div>
+                                            <div class="od-pharmacy-card-body">
+                                                <div class="od-pharmacy-card-name">{{ store.ten_cua_hang }}</div>
+                                                <div class="od-pharmacy-card-addr">
+                                                    <i class="bi bi-geo-alt"></i>
+                                                    <span>{{ store.dia_chi?.dia_chi_day_du ? store.dia_chi?.dia_chi_day_du + ', ' : '' }}{{
+                                                        store.dia_chi?.phuong_xa
+                                                        }}, {{ store.dia_chi?.quan_huyen }}, {{ store.dia_chi?.tinh_thanh }}</span>
+                                                </div>
+                                                <div class="od-pharmacy-card-open">
+                                                    <i class="bi bi-clock"></i> Đang mở cửa
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+
+                    <!-- Dược sĩ: tên/SĐT/email không bắt buộc; nhận tại cửa hàng -->
+                    <ng-container *ngIf="isPharmacistCreateOrder">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Tên khách hàng</label>
+                                <input type="text" [(ngModel)]="newOrder.shippingInfo.fullName"
+                                    placeholder="Nhập tên (tuỳ chọn)"
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
+                            </div>
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Số điện thoại</label>
+                                <input type="text" [(ngModel)]="newOrder.shippingInfo.phone"
+                                    placeholder="Nhập SĐT (tuỳ chọn)"
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
+                            </div>
                         </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div class="form-group">
-                            <vc-searchable-select
-                                [(ngModel)]="newOrder.shippingInfo.ward"
-                                [options]="wardSelectOptions"
-                                [disabled]="!newOrder.shippingInfo.district"
-                                placeholder="Chọn Phường/Xã"
-                            />
-                        </div>
-                        <div class="form-group">
-                            <input type="text" [(ngModel)]="newOrder.shippingInfo.address"
-                                placeholder="Thêm số nhà, tên đường..."
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Email</label>
+                            <input type="email" [(ngModel)]="newOrder.shippingInfo.email"
+                                placeholder="Email (tuỳ chọn)"
                                 style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-neutral-40); border-radius: 8px; outline: none;">
                         </div>
-                    </div>
+
+                        <div class="order-pharmacy-section">
+                            <div class="order-pharmacy-label">
+                                <i class="bi bi-building"></i>
+                                <span>Chọn nhà thuốc lấy hàng <span class="order-label-required">*</span></span>
+                            </div>
+                            <div class="order-pharmacy-selects od-pharmacy-selects-3">
+                                <vc-searchable-select
+                                    class="order-addr-vc-select"
+                                    [(ngModel)]="pharmacyProvince"
+                                    name="od_pharmacy_province"
+                                    [options]="pharmacyProvinceSelectOptions"
+                                    [disabled]="!allPharmacyLocations.length"
+                                    placeholder="Chọn Tỉnh/Thành phố"
+                                    (ngModelChange)="onPharmacyProvinceChange($event)"
+                                />
+                                <vc-searchable-select
+                                    class="order-addr-vc-select"
+                                    [(ngModel)]="pharmacyDistrict"
+                                    name="od_pharmacy_district"
+                                    [options]="pharmacyDistrictSelectOptions"
+                                    [disabled]="!pharmacyProvince"
+                                    placeholder="Chọn Quận/Huyện"
+                                    (ngModelChange)="onPharmacyDistrictChange($event)"
+                                />
+                                <vc-searchable-select
+                                    class="order-addr-vc-select"
+                                    [(ngModel)]="pharmacyWard"
+                                    name="od_pharmacy_ward"
+                                    [options]="pharmacyWardSelectOptions"
+                                    [disabled]="!pharmacyDistrict"
+                                    placeholder="Chọn Phường/Xã"
+                                    (ngModelChange)="onPharmacyWardChange($event)"
+                                />
+                            </div>
+
+                            <div *ngIf="pharmacyProvince" class="od-pharmacy-stores-wrap">
+                                <label class="od-pharmacy-stores-label">
+                                    Chọn nhà thuốc lấy hàng <span class="order-label-required">*</span>
+                                </label>
+                                <div class="od-pharmacy-search">
+                                    <input type="text"
+                                        [(ngModel)]="storeSearchKeyword"
+                                        name="od_storeSearchKeyword"
+                                        (ngModelChange)="onStoreKeywordChange()"
+                                        placeholder="Tìm tên đường, tên nhà thuốc...">
+                                </div>
+
+                                <div *ngIf="availableStores.length === 0" class="od-pharmacy-empty">
+                                    Không tìm thấy nhà thuốc nào tại khu vực đã chọn.
+                                </div>
+
+                                <div *ngIf="availableStores.length > 0" class="od-pharmacy-store-list">
+                                    <div *ngFor="let store of availableStores"
+                                        class="store-card"
+                                        [class.selected]="selectedStore?.ma_cua_hang === store.ma_cua_hang"
+                                        (click)="selectStore(store)">
+                                        <div class="store-card-radio">
+                                            <div class="store-card-radio-outer">
+                                                <div *ngIf="selectedStore?.ma_cua_hang === store.ma_cua_hang"
+                                                    class="store-card-radio-inner"></div>
+                                            </div>
+                                        </div>
+                                        <div class="od-pharmacy-card-body">
+                                            <div class="od-pharmacy-card-name">{{ store.ten_cua_hang }}</div>
+                                            <div class="od-pharmacy-card-addr">
+                                                <i class="bi bi-geo-alt"></i>
+                                                <span>{{ store.dia_chi?.dia_chi_day_du ? store.dia_chi?.dia_chi_day_du + ', ' : '' }}{{
+                                                    store.dia_chi?.phuong_xa
+                                                    }}, {{ store.dia_chi?.quan_huyen }}, {{ store.dia_chi?.tinh_thanh }}</span>
+                                            </div>
+                                            <div class="od-pharmacy-card-open">
+                                                <i class="bi bi-clock"></i> Đang mở cửa
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
                 </div>
 
                 <!-- Products Section -->

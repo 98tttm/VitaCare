@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, ViewChild, ViewChildren, QueryList, 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { LoggedUser } from '../../../core/services/auth.service';
 import { AuthApiService } from '../../../core/services/auth-api.service';
 import { InfoApiService } from './info-api.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -48,6 +49,33 @@ export class Info implements OnInit {
   cameraError = '';
   /** Ảnh vừa chụp (blob URL); khi set sẽ hiện ảnh và nút Lưu / Hủy */
   capturedImageUrl: string | null = null;
+  showPresetAvatarPicker = false;
+  selectedPresetAvatar = '';
+  showAvatarCropper = false;
+  cropImageSrc: string | null = null;
+  cropScale = 1;
+  cropMinScale = 1;
+  cropMaxScale = 4;
+  cropOffsetX = 0;
+  cropOffsetY = 0;
+  private cropImageEl: HTMLImageElement | null = null;
+  private cropImageNaturalWidth = 0;
+  private cropImageNaturalHeight = 0;
+  private readonly cropViewportSize = 280;
+  private readonly cropCircleSize = 210;
+  private draggingCrop = false;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private dragOriginOffsetX = 0;
+  private dragOriginOffsetY = 0;
+  readonly presetAvatars: string[] = [
+    '/assets/avatar/default_male.png',
+    '/assets/avatar/default_fe.png',
+    '/assets/avatar/summer_male.png',
+    '/assets/avatar/summer_fe.png',
+    '/assets/avatar/tet_male.png',
+    '/assets/avatar/tet_fe.png',
+  ];
 
   /** Snapshot ban đầu để so sánh khi submit */
   private originalPhone = '';
@@ -83,15 +111,55 @@ export class Info implements OnInit {
   ngOnInit(): void {
     const user = this.authService.currentUser();
     if (user) {
-      this.fullName = (user.full_name as string) ?? '';
-      this.phone = (user.phone as string) ?? '';
-      this.originalPhone = this.phone;
-      this.email = (user.email as string) ?? '';
-      this.birthDate = (user['birthday'] as string) ?? '';
-      this.gender = (user['gender'] as string) ?? 'male';
-      this.tiering = (user['tiering'] as string) ?? null;
-      this.originalUser = { ...user };
+      this.applyUserToForm(user as Record<string, unknown>);
+      const uid = String(user.user_id || '').trim();
+      if (uid) {
+        this.infoApi.getMe(uid).subscribe({
+          next: (res) => {
+            if (res?.success && res.user) {
+              this.authService.setUser(res.user as LoggedUser);
+              this.applyUserToForm(res.user);
+            }
+          },
+          error: () => {
+            // Giữ dữ liệu local hiện tại nếu không fetch được snapshot mới.
+          }
+        });
+      }
     }
+  }
+
+  private applyUserToForm(user: Record<string, unknown>): void {
+    this.fullName = (user['full_name'] as string) ?? '';
+    this.phone = (user['phone'] as string) ?? '';
+    this.originalPhone = this.phone;
+    this.email = (user['email'] as string) ?? '';
+    this.birthDate = (user['birthday'] as string) ?? '';
+    this.gender = (user['gender'] as string) ?? 'male';
+    this.tiering = (user['tiering'] as string) ?? null;
+    this.originalUser = { ...user };
+  }
+
+  getTierClass(tier: string | null | undefined): string {
+    if (!tier) return 'vc_action_tier--bronze';
+    const raw = tier.toString().trim().toLowerCase();
+    const normalized = raw
+      .replace('đ', 'd')
+      .replace('ồng', 'ong')
+      .replace('ạc', 'ac')
+      .replace('àng', 'ang');
+
+    if (normalized.includes('gold') || normalized.includes('vang')) return 'vc_action_tier--gold';
+    if (normalized.includes('silver') || normalized.includes('bac')) return 'vc_action_tier--silver';
+    if (normalized.includes('bronze') || normalized.includes('dong')) return 'vc_action_tier--bronze';
+    return 'vc_action_tier--bronze';
+  }
+
+  getTierLabel(tier: string | null | undefined): string {
+    const cls = this.getTierClass(tier);
+    if (cls === 'vc_action_tier--gold') return 'Vàng';
+    if (cls === 'vc_action_tier--silver') return 'Bạc';
+    return 'Đồng';
   }
 
   onUpdateInfo(e: Event): void {
@@ -153,6 +221,9 @@ export class Info implements OnInit {
   closeAvatarModal(): void {
     this.discardCapturedImage();
     this.stopCamera();
+    this.closeAvatarCropper(false);
+    this.showPresetAvatarPicker = false;
+    this.selectedPresetAvatar = '';
     this.showAvatarModal = false;
   }
 
@@ -168,18 +239,7 @@ export class Info implements OnInit {
   /** Lưu ảnh đã chụp: gửi lên MongoDB rồi cập nhật sidebar + info */
   saveCapturedImage(): void {
     if (!this.capturedImageUrl) return;
-    const user = this.authService.currentUser();
-    if (!user?.user_id) return;
-    fetch(this.capturedImageUrl)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const file = new File([blob], 'avatar.jpg', { type: blob.type || 'image/jpeg' });
-        this.uploadAvatarFile(file);
-      })
-      .catch(() => {
-        this.toastService.showError('Không thể xử lý ảnh.');
-        this.cdr.detectChanges();
-      });
+    this.openAvatarCropper(this.capturedImageUrl);
   }
 
   private uploadAvatarFile(file: File): void {
@@ -268,11 +328,40 @@ export class Info implements OnInit {
 
   /** Kích hoạt input tải ảnh (không dùng camera) */
   triggerAvatarUpload(): void {
+    this.showPresetAvatarPicker = false;
+    this.closeAvatarCropper();
     const input = this.avatarUploadInputRef?.nativeElement;
     if (input) {
       input.value = '';
       input.click();
     }
+  }
+
+  openPresetAvatarPicker(): void {
+    this.closeAvatarCropper(false);
+    this.discardCapturedImage();
+    this.stopCamera();
+    this.showPresetAvatarPicker = true;
+    const currentAvatar = String(this.authService.currentUser()?.avatar || '').trim();
+    this.selectedPresetAvatar = this.presetAvatars.includes(currentAvatar) ? currentAvatar : '';
+    this.cdr.detectChanges();
+  }
+
+  closePresetAvatarPicker(): void {
+    this.showPresetAvatarPicker = false;
+    this.selectedPresetAvatar = '';
+    this.cameraError = '';
+    this.startCamera();
+  }
+
+  selectPresetAvatar(path: string): void {
+    this.selectedPresetAvatar = path;
+  }
+
+  savePresetAvatar(): void {
+    const avatarPath = String(this.selectedPresetAvatar || '').trim();
+    if (!avatarPath) return;
+    this.openAvatarCropper(avatarPath);
   }
 
   /** Thử lại mở camera (khi lần đầu bị từ chối hoặc lỗi) */
@@ -286,8 +375,154 @@ export class Info implements OnInit {
     const file = input?.files?.[0];
     if (!file || !file.type.startsWith('image/')) return;
     if (input) input.value = '';
+    this.showPresetAvatarPicker = false;
     this.stopCamera();
-    this.uploadAvatarFile(file);
+    const localUrl = URL.createObjectURL(file);
+    this.openAvatarCropper(localUrl);
+  }
+
+  openAvatarCropper(src: string): void {
+    if (!src) return;
+    this.showPresetAvatarPicker = false;
+    this.stopCamera();
+    this.showAvatarCropper = true;
+    this.cropImageSrc = src;
+    this.cropScale = 1;
+    this.cropOffsetX = 0;
+    this.cropOffsetY = 0;
+
+    const img = new Image();
+    img.onload = () => {
+      this.cropImageEl = img;
+      this.cropImageNaturalWidth = img.naturalWidth || img.width || this.cropViewportSize;
+      this.cropImageNaturalHeight = img.naturalHeight || img.height || this.cropViewportSize;
+      const sx = this.cropCircleSize / this.cropImageNaturalWidth;
+      const sy = this.cropCircleSize / this.cropImageNaturalHeight;
+      this.cropMinScale = Math.max(sx, sy);
+      this.cropScale = this.cropMinScale;
+      this.cropOffsetX = 0;
+      this.cropOffsetY = 0;
+      this.clampCropOffsets();
+      this.cdr.detectChanges();
+    };
+    img.onerror = () => {
+      this.toastService.showError('Không thể mở ảnh để cắt.');
+      this.closeAvatarCropper();
+      this.cdr.detectChanges();
+    };
+    img.src = src;
+  }
+
+  closeAvatarCropper(restoreCamera = true): void {
+    this.showAvatarCropper = false;
+    this.cropImageSrc = null;
+    this.cropImageEl = null;
+    this.cropImageNaturalWidth = 0;
+    this.cropImageNaturalHeight = 0;
+    this.draggingCrop = false;
+    if (restoreCamera && this.showAvatarModal && !this.showPresetAvatarPicker) {
+      this.startCamera();
+    }
+  }
+
+  private clampCropOffsets(): void {
+    const drawW = this.cropImageNaturalWidth * this.cropScale;
+    const drawH = this.cropImageNaturalHeight * this.cropScale;
+    const maxX = Math.max(0, (drawW - this.cropCircleSize) / 2);
+    const maxY = Math.max(0, (drawH - this.cropCircleSize) / 2);
+    this.cropOffsetX = Math.max(-maxX, Math.min(maxX, this.cropOffsetX));
+    this.cropOffsetY = Math.max(-maxY, Math.min(maxY, this.cropOffsetY));
+  }
+
+  onCropScaleChange(value: string | number): void {
+    const next = Number(value) || this.cropMinScale;
+    this.cropScale = Math.max(this.cropMinScale, Math.min(this.cropMaxScale, next));
+    this.clampCropOffsets();
+  }
+
+  onCropScaleInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.onCropScaleChange(target?.value ?? this.cropScale);
+  }
+
+  getCropImageTransform(): string {
+    return `translate(-50%, -50%) translate(${this.cropOffsetX}px, ${this.cropOffsetY}px) scale(${this.cropScale})`;
+  }
+
+  onCropPointerDown(event: MouseEvent | TouchEvent): void {
+    event.preventDefault();
+    const p = this.getPointer(event);
+    if (!p) return;
+    this.draggingCrop = true;
+    this.dragStartX = p.x;
+    this.dragStartY = p.y;
+    this.dragOriginOffsetX = this.cropOffsetX;
+    this.dragOriginOffsetY = this.cropOffsetY;
+  }
+
+  onCropPointerMove(event: MouseEvent | TouchEvent): void {
+    if (!this.draggingCrop) return;
+    const p = this.getPointer(event);
+    if (!p) return;
+    this.cropOffsetX = this.dragOriginOffsetX + (p.x - this.dragStartX);
+    this.cropOffsetY = this.dragOriginOffsetY + (p.y - this.dragStartY);
+    this.clampCropOffsets();
+  }
+
+  onCropPointerUp(): void {
+    this.draggingCrop = false;
+  }
+
+  private getPointer(event: MouseEvent | TouchEvent): { x: number; y: number } | null {
+    if (event instanceof MouseEvent) return { x: event.clientX, y: event.clientY };
+    const t = event.touches?.[0] || event.changedTouches?.[0];
+    if (!t) return null;
+    return { x: t.clientX, y: t.clientY };
+  }
+
+  confirmCropAvatar(): void {
+    const user = this.authService.currentUser();
+    if (!user?.user_id || !this.cropImageEl) return;
+    const outSize = 512;
+    const canvas = document.createElement('canvas');
+    canvas.width = outSize;
+    canvas.height = outSize;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      this.toastService.showError('Không thể xử lý ảnh cắt.');
+      return;
+    }
+
+    const drawW = this.cropImageNaturalWidth * this.cropScale;
+    const drawH = this.cropImageNaturalHeight * this.cropScale;
+    const drawX = (this.cropViewportSize - drawW) / 2 + this.cropOffsetX;
+    const drawY = (this.cropViewportSize - drawH) / 2 + this.cropOffsetY;
+    const cropStart = (this.cropViewportSize - this.cropCircleSize) / 2;
+    const factor = outSize / this.cropCircleSize;
+
+    ctx.clearRect(0, 0, outSize, outSize);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(outSize / 2, outSize / 2, outSize / 2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(
+      this.cropImageEl,
+      (drawX - cropStart) * factor,
+      (drawY - cropStart) * factor,
+      drawW * factor,
+      drawH * factor
+    );
+    ctx.restore();
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        this.toastService.showError('Không thể tạo ảnh avatar.');
+        return;
+      }
+      const file = new File([blob], 'avatar-cropped.png', { type: 'image/png' });
+      this.uploadAvatarFile(file);
+    }, 'image/png');
   }
 
   /** Mở popup đổi mật khẩu: bước 1 nhập SĐT (prefill current), gửi OTP */

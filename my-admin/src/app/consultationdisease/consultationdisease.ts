@@ -61,6 +61,27 @@ export class Consultationdisease implements OnInit, OnDestroy {
     return this.filters.status.length;
   }
 
+  /** Đồng bộ với bộ lọc câu hỏi (pending = chưa có trả lời hoặc status pending/unreviewed). */
+  isDiseaseQuestionPending(q: any): boolean {
+    return !q.answer || q.status === 'unreviewed' || q.status === 'pending';
+  }
+
+  /** Card thống kê: danh sách = tổng toàn hệ thống; chi tiết = chỉ bệnh đang xem. */
+  get diseaseStatsTotal(): number {
+    if (!this.selectedDisease) return this.totalQuestions;
+    return (this.questions || []).length;
+  }
+
+  get diseaseStatsPending(): number {
+    if (!this.selectedDisease) return this.pendingCount;
+    return (this.questions || []).filter((q) => this.isDiseaseQuestionPending(q)).length;
+  }
+
+  get diseaseStatsAnswered(): number {
+    if (!this.selectedDisease) return this.answeredCount;
+    return (this.questions || []).filter((q) => !this.isDiseaseQuestionPending(q)).length;
+  }
+
   constructor(
     @Inject(ConsultationService) private consultationService: ConsultationService,
     private datePipe: DatePipe,
@@ -445,7 +466,11 @@ export class Consultationdisease implements OnInit, OnDestroy {
       totalQuestions: 0
     };
     this.selectedQuestion = { ...item };
-    this.replyContent = item.answer || '';
+    const isNewReply =
+      !item.answer ||
+      item.status === 'unreviewed' ||
+      item.status === 'pending';
+    this.replyContent = isNewReply ? '' : String(item.answer || '');
     const foundPharmacist = this.pharmacists.find(p => p.pharmacistName === item.answeredBy);
     const defaultPharmacistId = foundPharmacist?._id || this.getDefaultPharmacistIdForCurrentSession();
     this.editedPharmacistId = defaultPharmacistId || '';

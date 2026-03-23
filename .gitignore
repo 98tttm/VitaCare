@@ -1,10 +1,15 @@
 .DS_Store
 
-# Dependencies & env
+# Dependencies & env (không commit secret — OAuth, DB, API keys)
 **/node_modules/
 backend/.env
+backend/.env.example
+
+**/.env
 .env
+.env.*
 .env.local
+!.env.example
 *.log
 
 # Large data files (imported to MongoDB, too large for GitHub)

@@ -201,53 +201,53 @@
     transition: color 0.3s;
 }
 
-/* Status Specific Colors (Top Border & Text Only) */
+/* Status Specific Colors (Top Border & Text Only) — design tokens: color-system.css */
 .stat-card.stat-all {
-    border-top: 3px solid #64748b;
+    border-top: 4px solid var(--vc-primary-main);
 }
 
 .stat-card.stat-all .stat-value {
-    color: #64748b;
+    color: var(--vc-primary-main);
 }
 
 .stat-card.stat-pending {
-    border-top: 3px solid #f59e0b;
+    border-top: 4px solid var(--vc-warning-main);
 }
 
 .stat-card.stat-pending .stat-value {
-    color: #f59e0b;
+    color: var(--vc-warning-main);
 }
 
 .stat-card.stat-shipping {
-    border-top: 3px solid #3b82f6;
+    border-top: 4px solid var(--vc-primary-light);
 }
 
 .stat-card.stat-shipping .stat-value {
-    color: #3b82f6;
+    color: var(--vc-primary-light);
 }
 
 .stat-card.stat-unpaid {
-    border-top: 4px solid #ef4444;
+    border-top: 4px solid var(--vc-danger-main);
 }
 
 .stat-card.stat-unpaid .stat-value {
-    color: #ef4444;
+    color: var(--vc-danger-main);
 }
 
 .stat-card.stat-cancelled {
-    border-top: 3px solid #ef4444;
+    border-top: 4px solid var(--vc-danger-main);
 }
 
 .stat-card.stat-cancelled .stat-value {
-    color: #ef4444;
+    color: var(--vc-danger-main);
 }
 
 .stat-card.stat-refunded {
-    border-top: 3px solid #f59e0b;
+    border-top: 4px solid var(--vc-warning-main);
 }
 
 .stat-card.stat-refunded .stat-value {
-    color: #f59e0b;
+    color: var(--vc-warning-main);
 }
 
 /* End of Stats Cards */

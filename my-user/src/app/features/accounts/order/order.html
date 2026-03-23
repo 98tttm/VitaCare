@@ -114,14 +114,6 @@
                 <i class="bi bi-building"></i>
                 <span>Chọn nhà thuốc lấy hàng <span class="order-label-required">*</span></span>
               </div>
-              <div class="order-pharmacy-info-box">
-                <span>Đơn vị hành chính đã thay đổi theo quy định.</span>
-                <a class="order-info-link"
-                  href="https://thuvienphapluat.vn/ma-so-thue/tra-cuu-thong-tin-sap-nhap-tinh"
-                  target="_blank" rel="noopener">
-                  Tra cứu địa chỉ trước và sau sáp nhập
-                </a>
-              </div>
               <div class="order-pharmacy-selects" style="grid-template-columns: 1fr 1fr 1fr;">
                 <vc-searchable-select
                   class="order-addr-vc-select"
@@ -825,6 +817,13 @@
               </div>
             </aside>
           </div>
+        </div>
+
+        <div class="vc-qr-footer">
+          <button type="button" class="vc-qr-btn vc-qr-btn-confirm vc-qr-btn-paid" [disabled]="isSubmitting"
+            (click)="confirmQrPayment()">
+            Đã thanh toán
+          </button>
         </div>
 
       </div>

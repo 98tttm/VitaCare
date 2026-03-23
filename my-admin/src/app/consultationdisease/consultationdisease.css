@@ -24,6 +24,68 @@
     align-items: center;
 }
 
+.consultation-page-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.consultation-page-header-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.consultation-list-page-title {
+    margin: 0;
+    font-size: 28px;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+.consultation-detail-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-transform: none;
+    color: var(--color-primary);
+}
+
+.consultation-page-header .btn-back {
+    flex-shrink: 0;
+    margin: 0;
+    align-self: center;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--btn-padding-y) var(--btn-padding-x);
+    border-radius: var(--btn-border-radius);
+    font-size: var(--btn-font-size);
+    font-weight: var(--font-weight-bold);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    color: var(--color-text-inverse);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 88, 159, 0.3);
+}
+
+.btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 88, 159, 0.4);
+}
+
+.btn-back-inline {
+    flex-shrink: 0;
+}
+
 .page-title {
     margin: 0;
     font-size: 22px;
@@ -66,9 +128,9 @@
 }
 
 .stat-card.active-filter {
-    border: 2px solid #6a1b9a !important;
-    background-color: #f8f5fa;
-    box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.05);
+    border: 2px solid var(--vc-info-hover) !important;
+    background-color: var(--vc-info-bg);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--vc-info-hover) 8%, transparent);
 }
 
 .stat-label {
@@ -89,29 +151,29 @@
     transition: color 0.3s;
 }
 
-/* Status Specific Colors (Top Border & Text Only) */
+/* Status Specific Colors (Top Border & Text Only) — design tokens: color-system.css */
 .stat-card.stat-all {
-    border-top: 4px solid #64748b;
+    border-top: 4px solid var(--vc-info-main);
 }
 
 .stat-card.stat-all .stat-value {
-    color: #64748b;
+    color: var(--vc-info-hover);
 }
 
 .stat-card.stat-pending {
-    border-top: 3px solid #f59e0b;
+    border-top: 4px solid var(--vc-warning-main);
 }
 
 .stat-card.stat-pending .stat-value {
-    color: #f59e0b;
+    color: var(--vc-warning-main);
 }
 
 .stat-card.stat-answered {
-    border-top: 4px solid #10b981;
+    border-top: 4px solid var(--vc-primary-main);
 }
 
 .stat-card.stat-answered .stat-value {
-    color: #10b981;
+    color: var(--vc-primary-main);
 }
 
 .filter-bar {
@@ -1235,16 +1297,12 @@
     color: #f87171;
 }
 
-:host-context(body.dark-mode) .btn-back-main {
-    color: var(--color-text-primary);
-    border-color: var(--color-neutral-30);
-    background: var(--color-bg-secondary);
+:host-context(body.dark-mode) .consultation-page-header .btn-back {
+    box-shadow: 0 4px 12px rgba(0, 88, 159, 0.35);
 }
 
-:host-context(body.dark-mode) .btn-back-main:hover {
-    background: rgba(167, 139, 250, 0.1);
-    border-color: #a78bfa;
-    color: #a78bfa;
+:host-context(body.dark-mode) .consultation-page-header .btn-back:hover {
+    box-shadow: 0 8px 18px rgba(0, 88, 159, 0.45);
 }
 
 /* Admin: xóa vĩnh viễn document tư vấn bệnh */

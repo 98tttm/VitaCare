@@ -40,7 +40,8 @@ export class HealthApiService {
     });
   }
 
-  updateProfile(body: Partial<HealthProfile> & { user_id: string }): Observable<{ success: boolean; profile?: HealthProfile }> {
-    return this.http.patch<{ success: boolean; profile?: HealthProfile }>(`${API}/healthprofiles`, body);
+  updateProfile(body: Partial<HealthProfile> & { user_id: string }): Observable<{ success: boolean; profile?: HealthProfile; message?: string }> {
+    const payload = { ...body, user_id: String(body.user_id) };
+    return this.http.patch<{ success: boolean; profile?: HealthProfile; message?: string }>(`${API}/healthprofiles`, payload);
   }
 }

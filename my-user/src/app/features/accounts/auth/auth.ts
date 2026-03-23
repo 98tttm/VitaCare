@@ -642,11 +642,11 @@ export class Auth implements OnDestroy {
   }
 
   onGoogleLogin(): void {
-    console.log('Google login');
+    window.location.href = '/api/auth/google/start';
   }
 
   onFacebookLogin(): void {
-    console.log('Facebook login');
+    window.location.href = '/api/auth/facebook/start';
   }
 
   onShowQrLogin(): void {

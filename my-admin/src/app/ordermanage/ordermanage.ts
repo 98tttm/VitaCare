@@ -621,20 +621,32 @@ export class Ordermanage implements OnInit {
 
   mapOrder(item: any): Order {
     const rawStatus = item.status;
+    /** Đơn tạo tại quầy dược sĩ + đã thanh toán: hiển thị như đã giao / đã xác nhận dù DB còn pending */
+    const paid = String(item.statusPayment || '').toLowerCase() === 'paid';
+    const pharmacistPickupDone =
+      paid &&
+      Boolean(item.atPharmacy) &&
+      String(item.pickupStoreId || '').trim() !== '' &&
+      (Boolean(item.pharmacistWalkIn) ||
+        !!(item.createdByPharmacist && (item.createdByPharmacist.id || item.createdByPharmacist.name)));
+    const terminalRaw = ['cancelled', 'returned', 'refunded', 'returning', 'processing_return', 'return_processing', 'rejected'];
+    const effectiveStatus =
+      pharmacistPickupDone && !terminalRaw.includes(String(rawStatus || '')) ? 'delivered' : rawStatus;
+
     let status = 'pending';
     let statusText = 'Chờ xác nhận';
     let deliveryStatus = 'pending';
     let deliveryStatusText = 'Chưa giao';
 
     // 1. Trạng thái đơn hàng (Cột 1) - Chỉ hiển thị 4 loại nhãn rút gọn
-    if (item.status === 'pending') {
+    if (effectiveStatus === 'pending') {
       status = 'pending'; statusText = 'Chờ xác nhận';
-    } else if (['confirmed', 'shipping', 'delivered', 'unreview', 'reviewed'].includes(item.status)) {
+    } else if (['confirmed', 'shipping', 'delivered', 'unreview', 'reviewed'].includes(effectiveStatus)) {
       status = 'confirmed'; // Sử dụng confirmed làm gốc cho nhóm đã xác nhận
       statusText = 'Đã xác nhận';
-    } else if (item.status === 'cancelled') {
+    } else if (effectiveStatus === 'cancelled') {
       status = 'cancelled'; statusText = 'Đã hủy';
-    } else if (['returned', 'refunded', 'returning', 'processing_return', 'return_processing', 'rejected'].includes(item.status)) {
+    } else if (['returned', 'refunded', 'returning', 'processing_return', 'return_processing', 'rejected'].includes(effectiveStatus)) {
       status = 'returned'; // Sử dụng returned làm gốc cho nhóm hoàn trả
       statusText = 'Hoàn trả';
     } else {
@@ -643,15 +655,15 @@ export class Ordermanage implements OnInit {
     }
 
     // 2. Trạng thái Giao hàng (Cột 3) - Phân loại theo 5 nhóm yêu cầu: Đang giao, Đã giao, Đang hoàn, Đã hoàn, Đã hủy
-    if (item.status === 'shipping') {
+    if (effectiveStatus === 'shipping') {
       deliveryStatus = 'shipping'; deliveryStatusText = 'Đang giao';
-    } else if (['delivered', 'unreview', 'reviewed'].includes(item.status)) {
+    } else if (['delivered', 'unreview', 'reviewed'].includes(effectiveStatus)) {
       deliveryStatus = 'delivered'; deliveryStatusText = 'Đã giao';
-    } else if (item.status === 'returning') {
+    } else if (effectiveStatus === 'returning') {
       deliveryStatus = 'returning'; deliveryStatusText = 'Đang hoàn';
-    } else if (item.status === 'returned' || item.status === 'refunded') {
+    } else if (effectiveStatus === 'returned' || effectiveStatus === 'refunded') {
       deliveryStatus = 'returned'; deliveryStatusText = 'Đã hoàn';
-    } else if (item.status === 'cancelled' || item.status === 'rejected') {
+    } else if (effectiveStatus === 'cancelled' || effectiveStatus === 'rejected') {
       deliveryStatus = 'cancelled'; deliveryStatusText = 'Đã hủy';
     } else {
       deliveryStatus = 'pending'; deliveryStatusText = 'Chưa giao';

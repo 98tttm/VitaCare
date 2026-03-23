@@ -2,9 +2,11 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { forkJoin, of, catchError, finalize } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { HealthApiService } from '../../../core/services/health-api.service';
 import { BlogService } from '../../../core/services/blog.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 const BASE = '/assets/images/health/';
 const IMG_MAP: Record<string, string> = {
@@ -27,6 +29,7 @@ export class BmiCalculator implements OnInit {
     readonly authService = inject(AuthService);
     private healthApi = inject(HealthApiService);
     private blogService = inject(BlogService);
+    private toastService = inject(ToastService);
 
     gender: 'male' | 'female' = 'female';
     dob = '';
@@ -44,9 +47,12 @@ export class BmiCalculator implements OnInit {
     imgSwitching = signal(false);
     private _lastStatusKey = '';
 
-    /** Blogs cho BMI và BMR */
-    bmiBlogs = signal<any[]>([]);
-    bmrBlogs = signal<any[]>([]);
+    /** Góc sức khỏe: gộp bài gợi ý BMI + BMR (không trùng), tối đa 5 bài */
+    healthCornerBlogs = signal<any[]>([]);
+
+    /** Popup sau khi lưu sổ sức khỏe thành công */
+    showSaveSuccess = signal(false);
+    saveInProgress = signal(false);
 
     ngOnInit(): void {
         this.calculate();
@@ -54,14 +60,40 @@ export class BmiCalculator implements OnInit {
     }
 
     private fetchBlogs(): void {
-        this.blogService.getBlogsByIndicator('bmi', 5).subscribe({
-            next: (res) => this.bmiBlogs.set(Array.isArray(res?.blogs) ? res.blogs : []),
-            error: () => this.bmiBlogs.set([]),
+        forkJoin({
+            bmi: this.blogService
+                .getBlogsByIndicator('bmi', 5)
+                .pipe(catchError(() => of({ blogs: [] }))),
+            bmr: this.blogService
+                .getBlogsByIndicator('bmr', 5)
+                .pipe(catchError(() => of({ blogs: [] }))),
+        }).subscribe({
+            next: ({ bmi, bmr }) => {
+                const bmiList = Array.isArray(bmi?.blogs) ? bmi.blogs : [];
+                const bmrList = Array.isArray(bmr?.blogs) ? bmr.blogs : [];
+                this.healthCornerBlogs.set(this.mergeUniqueBlogs(bmiList, bmrList, 5));
+            },
+            error: () => this.healthCornerBlogs.set([]),
         });
-        this.blogService.getBlogsByIndicator('bmr', 5).subscribe({
-            next: (res) => this.bmrBlogs.set(Array.isArray(res?.blogs) ? res.blogs : []),
-            error: () => this.bmrBlogs.set([]),
-        });
+    }
+
+    private mergeUniqueBlogs(bmi: any[], bmr: any[], max: number): any[] {
+        const seen = new Set<string>();
+        const out: any[] = [];
+        const pushUnique = (arr: any[]) => {
+            for (const b of arr) {
+                const id = String(b?._id ?? '').trim();
+                const url = String(b?.url ?? '').trim();
+                const key = id || url;
+                if (!key || seen.has(key)) continue;
+                seen.add(key);
+                out.push(b);
+                if (out.length >= max) return;
+            }
+        };
+        pushUnique(bmi);
+        pushUnique(bmr);
+        return out;
     }
 
     getBlogImageUrl(blog: any): string {
@@ -163,16 +195,51 @@ export class BmiCalculator implements OnInit {
         this.calculate();
     }
 
+    /** Khách vãng lai → mở đăng nhập/đăng ký; đã đăng nhập → lưu DB */
+    onSaveClick(): void {
+        if (!this.authService.currentUser()) {
+            this.authService.openAuthModal();
+            return;
+        }
+        if (this.bmiValue === null || this.bmrValue === null) {
+            this.toastService.showError('Vui lòng nhập chiều cao và cân nặng hợp lệ để có chỉ số BMI/BMR trước khi lưu.');
+            return;
+        }
+        this.save();
+    }
+
     save(): void {
         const user = this.authService.currentUser();
-        if (!user?.user_id || this.bmiValue === null || this.bmrValue === null) return;
-        this.healthApi.updateProfile({
-            user_id: user.user_id,
-            bmi: Math.round(this.bmiValue * 100) / 100,
-            bmiStatus: this.bmiStatus,
-            bmr: Math.round(this.bmrValue),
-            bmrStatus: this.getBmrStatus(),
-        }).subscribe();
+        const uid = user?.user_id ?? (user as { id?: string })?.id;
+        if (!uid || this.bmiValue === null || this.bmrValue === null) return;
+        if (this.saveInProgress()) return;
+
+        this.saveInProgress.set(true);
+        this.healthApi
+            .updateProfile({
+                user_id: String(uid),
+                bmi: Math.round(this.bmiValue * 100) / 100,
+                bmiStatus: this.bmiStatus,
+                bmr: Math.round(this.bmrValue),
+                bmrStatus: this.getBmrStatus(),
+            })
+            .pipe(finalize(() => this.saveInProgress.set(false)))
+            .subscribe({
+                next: (res) => {
+                    if (res.success) {
+                        this.showSaveSuccess.set(true);
+                    } else {
+                        this.toastService.showError(res.message || 'Không lưu được sổ sức khỏe. Vui lòng thử lại.');
+                    }
+                },
+                error: () => {
+                    this.toastService.showError('Lỗi kết nối máy chủ. Vui lòng thử lại.');
+                },
+            });
+    }
+
+    closeSaveSuccess(): void {
+        this.showSaveSuccess.set(false);
     }
 
     private getBmrStatus(): string {

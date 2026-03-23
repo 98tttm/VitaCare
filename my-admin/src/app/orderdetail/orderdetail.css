@@ -752,3 +752,218 @@
 .od-checkout-final {
     letter-spacing: -0.02em;
 }
+
+/* --- Admin tạo đơn: chọn hình thức nhận hàng --- */
+.od-delivery-method {
+    margin-bottom: 14px;
+}
+
+.od-delivery-method__label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-primary, #0f172a);
+    margin-bottom: 8px;
+}
+
+.od-delivery-method__actions {
+    display: inline-flex;
+    gap: 8px;
+    padding: 4px;
+    border-radius: 999px;
+    background: #eef2ff;
+    border: 1px solid #dbe4ff;
+}
+
+.od-delivery-method__btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: #334155;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.od-delivery-method__btn:hover {
+    color: var(--color-primary, #3c4db5);
+    background: rgba(0, 88, 159, 0.08);
+}
+
+.od-delivery-method__btn--active {
+    color: #fff;
+    background: var(--color-primary, #3c4db5);
+    box-shadow: 0 4px 10px rgba(0, 88, 159, 0.2);
+}
+
+/* --- Chọn cửa hàng (dược sĩ) — đồng bộ my-user đặt hàng / nhận tại nhà thuốc --- */
+.order-pharmacy-section {
+    margin-top: 8px;
+}
+
+.order-pharmacy-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary, #0f172a);
+    margin-bottom: 10px;
+}
+
+.order-pharmacy-label .bi {
+    color: var(--color-primary, #3c4db5);
+    font-size: 1.1em;
+}
+
+.order-label-required {
+    color: var(--color-danger, #dc3545);
+    margin-left: 0.15em;
+}
+
+.order-pharmacy-selects {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.od-pharmacy-selects-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.order-pharmacy-selects vc-searchable-select,
+.order-addr-vc-select {
+    display: block;
+    width: 100%;
+}
+
+.od-pharmacy-stores-wrap {
+    margin-top: 16px;
+}
+
+.od-pharmacy-stores-label {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+    color: var(--color-text-primary, #0f172a);
+}
+
+.od-pharmacy-search input {
+    width: 100%;
+    border: 1px solid var(--color-neutral-40, #e2e8f0);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.od-pharmacy-search input:focus {
+    border-color: var(--color-primary, #3c4db5);
+}
+
+.od-pharmacy-empty {
+    padding: 24px;
+    text-align: center;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.od-pharmacy-store-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.store-card {
+    padding: 14px;
+    border: 1.5px solid #c2e5ff;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fff;
+}
+
+.store-card.selected {
+    border-color: var(--color-primary, #3c4db5);
+    background: var(--color-primary-bg, rgba(60, 77, 181, 0.08));
+}
+
+.store-card-radio {
+    margin-top: 2px;
+}
+
+.store-card-radio-outer {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #c2e5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.store-card.selected .store-card-radio-outer {
+    border-color: var(--color-primary, #3c4db5);
+}
+
+.store-card-radio-inner {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-primary, #3c4db5);
+}
+
+.od-pharmacy-card-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.od-pharmacy-card-name {
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.od-pharmacy-card-addr {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.od-pharmacy-card-addr .bi {
+    font-size: 14px;
+    margin-top: 1px;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.od-pharmacy-card-open {
+    font-size: 12px;
+    color: #10b981;
+    font-weight: 500;
+}
+
+.od-pharmacy-card-open .bi {
+    margin-right: 4px;
+}
+
+@media (max-width: 900px) {
+    .od-pharmacy-selects-3 {
+        grid-template-columns: 1fr;
+    }
+}

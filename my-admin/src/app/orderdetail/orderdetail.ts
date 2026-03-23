@@ -15,6 +15,7 @@ import {
 } from '../utils/applicable-promotions';
 import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
 import { VcSearchableSelectComponent } from '../shared/vc-searchable-select/vc-searchable-select.component';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-orderdetail',
@@ -35,7 +36,9 @@ export class Orderdetail implements OnInit {
 
   // For Create Mode (trường tính tiền đồng bộ payload /api/orders)
   newOrder: any = {
-    shippingInfo: { fullName: '', phone: '', address: '', city: '', district: '', ward: '' },
+    shippingInfo: { fullName: '', phone: '', email: '', address: '', city: '', district: '', ward: '' },
+    pharmacyAddress: '',
+    atPharmacy: false,
     item: [],
     paymentMethod: 'COD',
     subtotal: 0,
@@ -80,6 +83,17 @@ export class Orderdetail implements OnInit {
   /** Dropdown tùy chỉnh trên form tạo/sửa đơn (thay select native). */
   openCreateSelect: string | null = null;
 
+  /** Chọn cửa hàng (luồng dược sĩ) — giống my-user đặt hàng / nhận tại nhà thuốc */
+  allPharmacyLocations: any[] = [];
+  pharmacyProvince = '';
+  pharmacyDistrict = '';
+  pharmacyWard = '';
+  availableDistricts: any[] = [];
+  availableWards: string[] = [];
+  availableStores: any[] = [];
+  selectedStore: any | null = null;
+  storeSearchKeyword = '';
+
   readonly paymentOptions: { value: string; label: string }[] = [
     { value: 'COD', label: 'Thanh toán khi nhận hàng (COD)' },
     { value: 'Banking', label: 'Chuyển khoản' },
@@ -97,6 +111,24 @@ export class Orderdetail implements OnInit {
     return (this.wards || []).map((w: any) => ({ value: w.name_with_type, label: w.name_with_type }));
   }
 
+  get pharmacyProvinceSelectOptions(): { value: string; label: string }[] {
+    return (this.allPharmacyLocations || []).map((p: { tinh: string }) => ({
+      value: p.tinh,
+      label: p.tinh,
+    }));
+  }
+
+  get pharmacyDistrictSelectOptions(): { value: string; label: string }[] {
+    return (this.availableDistricts || []).map((d: { ten: string }) => ({
+      value: d.ten,
+      label: d.ten,
+    }));
+  }
+
+  get pharmacyWardSelectOptions(): { value: string; label: string }[] {
+    return (this.availableWards || []).map((w) => ({ value: w, label: w }));
+  }
+
   constructor(
     private location: Location,
     private route: ActivatedRoute,
@@ -104,8 +136,18 @@ export class Orderdetail implements OnInit {
     @Inject(OrderService) private orderService: OrderService,
     @Inject(ProductService) private productService: ProductService,
     @Inject(PromotionService) private promotionService: PromotionService,
+    private auth: AuthService,
     private cdr: ChangeDetectorRef
   ) { }
+
+  /** Tạo đơn mới bởi dược sĩ: không bắt buộc tên/SĐT, chọn cửa hàng thay vì địa chỉ */
+  get isPharmacistCreateOrder(): boolean {
+    return this.isCreateMode && !this.isEditMode && this.auth.isPharmacistAccount();
+  }
+
+  get isAdminCreateOrder(): boolean {
+    return this.isCreateMode && !this.isEditMode && !this.auth.isPharmacistAccount();
+  }
 
   @HostListener('document:click', ['$event'])
   closeCreateSelectOnOutside(ev: MouseEvent) {
@@ -135,6 +177,12 @@ export class Orderdetail implements OnInit {
       this.fetchLocations();
       this.prefetchAllProducts();
       this.fetchPromoSupportData();
+      this.fetchStoreLocationsForPharmacist();
+      if (this.auth.isPharmacistAccount()) {
+        this.newOrder.atPharmacy = true;
+      } else {
+        this.newOrder.atPharmacy = false;
+      }
     } else if (id) {
       this.fetchOrderDetail(id);
     } else {
@@ -346,6 +394,7 @@ export class Orderdetail implements OnInit {
 
   get showNextStepButton(): boolean {
     if (!this.order) return false;
+    if (this.isPharmacistPickupComplete()) return false;
     const finalStatuses = ['delivered', 'cancelled', 'refunded', 'rejected', 'returned', 'processing_return', 'return_processing'];
     if (finalStatuses.includes(this.order.status)) return false;
 
@@ -454,8 +503,12 @@ export class Orderdetail implements OnInit {
 
     const vita = 0;
     const totalAfterDeductions = Math.max(0, subtotalGross - directDiscountPos - orderVoucher - vita);
-    const shippingGross =
-      totalAfterDeductions > ADMIN_ORDER_FREE_SHIPPING_THRESHOLD ? 0 : ADMIN_ORDER_DEFAULT_SHIPPING_FEE;
+    const pickupAtPharmacy = Boolean(this.newOrder.atPharmacy);
+    const shippingGross = pickupAtPharmacy
+      ? 0
+      : totalAfterDeductions > ADMIN_ORDER_FREE_SHIPPING_THRESHOLD
+        ? 0
+        : ADMIN_ORDER_DEFAULT_SHIPPING_FEE;
     const shippingNet = Math.max(0, shippingGross - shipVoucher);
 
     this.newOrder.subtotal = Math.round(subtotalGross);
@@ -468,16 +521,46 @@ export class Orderdetail implements OnInit {
     this.newOrder.discount = Math.round(orderVoucher + this.newOrder.shippingDiscount);
   }
 
+  /**
+   * Đơn nhận tại quầy do dược sĩ + đã thanh toán: coi như hoàn tất dù `status` trong DB còn pending.
+   * (Đồng bộ hiển thị với danh sách đơn hàng.)
+   */
+  isPharmacistPickupComplete(): boolean {
+    if (!this.order) return false;
+    const paid = String(this.order.statusPayment || '').toLowerCase() === 'paid';
+    if (!paid) return false;
+    if (!this.order.atPharmacy) return false;
+    if (!String(this.order.pickupStoreId || '').trim()) return false;
+    const walk = Boolean(this.order.pharmacistWalkIn);
+    const cp = this.order.createdByPharmacist;
+    const hasCreator = !!(cp && (cp.id || cp.name));
+    return walk || hasCreator;
+  }
+
   isConfirmed() {
-    return this.order && this.order.status !== 'pending' && this.order.status !== 'cancelled';
+    if (!this.order) return false;
+    if (this.isPharmacistPickupComplete()) return true;
+    return this.order.status !== 'pending' && this.order.status !== 'cancelled';
   }
 
   isDelivered() {
-    return this.order && this.order.status === 'delivered';
+    if (!this.order) return false;
+    if (this.isPharmacistPickupComplete()) return true;
+    return this.order.status === 'delivered';
   }
 
   isPaid() {
     return this.order && (this.order.paymentStatus === 'paid' || this.order.statusPayment === 'paid');
+  }
+
+  /**
+   * Đơn đã giao (admin đã xác nhận) nhưng thanh toán vẫn unpaid — cho phép bấm ghi nhận đã thu.
+   */
+  get showMarkPaidAfterDeliveryButton(): boolean {
+    if (!this.order || this.isCreateMode) return false;
+    if (this.isPaid()) return false;
+    const s = String(this.order.status || '');
+    return ['delivered', 'unreview', 'reviewed'].includes(s);
   }
 
   // --- Create Mode Logic ---
@@ -730,7 +813,213 @@ export class Orderdetail implements OnInit {
     else this.calculateTotal();
   }
 
+  fetchStoreLocationsForPharmacist() {
+    this.orderService.getStoreLocationsTree().subscribe({
+      next: (data: any[]) => {
+        this.allPharmacyLocations = Array.isArray(data) ? data : [];
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.allPharmacyLocations = [];
+      },
+    });
+  }
+
+  onPharmacyProvinceChange(tinh: string): void {
+    this.pharmacyProvince = tinh;
+    this.pharmacyDistrict = '';
+    this.pharmacyWard = '';
+    this.availableDistricts = [];
+    this.availableWards = [];
+    this.availableStores = [];
+    this.selectedStore = null;
+    this.newOrder.pharmacyAddress = '';
+
+    if (tinh) {
+      const loc = this.allPharmacyLocations.find((l) => l.tinh === tinh);
+      if (loc?.quans) {
+        this.availableDistricts = [...loc.quans].sort((a: any, b: any) =>
+          String(a.ten).localeCompare(String(b.ten))
+        );
+      }
+    }
+    this.loadAvailableStores();
+    if (this.isCreateMode) this.rebuildApplicablePromotions();
+    else this.calculateTotal();
+    this.cdr.markForCheck();
+  }
+
+  onPharmacyDistrictChange(quan: string): void {
+    this.pharmacyDistrict = quan;
+    this.pharmacyWard = '';
+    this.availableWards = [];
+    this.availableStores = [];
+    this.selectedStore = null;
+    this.newOrder.pharmacyAddress = '';
+
+    if (quan && this.availableDistricts.length) {
+      const q = this.availableDistricts.find((a) => a.ten === quan);
+      if (q?.phuongs) {
+        this.availableWards = [...q.phuongs].sort();
+      }
+    }
+    this.loadAvailableStores();
+    if (this.isCreateMode) this.rebuildApplicablePromotions();
+    else this.calculateTotal();
+    this.cdr.markForCheck();
+  }
+
+  onPharmacyWardChange(phuong: string): void {
+    this.pharmacyWard = phuong;
+    this.selectedStore = null;
+    this.newOrder.pharmacyAddress = '';
+    this.availableStores = [];
+    this.loadAvailableStores();
+    if (this.isCreateMode) this.rebuildApplicablePromotions();
+    else this.calculateTotal();
+    this.cdr.markForCheck();
+  }
+
+  loadAvailableStores(): void {
+    if (!this.pharmacyProvince) {
+      this.availableStores = [];
+      return;
+    }
+
+    this.orderService
+      .getStoresFiltered({
+        keyword: this.storeSearchKeyword,
+        tinh_thanh: this.pharmacyProvince,
+        quan_huyen: this.pharmacyDistrict,
+        phuong_xa: this.pharmacyWard,
+        page: 1,
+        limit: 100,
+      })
+      .subscribe({
+        next: (res: any) => {
+          const data = res?.data;
+          this.availableStores = Array.isArray(data) ? data : [];
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.availableStores = [];
+        },
+      });
+  }
+
+  onStoreKeywordChange(): void {
+    this.loadAvailableStores();
+  }
+
+  selectStore(store: any): void {
+    this.selectedStore = store;
+    this.newOrder.atPharmacy = true;
+    this.newOrder.pharmacyAddress = this.buildPharmacyAddressFromStore(store);
+    if (this.isCreateMode) this.rebuildApplicablePromotions();
+    else this.calculateTotal();
+    this.cdr.markForCheck();
+  }
+
+  setCreateDeliveryMethod(method: 'home' | 'pharmacy'): void {
+    const pickup = method === 'pharmacy';
+    this.newOrder.atPharmacy = pickup;
+    if (pickup) {
+      this.newOrder.shippingInfo.address = '';
+      this.newOrder.shippingInfo.city = '';
+      this.newOrder.shippingInfo.district = '';
+      this.newOrder.shippingInfo.ward = '';
+      this.districts = [];
+      this.wards = [];
+      this.newOrder.pharmacyAddress = '';
+      this.selectedStore = null;
+      if (!this.allPharmacyLocations.length) {
+        this.fetchStoreLocationsForPharmacist();
+      }
+    } else {
+      this.pharmacyProvince = '';
+      this.pharmacyDistrict = '';
+      this.pharmacyWard = '';
+      this.availableDistricts = [];
+      this.availableWards = [];
+      this.availableStores = [];
+      this.selectedStore = null;
+      this.storeSearchKeyword = '';
+      this.newOrder.pharmacyAddress = '';
+    }
+    this.calculateTotal();
+    this.cdr.markForCheck();
+  }
+
+  /** Cùng định dạng payload my-user khi atPharmacy */
+  private buildPharmacyAddressFromStore(s: any): string {
+    if (!s) return '';
+    const d = s.dia_chi || {};
+    return `${s.ten_cua_hang || ''} - ${d.dia_chi_day_du || ''}, ${d.phuong_xa || ''}, ${d.quan_huyen || ''}, ${d.tinh_thanh || ''}`;
+  }
+
   createOrder() {
+    if (this.isPharmacistCreateOrder) {
+      if (!this.selectedStore?.ma_cua_hang || !String(this.newOrder.pharmacyAddress || '').trim()) {
+        this.showNotification('Vui lòng chọn cửa hàng nhận hàng.', 'warning');
+        return;
+      }
+      if (this.newOrder.item.length === 0) {
+        this.showNotification('Vui lòng chọn ít nhất 1 sản phẩm!', 'warning');
+        return;
+      }
+
+      this.rebuildApplicablePromotions();
+      if (this.selectedPromotionId) {
+        const ap = this.applicablePromotions.find((p) => String(p._id) === String(this.selectedPromotionId));
+        if (!ap?.isApplicable) {
+          this.showNotification('Mã khuyến mãi không hợp lệ cho đơn hàng này.', 'warning');
+          return;
+        }
+      }
+      this.calculateTotal();
+      const pm = String(this.newOrder.paymentMethod || 'cod').toLowerCase();
+      const creators = this.auth.getOrderCreatorMeta();
+      const fn = (this.newOrder.shippingInfo.fullName || '').trim();
+      const payload = {
+        ...this.newOrder,
+        shippingInfo: {
+          ...this.newOrder.shippingInfo,
+          fullName: fn || 'Khách vãng lai',
+          phone: (this.newOrder.shippingInfo.phone || '').trim(),
+          email: (this.newOrder.shippingInfo.email || '').trim(),
+        },
+        paymentMethod: pm === 'banking' ? 'banking' : 'cod',
+        atPharmacy: true,
+        pharmacyAddress: String(this.newOrder.pharmacyAddress || '').trim(),
+        pharmacistWalkIn: true,
+        pickupStoreId: this.selectedStore.ma_cua_hang,
+        createdByPharmacist: creators.createdByPharmacist,
+        createdByAdmin: null,
+        /** Đồng bộ backend: đơn quầy = đã giao + đã thanh toán */
+        status: 'delivered',
+        statusPayment: 'paid',
+      };
+      this.isLoading = true;
+      this.orderService.createOrder(payload).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.showNotification('Tạo đơn hàng thành công!', 'success');
+            setTimeout(() => {
+              this.router.navigate(['/admin/orders']);
+            }, 1000);
+          } else {
+            this.showNotification(res.message || 'Lỗi thêm mới', 'error');
+            this.isLoading = false;
+          }
+        },
+        error: (err) => {
+          this.showNotification('Lỗi server khi thêm mới', 'error');
+          this.isLoading = false;
+        }
+      });
+      return;
+    }
+
     if (!this.newOrder.shippingInfo.fullName || !this.newOrder.shippingInfo.phone) {
       this.showNotification('Vui lòng nhập tên và số điện thoại!', 'warning');
       return;
@@ -750,11 +1039,30 @@ export class Orderdetail implements OnInit {
     }
     this.calculateTotal();
     const pm = String(this.newOrder.paymentMethod || 'cod').toLowerCase();
+    const creators = this.auth.getOrderCreatorMeta();
     const payload = {
       ...this.newOrder,
       paymentMethod: pm === 'banking' ? 'banking' : 'cod',
       atPharmacy: Boolean(this.newOrder.atPharmacy),
+      pharmacistWalkIn: false,
+      createdByAdmin: creators.createdByAdmin,
+      createdByPharmacist: null,
+      pickupStoreId: this.newOrder.atPharmacy ? (this.selectedStore?.ma_cua_hang || '') : '',
+      pharmacyAddress: this.newOrder.atPharmacy ? String(this.newOrder.pharmacyAddress || '').trim() : '',
     };
+
+    if (payload.atPharmacy) {
+      if (!payload.pickupStoreId || !payload.pharmacyAddress) {
+        this.showNotification('Vui lòng chọn nhà thuốc nhận hàng.', 'warning');
+        return;
+      }
+    } else {
+      if (!this.newOrder.shippingInfo?.city || !this.newOrder.shippingInfo?.district || !this.newOrder.shippingInfo?.ward || !this.newOrder.shippingInfo?.address) {
+        this.showNotification('Vui lòng nhập đầy đủ địa chỉ giao hàng tận nơi.', 'warning');
+        return;
+      }
+    }
+
     this.isLoading = true;
     this.orderService.createOrder(payload).subscribe({
       next: (res) => {

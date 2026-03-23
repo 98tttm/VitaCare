@@ -563,39 +563,6 @@
   margin-bottom: 10px;
 }
 
-.order-pharmacy-info-box {
-  padding: 12px 14px;
-  /* Màu nền & border giống card thông tin người nhận */
-  background: #F0F9FF;
-  border: 1px solid #C2E5FF;
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-3);
-  font-size: var(--order-content-size);
-  color: var(--order-label-color);
-}
-
-.order-pharmacy-info-box a {
-  color: var(--order-link-color);
-  text-decoration: none;
-  margin-left: 4px;
-}
-
-.order-pharmacy-info-box a:hover {
-  color: var(--color-primary-hover);
-  text-decoration: underline;
-}
-
-/* Link "Tra cứu địa chỉ..." trong box đơn vị hành chính */
-.order-info-link {
-  color: #00589F;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.order-info-link:hover {
-  text-decoration: underline;
-}
-
 .order-pharmacy-selects {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2744,9 +2711,20 @@
 }
 
 .vc-qr-footer {
-  padding: 10px 14px 12px;
+  padding: 12px 14px 14px;
   display: flex;
   gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  border-top: 1px solid #eee;
+  background: #fafbfc;
+  flex-shrink: 0;
+}
+
+.vc-qr-footer .vc-qr-btn {
+  flex: 0 0 auto;
+  min-width: 160px;
+  border-radius: 8px;
 }
 
 .vc-qr-btn {
@@ -2782,6 +2760,12 @@
 
 .vc-qr-btn-confirm:hover {
   background: var(--color-primary-hover, #2B3E66);
+}
+
+.vc-qr-btn-confirm:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 480px) {

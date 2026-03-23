@@ -17,12 +17,12 @@
         </button>
     </div>
 
-    <!-- Stats Container - Consistent with other pages -->
-    <div class="stats-container">
+    <!-- Stats: tổng hệ thống trên danh sách; chỉ sản phẩm đang xem khi vào chi tiết -->
+    <div class="stats-grid stats-grid--consultation">
         <div class="stat-card stat-all" (click)="filterByStatus('')" [class.active-filter]="currentFilter === ''"
             style="cursor: pointer;">
             <span class="stat-label">TỔNG CÂU HỎI</span>
-            <span class="stat-value">{{ totalQuestions }}</span>
+            <span class="stat-value">{{ statsTotal }}</span>
         </div>
         <div class="stat-card stat-pending" (click)="filterByStatus(isPharmacist ? 'needs' : 'pending')"
             [class.active-filter]="currentFilter === (isPharmacist ? 'needs' : 'pending')" style="cursor: pointer;"
@@ -33,12 +33,12 @@
         <div class="stat-card stat-assigned" *ngIf="!isPharmacist" (click)="filterByStatus('assigned')"
             [class.active-filter]="currentFilter === 'assigned'" style="cursor: pointer;">
             <span class="stat-label">ĐÃ PHÂN CÔNG</span>
-            <span class="stat-value">{{ assignedCount }}</span>
+            <span class="stat-value">{{ statsAssigned }}</span>
         </div>
         <div class="stat-card stat-answered" (click)="filterByStatus('answered')"
             [class.active-filter]="currentFilter === 'answered'" style="cursor: pointer;">
             <span class="stat-label">ĐÃ TRẢ LỜI</span>
-            <span class="stat-value">{{ answeredCount }}</span>
+            <span class="stat-value">{{ statsAnswered }}</span>
         </div>
     </div>
 
@@ -107,7 +107,6 @@
                 <span>Mã SKU: {{ selectedProduct.sku }} • {{ (selectedProduct.pendingCount ?? selectedProduct.unansweredCount ?? 0) + (selectedProduct.assignedCount || 0) }} câu hỏi cần xử lý</span>
             </div>
         </div>
-
         <div class="filter-bar">
             <div class="search-box">
                 <i class="bi bi-search"></i>

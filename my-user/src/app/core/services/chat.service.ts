@@ -2,14 +2,24 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+/** Thẻ sản phẩm kèm câu trả lời bot (từ backend enrich /product/...) */
+export interface ChatProductCard {
+  slug: string;
+  name: string;
+  price: number | null;
+  image: string;
+}
+
 export interface ChatTurn {
   role: 'user' | 'model';
   parts: { text: string }[];
+  products?: ChatProductCard[];
 }
 
 export interface ChatResponse {
   success: boolean;
   reply?: string;
+  products?: ChatProductCard[];
   message?: string;
 }
 

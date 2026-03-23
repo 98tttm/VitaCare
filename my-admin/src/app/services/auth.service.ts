@@ -43,6 +43,36 @@ export class AuthService {
     }
 
     /**
+     * Người tạo đơn từ admin (lưu DB: createdByAdmin | createdByPharmacist).
+     */
+    getOrderCreatorMeta(): {
+        createdByAdmin: { id: string; name: string } | null;
+        createdByPharmacist: { id: string; name: string } | null;
+    } {
+        if (typeof window === 'undefined') {
+            return { createdByAdmin: null, createdByPharmacist: null };
+        }
+        try {
+            const raw = localStorage.getItem('admin');
+            if (!raw) return { createdByAdmin: null, createdByPharmacist: null };
+            const a = JSON.parse(raw) as Record<string, unknown>;
+            const isPh = a['accountRole'] === 'pharmacist';
+            const id = String(a['_id'] ?? a['id'] ?? a['pharmacist_id'] ?? '').trim();
+            const nameAdmin = String(a['adminname'] ?? a['adminName'] ?? '').trim();
+            const namePh = String(a['pharmacistName'] ?? a['adminname'] ?? '').trim();
+            const name = isPh ? namePh : nameAdmin;
+            if (!id && !name) return { createdByAdmin: null, createdByPharmacist: null };
+            const payload = { id: id || '—', name: name || '—' };
+            if (isPh) {
+                return { createdByAdmin: null, createdByPharmacist: payload };
+            }
+            return { createdByAdmin: payload, createdByPharmacist: null };
+        } catch {
+            return { createdByAdmin: null, createdByPharmacist: null };
+        }
+    }
+
+    /**
      * Thông tin dược sĩ đang đăng nhập để gắn vào blog (author / approver).
      * Cấu trúc tương thích document blog (không gửi password).
      */
