@@ -99,6 +99,7 @@
   line-height: 1.4;
   margin: 0 0 12px;
   letter-spacing: -0.02em;
+  transition: font-size 0.3s ease;
 }
 
 .bd-meta {
@@ -231,20 +232,32 @@
 }
 
 /* Kích thước chữ lớn hơn (khi bấm "Lớn hơn") */
-.bd-article.bd-font-large .bd-intro p {
-  font-size: 16px;
+.bd-article.bd-font-large .bd-title {
+  font-size: 32px;
+}
+
+.bd-article.bd-font-large .bd-intro,
+.bd-article.bd-font-large .bd-intro-text {
+  font-size: 19.5px;
 }
 
 .bd-article.bd-font-large .bd-body {
-  font-size: 17px;
+  font-size: 20px;
 }
 
-.bd-article.bd-font-large .bd-body :deep(p) {
-  font-size: 17px;
+.bd-article.bd-font-large .bd-body ::ng-deep p,
+.bd-article.bd-font-large .bd-body ::ng-deep li,
+.bd-article.bd-font-large .bd-body ::ng-deep span,
+.bd-article.bd-font-large .bd-body ::ng-deep a {
+  font-size: 18px;
 }
 
-.bd-article.bd-font-large .bd-body ::ng-deep li {
-  font-size: 17px;
+.bd-article.bd-font-large .bd-body ::ng-deep h2 {
+  font-size: 26px;
+}
+
+.bd-article.bd-font-large .bd-body ::ng-deep h3 {
+  font-size: 23px;
 }
 
 /* Heading Styles - Matched with Disease Details Section Headings */
@@ -289,6 +302,16 @@
   margin: 0;
   padding: 0;
   max-width: 100%;
+  transition: font-size 0.3s ease;
+}
+
+.bd-body ::ng-deep p,
+.bd-body ::ng-deep li,
+.bd-body ::ng-deep span,
+.bd-body ::ng-deep a,
+.bd-body ::ng-deep h2,
+.bd-body ::ng-deep h3 {
+  transition: font-size 0.3s ease;
 }
 
 .bd-body ::ng-deep h2 {
@@ -332,8 +355,7 @@
 
 .bd-body ::ng-deep a {
   color: #00589F;
-  text-decoration: none;
-  font-weight: 700;
+  text-decoration: underline;
 }
 
 .bd-body ::ng-deep a:hover {
