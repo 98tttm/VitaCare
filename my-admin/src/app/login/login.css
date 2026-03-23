@@ -576,12 +576,12 @@ a {
 .loading-container {
     width: 100%;
     position: relative;
-    padding-top: 50px; /* Space for mascot */
+    padding-top: 42px; /* Space for mascot — đồng bộ admin-mascot-loading.css */
 }
 
 .mascot-shipping {
     position: absolute;
-    bottom: 10px; /* Adjust based on mascot height */
+    bottom: 0; /* Sát thanh loading */
     left: 0;
     width: 60px;
     z-index: 2;

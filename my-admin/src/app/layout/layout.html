@@ -1,9 +1,11 @@
-<div class="admin-wrapper" [class.collapsed]="isSidebarCollapsed">
+<div class="admin-wrapper" [class.collapsed]="isSidebarCollapsed"
+    [class.flyout-open]="blogCollapsedFlyoutTopPx !== null || consultationCollapsedFlyoutTopPx !== null">
     <!-- Sidebar -->
     <aside class="sidebar">
         <!-- Logo Section Inside Sidebar -->
         <div class="sidebar-header">
-            <div class="brand-logo">
+            <div class="brand-logo" role="button" tabindex="0" (click)="goDashboardAndReload()"
+                (keydown.enter)="goDashboardAndReload()" (keydown.space)="goDashboardAndReload(); $event.preventDefault()">
                 <div class="logo-icon">
                     <img [src]="isSidebarCollapsed ? 'assets/favicon/Favicon.png' : 'assets/favicon/logo.png'"
                         alt="VitaCare Logo">
@@ -45,14 +47,17 @@
                         <span class="text">Khách hàng</span>
                     </a>
                 </li>
-                <li class="nav-item has-submenu" [class.open]="isBlogMenuOpen" [class.active]="isBlogMenuOpen">
-                    <a href="javascript:void(0)" class="nav-link" (click)="toggleBlogMenu()">
+                <li class="nav-item has-submenu" [class.open]="isBlogMenuOpen" [class.active]="isBlogMenuOpen"
+                    [class.open-flyout]="blogCollapsedFlyoutTopPx !== null"
+                    (mouseenter)="onCollapsedSubmenuEnter('blog', $event)"
+                    (mouseleave)="onCollapsedSubmenuLeave('blog')">
+                    <button type="button" class="nav-link nav-link-button" (click)="toggleBlogMenu()">
                         <div class="icon-wrapper">
                             <img src="assets/icon/edit.png" class="icon" alt="Blog">
                         </div>
                         <span class="text submenu-title">Blog & tin tức <i class="bi"
                                 [ngClass]="isBlogMenuOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i></span>
-                    </a>
+                    </button>
                     <ul class="submenu" *ngIf="isBlogMenuOpen">
                         <li>
                             <a routerLink="/admin/blogs" routerLinkActive="active" class="submenu-link">
@@ -66,7 +71,8 @@
                         </li>
                     </ul>
                     <!-- Floating submenu when sidebar collapsed (shown on hover) -->
-                    <div class="consultation-float-menu" *ngIf="isSidebarCollapsed">
+                    <div class="consultation-float-menu" *ngIf="isSidebarCollapsed && blogCollapsedFlyoutTopPx !== null"
+                        [style.top.px]="blogCollapsedFlyoutTopPx" [style.left.px]="74">
                         <ul>
                             <li>
                                 <a routerLink="/admin/blogs" routerLinkActive="active" class="submenu-link">
@@ -90,14 +96,17 @@
                     </a>
                 </li>
                 <li class="nav-item has-submenu" [class.open]="isConsultationMenuOpen"
-                    [class.active]="isConsultationMenuOpen">
-                    <a href="javascript:void(0)" class="nav-link" (click)="toggleConsultationMenu()">
+                    [class.active]="isConsultationMenuOpen"
+                    [class.open-flyout]="consultationCollapsedFlyoutTopPx !== null"
+                    (mouseenter)="onCollapsedSubmenuEnter('consultation', $event)"
+                    (mouseleave)="onCollapsedSubmenuLeave('consultation')">
+                    <button type="button" class="nav-link nav-link-button" (click)="toggleConsultationMenu()">
                         <div class="icon-wrapper">
                             <img src="assets/icon/note.png" class="icon" alt="Tu van">
                         </div>
                         <span class="text submenu-title">Tư vấn <i class="bi"
                                 [ngClass]="isConsultationMenuOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i></span>
-                    </a>
+                    </button>
                     <ul class="submenu" *ngIf="isConsultationMenuOpen">
                         <li>
                             <a routerLink="/admin/consultation-prescription" routerLinkActive="active"
@@ -110,14 +119,16 @@
                                 Tư vấn sản phẩm
                             </a>
                         </li>
-                        <li>
+                        <li *ngIf="isPharmacistAccount()">
                             <a routerLink="/admin/consultation-disease" routerLinkActive="active" class="submenu-link">
                                 Tư vấn bệnh
                             </a>
                         </li>
                     </ul>
                     <!-- Floating submenu when sidebar collapsed (shown on hover) -->
-                    <div class="consultation-float-menu" *ngIf="isSidebarCollapsed">
+                    <div class="consultation-float-menu"
+                        *ngIf="isSidebarCollapsed && consultationCollapsedFlyoutTopPx !== null"
+                        [style.top.px]="consultationCollapsedFlyoutTopPx" [style.left.px]="74">
                         <ul>
                             <li>
                                 <a routerLink="/admin/consultation-prescription" routerLinkActive="active"
@@ -131,7 +142,7 @@
                                     Tư vấn sản phẩm
                                 </a>
                             </li>
-                            <li>
+                            <li *ngIf="isPharmacistAccount()">
                                 <a routerLink="/admin/consultation-disease" routerLinkActive="active"
                                     class="submenu-link">
                                     Tư vấn bệnh
@@ -142,10 +153,6 @@
                 </li>
             </ul>
         </nav>
-
-        <div class="sidebar-footer">
-            <!-- Emptied footer to move profile to top bar -->
-        </div>
     </aside>
 
     <!-- Main Content -->
@@ -170,7 +177,9 @@
                         <span class="slider round"></span>
                     </label>
                 </div>
-                <app-notice></app-notice>
+                <div class="header-notice-wrap">
+                    <app-notice></app-notice>
+                </div>
 
                 <!-- User Profile Dropdown -->
                 <div class="header-profile-container">
@@ -188,18 +197,18 @@
                     <div class="profile-dropdown" *ngIf="isAdminDropdownOpen">
                         <ul>
                             <li>
-                                <a href="javascript:void(0)" (click)="openPersonalInfo()"><i class="bi bi-person"></i>
-                                    Thông tin cá nhân</a>
+                                <button type="button" class="profile-dropdown-btn" (click)="openPersonalInfo()"><i class="bi bi-person"></i>
+                                    Thông tin cá nhân</button>
                             </li>
                             <li>
-                                <a href="javascript:void(0)" (click)="openSettings()"><i class="bi bi-gear"></i> Cài
-                                    đặt</a>
+                                <button type="button" class="profile-dropdown-btn" (click)="openSettings()"><i class="bi bi-gear"></i> Cài
+                                    đặt</button>
                             </li>
                             <li class="dropdown-divider"></li>
                             <li>
-                                <a href="javascript:void(0)" class="logout-link" (click)="openLogoutConfirm()">
+                                <button type="button" class="logout-link profile-dropdown-btn" (click)="openLogoutConfirm()">
                                     <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </div>

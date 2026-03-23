@@ -33,12 +33,172 @@
     text-transform: uppercase;
 }
 
+/* Link dạng chữ trong banner “đơn được phân công” — không khung nút */
+.prescription-focus-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #00589f;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.prescription-focus-link:hover {
+    text-decoration: underline;
+    color: #004680;
+}
+
+.prescription-focus-link:focus-visible {
+    outline: 2px solid #00589f;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.prescription-focus-link-arrows {
+    margin-left: 5px;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
 /* Unified Stats Container */
 .stats-container {
     display: flex;
     gap: 16px;
     margin-bottom: 24px;
     flex-wrap: wrap;
+}
+
+/* Admin: 7 ô cùng một hàng — grid tránh flex (thẻ xuống dòng một mình bị giãn full width) */
+.stats-container.stats-grid-admin {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 10px 12px;
+    flex-wrap: unset;
+}
+
+.stats-container.stats-grid-admin > .stat-card {
+    flex: none;
+    min-width: 0;
+    width: auto;
+    padding: 18px 6px;
+}
+
+.stats-container.stats-grid-admin .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.2px;
+}
+
+.stats-container.stats-grid-admin .stat-value {
+    font-size: 18px;
+}
+
+/* Dược sĩ — 6 ô: tổng, chưa TV, không LH, đã TV, thất bại, huỷ khách */
+.stats-container.stats-grid-pharmacist-main {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px 12px;
+    flex-wrap: unset;
+}
+
+.stats-container.stats-grid-pharmacist-main > .stat-card {
+    flex: none;
+    min-width: 0;
+    width: auto;
+    padding: 18px 8px;
+}
+
+/* Dược sĩ — khung thống kê gọn, full hàng, bóng & hover nhẹ */
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 10px 14px;
+    margin-bottom: 18px;
+}
+
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card {
+    padding: 13px 8px 15px;
+    border-radius: 12px;
+    min-height: 86px;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.05),
+        0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.08),
+        0 12px 28px rgba(15, 23, 42, 0.07);
+}
+
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main .stat-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    line-height: 1.22;
+    hyphens: none;
+}
+
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main .stat-value {
+    font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main .stat-sublabel {
+    font-size: 8px;
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+}
+
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.active-filter {
+    transform: none;
+    box-shadow:
+        0 0 0 2px rgba(106, 27, 154, 0.35),
+        0 6px 18px rgba(106, 27, 154, 0.12);
+}
+
+/* Viền màu trên mảnh hơn (override 3px mặc định) */
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.stat-all,
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.stat-pending,
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.stat-waiting,
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.stat-unreachable,
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.stat-advised,
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.stat-consultation-failed,
+.consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card.stat-cancelled {
+    border-top-width: 2px;
+}
+
+@media (max-width: 1100px) {
+    .stats-container.stats-grid-admin {
+        grid-template-columns: repeat(7, minmax(68px, 1fr));
+        overflow-x: auto;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stats-container.stats-grid-pharmacist-main {
+        grid-template-columns: repeat(6, minmax(72px, 1fr));
+        overflow-x: auto;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .consultation-prescription-container .stats-container.stats-grid-pharmacist-main {
+        gap: 8px 10px;
+    }
+
+    .consultation-prescription-container .stats-container.stats-grid-pharmacist-main > .stat-card {
+        min-height: 80px;
+        padding: 11px 6px 13px;
+    }
 }
 
 .stat-card {
@@ -131,6 +291,120 @@
     color: #8b5cf6;
 }
 
+.stat-card.stat-consultation-failed {
+    border-top: 3px solid #b91c1c;
+}
+
+.stat-card.stat-consultation-failed .stat-value {
+    color: #b91c1c;
+}
+
+.stat-card .stat-sublabel {
+    display: block;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+    text-transform: none;
+    color: var(--color-text-tertiary);
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+.prescription-status-history {
+    border-top: 1px solid var(--color-neutral-30);
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.prescription-status-history__title {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.prescription-status-history__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.prescription-status-history__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-neutral-30);
+}
+
+/* Màu theo từng bước trạng thái (modal lịch sử) */
+.prescription-status-history__item--pending {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.prescription-status-history__item--waiting {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.prescription-status-history__item--unreachable {
+    background: #fff7ed;
+    border-color: #fdba74;
+}
+
+.prescription-status-history__item--failed {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+.prescription-status-history__item--success {
+    background: #f0fdf4;
+    border-color: #86efac;
+}
+
+.prescription-status-history__item--cancelled {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.prescription-status-history__item--default {
+    background: var(--color-bg-secondary);
+    border-color: var(--color-neutral-30);
+}
+
+.prescription-status-history__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.prescription-status-history__meta {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+}
+
+.prescription-cancel-reason {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    font-size: 13px;
+}
+
+.prescription-cancel-reason__label {
+    font-weight: 600;
+    color: #9a3412;
+    margin-right: 6px;
+}
+
+.prescription-cancel-reason__text {
+    color: var(--color-text-primary);
+}
+
 .stat-card.stat-cancelled {
     border-top: 3px solid #94a3b8;
 }
@@ -172,13 +446,489 @@
     background-size: 16px;
 }
 
-.table-container,
-.table-scrollable {
+.table-container {
     background-color: var(--color-bg-secondary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     border: 1px solid var(--color-neutral-30);
+}
+
+/* Khung danh sách: header cố định, chỉ tbody cuộn; thanh cuộn mỏng trên tbody. */
+.table-scrollable {
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-neutral-30);
+    height: min(70vh, calc(100vh - 300px));
+    min-height: 220px;
+    max-height: min(70vh, calc(100vh - 300px));
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    z-index: 0;
+}
+
+.consultation-prescription-container .table-scrollable.prescription-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.consultation-prescription-container .table-scrollable > .data-table--scroll-body {
+    display: block;
+    width: 100%;
+    min-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    /* Ghi đè utilities.css (.table-scrollable table { border-collapse: separate }) — separate dễ làm lệch cột khi thead/tbody tách display */
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    table-layout: fixed;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-check {
+    width: 56px;
+}
+
+/* Cột 2–8 chia %; cột chuông (admin) cố định hẹp — thu nhỏ các cột để vừa khung. */
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-id {
+    width: 13%;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-date {
+    width: 12%;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-name {
+    width: 21%;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-phone {
+    width: 10%;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-qty {
+    width: 5%;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-img {
+    width: 9%;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-status {
+    width: 16%;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body col.rx-col-remind {
+    width: 44px;
+}
+
+/*
+ * thead rộng 100% nhưng tbody có track cuộn dọc → bảng trong tbody hẹp hơn vài px → có thể lệch cột nhẹ so với header.
+ * Không dùng dải ::after (user không muốn vệt xanh cạnh scrollbar).
+ */
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead {
+    display: table;
+    width: calc(100% - 8px);
+    max-width: calc(100% - 8px);
+    table-layout: fixed;
+    box-sizing: border-box;
+}
+
+/*
+ * Luôn hiển thị track cuộn dọc → bề ngang thead khớp tbody (tránh cột “co” một bên, khoảng trắng lệch phải).
+ */
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody {
+    display: block;
+    width: 100%;
+    max-height: calc(100% - 52px);
+    overflow-y: scroll;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 23, 42, 0.28) transparent;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody tr {
+    display: table;
+    width: 100%;
+    min-width: 100%;
+    table-layout: fixed;
+}
+
+/*
+ * thead / tbody tách display → mỗi hàng tbody là một bảng con: colgroup không luôn khớp.
+ * Gán width + text-align theo nth-child để header và dòng dữ liệu thẳng cột, chữ căn trái.
+ */
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th,
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td {
+    box-sizing: border-box;
+    vertical-align: middle;
+    text-align: left !important;
+    direction: ltr;
+    padding: 12px 14px;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th {
+    white-space: nowrap;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(1),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(1) {
+    width: 56px;
+    min-width: 56px;
+    max-width: 56px;
+    padding-left: 12px;
+    padding-right: 12px;
+    text-align: center !important;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(2),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(2) {
+    width: 13%;
+    padding-right: 8px;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(2) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+/* Ngày: đủ chỗ dd/mm/yyyy — không dùng ellipsis */
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(3),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(3) {
+    width: 12%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    padding-left: 8px;
+    padding-right: 10px;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(4),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(4) {
+    width: 21%;
+    padding-left: 10px;
+    padding-right: 8px;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(4) {
+    word-break: break-word;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(5),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(5) {
+    width: 10%;
+    padding-left: 8px;
+    padding-right: 10px;
+    white-space: nowrap;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(6),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(6) {
+    width: 5%;
+    padding-left: 8px;
+    padding-right: 8px;
+    text-align: center !important;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(7) {
+    width: 9%;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 10px;
+    text-align: center !important;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(7) {
+    width: 9%;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 10px;
+    text-align: center !important;
+}
+
+/* Trạng thái (+ sao / thời gian chờ) — hẹp hơn khi có cột chuông admin */
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(8),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(8) {
+    width: 16%;
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 8px;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(8) {
+    text-align: left !important;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(8) {
+    text-align: center !important;
+}
+
+/* Chuông nhắc nhở (admin): cột cuối */
+.consultation-prescription-container .table-scrollable .data-table--scroll-body thead th:nth-child(9),
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody td:nth-child(9) {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    padding: 8px 4px;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.rx-remind-th {
+    padding: 8px 4px !important;
+    text-align: center !important;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.rx-remind-th .bi {
+    font-size: 15px;
+}
+
+.rx-remind-cell {
+    vertical-align: middle !important;
+}
+
+.rx-remind-placeholder {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+}
+
+.rx-remind-cell button.rx-remind-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 22px;
+    height: auto;
+    min-height: 22px;
+    margin: 0;
+    padding: 0;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    transition:
+        color 0.15s ease,
+        transform 0.12s ease,
+        opacity 0.15s ease;
+}
+
+/* ≥ 2 giờ: chỉ icon vàng — không khung / nền */
+.rx-remind-btn--due {
+    color: #ca8a04;
+}
+
+.rx-remind-btn--due:hover:not(:disabled) {
+    color: #a16207;
+    transform: scale(1.08);
+}
+
+/* Dưới 2 giờ hoặc chưa phân công: icon xám, không khung */
+.rx-remind-btn--soon {
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.rx-remind-btn--soon:disabled {
+    opacity: 1;
+}
+
+.rx-remind-btn--due:disabled {
+    cursor: wait;
+    opacity: 0.92;
+}
+
+.rx-remind-btn .bi {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.rx-remind-cell button.rx-remind-btn:hover,
+.rx-remind-cell button.rx-remind-btn:focus,
+.rx-remind-cell button.rx-remind-btn:active,
+.rx-remind-cell button.rx-remind-btn:disabled {
+    background: transparent none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.rx-remind-btn:focus-visible {
+    outline: 2px solid rgba(202, 138, 4, 0.55);
+    outline-offset: 2px;
+}
+
+.rx-remind-btn--soon:focus-visible {
+    outline-color: rgba(148, 163, 184, 0.7);
+}
+
+/* Tag trạng thái (màu nhạt phân biệt) */
+.rx-status-cell {
+    vertical-align: middle !important;
+}
+
+.rx-status-stack {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.rx-status-stack > .rx-status-badge {
+    align-self: center;
+}
+
+/* Căn giữa dòng «X ngày» trong bề ngang cột trạng thái (cùng nhịp với badge) */
+.rx-status-elapsed {
+    width: 100%;
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.rx-review-stars {
+    display: inline-flex;
+    align-items: center;
+    align-self: center;
+    gap: 2px;
+    line-height: 1;
+}
+
+.rx-review-stars--modal {
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.rx-review-star-icon {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.rx-review-stars--modal .rx-review-star-icon {
+    font-size: 18px;
+}
+
+.rx-review-star-icon--on {
+    color: #eab308;
+}
+
+.rx-review-star-icon--off {
+    color: #cbd5e1;
+}
+
+.prescription-customer-review {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-neutral-30);
+}
+
+.prescription-customer-review__title {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.prescription-customer-review__text {
+    margin: 0 0 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.prescription-customer-review__empty {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--color-text-tertiary);
+}
+
+.prescription-customer-review__meta {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.rx-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: left;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.rx-status-badge--pending {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.rx-status-badge--waiting {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.rx-status-badge--unreachable {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.rx-status-badge--advised {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.rx-status-badge--failed {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.rx-status-badge--cancelled {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+.rx-status-badge--default {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody::-webkit-scrollbar-thumb {
+    background-color: rgba(15, 23, 42, 0.22);
+    border-radius: 6px;
+}
+
+.consultation-prescription-container .table-scrollable .data-table--scroll-body tbody::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(15, 23, 42, 0.35);
 }
 
 .data-table {
@@ -271,70 +1021,83 @@
     display: block;
 }
 
-/* Modal specific */
+/* Modal specific — z-index cao hơn top-bar (1100) / sidebar để không bị che phần đầu */
 .modal-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1050;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483646 !important;
+    isolation: isolate;
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Leave enough top space so header never overlaps. */
+    padding: max(76px, calc(env(safe-area-inset-top, 0px) + 56px)) 16px max(20px, env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .modal-backdrop {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    z-index: 0;
+    background: rgba(0, 0, 0, 0.45);
 }
 
 .modal-content {
     background-color: var(--color-bg-secondary);
-    width: 620px;
-    max-width: 90vw;
-    max-height: 90vh;
-    border-radius: 18px;
-    position: relative;
-    z-index: 1060;
+    width: 500px;
+    max-width: min(82vw, 500px);
+    max-height: min(
+        calc(100dvh - 180px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)),
+        calc(100vh - 180px)
+    );
+    margin: 0 auto;
+    border-radius: 14px;
+    position: relative !important;
+    z-index: 2147483647 !important;
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .modal-header {
-    padding: 20px 24px 12px;
+    padding: 12px 16px 10px;
     border-bottom: 1px solid var(--color-neutral-30);
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
 .header-titles h5 {
-    margin: 0 0 4px 0;
-    font-size: 20px;
+    margin: 0 0 2px 0;
+    font-size: 15px;
     font-weight: 700;
     color: var(--color-text-primary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
+    line-height: 1.25;
 }
 
 .header-titles .modal-subtitle {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--color-text-tertiary);
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 22px;
+    line-height: 1;
     cursor: pointer;
     color: var(--color-text-tertiary);
+    padding: 0 0 0 8px;
+    flex-shrink: 0;
 }
 
 .close-btn:hover {
@@ -342,8 +1105,286 @@
 }
 
 .modal-body {
-    padding: 20px 24px;
+    padding: 12px 16px 14px;
     overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.modal-body.scrollable {
+    overscroll-behavior: contain;
+}
+
+.modal-content--view-only .modal-body.scrollable {
+    padding-bottom: 18px;
+}
+
+/* Admin chỉ xem: select phân dược sĩ khóa, vẫn đọc/copy chữ phụ */
+.prescription-modal-assignment--readonly select.form-control {
+    opacity: 1;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-light, #f1f5f9) !important;
+    cursor: not-allowed;
+    -webkit-text-fill-color: var(--color-text-primary);
+}
+
+.prescription-assignment-readonly-display {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-neutral-40);
+    background-color: var(--color-bg-light, #f1f5f9);
+    color: var(--color-text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    user-select: text;
+}
+
+/* Phân công dược sĩ — dropdown tùy chỉnh (panel có bo góc + màu VitaCare; Inter kế thừa từ admin) */
+.rx-pharmacist-select {
+    position: relative;
+    width: 100%;
+    font-family: var(--font-family-base);
+}
+
+.rx-pharmacist-select__trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-primary-lighter, #a9b3e8);
+    background: var(--color-bg-secondary, #fff);
+    color: var(--color-text-primary);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rx-pharmacist-select__trigger:hover:not(:disabled) {
+    border-color: var(--color-primary-light, #7a85cc);
+}
+
+.rx-pharmacist-select__trigger:focus-visible {
+    border-color: var(--color-success, #00589f);
+    box-shadow: 0 0 0 3px var(--color-success-bg, #daecff);
+}
+
+.rx-pharmacist-select__trigger:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+    background-color: var(--color-bg-light, #eef3f9);
+    border-color: var(--color-neutral-40);
+    color: var(--color-text-primary);
+}
+
+.rx-pharmacist-select__trigger--open .rx-pharmacist-select__chevron {
+    transform: rotate(180deg);
+}
+
+.rx-pharmacist-select__chevron {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--color-primary, #4a55a2);
+    transition: transform 0.2s ease;
+}
+
+.rx-pharmacist-select__trigger-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rx-pharmacist-select__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: calc(100% + 4px);
+    z-index: 20;
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+    max-height: min(240px, 50vh);
+    overflow-y: auto;
+    border-radius: 5px;
+    border: 1px solid var(--color-primary-lighter, #a9b3e8);
+    background: linear-gradient(180deg, var(--color-primary-bg, #dde5f4) 0%, var(--color-success-bg, #daecff) 100%);
+    box-shadow: 0 -6px 20px rgba(74, 85, 162, 0.14);
+    font-family: var(--font-family-base);
+    font-size: 14px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-lighter, #a9b3e8) var(--color-primary-bg, #dde5f4);
+}
+
+/* Thanh cuộn mảnh (Chrome, Edge, Safari) */
+.rx-pharmacist-select__panel::-webkit-scrollbar {
+    width: 5px;
+}
+
+.rx-pharmacist-select__panel::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 5px;
+}
+
+.rx-pharmacist-select__panel::-webkit-scrollbar-thumb {
+    background: var(--color-primary-lighter, #a9b3e8);
+    border-radius: 5px;
+}
+
+.rx-pharmacist-select__panel::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-light, #7a85cc);
+}
+
+.rx-pharmacist-select__option {
+    margin: 0;
+    padding: 10px 12px;
+    cursor: pointer;
+    color: var(--color-text-primary);
+    line-height: 1.35;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.rx-pharmacist-select__option:hover,
+.rx-pharmacist-select__option:focus-visible {
+    outline: none;
+    background: var(--color-success-bg, #daecff);
+}
+
+.rx-pharmacist-select__option--active {
+    background: var(--color-success, #00589f);
+    color: var(--color-text-inverse, #fff);
+    font-weight: 600;
+}
+
+.rx-pharmacist-select__option--active:hover {
+    background: var(--color-success, #00589f);
+    color: var(--color-text-inverse, #fff);
+}
+
+.rx-pharmacist-select__option--placeholder.rx-pharmacist-select__option--active {
+    font-weight: 600;
+}
+
+/* Gọn khối nội dung trong modal */
+.modal-body .info-section h6 {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.modal-body .info-section p {
+    margin: 0 0 2px 0;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.modal-body .form-group label {
+    margin-bottom: 4px !important;
+    font-size: 12px !important;
+}
+
+.modal-body textarea.form-control {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+    line-height: 1.4;
+    max-height: 100px;
+}
+
+.modal-body .list-section > label {
+    margin-bottom: 6px !important;
+    font-size: 12px !important;
+}
+
+.modal-body .item-card {
+    padding: 8px 0 !important;
+}
+
+.modal-body .item-card .img-placeholder {
+    width: 36px !important;
+    height: 36px !important;
+    margin-right: 10px !important;
+}
+
+.modal-footer.prescription-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px 12px;
+    background-color: var(--color-bg-secondary);
+    border-top: 1px solid var(--color-neutral-30);
+    flex-shrink: 0;
+}
+
+/* Nút chính modal đơn thuốc (Phân công, Liên lạc lại, …) */
+.prescription-modal-footer .btn-primary {
+    background-color: #00589f;
+    border: 1px solid #00589f;
+    color: #fff;
+    font-family: var(--font-family-base, 'Inter', system-ui, sans-serif);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: background-color 0.2s, border-color 0.2s, filter 0.2s;
+}
+
+.prescription-modal-footer .btn-primary:hover:not(:disabled) {
+    background-color: #00487f;
+    border-color: #00487f;
+    color: #fff;
+    filter: brightness(1.02);
+}
+
+.prescription-modal-footer .btn-primary:focus-visible {
+    outline: 2px solid rgba(0, 88, 159, 0.45);
+    outline-offset: 2px;
+}
+
+.prescription-modal-footer .btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Tên / phụ đề sản phẩm trong modal — Inter, cỡ nhỏ, đồng bộ với admin */
+.prescription-modal-product-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.prescription-modal-product-name {
+    font-family: var(--font-family-base, 'Inter', system-ui, sans-serif);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    color: var(--color-text-primary);
+    margin: 0;
+    display: block;
+    word-break: break-word;
+}
+
+.prescription-modal-product-meta {
+    font-family: var(--font-family-base, 'Inter', system-ui, sans-serif);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--color-text-tertiary);
+    margin: 0;
+    display: block;
 }
 
 /* Success dialog popup */
@@ -385,7 +1426,7 @@
     justify-content: center;
 }
 
-/* Dialog chọn trạng thái khi đang tư vấn */
+/* Dialog chọn trạng thái — phải cao hơn .modal-wrapper (2500) để nổi trên popup chi tiết đơn */
 .status-dialog-backdrop {
     position: fixed;
     inset: 0;
@@ -393,7 +1434,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2100;
+    z-index: 6100;
+}
+
+.status-dialog-backdrop--outcome {
+    z-index: 6200;
 }
 
 .status-dialog-card {
@@ -423,6 +1468,31 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+.status-dialog-actions--wrap {
+    flex-wrap: wrap;
+    justify-content: stretch;
+}
+
+.status-dialog-actions--wrap .btn-primary,
+.status-dialog-actions--wrap .btn-danger-outline {
+    flex: 1 1 160px;
+    min-width: 140px;
+}
+
+.status-dialog-actions .btn-danger-outline {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-danger, #dc3545);
+    padding: 8px 18px;
+    border-radius: 8px;
+    color: var(--color-danger, #dc3545);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.status-dialog-actions .btn-danger-outline:hover {
+    background-color: rgba(220, 53, 69, 0.08);
 }
 
 .status-dialog-actions .btn-primary {
@@ -473,7 +1543,9 @@
     padding: 4px 0 8px;
     margin-bottom: 8px;
     position: relative;
-    z-index: 100;
+    /* Cao hơn thead sticky của bảng (utilities.css z-index: 10) để menu Lọc/Sắp xếp không bị thanh xanh đè.
+       Vẫn thấp hơn chuông thông báo layout (~1200). */
+    z-index: 50;
 }
 
 .search-wrapper {
@@ -583,7 +1655,7 @@
     border: 1px solid rgba(0, 0, 0, 0.05);
     min-width: 240px;
     padding: 8px 0;
-    z-index: 1000;
+    z-index: 2000;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
@@ -862,7 +1934,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    z-index: 2000;
+    z-index: 2700;
     animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     border-left: 5px solid;
     max-width: 400px;
@@ -942,6 +2014,24 @@
 :host-context(body.dark-mode) .stat-value,
 :host-context(body.dark-mode) .stat-number {
     color: var(--color-text-primary);
+}
+
+:host-context(body.dark-mode)
+    .consultation-prescription-container
+    .stats-container.stats-grid-pharmacist-main
+    > .stat-card {
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.25),
+        0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(body.dark-mode)
+    .consultation-prescription-container
+    .stats-container.stats-grid-pharmacist-main
+    > .stat-card:hover {
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.35),
+        0 14px 32px rgba(0, 0, 0, 0.22);
 }
 
 /* === Filter Bar === */
@@ -1071,6 +2161,103 @@
 
 :host-context(body.dark-mode) .data-table tbody tr:hover {
     background-color: var(--color-bg-light) !important;
+}
+
+:host-context(body.dark-mode)
+    .consultation-prescription-container
+    .table-scrollable
+    .data-table--scroll-body
+    tbody {
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+:host-context(body.dark-mode)
+    .consultation-prescription-container
+    .table-scrollable
+    .data-table--scroll-body
+    tbody::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.42);
+}
+
+:host-context(body.dark-mode)
+    .consultation-prescription-container
+    .table-scrollable
+    .data-table--scroll-body
+    tbody::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.58);
+}
+
+:host-context(body.dark-mode) .rx-status-badge {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(body.dark-mode) .rx-status-badge--pending {
+    background: rgba(234, 179, 8, 0.22);
+    color: #fde68a;
+}
+
+:host-context(body.dark-mode) .rx-status-badge--waiting {
+    background: rgba(59, 130, 246, 0.22);
+    color: #93c5fd;
+}
+
+:host-context(body.dark-mode) .rx-status-badge--unreachable {
+    background: rgba(249, 115, 22, 0.2);
+    color: #fdba74;
+}
+
+:host-context(body.dark-mode) .rx-status-badge--advised {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+}
+
+:host-context(body.dark-mode) .rx-status-badge--failed {
+    background: rgba(239, 68, 68, 0.22);
+    color: #fca5a5;
+}
+
+:host-context(body.dark-mode) .rx-status-badge--cancelled {
+    background: rgba(236, 72, 153, 0.2);
+    color: #f9a8d4;
+}
+
+:host-context(body.dark-mode) .rx-status-badge--default {
+    background: rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+}
+
+:host-context(body.dark-mode) .rx-remind-btn--due {
+    background: transparent none !important;
+    background-color: transparent !important;
+    color: #fde047;
+}
+
+:host-context(body.dark-mode) .rx-remind-btn--due:hover:not(:disabled) {
+    background: transparent none !important;
+    background-color: transparent !important;
+    color: #fef08a;
+}
+
+:host-context(body.dark-mode) .rx-remind-btn--soon {
+    background: transparent none !important;
+    background-color: transparent !important;
+    color: #94a3b8;
+}
+
+:host-context(body.dark-mode) .rx-status-elapsed {
+    color: #94a3b8;
+}
+
+:host-context(body.dark-mode) .rx-review-star-icon--on {
+    color: #fde047;
+}
+
+:host-context(body.dark-mode) .rx-review-star-icon--off {
+    color: #475569;
+}
+
+:host-context(body.dark-mode) .prescription-customer-review {
+    border-top-color: var(--color-neutral-30);
 }
 
 /* === Modal === */

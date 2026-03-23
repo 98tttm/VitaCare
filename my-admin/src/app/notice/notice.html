@@ -1,63 +1,170 @@
-<div class="notice-wrapper">
-  <!-- Bell icon + badge -->
-  <button class="notice-bell-btn" type="button" (click)="toggleDropdown($event)">
-    <img src="assets/icon/notification-bell.png" alt="Notification">
-    <span class="badge" *ngIf="unreadCount > 0">
-      {{ unreadCount > 99 ? '99+' : unreadCount }}
-    </span>
-  </button>
+<div class="notice-host">
+  <div class="notice-wrapper">
+    <button
+      class="notice-bell-btn"
+      type="button"
+      aria-label="Thông báo"
+      [class.notice-bell-shake]="bellShaking"
+      (click)="toggleDropdown($event)"
+    >
+      <img src="assets/icon/notification-bell.png" alt="" class="notice-bell-img" aria-hidden="true">
+      <span class="badge" *ngIf="unreadCount > 0" [class.badge-bump]="bellShaking">
+        {{ unreadCount > 99 ? '99+' : unreadCount }}
+      </span>
+    </button>
 
-  <!-- Dropdown on hover -->
-  <div class="notice-dropdown" *ngIf="isDropdownOpen">
-    <div class="notice-dropdown-header">
-      <span>Thông báo</span>
-      <button type="button" class="view-all" (click)="viewAll(); $event.stopPropagation()">Xem tất cả</button>
-    </div>
-    <div class="notice-list">
-      <div
-        class="notice-item"
-        *ngFor="let item of notifications | slice:0:20; let i = index"
-        [class.notice-item--highlight]="i < 3"
-        (click)="openItem(item); $event.stopPropagation()"
-      >
-        <div class="notice-item-main">
-          <div class="notice-title">{{ item.title }}</div>
-          <div class="notice-message">{{ item.message }}</div>
-        </div>
-        <div class="notice-time">
-          <span>{{ item.createdAt | date:'HH:mm dd/MM' }}</span>
-        </div>
+    <div class="notice-dropdown" *ngIf="isDropdownOpen">
+      <div class="notice-dropdown-header">
+        <span>Thông báo</span>
+        <button type="button" class="view-all" (click)="viewAll($event)">Xem tất cả</button>
       </div>
-
-      <div class="notice-empty" *ngIf="!notifications || notifications.length === 0">
-        Không có thông báo mới.
-      </div>
-    </div>
-  </div>
-
-  <!-- Popup khi có thông báo mới lúc login / reload -->
-  <div class="notice-popup-backdrop" *ngIf="showPopup">
-    <div class="notice-popup">
-      <div class="notice-popup-header">
-        <h3>Thông báo mới</h3>
-        <button type="button" class="close-btn" (click)="closePopup()">&times;</button>
-      </div>
-      <div class="notice-popup-body">
-        <div class="notice-item" *ngFor="let item of popupNotifications">
+      <div class="notice-list">
+        <div
+          class="notice-item"
+          *ngFor="let item of dropdownNotifications"
+          [class.notice-item--unread]="!isRead(item._id)"
+          [class.notice-item--read]="isRead(item._id)"
+          (click)="openItem(item); $event.stopPropagation()"
+        >
+          <div class="notice-item-icon" aria-hidden="true">
+            <i class="bi" [ngClass]="dropdownTypeIconClass(item.type)"></i>
+          </div>
           <div class="notice-item-main">
             <div class="notice-title">{{ item.title }}</div>
-            <div class="notice-message">{{ item.message }}</div>
+            <div class="notice-message" *ngIf="item.message">{{ item.message }}</div>
           </div>
           <div class="notice-time">
             <span>{{ item.createdAt | date:'HH:mm dd/MM' }}</span>
           </div>
         </div>
-      </div>
-      <div class="notice-popup-footer">
-        <button type="button" class="btn-secondary" (click)="closePopup()">Đóng</button>
-        <button type="button" class="btn-primary" (click)="viewAll(); closePopup()">Xem tất cả</button>
+
+        <div class="notice-empty" *ngIf="dropdownNotifications.length === 0">
+          Không có thông báo cần xử lý.
+        </div>
       </div>
     </div>
   </div>
-</div>
 
+  <div class="notice-drawer-portal" #drawerPortal *ngIf="drawerOpen">
+    <div class="notice-drawer-overlay" (click)="closeDrawer()" aria-hidden="true"></div>
+    <aside class="notice-drawer-panel" role="dialog" aria-modal="true" aria-label="Thông báo">
+      <div class="notice-drawer-head">
+        <i class="bi bi-bell-fill notice-drawer-head-icon" aria-hidden="true"></i>
+        <h2 class="notice-drawer-title">Thông báo</h2>
+        <button type="button" class="notice-drawer-close" (click)="closeDrawer()" aria-label="Đóng">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="notice-drawer-banner">
+        Đơn chờ xác nhận, trả hàng và các yêu cầu tư vấn cần xử lý được gom tại đây.
+        <span *ngIf="!isPharmacist" class="notice-drawer-banner-extra"> Tư vấn bệnh chỉ hiển thị khi đăng nhập vai dược sĩ.</span>
+        <span *ngIf="isPharmacist" class="notice-drawer-banner-extra"> Đơn tư vấn thuốc mới từ khách chỉ admin nhận chuông; phân công từ admin cho bạn nằm ở tab Đơn thuốc.</span>
+      </div>
+
+      <div class="notice-drawer-tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          class="notice-drawer-tab"
+          *ngFor="let t of drawerTabs"
+          [class.is-active]="drawerTab === t.id"
+          (click)="setDrawerTab(t.id)"
+          [attr.aria-label]="(t.id === 'disease' || (t.id === 'prescription' && isPharmacist)) ? (t.label + ', ' + t.count + ' thông báo') : (t.label + ', ' + t.count + ' thông báo cần xử lý')"
+        >
+          {{ t.label }} <span class="notice-drawer-tab-count">({{ t.count }})</span>
+        </button>
+      </div>
+
+      <div class="notice-drawer-body">
+        <div class="notice-drawer-loading" *ngIf="drawerLoading">Đang tải…</div>
+
+        <div
+          class="notice-drawer-empty"
+          *ngIf="!drawerLoading && filteredDrawerItems.length === 0"
+        >
+          <i class="bi bi-bell-slash" aria-hidden="true"></i>
+          <p>{{ drawerEmptyMessage }}</p>
+        </div>
+
+        <div class="notice-drawer-list" *ngIf="!drawerLoading && filteredDrawerItems.length > 0">
+          <div
+            class="notice-drawer-row"
+            *ngFor="let item of filteredDrawerItems"
+            [class.notice-drawer-row--prescription-assigned]="isPrescriptionPharmacistAssigned(item)"
+            [class.notice-drawer-row--disease-consulted]="isConsultationDiseaseDone(item)"
+            [class.notice-drawer-row--product-assigned]="!isPharmacist && isProductPharmacistAssignedRow(item)"
+            [class.notice-drawer-row--pharmacist-rx-green]="isPharmacistPrescriptionOutcomeGreen(item) || isPharmacistProductOutcomeGreen(item)"
+            [class.notice-drawer-row--pharmacist-rx-yellow]="isPharmacistPrescriptionOutcomeYellow(item)"
+            [class.notice-drawer-row--pharmacist-rx-red]="isPharmacistPrescriptionOutcomeRed(item)"
+            [class.notice-drawer-row--pending]="isPharmacistPrescriptionAssignedPendingBlue(item) || isPharmacistProductAssignedPendingBlue(item) || (!isConsultationDiseaseDone(item) && !isPrescriptionPharmacistAssigned(item) && !isPharmacistPrescriptionAssignedRow(item) && !isProductPharmacistAssignedRow(item) && noticeRowPhase(item) === 'pending')"
+            [class.notice-drawer-row--confirmed]="!isConsultationDiseaseDone(item) && !isPrescriptionPharmacistAssigned(item) && !isPharmacistPrescriptionAssignedRow(item) && (noticeRowPhase(item) === 'confirmed' || showOrderDeliveredTagStack(item))"
+            [class.notice-drawer-row--done]="!isConsultationDiseaseDone(item) && !isPrescriptionPharmacistAssigned(item) && !isPharmacistPrescriptionAssignedRow(item) && noticeRowPhase(item) === 'done' && !showOrderDeliveredTagStack(item)"
+            (click)="openItem(item, true)"
+          >
+            <div class="notice-drawer-row-head">
+              <div class="notice-drawer-row-title">{{ item.title }}</div>
+              <div
+                class="notice-drawer-row-tags"
+                *ngIf="((!isPharmacist && isProductPharmacistAssignedRow(item)) || isPrescriptionPharmacistAssigned(item) || isEffectivelyResolved(item) || showPharmacistPrescriptionOutcomeTags(item) || isPharmacistProductOutcomeGreen(item))"
+              >
+                <span
+                  *ngIf="isPrescriptionPharmacistAssigned(item)"
+                  class="notice-drawer-done-tag notice-drawer-done-tag--admin-rx-assigned"
+                >Đã phân công</span>
+                <span *ngIf="!isPharmacist && isProductPharmacistAssignedRow(item)" class="notice-drawer-done-tag notice-drawer-done-tag--admin-rx-assigned">Đã phân công</span>
+                <span
+                  *ngIf="isPharmacistProductOutcomeGreen(item)"
+                  class="notice-drawer-done-tag notice-drawer-done-tag--leaf"
+                >{{ pharmacistProductOutcomeTagLabel(item) }}</span>
+                <ng-container *ngIf="showPharmacistPrescriptionOutcomeTags(item)">
+                  <span
+                    class="notice-drawer-done-tag"
+                    [class.notice-drawer-done-tag--leaf]="isPharmacistPrescriptionOutcomeGreen(item)"
+                    [class.notice-drawer-done-tag--amberrx]="isPharmacistPrescriptionOutcomeYellow(item)"
+                    [class.notice-drawer-done-tag--danger]="isPharmacistPrescriptionOutcomeRed(item)"
+                  >{{ pharmacistPrescriptionOutcomeTagLabel(item) }}</span>
+                </ng-container>
+                <ng-container *ngIf="!showPharmacistPrescriptionOutcomeTags(item)">
+                  <ng-container *ngIf="showOrderDeliveredTagStack(item)">
+                    <span class="notice-drawer-done-tag notice-drawer-done-tag--soft">Đã xác nhận</span>
+                    <span class="notice-drawer-done-tag notice-drawer-done-tag--blue">Đã giao</span>
+                  </ng-container>
+                  <ng-container *ngIf="!showOrderDeliveredTagStack(item)">
+                    <div *ngIf="isConsultationDiseaseDone(item)" class="notice-drawer-disease-tags">
+                      <span class="notice-drawer-done-tag notice-drawer-done-tag--leaf">{{ diseaseConsultedStatusLabel() }}</span>
+                      <span
+                        *ngIf="diseaseConsultPharmacistName(item)"
+                        class="notice-drawer-done-tag notice-drawer-done-tag--pharmacist-name"
+                      >{{ diseaseConsultPharmacistName(item) }}</span>
+                    </div>
+                    <span
+                      *ngIf="!isConsultationDiseaseDone(item) && isEffectivelyResolved(item) && !isPharmacistProductOutcomeGreen(item)"
+                      class="notice-drawer-done-tag"
+                      [class.notice-drawer-done-tag--soft]="noticeRowPhase(item) === 'confirmed'"
+                      [class.notice-drawer-done-tag--leaf]="!isPharmacist && isProductPharmacistAssignedRow(item) && resolvedTagLabel(item) === 'Đã hoàn thành'"
+                    >{{ resolvedTagLabel(item) }}</span>
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+            <div class="notice-drawer-row-msg" *ngIf="item.message">{{ item.message }}</div>
+            <div class="notice-drawer-row-assignee" *ngIf="!isPharmacist && isProductPharmacistAssignedRow(item) && productAssignedPharmacistLabel(item)">
+              <span class="notice-drawer-done-tag notice-drawer-done-tag--product-assignee">
+                {{ productAssignedPharmacistLabel(item) }}
+              </span>
+              <span class="notice-drawer-row-assignee-time">{{ item.createdAt | date:'HH:mm dd/MM/yyyy' }}</span>
+            </div>
+            <div class="notice-drawer-row-meta">
+              <span
+                class="notice-drawer-type"
+                *ngIf="!(!isPharmacist && isProductPharmacistAssignedRow(item)) && !showOrderDeliveredTagStack(item)"
+              >{{ prescriptionNoticeTypeLabel(item) }}</span>
+              <span *ngIf="!(!isPharmacist && isProductPharmacistAssignedRow(item))">{{ item.createdAt | date:'HH:mm dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

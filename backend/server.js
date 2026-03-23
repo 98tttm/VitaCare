@@ -222,6 +222,84 @@ async function ensureUsersResultTestCollection() {
 
 const locationsCollection = () => mongoose.connection.db.collection('tree_complete');
 const ordersCollection = () => mongoose.connection.db.collection('orders');
+/** Thông báo lưu cho admin panel (đơn hàng, sau này mở rộng). `roles`: ai được xem — ví dụ chỉ admin cho đơn hàng. */
+const adminNoticeCollection = () => mongoose.connection.db.collection('admin_notice');
+
+/** Đánh dấu thông báo admin_notice (tư vấn đơn thuốc) đã xử lý — ẩn khỏi chuông admin. */
+async function markPrescriptionConsultAdminNoticesResolved(prescriptionId) {
+  const pid = String(prescriptionId ?? '').trim();
+  if (!pid) return;
+  try {
+    await adminNoticeCollection().updateMany(
+      {
+        type: 'consultation_prescription',
+        $or: [{ 'meta.prescriptionId': pid }, { 'meta.prescription_id': pid }],
+      },
+      { $set: { resolved: true, resolvedAt: new Date() } }
+    );
+  } catch (e) {
+    console.warn('[admin_notice] mark prescription consultation resolved:', e?.message || e);
+  }
+}
+
+/** Xóa thông báo đơn tư vấn thuốc gửi nhầm cho dược sĩ (chạy một lần khi khởi động). */
+async function cleanupLegacyPrescriptionNotificationsForPharmacist() {
+  try {
+    const pn = await pharmacistNoticeCollection().deleteMany({
+      type: { $in: ['consultation_prescription', 'prescription_consultation', 'prescription_pending'] },
+    });
+    if (pn.deletedCount) {
+      console.log(`[cleanup] pharmacist_notice: đã xóa ${pn.deletedCount} bản ghi thông báo liên quan đơn tư vấn thuốc.`);
+    }
+    const an = await adminNoticeCollection().deleteMany({
+      type: 'consultation_prescription',
+      roles: { $in: ['pharmacist'] },
+    });
+    if (an.deletedCount) {
+      console.log(`[cleanup] admin_notice: đã xóa ${an.deletedCount} thông báo đơn thuốc có role dược sĩ.`);
+    }
+  } catch (e) {
+    console.warn('[cleanup] prescription notifications:', e?.message || e);
+  }
+}
+
+/** Đơn pending cũ chưa có bản ghi admin_notice — tạo một lần để chuông admin không mất dữ liệu. */
+async function backfillPrescriptionConsultAdminNoticesIfMissing() {
+  try {
+    const pending = await ConsultationPrescriptionModel.find({ status: 'pending' })
+      .sort({ createdAt: -1 })
+      .limit(300)
+      .lean();
+    let added = 0;
+    for (const p of pending) {
+      const pid = String(p.prescriptionId || '').trim();
+      if (!pid) continue;
+      const exists = await adminNoticeCollection().findOne({
+        type: 'consultation_prescription',
+        $or: [{ 'meta.prescriptionId': pid }, { 'meta.prescription_id': pid }],
+      });
+      if (exists) continue;
+      const who = String(p.full_name || p.name || '').trim() || 'Khách hàng';
+      await adminNoticeCollection().insertOne({
+        type: 'consultation_prescription',
+        title: 'Đơn tư vấn thuốc mới',
+        message: `${who} vừa gửi đơn tư vấn thuốc.`,
+        createdAt: p.createdAt || new Date(),
+        link: '/admin/consultation-prescription',
+        meta: { prescriptionId: pid },
+        roles: ['admin'],
+        resolved: false,
+      });
+      added += 1;
+    }
+    if (added) console.log(`[backfill] admin_notice: đã thêm ${added} thông báo đơn tư vấn thuốc (đơn pending cũ).`);
+  } catch (e) {
+    console.warn('[backfill] prescription admin_notice:', e?.message || e);
+  }
+}
+
+/** Thông báo cho dược sĩ (vd. câu hỏi tư vấn bệnh từ user) — đọc qua GET /api/admin/notifications?role=pharmacist. */
+const pharmacistNoticeCollection = () => mongoose.connection.db.collection('pharmacist_notice');
 const noticesCollection = () => mongoose.connection.db.collection('notice');
 const storeSystemCollection = () => mongoose.connection.db.collection('storesystem_full');
 const doctorsCollection = () => mongoose.connection.db.collection('doctors');
@@ -303,98 +381,948 @@ function normalizeText(text) {
     .replace(/\s+/g, " ").trim();
 }
 
-// GET /api/admin/notifications - tổng hợp thông báo cho admin (đơn hàng, tư vấn, hỏi đáp sản phẩm)
+/** Còn câu hỏi sản phẩm chưa trả lời / chờ xử lý (khớp logic stats admin). */
+function consultationProductHasUnanswered(p) {
+  const qs = p.questions || [];
+  return qs.some((q) => {
+    if (q.status === 'assigned' && !q.answer) return true;
+    if (q.status === 'answered') return false;
+    return q.status === 'pending' || q.status === 'unreviewed' || !q.answer;
+  });
+}
+
+/**
+ * Query role: `admin` | `pharmacist` (mặc định admin nếu thiếu/sai).
+ * - Đơn hàng (order_pending): chỉ admin.
+ * - Tư vấn bệnh (consultation_disease): chỉ dược sĩ — admin không bao giờ nhận trên API này.
+ */
+function parseNotificationsAccountRole(req) {
+  const r = String(req.query.role || req.query.accountRole || '').trim().toLowerCase();
+  return r === 'pharmacist' ? 'pharmacist' : 'admin';
+}
+
+/** Tư vấn bệnh (admin API + thông báo) chỉ dược sĩ — query `role=pharmacist` giống GET /api/admin/notifications. */
+function assertConsultationDiseasePharmacistOnly(req, res) {
+  if (parseNotificationsAccountRole(req) !== 'pharmacist') {
+    res.status(403).json({
+      success: false,
+      message: 'Tư vấn bệnh chỉ dành cho tài khoản dược sĩ.',
+    });
+    return false;
+  }
+  return true;
+}
+
+function adminNoticeVisibleForRole(doc, accountRole) {
+  const roles = doc.roles;
+  if (!Array.isArray(roles) || roles.length === 0) {
+    return accountRole === 'admin';
+  }
+  const set = new Set(roles.map((x) => String(x).toLowerCase()));
+  return set.has(accountRole);
+}
+
+/**
+ * Thông báo trong `pharmacist_notice`.
+ * - `consultation_disease`: luôn gửi cho mọi tài khoản dược sĩ (một bản ghi chung, không gán theo pharmacistId).
+ */
+function pharmacistNoticeVisibleForRole(doc, accountRole) {
+  if (accountRole !== 'pharmacist') return false;
+  if (String(doc?.type || '') === 'consultation_disease') return true;
+  const roles = doc.roles;
+  if (!Array.isArray(roles) || roles.length === 0) {
+    return true;
+  }
+  const set = new Set(roles.map((x) => String(x).toLowerCase()));
+  return set.has(accountRole);
+}
+
+function pharmacistIdsMatchForNotice(a, b) {
+  const sa = String(a ?? '').trim();
+  const sb = String(b ?? '').trim();
+  if (!sa || !sb) return false;
+  if (sa === sb) return true;
+  if (mongoose.Types.ObjectId.isValid(sa) && mongoose.Types.ObjectId.isValid(sb)) {
+    try {
+      return new mongoose.Types.ObjectId(sa).equals(new mongoose.Types.ObjectId(sb));
+    } catch (_) {
+      /* ignore */
+    }
+  }
+  return false;
+}
+
+/** Chỉ dược sĩ đã trả lời (id trong DB hoặc bản ghi cũ khớp tên từ Pharmacist lookup) mới được PATCH sửa. */
+function diseaseQuestionEditableByRequestingPharmacist(question, pidRaw, requesterNameFromDb) {
+  const hadAnswer =
+    question?.answer != null && String(question.answer).trim() !== '';
+  if (!hadAnswer) return true;
+  const reqId = String(pidRaw ?? '').trim();
+  const storedAuthorId = String(
+    question.answeredByPharmacistId ?? question.answered_by_pharmacist_id ?? ''
+  ).trim();
+  if (storedAuthorId && reqId) {
+    return pharmacistIdsMatchForNotice(storedAuthorId, reqId);
+  }
+  const storedName = normalizeText(String(question.answeredBy ?? ''));
+  const requesterName = normalizeText(String(requesterNameFromDb ?? ''));
+  if (storedName && requesterName && storedName === requesterName) return true;
+  return false;
+}
+
+/** Phân công đơn thuốc — chỉ dược sĩ khớp `pharmacistId` hoặc email (query từ client). */
+function pharmacistPrescriptionAssignmentNoticeVisibleForRequest(doc, req) {
+  const meta = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+  const assignedId = String(meta.pharmacistId || meta.pharmacist_id || '').trim();
+  const qId = String(req.query.pharmacistId || '').trim();
+  if (qId && pharmacistIdsMatchForNotice(assignedId, qId)) return true;
+  const qEmail = String(req.query.pharmacistEmail || '').trim().toLowerCase();
+  const metaEmail = String(meta.pharmacistEmail || meta.email || '').trim().toLowerCase();
+  if (qEmail && metaEmail && qEmail === metaEmail) return true;
+  const qName = normalizeText(String(req.query.pharmacistName || ''));
+  const metaName = normalizeText(String(meta.pharmacistName || ''));
+  return !!(qName && metaName && qName === metaName);
+}
+
+/** Phân công tư vấn sản phẩm — chỉ dược sĩ khớp `pharmacistId` hoặc email (query từ client). */
+function pharmacistProductAssignmentNoticeVisibleForRequest(doc, req) {
+  const meta = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+  const assignedId = String(
+    meta.pharmacistId || meta.pharmacist_id || meta.assignedPharmacistId || meta.assigned_pharmacist_id || ''
+  ).trim();
+  const qId = String(req.query.pharmacistId || '').trim();
+  if (qId && pharmacistIdsMatchForNotice(assignedId, qId)) return true;
+
+  const qEmail = String(req.query.pharmacistEmail || '').trim().toLowerCase();
+  const metaEmail = String(
+    meta.pharmacistEmail || meta.email || meta.assignedPharmacistEmail || meta.assigned_pharmacist_email || ''
+  )
+    .trim()
+    .toLowerCase();
+  if (qEmail && metaEmail && qEmail === metaEmail) return true;
+
+  const qName = normalizeText(String(req.query.pharmacistName || ''));
+  const metaName = normalizeText(
+    String(meta.pharmacistName || meta.assignedPharmacistName || meta.assigned_pharmacist_name || '')
+  );
+  return !!(qName && metaName && qName === metaName);
+}
+
+function pharmacistNoticeDocVisibleInNotifications(doc, accountRole, req) {
+  if (accountRole !== 'pharmacist') return false;
+  const t = String(doc?.type || '');
+  if (t === 'consultation_disease') return pharmacistNoticeVisibleForRole(doc, accountRole);
+  if (t === 'consultation_prescription_assigned' || t === 'consultation_prescription_reminder') {
+    return pharmacistPrescriptionAssignmentNoticeVisibleForRequest(doc, req);
+  }
+  if (t === 'consultation_product_assigned') {
+    return pharmacistProductAssignmentNoticeVisibleForRequest(doc, req);
+  }
+  return false;
+}
+
+/** Mốc bắt đầu lần «đang tư vấn» hiện tại (phân công / chuyển waiting) — dùng cho nhắc nhở sau 2 giờ. */
+function getPrescriptionWaitingSinceDateFromDoc(doc) {
+  if (!doc) return null;
+  if (String(doc.status || '').trim().toLowerCase() !== 'waiting') return null;
+  const cur = doc.current_status && typeof doc.current_status === 'object' ? doc.current_status : null;
+  if (cur && String(cur.status || '').trim().toLowerCase() === 'waiting' && cur.changedAt) {
+    const d = new Date(cur.changedAt);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+  const h = Array.isArray(doc.status_history) ? doc.status_history : [];
+  for (let i = h.length - 1; i >= 0; i -= 1) {
+    const e = h[i];
+    if (String(e?.status || '').trim().toLowerCase() === 'waiting' && e?.changedAt) {
+      const d = new Date(e.changedAt);
+      if (!Number.isNaN(d.getTime())) return d;
+    }
+  }
+  const fb = doc.updatedAt || doc.createdAt;
+  if (fb) {
+    const d = new Date(fb);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
+/** Đơn thuốc có `pharmacist_id` khớp session dược sĩ (id / email / tên trên đơn sau khi phân công). */
+function prescriptionConsultVisibleForPharmacistQuery(item, pharmacistId, pharmacistEmail, pharmacistName) {
+  const assignedId = String(item.pharmacist_id || item.pharmacistId || '').trim();
+  if (pharmacistId && pharmacistIdsMatchForNotice(assignedId, pharmacistId)) return true;
+  const docName = normalizeText(String(item.pharmacistName || ''));
+  const qName = normalizeText(pharmacistName || '');
+  if (qName && docName && qName === docName) return true;
+  const docEmail = String(item.pharmacistEmail || item.pharmacist_email || '').trim().toLowerCase();
+  if (pharmacistEmail && docEmail && pharmacistEmail === docEmail) return true;
+  return false;
+}
+
+/**
+ * Đánh dấu thông báo tư vấn bệnh đã xử lý (vẫn giữ bản ghi — UI hiển thị nền xanh + tag).
+ * `consultedByName`: tên dược sĩ trả lời (hiển thị "Đã tư vấn bởi Dược sĩ …").
+ */
+async function markPharmacistDiseaseNoticesResolved(sku, questionId, consultedByName) {
+  const skuStr = String(sku ?? '').trim();
+  const qId = String(questionId ?? '').trim();
+  if (!skuStr || !qId) return;
+  const skuCand = getDiseaseSkuLookupCandidates(skuStr);
+  if (!skuCand.length) return;
+
+  const qOr = [{ 'meta.questionId': qId }];
+  if (mongoose.Types.ObjectId.isValid(qId)) {
+    try {
+      const oid = new mongoose.Types.ObjectId(qId);
+      if (String(oid) === qId) {
+        qOr.push({ 'meta.questionId': oid });
+      }
+    } catch (_) {
+      /* ignore */
+    }
+  }
+
+  const setDoc = { resolved: true, resolvedAt: new Date() };
+  const byName = String(consultedByName ?? '').trim();
+  if (byName) setDoc.consultedByName = byName;
+
+  try {
+    await pharmacistNoticeCollection().updateMany(
+      {
+        type: 'consultation_disease',
+        resolved: { $ne: true },
+        'meta.sku': { $in: skuCand },
+        $or: qOr,
+      },
+      { $set: setDoc }
+    );
+  } catch (e) {
+    console.warn('[pharmacist_notice] mark resolved:', e?.message || e);
+  }
+}
+
+/**
+ * Cập nhật `consultedByName` trên mọi thông báo khớp sku/câu hỏi (kể cả đã resolved).
+ * `markPharmacistDiseaseNoticesResolved` chỉ sửa bản ghi chưa resolved — hàm này bù khi sửa trả lời hoặc tên thật lưu sau.
+ */
+async function syncPharmacistDiseaseNoticeConsultedByName(sku, questionId, consultedByName) {
+  const byName = String(consultedByName ?? '').trim();
+  if (!byName || byName === 'Dược sĩ' || byName === 'Admin') return;
+  const skuStr = String(sku ?? '').trim();
+  const qId = String(questionId ?? '').trim();
+  if (!skuStr || !qId) return;
+  const skuCand = getDiseaseSkuLookupCandidates(skuStr);
+  if (!skuCand.length) return;
+  const qOr = [{ 'meta.questionId': qId }];
+  if (mongoose.Types.ObjectId.isValid(qId)) {
+    try {
+      const oid = new mongoose.Types.ObjectId(qId);
+      if (String(oid) === qId) {
+        qOr.push({ 'meta.questionId': oid });
+      }
+    } catch (_) {
+      /* ignore */
+    }
+  }
+  try {
+    await pharmacistNoticeCollection().updateMany(
+      {
+        type: 'consultation_disease',
+        'meta.sku': { $in: skuCand },
+        $or: qOr,
+      },
+      { $set: { consultedByName: byName } }
+    );
+  } catch (e) {
+    console.warn('[pharmacist_notice] sync consultedByName:', e?.message || e);
+  }
+}
+
+/** Đơn đã giao / kết thúc — thông báo "chờ xác nhận" coi là đã giải quyết (không cần bấm Đã xử lý). */
+const ORDER_PENDING_AUTO_RESOLVED_STATUSES = new Set([
+  // Admin đã xác nhận / chuyển sang giao — coi thông báo “chờ xác nhận” là đã xử lý
+  'confirmed',
+  'shipping',
+  'delivered',
+  'unreview',
+  'reviewed',
+  'completed',
+  'received',
+  'cancelled',
+  'refunded',
+  'returned',
+  'rejected',
+  'refund_rejected',
+  'processing_return',
+  'returning',
+]);
+
+function extractOrderMongoIdFromAdminNotice(doc) {
+  const m = doc?.meta?.order_mongo_id;
+  if (m != null && String(m).trim()) return String(m).trim();
+  const link = String(doc?.link || '');
+  const match = link.match(/\/admin\/orders\/detail\/([^/?#]+)/);
+  return match ? match[1].trim() : '';
+}
+
+function isOrderPendingAutoResolvedStatus(status) {
+  return ORDER_PENDING_AUTO_RESOLVED_STATUSES.has(String(status || '').trim().toLowerCase());
+}
+
+async function fetchOrderStatusesForNoticePending(idStrs) {
+  const map = new Map();
+  if (!Array.isArray(idStrs) || idStrs.length === 0) return map;
+  const or = [];
+  const seen = new Set();
+  for (const raw of idStrs) {
+    const id = String(raw || '').trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    or.push({ _id: id });
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      try {
+        or.push({ _id: new mongoose.Types.ObjectId(id) });
+      } catch (_) {
+        /* ignore */
+      }
+    }
+  }
+  if (!or.length) return map;
+  const docs = await ordersCollection().find({ $or: or }).project({ status: 1 }).toArray();
+  for (const o of docs) {
+    const sid = getId(o);
+    if (sid) map.set(String(sid), o.status);
+  }
+  return map;
+}
+
+/** prescriptionId -> thông tin phân công (chuông admin: đơn tư vấn thuốc đã gán dược sĩ). */
+async function fetchPrescriptionPharmacistAssignmentMapByPrescriptionIds(prescriptionIds) {
+  const map = new Map();
+  const unique = [...new Set((prescriptionIds || []).map((x) => String(x || '').trim()).filter(Boolean))];
+  if (!unique.length) return map;
+  try {
+    // Đọc trực tiếp collection (tránh lệch schema Mongoose với dữ liệu seed/JSON).
+    const col = mongoose.connection.db.collection('consultations_prescription');
+    const docs = await col
+      .find({
+        $or: [{ prescriptionId: { $in: unique } }, { id: { $in: unique } }],
+      })
+      .project({ prescriptionId: 1, id: 1, pharmacist_id: 1, pharmacistId: 1, pharmacistName: 1 })
+      .toArray();
+    for (const d of docs) {
+      const pid = String(d.prescriptionId ?? d.id ?? '').trim();
+      if (!pid) continue;
+      const phId = String(d.pharmacist_id ?? d.pharmacistId ?? '').trim();
+      const phName = String(d.pharmacistName ?? '').trim();
+      if (!phId && !phName) continue;
+      const entry = { pharmacistId: phId, pharmacistName: phName || 'Dược sĩ' };
+      map.set(pid, entry);
+    }
+  } catch (e) {
+    console.warn('[notifications] prescription assignment map:', e?.message || e);
+  }
+  return map;
+}
+
+/** prescriptionId -> trạng thái tư vấn hiện tại của dược sĩ. */
+async function fetchPrescriptionConsultStatusMapByPrescriptionIds(prescriptionIds) {
+  const map = new Map();
+  const unique = [...new Set((prescriptionIds || []).map((x) => String(x || '').trim()).filter(Boolean))];
+  if (!unique.length) return map;
+  try {
+    const col = mongoose.connection.db.collection('consultations_prescription');
+    const docs = await col
+      .find({
+        $or: [{ prescriptionId: { $in: unique } }, { id: { $in: unique } }],
+      })
+      .project({ prescriptionId: 1, id: 1, status: 1 })
+      .toArray();
+    for (const d of docs) {
+      const pid = String(d.prescriptionId ?? d.id ?? '').trim();
+      if (!pid) continue;
+      const st = String(d.status ?? '').trim().toLowerCase();
+      if (!st) continue;
+      map.set(pid, st);
+    }
+  } catch (e) {
+    console.warn('[notifications] prescription consult status map:', e?.message || e);
+  }
+  return map;
+}
+
+/** Một lần khi chạy server: ghi meta phân công lên admin_notice theo đúng consultations_prescription (dữ liệu cũ / seed). */
+async function backfillPrescriptionNoticeAssignmentMetaFromDB() {
+  try {
+    const notices = await adminNoticeCollection()
+      .find({ type: 'consultation_prescription', resolved: { $ne: true } })
+      .project({ meta: 1 })
+      .toArray();
+    let updated = 0;
+    for (const doc of notices) {
+      const m = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+      const pCode = String(m.prescriptionId || m.prescription_id || '').trim();
+      if (!pCode) continue;
+      if (String(m.assignedPharmacistName || '').trim() || String(m.assignedPharmacistId || '').trim()) {
+        continue;
+      }
+      const col = mongoose.connection.db.collection('consultations_prescription');
+      const row = await col.findOne({
+        $or: [{ prescriptionId: pCode }, { id: pCode }],
+      });
+      if (!row) continue;
+      const phId = String(row.pharmacist_id ?? row.pharmacistId ?? '').trim();
+      const phName = String(row.pharmacistName ?? '').trim();
+      if (!phId && !phName) continue;
+      await syncPrescriptionAdminNoticePharmacistAssignment(pCode, phId || String(row._id || 'assigned'), phName);
+      updated += 1;
+    }
+    if (updated) {
+      console.log(`[backfill] admin_notice: đã đồng bộ meta phân công dược sĩ cho ${updated} thông báo đơn thuốc.`);
+    }
+  } catch (e) {
+    console.warn('[backfill] prescription notice assignment meta:', e?.message || e);
+  }
+}
+
+/** Ghi vào admin_notice khi admin phân công — GET chuông không phụ thuộc join lệch collection. */
+async function syncPrescriptionAdminNoticePharmacistAssignment(prescriptionCode, pharmacistIdRaw, pharmacistNameFromBody) {
+  const code = String(prescriptionCode || '').trim();
+  const phId = String(pharmacistIdRaw || '').trim();
+  if (!code || !phId) return;
+  let displayName = String(pharmacistNameFromBody || '').trim();
+  if (!displayName) {
+    const pq = [{ _id: String(phId) }];
+    if (mongoose.Types.ObjectId.isValid(String(phId))) {
+      try {
+        pq.push({ _id: new mongoose.Types.ObjectId(String(phId)) });
+      } catch (_) {
+        /* ignore */
+      }
+    }
+    try {
+      const ph = await Pharmacist.findOne({ $or: pq }).lean();
+      displayName = String(ph?.pharmacistName || '').trim();
+    } catch (_) {
+      /* ignore */
+    }
+  }
+  if (!displayName) displayName = 'Dược sĩ';
+  try {
+    await adminNoticeCollection().updateMany(
+      {
+        type: 'consultation_prescription',
+        resolved: { $ne: true },
+        $or: [{ 'meta.prescriptionId': code }, { 'meta.prescription_id': code }],
+      },
+      {
+        $set: {
+          'meta.assignedPharmacistId': phId,
+          'meta.assignedPharmacistName': displayName,
+        },
+      }
+    );
+  } catch (e) {
+    console.warn('[admin_notice] sync prescription assignment:', e?.message || e);
+  }
+}
+
+async function clearPrescriptionAdminNoticePharmacistAssignmentMeta(prescriptionCode) {
+  const code = String(prescriptionCode || '').trim();
+  if (!code) return;
+  try {
+    await adminNoticeCollection().updateMany(
+      {
+        type: 'consultation_prescription',
+        $or: [{ 'meta.prescriptionId': code }, { 'meta.prescription_id': code }],
+      },
+      { $unset: { 'meta.assignedPharmacistId': '', 'meta.assignedPharmacistName': '' } }
+    );
+  } catch (e) {
+    console.warn('[admin_notice] clear prescription assignment meta:', e?.message || e);
+  }
+}
+
+/** Đồng bộ trạng thái đơn tư vấn thuốc lên thông báo phân công (dược sĩ) — UI chuông theo advised / unreachable / consultation_failed. */
+async function syncPharmacistPrescriptionAssignedNoticeStatus(prescriptionCode, status) {
+  const code = String(prescriptionCode || '').trim();
+  const st = String(status || '').trim().toLowerCase();
+  if (!code || !st) return;
+  try {
+    await pharmacistNoticeCollection().updateMany(
+      {
+        type: 'consultation_prescription_assigned',
+        $or: [{ 'meta.prescriptionId': code }, { 'meta.prescription_id': code }],
+      },
+      { $set: { 'meta.prescriptionStatus': st, updatedAt: new Date() } }
+    );
+  } catch (e) {
+    console.warn('[pharmacist_notice] sync prescription status:', e?.message || e);
+  }
+}
+
+/**
+ * Xóa khỏi DB các admin_notice đơn thuốc (chưa resolved) mà meta.prescriptionId không còn trong consultations_prescription.
+ * Trả về mảng đã lọc (dùng cho GET notifications).
+ */
+async function deleteOrphanPrescriptionAdminNoticesInList(noticeDocs) {
+  if (!Array.isArray(noticeDocs) || !noticeDocs.length) return noticeDocs;
+  const presc = noticeDocs.filter(
+    (d) => String(d.type || '') === 'consultation_prescription' && d.resolved !== true
+  );
+  if (!presc.length) return noticeDocs;
+
+  const pids = [
+    ...new Set(
+      presc
+        .map((d) => {
+          const m = d.meta && typeof d.meta === 'object' ? d.meta : {};
+          return String(m.prescriptionId || m.prescription_id || '').trim();
+        })
+        .filter(Boolean)
+    ),
+  ];
+  if (!pids.length) return noticeDocs;
+
+  try {
+    const col = mongoose.connection.db.collection('consultations_prescription');
+    const existingRows = await col
+      .find({ $or: [{ prescriptionId: { $in: pids } }, { id: { $in: pids } }] })
+      .project({ prescriptionId: 1, id: 1 })
+      .toArray();
+    const existing = new Set();
+    for (const e of existingRows) {
+      const k = String(e.prescriptionId || e.id || '').trim();
+      if (k) existing.add(k);
+    }
+
+    const orphanIds = [];
+    for (const d of presc) {
+      const m = d.meta && typeof d.meta === 'object' ? d.meta : {};
+      const pid = String(m.prescriptionId || m.prescription_id || '').trim();
+      if (!pid || existing.has(pid)) continue;
+      if (d._id != null) orphanIds.push(d._id);
+    }
+    if (orphanIds.length) {
+      await adminNoticeCollection().deleteMany({
+        _id: { $in: orphanIds },
+        type: 'consultation_prescription',
+      });
+      console.log(
+        `[cleanup] admin_notice: đã xóa ${orphanIds.length} thông báo đơn thuốc (đơn không còn trong consultations_prescription).`
+      );
+    }
+
+    const dead = new Set(orphanIds.map((id) => (id && id.toString ? id.toString() : String(id))));
+    return noticeDocs.filter((d) => {
+      if (String(d.type || '') !== 'consultation_prescription') return true;
+      const idStr = d._id && d._id.toString ? d._id.toString() : String(d._id || '');
+      return !dead.has(idStr);
+    });
+  } catch (e) {
+    console.warn('[cleanup] orphan prescription admin_notice:', e?.message || e);
+    return noticeDocs;
+  }
+}
+
+async function deleteAllOrphanPrescriptionAdminNoticesGlobally() {
+  try {
+    const all = await adminNoticeCollection()
+      .find({ type: 'consultation_prescription', resolved: { $ne: true } })
+      .toArray();
+    await deleteOrphanPrescriptionAdminNoticesInList(all);
+  } catch (e) {
+    console.warn('[cleanup] global orphan prescription notices:', e?.message || e);
+  }
+}
+
+// GET /api/admin/notifications - DB admin_notice + đơn trả hàng + tư vấn (đơn chờ từ admin_notice khi đặt hàng)
 app.get('/api/admin/notifications', async (req, res) => {
   try {
     const limit = Math.min(Math.max(1, parseInt(req.query.limit, 10) || 20), 50);
+    const scanCap = Math.min(300, Math.max(limit * 15, limit));
+    const accountRole = parseNotificationsAccountRole(req);
 
-    const [pendingOrders, returnOrders, consultPres, consultProd] = await Promise.all([
-      ordersCollection()
-        .find({ status: 'pending' })
+    // Tư vấn bệnh: giữ cả thông báo đã trả lời (resolved) để drawer tab vẫn hiện + nền xanh / tag.
+    const pharmacistDiseaseNoticeQuery =
+      accountRole === 'pharmacist'
+        ? pharmacistNoticeCollection()
+            .find({
+              type: {
+                $in: [
+                  'consultation_disease',
+                  'consultation_prescription_assigned',
+                  'consultation_prescription_reminder',
+                  'consultation_product_assigned'
+                ],
+              },
+            })
+            .sort({ createdAt: -1 })
+            .limit(120)
+            .toArray()
+        : Promise.resolve([]);
+
+    // Đơn tư vấn thuốc: chỉ đọc từ admin_notice (POST /api/prescriptions ghi vào đó), không tổng hợp từ consultations_prescription.
+    const [adminNoticeDocsRaw, returnOrders, consultProdRaw, rawPharmacistDiseaseNoticeDocs] = await Promise.all([
+      adminNoticeCollection()
+        .find({})
         .sort({ createdAt: -1 })
-        .limit(limit)
+        .limit(Math.min(100, limit * 3))
         .toArray(),
       ordersCollection()
         .find({ status: { $in: ['processing_return', 'returning'] } })
         .sort({ updatedAt: -1, createdAt: -1 })
         .limit(limit)
         .toArray(),
-      ConsultationPrescriptionModel.find({})
-        .sort({ createdAt: -1 })
-        .limit(limit),
       ConsultationProductModel.find({})
-        .sort({ createdAt: -1 })
-        .limit(limit),
-      ConsultationDiseaseModel.find({})
-        .sort({ createdAt: -1 })
-        .limit(limit),
+        .sort({ updatedAt: -1 })
+        .limit(scanCap)
+        .lean(),
+      pharmacistDiseaseNoticeQuery,
     ]);
+
+    let adminNoticeDocs = adminNoticeDocsRaw;
+    if (accountRole === 'admin') {
+      adminNoticeDocs = await deleteOrphanPrescriptionAdminNoticesInList(adminNoticeDocs);
+    }
+
+    let pharmacistDiseaseNoticeDocs = rawPharmacistDiseaseNoticeDocs;
+    if (
+      accountRole === 'pharmacist' &&
+      Array.isArray(pharmacistDiseaseNoticeDocs) &&
+      pharmacistDiseaseNoticeDocs.length
+    ) {
+      pharmacistDiseaseNoticeDocs = await Promise.all(
+        pharmacistDiseaseNoticeDocs.map((d) =>
+          String(d.type || '') === 'consultation_disease'
+            ? enrichPharmacistDiseaseNoticeConsultedBy(d)
+            : Promise.resolve(d)
+        )
+      );
+    }
+
+    const consultProd = consultProdRaw.filter(consultationProductHasUnanswered).slice(0, limit);
+
+    const pendingOrderMongoIds = new Set();
+    for (const doc of adminNoticeDocs) {
+      // Tư vấn bệnh chỉ từ collection pharmacist_notice — không hiển thị qua admin_notice (tránh lệch roles trong DB).
+      if (String(doc.type || '') === 'consultation_disease') continue;
+      if (String(doc.type || '') === 'order_pending' && accountRole !== 'admin') continue;
+      if (!adminNoticeVisibleForRole(doc, accountRole)) continue;
+      if (String(doc.type || '') !== 'order_pending') continue;
+      const oid = extractOrderMongoIdFromAdminNotice(doc);
+      if (oid) pendingOrderMongoIds.add(oid);
+    }
+    const orderStatusByMongoId = await fetchOrderStatusesForNoticePending([...pendingOrderMongoIds]);
+
+    const prescriptionIdsForAssignment = [];
+    if (accountRole === 'admin') {
+      for (const d of adminNoticeDocs) {
+        if (String(d.type || '') !== 'consultation_prescription') continue;
+        const m = d.meta && typeof d.meta === 'object' ? d.meta : {};
+        const pid = String(m.prescriptionId || m.prescription_id || '').trim();
+        if (pid) prescriptionIdsForAssignment.push(pid);
+      }
+    }
+    const [prescriptionAssignmentMap, prescriptionConsultStatusMap] =
+      accountRole === 'admin' && prescriptionIdsForAssignment.length
+        ? await Promise.all([
+            fetchPrescriptionPharmacistAssignmentMapByPrescriptionIds(prescriptionIdsForAssignment),
+            fetchPrescriptionConsultStatusMapByPrescriptionIds(prescriptionIdsForAssignment),
+          ])
+        : [new Map(), new Map()];
 
     const notifications = [];
 
-    pendingOrders.forEach((o) => {
-      notifications.push({
-        _id: getId(o),
-        type: 'order_pending',
-        title: 'Đơn hàng mới chờ xác nhận',
-        message: `Đơn ${o.order_id || o.code || getId(o)} từ ${o.shippingInfo?.fullName || 'Khách lẻ'} đang chờ xác nhận.`,
-        createdAt: o.createdAt || o.route?.pending || o.date || new Date(),
-        link: `/admin/orders/detail/${getId(o)}`
-      });
-    });
+    for (const doc of adminNoticeDocs) {
+      if (String(doc.type || '') === 'consultation_disease') continue;
+      // Đơn thuốc từ khách (admin_notice): chỉ admin — dược sĩ chỉ nhận thông báo khi admin phân công (pharmacist_notice).
+      if (String(doc.type || '') === 'consultation_prescription') {
+        if (accountRole !== 'admin') continue;
+      }
+      // Đơn chờ xác nhận: chỉ admin — không gửi cho dược sĩ dù document trong DB có roles lệch
+      if (String(doc.type || '') === 'order_pending' && accountRole !== 'admin') continue;
+      if (!adminNoticeVisibleForRole(doc, accountRole)) continue;
+      const payload = {
+        _id: getId(doc),
+        type: doc.type || 'admin_notice',
+        title: doc.title || '',
+        message: doc.message || '',
+        createdAt: doc.createdAt || new Date(),
+        link: doc.link || '',
+      };
+      // Tôn trọng trạng thái resolved từ DB cho mọi loại thông báo admin_notice.
+      if (doc.resolved === true) {
+        payload.autoResolved = true;
+      }
+      if (String(doc.type || '') === 'order_pending') {
+        const oid = extractOrderMongoIdFromAdminNotice(doc);
+        const st = oid ? orderStatusByMongoId.get(oid) : undefined;
+        if (st != null && String(st).trim() !== '') {
+          payload.orderStatus = st;
+        }
+        if (isOrderPendingAutoResolvedStatus(st)) {
+          payload.autoResolved = true;
+        }
+      }
+      if (String(doc.type || '') === 'consultation_prescription') {
+        const nm = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+        const pCode = String(nm.prescriptionId || nm.prescription_id || '').trim();
+        const metaName = String(nm.assignedPharmacistName || '').trim();
+        const metaPhId = String(nm.assignedPharmacistId || '').trim();
+        if (metaName || metaPhId) {
+          payload.prescriptionPharmacistAssigned = true;
+          payload.assignedPharmacistName = metaName || 'Dược sĩ';
+        } else {
+          const asg = pCode ? prescriptionAssignmentMap.get(pCode) : null;
+          if (asg && (asg.pharmacistId || asg.pharmacistName)) {
+            payload.prescriptionPharmacistAssigned = true;
+            payload.assignedPharmacistName = asg.pharmacistName;
+          }
+        }
+        const stMeta = String(nm.prescriptionStatus || '').trim().toLowerCase();
+        const stDb = pCode ? String(prescriptionConsultStatusMap.get(pCode) || '').trim().toLowerCase() : '';
+        const st = stMeta || stDb;
+        if (st) payload.prescriptionConsultStatus = st;
+      }
 
-    returnOrders.forEach((o) => {
-      notifications.push({
-        _id: `${getId(o)}_return`,
-        type: 'order_return',
-        title: 'Yêu cầu trả/hoàn hàng mới',
-        message: `Đơn ${o.order_id || o.code || getId(o)} có yêu cầu trả/hoàn.`,
-        createdAt: o.updatedAt || o.createdAt || new Date(),
-        link: `/admin/orders/detail/${getId(o)}`
-      });
-    });
+      if (String(doc.type || '') === 'consultation_product') {
+        const nm = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+        const asgId = String(nm.assignedPharmacistId || nm.assigned_pharmacist_id || '').trim();
+        const asgName = String(nm.assignedPharmacistName || nm.assigned_pharmacist_name || '').trim();
+        if (asgId) {
+          payload.productPharmacistAssigned = true;
+          payload.assignedPharmacistId = asgId;
+          payload.assignedPharmacistName = asgName || 'Dược sĩ';
+        }
+      }
+      notifications.push(payload);
+    }
 
-    consultPres.forEach((c) => {
-      notifications.push({
-        _id: getId(c),
-        type: 'consultation_prescription',
-        title: 'Đơn tư vấn thuốc mới',
-        message: `${c.fullName || c.name || 'Khách hàng'} vừa gửi đơn tư vấn thuốc.`,
-        createdAt: c.createdAt || new Date(),
-        link: '/admin/consultation-prescription'
+    if (accountRole === 'admin') {
+      returnOrders.forEach((o) => {
+        notifications.push({
+          _id: `${getId(o)}_return`,
+          type: 'order_return',
+          title: 'Yêu cầu trả/hoàn hàng mới',
+          message: `Đơn ${o.order_id || o.code || getId(o)} có yêu cầu trả/hoàn.`,
+          createdAt: o.updatedAt || o.createdAt || new Date(),
+          link: `/admin/orders/detail/${getId(o)}`
+        });
       });
-    });
+    }
 
-    consultProd.forEach((c) => {
-      notifications.push({
-        _id: getId(c),
-        type: 'consultation_product',
-        title: 'Câu hỏi tư vấn sản phẩm mới',
-        message: `${c.fullName || c.name || 'Khách hàng'} vừa hỏi về sản phẩm ${c.productName || ''}`.trim(),
-        createdAt: c.createdAt || new Date(),
-        link: '/admin/consultation-product'
+    // Fallback dữ liệu cũ:
+    // Nếu collection consultations_product có câu hỏi chưa xử lý nhưng chưa có bản ghi admin_notice,
+    // vẫn tạo thông báo tạm để admin không bị mất chuông cho data lịch sử.
+    if (accountRole === 'admin') {
+      const existingConsultProductSku = new Set(
+        adminNoticeDocs
+          .filter((doc) => String(doc.type || '') === 'consultation_product')
+          .map((doc) => String((doc.meta && doc.meta.sku) || '').trim())
+          .filter(Boolean)
+      );
+      consultProd.forEach((c) => {
+        const sku = String(c?.sku || '').trim();
+        if (!sku) return;
+        if (existingConsultProductSku.has(sku)) return;
+        notifications.push({
+          _id: getId(c),
+          type: 'consultation_product',
+          title: 'Câu hỏi tư vấn sản phẩm mới',
+          message: `${c.fullName || c.name || 'Khách hàng'} vừa hỏi về sản phẩm ${c.productName || ''}`.trim(),
+          createdAt: c.createdAt || new Date(),
+          link: '/admin/consultation-product'
+        });
       });
-    });
+    }
 
-    const consultDis = await ConsultationDiseaseModel.find({}).sort({ createdAt: -1 }).limit(limit);
-    consultDis.forEach((c) => {
-      notifications.push({
-        _id: getId(c),
-        type: 'consultation_disease',
-        title: 'Câu hỏi tư vấn bệnh mới',
-        message: `${c.fullName || c.name || 'Khách hàng'} vừa hỏi về bệnh ${c.productName || ''}`.trim(),
-        createdAt: c.createdAt || new Date(),
-        link: '/admin/consultation-disease'
+    // Tư vấn bệnh chỉ trong phạm vi dược sĩ — lưu collection pharmacist_notice khi user gửi câu hỏi.
+    let pharmacistRxStatusByCode = {};
+    let pharmacistProductQuestionStatusByKey = {};
+    if (accountRole === 'pharmacist' && pharmacistDiseaseNoticeDocs.length) {
+      const codesNeeding = [];
+      const productNoticeKeys = [];
+      for (const doc of pharmacistDiseaseNoticeDocs) {
+        const dtype = String(doc.type || '');
+        if (dtype === 'consultation_prescription_assigned') {
+          const am = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+          const pcode = String(am.prescriptionId || am.prescription_id || '').trim();
+          if (!pcode) continue;
+          const hasSt = String(am.prescriptionStatus || '').trim();
+          if (!hasSt) codesNeeding.push(pcode);
+          continue;
+        }
+        if (dtype === 'consultation_product_assigned') {
+          const am = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+          const sku = String(am.sku || '').trim();
+          const qid = String(am.questionId || am.question_id || '').trim();
+          if (!sku || !qid) continue;
+          productNoticeKeys.push({ sku, qid });
+        }
+      }
+      const uniqueCodes = [...new Set(codesNeeding)];
+      if (uniqueCodes.length) {
+        try {
+          const rxCol = mongoose.connection.db.collection('consultations_prescription');
+          const rxRows = await rxCol
+            .find({ $or: [{ prescriptionId: { $in: uniqueCodes } }, { id: { $in: uniqueCodes } }] })
+            .project({ prescriptionId: 1, id: 1, status: 1 })
+            .toArray();
+          for (const r of rxRows) {
+            const k = String(r.prescriptionId || r.id || '').trim();
+            if (k) pharmacistRxStatusByCode[k] = String(r.status || '').trim().toLowerCase();
+          }
+        } catch (e) {
+          console.warn('[GET /api/admin/notifications] pharmacist rx status:', e?.message || e);
+        }
+      }
+
+      const uniqueProductSkus = [...new Set(productNoticeKeys.map((x) => x.sku).filter(Boolean))];
+      if (uniqueProductSkus.length) {
+        try {
+          const productRows = await ConsultationProductModel.find({ sku: { $in: uniqueProductSkus } })
+            .select({ sku: 1, questions: 1 })
+            .lean();
+          for (const row of productRows) {
+            const sku = String(row?.sku || '').trim();
+            if (!sku) continue;
+            const questions = Array.isArray(row?.questions) ? row.questions : [];
+            for (const q of questions) {
+              const qid = String(q?.id || q?._id || '').trim();
+              if (!qid) continue;
+              const qStatus = String(q?.status || '').trim().toLowerCase();
+              if (!qStatus) continue;
+              pharmacistProductQuestionStatusByKey[`${sku}::${qid}`] = qStatus;
+            }
+          }
+        } catch (e) {
+          console.warn('[GET /api/admin/notifications] pharmacist product status:', e?.message || e);
+        }
+      }
+    }
+
+    if (accountRole === 'pharmacist') {
+      pharmacistDiseaseNoticeDocs.forEach((doc) => {
+        if (!pharmacistNoticeDocVisibleInNotifications(doc, accountRole, req)) return;
+        const t = String(doc.type || '');
+        if (t === 'consultation_disease') {
+          const meta = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+          const fn = meta.full_name || 'Khách hàng';
+          const name = meta.productName || meta.sku || '';
+          const isResolved = doc.resolved === true;
+          const consultedBy = String(doc.consultedByName || '').trim();
+          notifications.push({
+            _id: getId(doc),
+            type: 'consultation_disease',
+            title: doc.title || 'Câu hỏi tư vấn bệnh mới',
+            message:
+              doc.message ||
+              `${fn} vừa hỏi về bệnh ${name}`.trim(),
+            createdAt: doc.createdAt || new Date(),
+            link: doc.link || '/admin/consultation-disease',
+            consultationDiseaseResolved: isResolved,
+            consultedByPharmacistName: consultedBy,
+          });
+        } else if (t === 'consultation_prescription_assigned') {
+          const am = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+          const pcode = String(am.prescriptionId || am.prescription_id || '').trim();
+          const rxStatus =
+            String(am.prescriptionStatus || '').trim().toLowerCase() ||
+            (pcode ? pharmacistRxStatusByCode[pcode] || '' : '');
+          const fallbackAssign = pcode
+            ? `Bạn vừa được phân công tư vấn đơn thuốc ${pcode}`
+            : 'Bạn vừa được phân công tư vấn đơn thuốc';
+          const line = String(doc.title || doc.message || fallbackAssign).trim() || fallbackAssign;
+          const sub = String(doc.message || '').trim();
+          const basePath = '/admin/consultation-prescription';
+          let nlink = String(doc.link || '').trim() || basePath;
+          if (pcode && !nlink.includes('prescriptionId=')) {
+            nlink = `${basePath}?prescriptionId=${encodeURIComponent(pcode)}`;
+          }
+          notifications.push({
+            _id: getId(doc),
+            type: 'consultation_prescription_assigned',
+            title: line,
+            message: sub && sub !== line ? sub : '',
+            createdAt: doc.createdAt || new Date(),
+            link: nlink,
+            prescriptionConsultStatus: rxStatus,
+          });
+        } else if (t === 'consultation_prescription_reminder') {
+          const am = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+          const pcode = String(am.prescriptionId || am.prescription_id || '').trim();
+          const fallbackRemind = pcode
+            ? `Nhắc nhở: đơn thuốc ${pcode} chưa được cập nhật trạng thái tư vấn`
+            : 'Bạn có nhắc nhở: đơn thuốc đã phân công chưa được cập nhật trạng thái tư vấn';
+          const line = String(doc.title || '').trim() || fallbackRemind;
+          const sub = String(doc.message || '').trim();
+          const basePath = '/admin/consultation-prescription';
+          let nlink = String(doc.link || '').trim() || basePath;
+          if (pcode && !nlink.includes('prescriptionId=')) {
+            nlink = `${basePath}?prescriptionId=${encodeURIComponent(pcode)}`;
+          }
+          notifications.push({
+            _id: getId(doc),
+            type: 'consultation_prescription_reminder',
+            title: line,
+            message: sub && sub !== line ? sub : '',
+            createdAt: doc.createdAt || new Date(),
+            link: nlink,
+          });
+        } else if (t === 'consultation_product_assigned') {
+          const am = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+          const sku = String(am.sku || '').trim();
+          const productName = String(am.productName || '').trim();
+          const questionId = String(am.questionId || am.question_id || '').trim();
+          const questionStatusFromMeta = String(am.questionStatus || am.status || '').trim().toLowerCase();
+          const questionStatusFromDb =
+            sku && questionId ? String(pharmacistProductQuestionStatusByKey[`${sku}::${questionId}`] || '').trim().toLowerCase() : '';
+          const productConsultStatus = questionStatusFromMeta || questionStatusFromDb;
+          const assignedPharmacistId = String(
+            am.pharmacistId || am.pharmacist_id || am.assignedPharmacistId || ''
+          ).trim();
+          const assignedPharmacistName = String(
+            am.pharmacistName || am.assignedPharmacistName || ''
+          ).trim();
+
+          const fallbackTitle = sku
+            ? `Bạn vừa được phân công tư vấn sản phẩm (${sku})`
+            : 'Bạn vừa được phân công tư vấn sản phẩm';
+          const line = String(doc.title || '').trim() || fallbackTitle;
+          const sub = String(doc.message || '').trim();
+
+          let nlink = String(doc.link || '').trim() || '/admin/consultation-product';
+          if (sku && !nlink.includes('sku=')) {
+            nlink = `/admin/consultation-product?sku=${encodeURIComponent(sku)}`;
+          }
+
+          notifications.push({
+            _id: getId(doc),
+            type: 'consultation_product_assigned',
+            title: line,
+            message: sub && sub !== line ? sub : '',
+            createdAt: doc.createdAt || new Date(),
+            link: nlink,
+            productPharmacistAssigned: true,
+            assignedPharmacistId: assignedPharmacistId || '',
+            assignedPharmacistName: assignedPharmacistName || 'Dược sĩ',
+            sku,
+            productName,
+            questionId,
+            productConsultStatus,
+          });
+        }
       });
-    });
+    }
 
     notifications.sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
+    const outLimit = accountRole === 'pharmacist' ? Math.max(limit, 100) : limit;
     res.json({
       success: true,
-      data: notifications.slice(0, limit)
+      data: notifications.slice(0, outLimit)
     });
   } catch (err) {
     console.error('[GET /api/admin/notifications] Error:', err);
@@ -1454,7 +2382,29 @@ app.post('/api/orders', async (req, res) => {
       }
     }
 
-    await col.insertOne(orderDoc);
+    const insertOrderResult = await col.insertOne(orderDoc);
+    const orderMongoId = insertOrderResult?.insertedId
+      ? String(insertOrderResult.insertedId)
+      : getId(orderDoc);
+
+    // Thông báo admin: đơn mới chờ xác nhận — chỉ admin (dược sĩ không nhận) — lưu MongoDB collection admin_notice
+    try {
+      const customerName = String(orderDoc.shippingInfo?.fullName || orderDoc.shippingInfo?.full_name || '').trim() || 'Khách lẻ';
+      await adminNoticeCollection().insertOne({
+        type: 'order_pending',
+        title: 'Đơn hàng mới chờ xác nhận',
+        message: `Đơn ${orderId} từ ${customerName} đang chờ xác nhận.`,
+        createdAt: new Date(),
+        link: `/admin/orders/detail/${orderMongoId}`,
+        meta: {
+          order_id: orderId,
+          order_mongo_id: orderMongoId,
+        },
+        roles: ['admin'],
+      });
+    } catch (e) {
+      console.warn('[POST /api/orders] Cannot create admin_notice:', e?.message || e);
+    }
 
     // Sau khi tạo đơn: trừ tồn kho sản phẩm và cập nhật lượt sử dụng khuyến mãi (nếu có)
     try {
@@ -2185,6 +3135,7 @@ app.patch('/api/prescriptions/:id/cancel', async (req, res) => {
     const filter = mongoose.Types.ObjectId.isValid(id)
       ? { _id: new mongoose.Types.ObjectId(id) }
       : { prescriptionId: id };
+    const existing = await col.findOne(filter);
     const result = await col.updateOne(filter, {
       $set: {
         status: 'cancelled',
@@ -2197,9 +3148,126 @@ app.patch('/api/prescriptions/:id/cancel', async (req, res) => {
     if (result.matchedCount === 0) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy đơn tư vấn.' });
     }
+    const pid = String(existing?.prescriptionId || '').trim();
+    if (pid) await markPrescriptionConsultAdminNoticesResolved(pid);
     res.json({ success: true, message: 'Đã huỷ đơn tư vấn.' });
   } catch (err) {
     console.error('Cancel prescription error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
+  }
+});
+
+// PATCH /api/prescriptions/:id/recontact - Khách yêu cầu dược sĩ liên lạc lại cho đơn thất bại/không liên hệ được
+app.patch('/api/prescriptions/:id/recontact', async (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim();
+    const userId = String(req.body?.user_id || '').trim();
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Thiếu mã đơn tư vấn.' });
+    }
+
+    const col = consultationsPrescriptionsCollection();
+    const filter = mongoose.Types.ObjectId.isValid(id)
+      ? { _id: new mongoose.Types.ObjectId(id) }
+      : { prescriptionId: id };
+
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đơn tư vấn.' });
+    }
+
+    const ownerId = String(existing.user_id || '').trim();
+    if (userId && ownerId && userId !== ownerId) {
+      return res.status(403).json({ success: false, message: 'Không có quyền cập nhật đơn này.' });
+    }
+
+    const prevStatus = String(existing.status || '').trim().toLowerCase();
+    if (prevStatus !== 'consultation_failed' && prevStatus !== 'unreachable') {
+      return res.status(400).json({
+        success: false,
+        message: 'Chỉ có thể yêu cầu liên lạc lại với đơn thất bại hoặc chưa thể liên hệ.',
+      });
+    }
+
+    const now = new Date().toISOString();
+    const historyEntry = { status: 'waiting', changedAt: now, changedBy: 'user_recontact' };
+    await col.updateOne(filter, {
+      $set: {
+        status: 'waiting',
+        'current_status.status': 'waiting',
+        'current_status.changedAt': now,
+        'current_status.changedBy': 'user_recontact',
+        updatedAt: now,
+      },
+      $push: { status_history: historyEntry },
+    });
+
+    const prescriptionCode = String(existing.prescriptionId || id).trim();
+    if (prescriptionCode) {
+      await syncPharmacistPrescriptionAssignedNoticeStatus(prescriptionCode, 'waiting');
+    }
+
+    const updated = await col.findOne(filter);
+    return res.json({
+      success: true,
+      message: 'Đã gửi yêu cầu tư vấn lại. Dược sĩ sẽ liên hệ lại sớm nhất.',
+      item: updated,
+    });
+  } catch (err) {
+    console.error('Recontact prescription error:', err);
+    return res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
+  }
+});
+
+// PATCH /api/prescriptions/:id/review — Khách đánh giá đơn đã tư vấn thành công (lưu DB, phục vụ dữ liệu)
+app.patch('/api/prescriptions/:id/review', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { rating, note, user_id } = req.body || {};
+    const uid = String(user_id || '').trim();
+    if (!uid) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+    const r = Number(rating);
+    if (!Number.isFinite(r) || r < 1 || r > 5 || Math.round(r) !== r) {
+      return res.status(400).json({ success: false, message: 'Vui lòng chọn từ 1 đến 5 sao.' });
+    }
+    const noteStr = note != null ? String(note).trim().slice(0, 2000) : '';
+
+    const col = consultationsPrescriptionsCollection();
+    const filter = mongoose.Types.ObjectId.isValid(id)
+      ? { _id: new mongoose.Types.ObjectId(id) }
+      : { prescriptionId: id };
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đơn tư vấn.' });
+    }
+    if (String(existing.user_id || '').trim() !== uid) {
+      return res.status(403).json({ success: false, message: 'Không có quyền đánh giá đơn này.' });
+    }
+    if (String(existing.status || '').toLowerCase() !== 'advised') {
+      return res.status(400).json({ success: false, message: 'Chỉ đánh giá được đơn đã tư vấn thành công.' });
+    }
+
+    const now = new Date();
+    const nowIso = now.toISOString();
+    await col.updateOne(filter, {
+      $set: {
+        user_prescription_rating: r,
+        user_prescription_review: noteStr,
+        user_prescription_reviewed_at: nowIso,
+        updatedAt: now,
+      },
+    });
+
+    const updated = await col.findOne(filter);
+    res.json({
+      success: true,
+      message: 'Cảm ơn bạn đã đánh giá.',
+      item: updated,
+    });
+  } catch (err) {
+    console.error('Review prescription error:', err);
     res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
   }
 });
@@ -2316,6 +3384,23 @@ app.post('/api/prescriptions', async (req, res) => {
     const insertResult = await col.insertOne(doc);
     const created = { ...doc, _id: insertResult.insertedId };
 
+    // Thông báo admin panel — collection admin_notice (chỉ role admin; dược sĩ không đọc).
+    try {
+      const who = String(full_name || '').trim() || 'Khách hàng';
+      await adminNoticeCollection().insertOne({
+        type: 'consultation_prescription',
+        title: 'Đơn tư vấn thuốc mới',
+        message: `${who} vừa gửi đơn tư vấn thuốc.`,
+        createdAt: new Date(),
+        link: '/admin/consultation-prescription',
+        meta: { prescriptionId },
+        roles: ['admin'],
+        resolved: false,
+      });
+    } catch (e) {
+      console.warn('[POST /api/prescriptions] Cannot create admin_notice:', e?.message || e);
+    }
+
     // Tạo thông báo "đơn thuốc cần tư vấn" cho user (chỉ khi có user_id)
     if (uid) {
       try {
@@ -2324,7 +3409,7 @@ app.post('/api/prescriptions', async (req, res) => {
           user_id: uid,
           type: 'prescription_created',
           title: 'Đơn thuốc cần tư vấn',
-          message: 'Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.',
+          message: 'Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.',
           createdAt: now,
           read: false,
           link: '/account',
@@ -4948,6 +6033,28 @@ app.post('/api/consultations', async (req, res) => {
       await col.updateOne({ sku: skuStr }, { $push: { questions: entry }, $set: { updatedAt: new Date() } });
     }
 
+    // Lưu thông báo cho admin vào collection admin_notice (chỉ admin nhận chuông).
+    try {
+      await adminNoticeCollection().insertOne({
+        type: 'consultation_product',
+        title: 'Câu hỏi tư vấn sản phẩm mới',
+        message: `${entry.full_name || 'Khách hàng'} vừa gửi câu hỏi về sản phẩm "${productName}".`,
+        createdAt: new Date(),
+        link: '/admin/consultation-product',
+        meta: {
+          sku: skuStr,
+          questionId: qId,
+          productName,
+          fullName: entry.full_name || 'Khách hàng',
+          userId: uid || '',
+        },
+        roles: ['admin'],
+        resolved: false,
+      });
+    } catch (e) {
+      console.warn('[POST /api/consultations] Cannot create admin_notice:', e?.message || e);
+    }
+
     // Lưu notice cho user (xác nhận câu hỏi đã được gửi)
     if (uid) {
       try {
@@ -6715,6 +7822,120 @@ function diseaseConsultationBenhPath(sku) {
   return { href: `/benh/${routeId}`, routeId };
 }
 
+/**
+ * Các biến thể slug/sku để khớp `consultations_disease.sku` với `benh.slug` (cùng logic GET /api/diseases/:id).
+ * Tránh POST lưu một khóa, GET tìm khóa khác → câu hỏi “mất” trên UI.
+ */
+function getDiseaseSkuLookupCandidates(rawInput) {
+  const id = String(rawInput || '').trim();
+  if (!id) return [];
+  const baseCandidates = new Set();
+  baseCandidates.add(id);
+  const withoutBenhPrefix = id.replace(/^benh\//i, '');
+  baseCandidates.add(withoutBenhPrefix);
+  const withoutHtml = id.replace(/\.html?$/i, '');
+  baseCandidates.add(withoutHtml);
+  const withoutPrefixAndHtml = withoutBenhPrefix.replace(/\.html?$/i, '');
+  baseCandidates.add(withoutPrefixAndHtml);
+
+  const allCandidates = new Set();
+  for (const raw of baseCandidates) {
+    if (!raw) continue;
+    const v = String(raw).trim();
+    if (!v) continue;
+    allCandidates.add(v);
+    if (!v.startsWith('benh/')) {
+      allCandidates.add(`benh/${v}`);
+    } else {
+      allCandidates.add(v.replace(/^benh\//i, ''));
+    }
+    if (!/\.html?$/i.test(v)) {
+      allCandidates.add(`${v}.html`);
+    } else {
+      allCandidates.add(v.replace(/\.html?$/i, ''));
+    }
+  }
+  return [...allCandidates].filter(Boolean);
+}
+
+/** Chuỗi id ổn định cho câu hỏi trong consultations_disease (Mixed schema — _id có thể là ObjectId hoặc string). */
+function diseaseQuestionIdString(q) {
+  if (!q || typeof q !== 'object') return '';
+  if (q._id != null) {
+    if (typeof q._id === 'object' && q._id.$oid) return String(q._id.$oid);
+    return String(q._id);
+  }
+  if (q.id != null) return String(q.id);
+  return '';
+}
+
+function diseaseConsultationQuestionMatchesId(q, questionId) {
+  const want = String(questionId ?? '').trim();
+  if (!want || !q) return false;
+  const sid = diseaseQuestionIdString(q);
+  if (sid === want) return true;
+  if (mongoose.Types.ObjectId.isValid(want) && mongoose.Types.ObjectId.isValid(sid)) {
+    try {
+      return new mongoose.Types.ObjectId(want).equals(new mongoose.Types.ObjectId(sid));
+    } catch (_) {
+      return false;
+    }
+  }
+  return false;
+}
+
+function findDiseaseQuestionByClientId(questions, questionId) {
+  if (!Array.isArray(questions)) return null;
+  return questions.find((q) => diseaseConsultationQuestionMatchesId(q, questionId)) || null;
+}
+
+/**
+ * Bổ sung `consultedByName` cho thông báo tư vấn bệnh khi DB notice thiếu nhưng `consultations_disease` đã có `answeredBy`.
+ */
+async function enrichPharmacistDiseaseNoticeConsultedBy(doc) {
+  if (!doc || String(doc.type || '') !== 'consultation_disease') return doc;
+  if (doc.resolved !== true) return doc;
+  let existing = String(doc.consultedByName || '').trim();
+  if (existing && existing !== 'Dược sĩ' && existing !== 'Admin') return doc;
+  const meta = doc.meta && typeof doc.meta === 'object' ? doc.meta : {};
+  const sku = String(meta.sku || '').trim();
+  const qid = String(meta.questionId || '').trim();
+  if (!sku || !qid) return doc;
+  try {
+    const skuCand = getDiseaseSkuLookupCandidates(sku);
+    if (!skuCand.length) return doc;
+    const col = mongoose.connection.db.collection('consultations_disease');
+    const diseaseDocs = await col.find({ sku: { $in: skuCand } }).toArray();
+    for (const diseaseDoc of diseaseDocs) {
+      const q = findDiseaseQuestionByClientId(diseaseDoc.questions || [], qid);
+      if (!q) continue;
+      const ab = String(q.answeredBy || '').trim();
+      if (ab && ab !== 'Dược sĩ' && ab !== 'Admin') {
+        return { ...doc, consultedByName: ab };
+      }
+    }
+  } catch (_) {
+    /* ignore */
+  }
+  return doc;
+}
+
+/** Gộp câu hỏi từ nhiều document consultations_disease (legacy trùng sku khác dạng). */
+function mergeDiseaseConsultationQuestionsFromDocs(docs) {
+  const seen = new Set();
+  const out = [];
+  for (const d of docs || []) {
+    for (const q of d.questions || []) {
+      const qid = diseaseQuestionIdString(q);
+      if (!qid || seen.has(qid)) continue;
+      seen.add(qid);
+      out.push(q);
+    }
+  }
+  out.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+  return out;
+}
+
 function normalizeDiseaseConsultationQuestion(q) {
   if (!q || typeof q !== 'object') return q;
   const o = { ...q };
@@ -6745,14 +7966,17 @@ function diseaseConsultationResponsePayload(doc) {
 // GET /api/consultations/disease/:id - Lấy danh sách câu hỏi về bệnh (id có thể là slug hoặc productId)
 app.get('/api/consultations/disease/:id', async (req, res) => {
   try {
-    const id = req.params.id;
-    // Tìm theo sku (id của bệnh)
-    let consultation = await ConsultationDiseaseModel.findOne({ sku: id }).lean();
-    if (!consultation) {
-      // Nếu không tìm thấy, trả về list rỗng thay vì lỗi 404 để frontend dễ xử lý
+    const id = decodeURIComponent(String(req.params.id || '').trim());
+    const cands = getDiseaseSkuLookupCandidates(id);
+    if (!cands.length) {
       return res.json({ success: true, questions: [] });
     }
-    const questions = (consultation.questions || []).map((q) => normalizeDiseaseConsultationQuestion(q));
+    const docs = await ConsultationDiseaseModel.find({ sku: { $in: cands } }).lean();
+    if (!docs.length) {
+      return res.json({ success: true, questions: [] });
+    }
+    const merged = mergeDiseaseConsultationQuestionsFromDocs(docs);
+    const questions = merged.map((q) => normalizeDiseaseConsultationQuestion(q));
     res.json({ success: true, questions });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -6760,6 +7984,8 @@ app.get('/api/consultations/disease/:id', async (req, res) => {
 });
 
 // POST /api/consultations/disease - Gửi câu hỏi mới về bệnh
+// Dùng driver MongoDB $push / insertOne (giống POST /api/consultations). Mongoose genericSchema
+// không markModified → .push() + .save() thường không ghi `questions` dù API vẫn 201.
 app.post('/api/consultations/disease', async (req, res) => {
   try {
     const { sku, productName, question, user_id, full_name } = req.body;
@@ -6768,48 +7994,82 @@ app.post('/api/consultations/disease', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Thiếu thông tin sku hoặc câu hỏi.' });
     }
 
-    let consultation = await ConsultationDiseaseModel.findOne({ sku });
+    const skuIn = String(sku).trim();
+    const skuCandidates = getDiseaseSkuLookupCandidates(skuIn);
+    const col = mongoose.connection.db.collection('consultations_disease');
 
-    if (!consultation) {
-      consultation = new ConsultationDiseaseModel({
-        sku,
-        productName: productName || sku,
-        questions: []
-      });
-    }
-
+    const qId = new mongoose.Types.ObjectId().toString();
     const newQuestion = {
-      _id: new mongoose.Types.ObjectId().toString(),
-      question,
-      user_id: user_id || "",
-      full_name: full_name || "Khách vãng lai",
-      status: "pending",
+      _id: qId,
+      id: qId,
+      question: String(question).trim(),
+      user_id: user_id ? String(user_id) : '',
+      full_name: full_name ? String(full_name).trim() : 'Khách vãng lai',
+      status: 'pending',
       createdAt: new Date().toISOString(),
       answer: null,
       replies: [],
       likes: [],
     };
 
-    consultation.questions.push(newQuestion);
-    consultation.updatedAt = new Date();
+    const existing = await col.findOne({ sku: { $in: skuCandidates } });
+    let storedSku;
 
-    await consultation.save();
+    if (!existing) {
+      storedSku = skuIn;
+      await col.insertOne({
+        sku: skuIn,
+        productName: String(productName || '').trim() || skuIn,
+        questions: [newQuestion],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } else {
+      storedSku = String(existing.sku ?? skuIn).trim();
+      await col.updateOne(
+        { _id: existing._id },
+        { $push: { questions: newQuestion }, $set: { updatedAt: new Date() } }
+      );
+    }
+
+    try {
+      const displayName = String(productName || '').trim() || String(storedSku);
+      const fn = String(full_name || '').trim() || 'Khách vãng lai';
+      // Broadcast: không gán pharmacistId — GET /api/admin/notifications?role=pharmacist trả về cho mọi dược sĩ.
+      await pharmacistNoticeCollection().insertOne({
+        type: 'consultation_disease',
+        title: 'Câu hỏi tư vấn bệnh mới',
+        message: `${fn} vừa hỏi về bệnh ${displayName}`.trim(),
+        createdAt: new Date(),
+        link: '/admin/consultation-disease',
+        roles: ['pharmacist'],
+        resolved: false,
+        meta: {
+          sku: storedSku,
+          questionId: String(newQuestion._id),
+          productName: displayName,
+          full_name: fn,
+        },
+      });
+    } catch (e) {
+      console.warn('[POST /api/consultations/disease] pharmacist_notice:', e?.message || e);
+    }
 
     // Tạo thông báo cho user khi gửi câu hỏi về bệnh thành công
     if (user_id) {
       try {
-        const { href, routeId } = diseaseConsultationBenhPath(sku);
-        const displayName = String(productName || '').trim() || routeId || sku;
+        const { href, routeId } = diseaseConsultationBenhPath(storedSku);
+        const displayName = String(productName || '').trim() || routeId || storedSku;
         await noticesCollection().insertOne({
           user_id: String(user_id),
           type: 'qa_submitted',
           title: 'Câu hỏi đã được gửi',
-          message: `Câu hỏi của bạn về "${productName || sku}" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.`,
+          message: `Câu hỏi của bạn về "${productName || storedSku}" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.`,
           createdAt: new Date().toISOString(),
           read: false,
           link: href,
           linkLabel: 'Xem câu hỏi',
-          meta: routeId || sku,
+          meta: routeId || storedSku,
           meta_label: displayName,
         });
       } catch (e) {
@@ -7345,6 +8605,8 @@ app.delete('/api/consultations/disease/question', async (req, res) => {
     if (r.modifiedCount === 0) {
       return res.status(404).json({ success: false, message: 'Không xóa được câu hỏi.' });
     }
+
+    await markPharmacistDiseaseNoticesResolved(skuStr, qId);
 
     const fresh = await col.findOne({ sku: skuStr });
     res.json(diseaseConsultationResponsePayload(fresh));
@@ -8235,6 +9497,8 @@ const start = async () => {
     // Run seeding/indexing in background
     (async () => {
       try {
+        await cleanupLegacyPrescriptionNotificationsForPharmacist();
+        await backfillPrescriptionConsultAdminNoticesIfMissing();
         await ensureBlogSlugIndex();
         await seedUsersIfEmpty();
         await seedOrdersIfEmpty();
@@ -8248,6 +9512,8 @@ const start = async () => {
         await seedBenhIfEmpty();
         await seedDiseaseGroups();
         await seedDataAdmin().catch(err => console.error('❌ Background Admin Seed Error:', err.message));
+        await backfillPrescriptionNoticeAssignmentMetaFromDB();
+        await deleteAllOrphanPrescriptionAdminNoticesGlobally();
       } catch (e) {
         console.error('❌ Background seeding failed:', e.message);
       }
@@ -9162,13 +10428,27 @@ app.get('/api/admin/consultations_prescription', async (req, res) => {
   try {
     const role = String(req.query.role || '').toLowerCase();
     const pharmacistId = String(req.query.pharmacistId || '').trim();
+    const pharmacistEmail = String(req.query.pharmacistEmail || '').trim().toLowerCase();
+    const pharmacistName = String(req.query.pharmacistName || '').trim();
+    const focusPrescriptionId = String(req.query.prescriptionId || '').trim();
     let data = await ConsultationPrescriptionModel.find().sort({ createdAt: -1 }).lean();
 
-    if (role === 'pharmacist' && (pharmacistId || pharmacistEmail || pharmacistName)) {
-      data = data.filter((item) => {
-        const assignedId = String(item.pharmacist_id || item.pharmacistId || '').trim();
-        return assignedId === pharmacistId;
-      });
+    // Dược sĩ: chỉ đơn đã được phân công — không gửi đủ id/email/tên thì không trả đơn nào (tránh lộ toàn bộ).
+    if (role === 'pharmacist') {
+      const hasIdentity = !!(pharmacistId || pharmacistEmail || pharmacistName);
+      if (!hasIdentity) {
+        data = [];
+      } else {
+        data = data.filter((item) =>
+          prescriptionConsultVisibleForPharmacistQuery(item, pharmacistId, pharmacistEmail, pharmacistName)
+        );
+      }
+      if (focusPrescriptionId) {
+        data = data.filter((item) => {
+          const pid = String(item.prescriptionId || '').trim();
+          return pid === focusPrescriptionId;
+        });
+      }
     }
     res.json({ success: true, data });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
@@ -9185,6 +10465,9 @@ app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
     if (mongoose.Types.ObjectId.isValid(id)) {
       query.push({ _id: new mongoose.Types.ObjectId(id) });
     }
+
+    const beforeAssign = await ConsultationPrescriptionModel.findOne({ $or: query }).lean();
+    const prevPharmacistAssign = String(beforeAssign?.pharmacist_id ?? beforeAssign?.pharmacistId ?? '').trim();
 
     const updated = await ConsultationPrescriptionModel.findOneAndUpdate(
       { $or: query },
@@ -9203,6 +10486,62 @@ app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
 
     if (!updated) return res.status(404).json({ success: false, message: 'Prescription not found' });
 
+    const prescriptionCodeForNotice = String(updated.prescriptionId || id || '').trim();
+    if (status && String(status).toLowerCase() !== 'pending' && prescriptionCodeForNotice) {
+      await markPrescriptionConsultAdminNoticesResolved(prescriptionCodeForNotice);
+    }
+
+    if (prescriptionCodeForNotice) {
+      if (normalizedPharmacistId) {
+        await syncPrescriptionAdminNoticePharmacistAssignment(
+          prescriptionCodeForNotice,
+          normalizedPharmacistId,
+          pharmacistName
+        );
+      } else {
+        await clearPrescriptionAdminNoticePharmacistAssignmentMeta(prescriptionCodeForNotice);
+      }
+    }
+
+    if (prescriptionCodeForNotice && status != null && String(status).trim() !== '') {
+      await syncPharmacistPrescriptionAssignedNoticeStatus(prescriptionCodeForNotice, status);
+    }
+
+    const assignJustChanged =
+      Boolean(normalizedPharmacistId) && normalizedPharmacistId !== prevPharmacistAssign;
+    if (assignJustChanged && normalizedPharmacistId) {
+      (async () => {
+        try {
+          const pq = [{ _id: String(normalizedPharmacistId) }];
+          if (mongoose.Types.ObjectId.isValid(String(normalizedPharmacistId))) {
+            pq.push({ _id: new mongoose.Types.ObjectId(String(normalizedPharmacistId)) });
+          }
+          const phLean = await Pharmacist.findOne({ $or: pq }).lean();
+          const phEmail = String(phLean?.pharmacistEmail || phLean?.email || '').trim().toLowerCase();
+          const phName = String(phLean?.pharmacistName || '').trim();
+          const code = prescriptionCodeForNotice || id;
+          const assignText = `Bạn vừa được phân công tư vấn đơn thuốc ${code}`;
+          await pharmacistNoticeCollection().insertOne({
+            type: 'consultation_prescription_assigned',
+            title: assignText,
+            message: '',
+            createdAt: new Date(),
+            link: `/admin/consultation-prescription?prescriptionId=${encodeURIComponent(code)}`,
+            roles: ['pharmacist'],
+            meta: {
+              pharmacistId: normalizedPharmacistId,
+              prescriptionId: code,
+              pharmacistEmail: phEmail,
+              pharmacistName: phName,
+              prescriptionStatus: String(updated.status || 'waiting').trim().toLowerCase(),
+            },
+          });
+        } catch (e) {
+          console.warn('[PATCH consultations_prescription] pharmacist_notice assign:', e?.message || e);
+        }
+      })();
+    }
+
     // Lưu notice cho user khi admin thay đổi trạng thái đơn thuốc
     if (status) {
       const userId = updated.user_id; // Original line
@@ -9215,6 +10554,10 @@ app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
           advised: { title: 'Đơn thuốc đã được tư vấn', message: `Đơn thuốc ${prescriptionCode} đã được tư vấn xong${pharmacistInfo}.` },
           unreachable: { title: 'Dược sĩ chưa thể liên hệ', message: `Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc ${prescriptionCode}. Vui lòng kiểm tra lại số điện thoại.` },
           cancelled: { title: 'Đơn thuốc tư vấn đã bị huỷ', message: `Đơn thuốc tư vấn ${prescriptionCode} đã bị huỷ.` },
+          consultation_failed: {
+            title: 'Tư vấn đơn thuốc không thành công',
+            message: `Sau nhiều lần liên hệ, dược sĩ không thể tư vấn đơn thuốc ${prescriptionCode}. Bạn có thể gửi yêu cầu tư vấn lại.`,
+          },
         };
         const noticeInfo = prescriptionStatusNoticeMap[status];
         if (noticeInfo) {
@@ -9342,6 +10685,88 @@ app.patch('/api/admin/consultations_prescription/:id', async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
 
+/** Admin: gửi nhắc nhở tới dược sĩ đã được phân công — đơn còn ở trạng thái waiting. */
+app.post('/api/admin/consultations_prescription/:id/remind-pharmacist', async (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim();
+    if (!id) return res.status(400).json({ success: false, message: 'Thiếu mã đơn.' });
+
+    const query = [{ _id: id }, { prescriptionId: id }, { id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(id) });
+    }
+
+    const doc = await ConsultationPrescriptionModel.findOne({ $or: query }).lean();
+    if (!doc) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn thuốc.' });
+
+    const st = String(doc.status || '').trim().toLowerCase();
+    if (st !== 'waiting') {
+      return res.status(400).json({
+        success: false,
+        message: 'Chỉ nhắc nhở khi đơn đang ở trạng thái «Đang tư vấn» (chưa cập nhật kết quả).',
+      });
+    }
+
+    const normalizedPharmacistId = String(doc.pharmacist_id ?? doc.pharmacistId ?? '').trim();
+    if (!normalizedPharmacistId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Đơn chưa được phân công dược sĩ, không thể gửi nhắc nhở.',
+      });
+    }
+
+    const waitingSince = getPrescriptionWaitingSinceDateFromDoc(doc);
+    if (!waitingSince) {
+      return res.status(400).json({
+        success: false,
+        message: 'Không xác định được thời điểm chuyển sang đang tư vấn.',
+      });
+    }
+    const remindMinMs = 2 * 60 * 60 * 1000;
+    if (Date.now() - waitingSince.getTime() < remindMinMs) {
+      return res.status(400).json({
+        success: false,
+        message: 'Chỉ gửi nhắc nhở sau ít nhất 2 giờ kể từ lúc phân công / chuyển sang đang tư vấn.',
+      });
+    }
+
+    const pq = [{ _id: String(normalizedPharmacistId) }];
+    if (mongoose.Types.ObjectId.isValid(String(normalizedPharmacistId))) {
+      pq.push({ _id: new mongoose.Types.ObjectId(String(normalizedPharmacistId)) });
+    }
+    const phLean = await Pharmacist.findOne({ $or: pq }).lean();
+    const phEmail = String(phLean?.pharmacistEmail || phLean?.email || '').trim().toLowerCase();
+    const phName = String(phLean?.pharmacistName || doc.pharmacistName || '').trim();
+    const code = String(doc.prescriptionId || doc.id || id).trim();
+
+    const title = code
+      ? `Nhắc nhở: đơn thuốc ${code} chưa được cập nhật trạng thái tư vấn`
+      : 'Bạn có nhắc nhở: đơn thuốc đã phân công chưa được cập nhật trạng thái tư vấn';
+    const message =
+      'Quản trị viên nhắc bạn xử lý đơn tư vấn thuốc đã phân công. Vui lòng liên hệ khách và cập nhật trạng thái.';
+
+    await pharmacistNoticeCollection().insertOne({
+      type: 'consultation_prescription_reminder',
+      title,
+      message,
+      createdAt: new Date(),
+      link: `/admin/consultation-prescription?prescriptionId=${encodeURIComponent(code || id)}`,
+      roles: ['pharmacist'],
+      meta: {
+        pharmacistId: normalizedPharmacistId,
+        prescriptionId: code || id,
+        pharmacistEmail: phEmail,
+        pharmacistName: phName,
+        prescriptionStatus: st,
+      },
+    });
+
+    res.json({ success: true, message: 'Đã gửi nhắc nhở tới dược sĩ.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 app.get('/api/admin/consultations_product', async (req, res) => {
   try {
     const role = String(req.query.role || '').toLowerCase();
@@ -9418,6 +10843,22 @@ app.get('/api/admin/consultations_product/stats', async (req, res) => {
         if (q.status === 'answered') return false;
         return q.status === 'pending' || q.status === 'unreviewed' || !q.answer;
       }).length;
+      const parseTimeMs = (value) => {
+        const t = new Date(value || 0).getTime();
+        return Number.isNaN(t) ? 0 : t;
+      };
+      const latestQuestionAtMs = scopedQuestions.reduce((max, q) => {
+        const t = parseTimeMs(q?.createdAt);
+        return t > max ? t : max;
+      }, 0);
+      const latestPendingQuestionAtMs = scopedQuestions.reduce((max, q) => {
+        const isPendingLike =
+          (q?.status === 'assigned' && !q?.answer)
+          || ((q?.status === 'pending' || q?.status === 'unreviewed' || !q?.answer) && q?.status !== 'answered');
+        if (!isPendingLike) return max;
+        const t = parseTimeMs(q?.createdAt);
+        return t > max ? t : max;
+      }, 0);
       const unanswered = pending + assigned;
       const skuStr = String(p.sku ?? '');
       return {
@@ -9428,6 +10869,8 @@ app.get('/api/admin/consultations_product/stats', async (req, res) => {
         pendingCount: pending,
         assignedCount: assigned,
         totalQuestions: scopedQuestions.length,
+        latestQuestionAt: latestQuestionAtMs ? new Date(latestQuestionAtMs).toISOString() : null,
+        latestPendingQuestionAt: latestPendingQuestionAtMs ? new Date(latestPendingQuestionAtMs).toISOString() : null,
         _id: p._id
       };
     }).filter((p) => p.totalQuestions > 0);
@@ -9485,7 +10928,67 @@ app.patch('/api/admin/consultations_product/reply', async (req, res) => {
       product.markModified('questions');
       await product.save();
 
+      const skuStrForNotice = String(sku || '').trim();
+      const qidStrForNotice = String(question.id || question._id || questionId || '').trim();
+      const pharmacistIdStr = String(pharmacist._id);
       const recipientEmail = pharmacist.pharmacistEmail || pharmacist.email || '';
+
+      // (1) Cập nhật admin_notice để admin thấy trạng thái "Đã phân công" (giữ nguyên bản ghi).
+      try {
+        if (qidStrForNotice || skuStrForNotice) {
+          await adminNoticeCollection().updateMany(
+            {
+              type: 'consultation_product',
+              $or: [
+                qidStrForNotice ? { 'meta.questionId': qidStrForNotice } : { 'meta.questionId': { $exists: false } },
+                skuStrForNotice ? { 'meta.sku': skuStrForNotice } : { 'meta.sku': { $exists: false } },
+              ],
+            },
+            {
+              $set: {
+                'meta.assignedPharmacistId': pharmacistIdStr,
+                'meta.assignedPharmacistName': pharmacist.pharmacistName || '',
+                'meta.assignedPharmacistEmail': recipientEmail,
+                'meta.assignedAt': new Date(),
+                'meta.assignedBy': assignedBy || 'Admin',
+              },
+            }
+          );
+        }
+      } catch (e) {
+        console.warn('[PATCH /api/admin/consultations_product/reply] Cannot sync admin_notice product assignment:', e?.message || e);
+      }
+
+      // (2) Gửi thông báo riêng cho dược sĩ (chỉ người được phân công mới thấy).
+      try {
+        const now = new Date();
+        await pharmacistNoticeCollection().insertOne({
+          type: 'consultation_product_assigned',
+          title: skuStrForNotice
+            ? `Bạn vừa được phân công tư vấn sản phẩm (${skuStrForNotice})`
+            : 'Bạn vừa được phân công tư vấn sản phẩm',
+          message: '',
+          createdAt: now,
+          link: skuStrForNotice
+            ? `/admin/consultation-product?sku=${encodeURIComponent(skuStrForNotice)}`
+            : '/admin/consultation-product',
+          roles: ['pharmacist'],
+          meta: {
+            pharmacistId: pharmacistIdStr,
+            pharmacistEmail: recipientEmail,
+            pharmacistName: pharmacist.pharmacistName || '',
+            sku: skuStrForNotice,
+            questionId: qidStrForNotice,
+            questionStatus: 'assigned',
+            productName,
+            assignedAt: now,
+            assignedBy: assignedBy || 'Admin',
+          },
+        });
+      } catch (e) {
+        console.warn('[PATCH /api/admin/consultations_product/reply] Cannot create pharmacist_notice product assignment:', e?.message || e);
+      }
+
       if (recipientEmail) {
         const customerName = question.full_name || 'Khách vãng lai';
         const html = `
@@ -9533,6 +11036,51 @@ app.patch('/api/admin/consultations_product/reply', async (req, res) => {
 
     await product.save();
 
+    // Câu hỏi đã được trả lời => đánh dấu thông báo admin_notice tương ứng là resolved.
+    try {
+      const qidStr = String(question.id || question._id || questionId || '').trim();
+      if (qidStr) {
+        await adminNoticeCollection().updateMany(
+          {
+            type: 'consultation_product',
+            $or: [
+              { 'meta.questionId': qidStr },
+              { 'meta.sku': String(sku || '').trim() },
+            ],
+          },
+          { $set: { resolved: true, resolvedAt: new Date() } }
+        );
+      }
+    } catch (e) {
+      console.warn('[PATCH /api/admin/consultations_product/reply] Cannot resolve admin_notice:', e?.message || e);
+    }
+
+    // Đồng bộ trạng thái thông báo phân công cho dược sĩ:
+    // vẫn giữ item trong bell đến khi trạng thái câu hỏi chuyển sang hoàn thành.
+    try {
+      const qidStr = String(question.id || question._id || questionId || '').trim();
+      const skuStr = String(sku || '').trim();
+      if (qidStr || skuStr) {
+        await pharmacistNoticeCollection().updateMany(
+          {
+            type: 'consultation_product_assigned',
+            $or: [
+              qidStr ? { 'meta.questionId': qidStr } : { 'meta.questionId': { $exists: false } },
+              skuStr ? { 'meta.sku': skuStr } : { 'meta.sku': { $exists: false } },
+            ],
+          },
+          {
+            $set: {
+              'meta.questionStatus': 'answered',
+              updatedAt: new Date(),
+            },
+          }
+        );
+      }
+    } catch (e) {
+      console.warn('[PATCH /api/admin/consultations_product/reply] Cannot sync pharmacist_notice product status:', e?.message || e);
+    }
+
     // Lưu notice cho user khi có phản hồi
     if (userId) {
       try {
@@ -9558,6 +11106,7 @@ app.patch('/api/admin/consultations_product/reply', async (req, res) => {
 
 app.get('/api/admin/consultations_disease', async (req, res) => {
   try {
+    if (!assertConsultationDiseasePharmacistOnly(req, res)) return;
     const data = await ConsultationDiseaseModel.find().sort({ updatedAt: -1 });
     res.json({ success: true, data });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
@@ -9565,6 +11114,7 @@ app.get('/api/admin/consultations_disease', async (req, res) => {
 
 app.get('/api/admin/consultations_disease/stats', async (req, res) => {
   try {
+    if (!assertConsultationDiseasePharmacistOnly(req, res)) return;
     const diseases = await ConsultationDiseaseModel.find().lean();
     const skuList = diseases.map((d) => String(d?.sku || '').trim()).filter(Boolean);
 
@@ -9596,7 +11146,9 @@ app.get('/api/admin/consultations_disease/stats', async (req, res) => {
 
     const stats = diseases.map(d => {
       const match = diseaseByKey.get(toKey(d?.sku));
-      const unanswered = (d.questions || []).filter(q => q.status === 'pending' || !q.answer).length;
+      const unanswered = (d.questions || []).filter(
+        (q) => q.status === 'pending' || q.status === 'unreviewed' || !q.answer
+      ).length;
       return {
         sku: d.sku,
         productName: match?.name || d.productName,
@@ -9612,37 +11164,133 @@ app.get('/api/admin/consultations_disease/stats', async (req, res) => {
 
 app.patch('/api/admin/consultations_disease/reply', async (req, res) => {
   try {
-    const { sku, questionId, answer, answeredBy } = req.body;
-    const disease = await ConsultationDiseaseModel.findOne({ sku });
-    if (!disease) return res.status(404).json({ success: false, message: 'Disease not found' });
-    const question = disease.questions?.id ? disease.questions.id(questionId) : disease.questions.find(q => q.id === questionId || q._id === questionId);
+    if (!assertConsultationDiseasePharmacistOnly(req, res)) return;
+    const { sku, questionId, answer, answeredBy, pharmacistId, answeredByPharmacistId } = req.body || {};
+    const skuStr = String(sku ?? '').trim();
+    const qIdRaw = String(questionId ?? '').trim();
+    if (!skuStr || !qIdRaw) {
+      return res.status(400).json({ success: false, message: 'Thiếu sku hoặc questionId.' });
+    }
+
+    const skuCandidates = getDiseaseSkuLookupCandidates(skuStr);
+    const col = mongoose.connection.db.collection('consultations_disease');
+    const diseaseDoc = await col.findOne({ sku: { $in: skuCandidates } });
+    if (!diseaseDoc) return res.status(404).json({ success: false, message: 'Disease not found' });
+
+    const question = findDiseaseQuestionByClientId(diseaseDoc.questions || [], qIdRaw);
     if (!question) return res.status(404).json({ success: false, message: 'Question not found' });
 
     const userId = question.user_id || null;
-    const diseaseName = disease.productName || sku;
+    const storedSku = String(diseaseDoc.sku ?? skuStr).trim();
+    const diseaseName = diseaseDoc.productName || storedSku;
+    const canonicalQuestionId = diseaseQuestionIdString(question) || qIdRaw;
+    const hadOfficialAnswerBefore =
+      question.answer != null && String(question.answer).trim() !== '';
 
-    question.answer = answer;
-    question.answeredBy = answeredBy;
-    question.status = 'answered';
-    question.answeredAt = new Date();
-    disease.updatedAt = new Date();
-
-    await disease.save();
-
-    // Lưu notice cho user khi admin trả lời câu hỏi về bệnh
-    if (userId) {
+    const pidRaw = String(pharmacistId ?? answeredByPharmacistId ?? '').trim();
+    let requesterNameFromDb = '';
+    if (pidRaw) {
       try {
-        const { href, routeId } = diseaseConsultationBenhPath(sku);
+        const or = [{ _id: pidRaw }];
+        if (mongoose.Types.ObjectId.isValid(pidRaw)) {
+          try {
+            or.push({ _id: new mongoose.Types.ObjectId(pidRaw) });
+          } catch (_) {
+            /* ignore */
+          }
+        }
+        const ph = await Pharmacist.findOne({ $or: or }).lean();
+        requesterNameFromDb = String(ph?.pharmacistName ?? ph?.name ?? '').trim();
+      } catch (_) {
+        /* ignore */
+      }
+    }
+    let resolvedAnsweredBy = String(answeredBy ?? '').trim();
+    if ((!resolvedAnsweredBy || resolvedAnsweredBy === 'Admin') && requesterNameFromDb) {
+      resolvedAnsweredBy = requesterNameFromDb;
+    }
+    if (!resolvedAnsweredBy || resolvedAnsweredBy === 'Admin') {
+      resolvedAnsweredBy = 'Dược sĩ';
+    }
+
+    if (
+      hadOfficialAnswerBefore &&
+      !diseaseQuestionEditableByRequestingPharmacist(question, pidRaw, requesterNameFromDb)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'Chỉ dược sĩ đã trả lời câu hỏi này mới được sửa nội dung.',
+      });
+    }
+
+    const answerStr = answer != null ? String(answer) : '';
+    const qCriteria = [{ 'q.id': qIdRaw }, { 'q._id': qIdRaw }];
+    if (mongoose.Types.ObjectId.isValid(qIdRaw) && String(new mongoose.Types.ObjectId(qIdRaw)) === qIdRaw) {
+      qCriteria.push({ 'q._id': new mongoose.Types.ObjectId(qIdRaw) });
+    }
+
+    const answeredAt = new Date();
+    const qSet = {
+      'questions.$[q].answer': answerStr,
+      'questions.$[q].answeredBy': resolvedAnsweredBy,
+      'questions.$[q].status': 'answered',
+      'questions.$[q].answeredAt': answeredAt,
+      updatedAt: answeredAt,
+    };
+    if (!hadOfficialAnswerBefore) {
+      qSet['questions.$[q].answeredByPharmacistId'] = pidRaw || null;
+    }
+    await col.updateOne(
+      { _id: diseaseDoc._id },
+      { $set: qSet },
+      { arrayFilters: [{ $or: qCriteria }] }
+    );
+
+    const fresh = await col.findOne({ _id: diseaseDoc._id });
+    const qAfter = findDiseaseQuestionByClientId(fresh?.questions || [], qIdRaw);
+    if (!qAfter || String(qAfter.status || '').toLowerCase() !== 'answered') {
+      return res.status(500).json({
+        success: false,
+        message: 'Không cập nhật được câu hỏi (lỗi khớp id trong DB).',
+      });
+    }
+
+    const abStored = String(qAfter.answeredBy || '').trim();
+    const nameForNotice =
+      abStored && abStored !== 'Dược sĩ' && abStored !== 'Admin'
+        ? abStored
+        : resolvedAnsweredBy !== 'Dược sĩ' && resolvedAnsweredBy !== 'Admin'
+          ? String(resolvedAnsweredBy).trim()
+          : '';
+
+    await markPharmacistDiseaseNoticesResolved(
+      storedSku,
+      canonicalQuestionId,
+      nameForNotice || resolvedAnsweredBy
+    );
+    await syncPharmacistDiseaseNoticeConsultedByName(storedSku, canonicalQuestionId, nameForNotice);
+
+    // Thông báo user (chỉ lần trả lời đầu — tránh gửi lặp khi dược sĩ sửa nội dung).
+    if (userId && !hadOfficialAnswerBefore) {
+      try {
+        const { href, routeId } = diseaseConsultationBenhPath(storedSku);
+        const isGenericResponder =
+          !resolvedAnsweredBy ||
+          resolvedAnsweredBy === 'Dược sĩ' ||
+          resolvedAnsweredBy === 'Admin';
+        const replyMessage = isGenericResponder
+          ? 'Câu hỏi về bệnh của bạn vừa được dược sĩ trả lời.'
+          : `Câu hỏi về bệnh của bạn vừa được Dược sĩ "${resolvedAnsweredBy}" trả lời.`;
         await noticesCollection().insertOne({
           user_id: String(userId),
           type: 'qa_reply',
-          title: 'Câu hỏi về bệnh đã có phản hồi',
-          message: `Câu hỏi của bạn về bệnh "${diseaseName}" đã được ${answeredBy || 'dược sĩ'} giải đáp.`,
+          title: 'Dược sĩ vừa trả lời câu hỏi của bạn',
+          message: replyMessage,
           createdAt: new Date().toISOString(),
           read: false,
           link: href,
           linkLabel: 'Xem phản hồi',
-          meta: routeId || sku,
+          meta: routeId || storedSku,
           meta_label: diseaseName,
         });
       } catch (e) {
@@ -9650,18 +11298,55 @@ app.patch('/api/admin/consultations_disease/reply', async (req, res) => {
       }
     }
 
-    res.json({ success: true, data: disease });
+    res.json({ success: true, data: fresh });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+// Phải khai báo trước route :sku/:questionId (tránh khớp sku=document).
+// DELETE /api/admin/consultations_disease/document/:id — xóa vĩnh viễn cả bản ghi consultations_disease (Mongo _id).
+app.delete('/api/admin/consultations_disease/document/:id', async (req, res) => {
+  try {
+    if (!assertConsultationDiseasePharmacistOnly(req, res)) return;
+    const id = String(req.params.id || '').trim();
+    if (!id) return res.status(400).json({ success: false, message: 'Thiếu id.' });
+    const or = [{ _id: id }];
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      try {
+        or.push({ _id: new mongoose.Types.ObjectId(id) });
+      } catch (_) {
+        /* ignore */
+      }
+    }
+    const result = await ConsultationDiseaseModel.findOneAndDelete({ $or: or });
+    if (!result) return res.status(404).json({ success: false, message: 'Không tìm thấy.' });
+    const delSku = result.sku != null ? String(result.sku) : '';
+    if (delSku) {
+      try {
+        await pharmacistNoticeCollection().deleteMany({
+          type: 'consultation_disease',
+          'meta.sku': delSku,
+        });
+      } catch (e) {
+        console.warn('[DELETE consultations_disease document] pharmacist_notice:', e?.message || e);
+      }
+    }
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.delete('/api/admin/consultations_disease/:sku/:questionId', async (req, res) => {
   try {
-    const { sku, questionId } = req.params;
+    if (!assertConsultationDiseasePharmacistOnly(req, res)) return;
+    const sku = String(req.params.sku ?? '').trim();
+    const questionId = decodeURIComponent(String(req.params.questionId ?? '').trim());
     const disease = await ConsultationDiseaseModel.findOne({ sku });
     if (!disease) return res.status(404).json({ success: false, message: 'Disease not found' });
 
-    disease.questions = disease.questions.filter(q => (q._id?.toString() !== questionId && q.id !== questionId));
+    disease.questions = (disease.questions || []).filter((q) => !diseaseConsultationQuestionMatchesId(q, questionId));
     await disease.save();
+    await markPharmacistDiseaseNoticesResolved(sku, questionId);
     res.json({ success: true });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });

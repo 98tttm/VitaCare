@@ -31,6 +31,10 @@ export class Layout implements OnInit, OnDestroy {
   isEditingProfile = false;
   isBlogMenuOpen = false;
 
+  /** Sidebar thu gọn: top viewport cho menu bay (fixed), tách theo từng mục có submenu. */
+  blogCollapsedFlyoutTopPx: number | null = null;
+  consultationCollapsedFlyoutTopPx: number | null = null;
+
   // Profile data state
   profileData: any = {};
   tempProfileData: any = {};
@@ -174,6 +178,32 @@ export class Layout implements OnInit, OnDestroy {
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    this.blogCollapsedFlyoutTopPx = null;
+    this.consultationCollapsedFlyoutTopPx = null;
+  }
+
+  goDashboardAndReload(): void {
+    if (typeof window === 'undefined') return;
+    window.location.href = '/admin/dashboard';
+  }
+
+  onCollapsedSubmenuEnter(which: 'blog' | 'consultation', event: MouseEvent): void {
+    if (!this.isSidebarCollapsed) return;
+    const target = event.currentTarget as HTMLElement | null;
+    const top = target ? Math.max(8, target.getBoundingClientRect().top) : 8;
+    if (which === 'blog') {
+      this.blogCollapsedFlyoutTopPx = top;
+    } else {
+      this.consultationCollapsedFlyoutTopPx = top;
+    }
+  }
+
+  onCollapsedSubmenuLeave(which: 'blog' | 'consultation'): void {
+    if (which === 'blog') {
+      this.blogCollapsedFlyoutTopPx = null;
+    } else {
+      this.consultationCollapsedFlyoutTopPx = null;
+    }
   }
 
   toggleConsultationMenu() {
@@ -390,6 +420,11 @@ export class Layout implements OnInit, OnDestroy {
   confirmLogout() {
     this.isLogoutConfirmModalOpen = false;
     this.router.navigate(['/login']);
+  }
+
+  /** Dùng trong template: ẩn mục chỉ dành cho dược sĩ (vd. Tư vấn bệnh). */
+  isPharmacistAccount(): boolean {
+    return this.authService.isPharmacistAccount();
   }
 
   private getCurrentRole(): AuthRole {

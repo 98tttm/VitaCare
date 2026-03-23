@@ -12,9 +12,9 @@
     box-sizing: border-box;
 }
 
-/* Khi .content-body không còn padding-top (route products): hơi cách mép dưới top-bar */
+/* Căn breadcrumb cùng baseline với trang đơn hàng (không đội lên thêm). */
 .product-manage-container > .breadcrumb {
-    padding-top: 8px;
+    padding-top: 0;
     position: relative;
     z-index: 69;
 }
@@ -31,12 +31,26 @@
 /* Cùng nền khối Danh mục / Lọc (.pm-cat-nav-inner, .pm-filter-bar) — nhìn một khối thống nhất */
 .product-manage-container .pm-sticky-chrome {
     position: sticky;
-    top: 0;
+    top: -14px;
     z-index: 68;
     margin-bottom: 0;
     padding-bottom: 0;
     background-color: #e8eef6;
     box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+    isolation: isolate;
+}
+
+/* Chặn mép hở phía trên khu Danh mục khi body cuộn lên. */
+.product-manage-container .pm-sticky-chrome::before {
+    content: '';
+    position: absolute;
+    top: -26px;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: #e8eef6;
+    pointer-events: none;
+    z-index: 6;
 }
 
 
@@ -1517,7 +1531,7 @@
  */
 .product-manage-container .pm-product-table-host .pm-table-body-scroll-fade {
     position: sticky;
-    top: var(--pm-sticky-chrome-height, 200px);
+    top: calc(var(--pm-sticky-chrome-height, 200px) - 14px);
     z-index: 4;
     height: 0;
     margin: 0;
@@ -1530,13 +1544,13 @@
 .product-manage-container .pm-product-table-host .pm-table-body-scroll-fade::after {
     content: '';
     display: block;
-    height: 76px;
-    margin-top: -76px;
+    height: 52px;
+    margin-top: -52px;
     background: linear-gradient(
         to bottom,
         var(--color-bg-secondary) 0%,
-        var(--color-bg-secondary) 10%,
-        color-mix(in srgb, var(--color-bg-secondary) 32%, transparent) 62%,
+        var(--color-bg-secondary) 26%,
+        color-mix(in srgb, var(--color-bg-secondary) 40%, transparent) 60%,
         transparent 100%
     );
 }
@@ -1546,8 +1560,8 @@
         background: linear-gradient(
             to bottom,
             var(--color-bg-secondary) 0%,
-            var(--color-bg-secondary) 10%,
-            rgba(255, 255, 255, 0.72) 58%,
+            var(--color-bg-secondary) 26%,
+            rgba(255, 255, 255, 0.75) 60%,
             rgba(255, 255, 255, 0) 100%
         );
     }
@@ -3434,6 +3448,10 @@ input[type="checkbox"] {
 :host-context(body.dark-mode) .product-manage-container .pm-sticky-chrome {
     background-color: var(--color-bg-secondary);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+:host-context(body.dark-mode) .product-manage-container .pm-sticky-chrome::before {
+    background-color: var(--color-bg-secondary);
 }
 
 /* Dark: header cột bảng — bỏ nền primary sáng, dùng gradient slate */

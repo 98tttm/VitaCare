@@ -103,6 +103,18 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: var(--spacing-6);
+    /* Mặc định stretch: cột trái cao bằng cột phải để sticky neo đến hết vùng cuộn cột phải */
+    align-items: stretch;
+}
+
+/*
+ * Chi tiết đơn hàng (một card trái): neo khối trái khi cuộn xuống xem sidebar dài.
+ * :only-child — không áp dụng form tạo/sửa (hai .order-info-card trong .main-content).
+ */
+.order-detail-container .layout-grid > .main-content > .order-info-card:only-child {
+    position: sticky;
+    top: var(--spacing-4, 16px);
+    z-index: 2;
 }
 
 /* Common Card Style */
@@ -384,6 +396,10 @@
         grid-template-columns: 1fr;
     }
 
+    .order-detail-container .layout-grid > .main-content > .order-info-card:only-child {
+        position: static;
+    }
+
     .status-steps {
         flex-direction: column;
         align-items: flex-start;
@@ -431,6 +447,10 @@
 
     .main-content {
         width: 100%;
+    }
+
+    .order-detail-container .layout-grid > .main-content > .order-info-card:only-child {
+        position: static !important;
     }
 
     .order-summary-sidebar {

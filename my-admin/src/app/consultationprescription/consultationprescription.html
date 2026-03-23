@@ -14,13 +14,26 @@
         </h1>
     </div>
 
-    <div class="stats-container">
+    <div
+        *ngIf="isPharmacist && focusPrescriptionId"
+        class="prescription-focus-banner"
+        style="margin-bottom: 12px; padding: 10px 16px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a5f; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between;"
+    >
+        <span>Đang xem đơn được phân công: <strong>{{ focusPrescriptionId }}</strong></span>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="clearPrescriptionFocus()">
+            Xem tất cả đơn của tôi
+        </button>
+    </div>
+
+    <div class="stats-container"
+        [class.stats-grid-admin]="isAdmin"
+        [class.stats-grid-pharmacist-main]="isPharmacist && !isAdmin">
         <div class="stat-card stat-all" (click)="filterByStatus('')" [class.active-filter]="currentFilter === ''"
             style="cursor: pointer;">
             <span class="stat-label">TỔNG ĐƠN<br>THUỐC</span>
             <span class="stat-value">{{ totalPrescriptions }}</span>
         </div>
-        <div class="stat-card stat-pending" (click)="filterByStatus('pending')"
+        <div *ngIf="isAdmin" class="stat-card stat-pending" (click)="filterByStatus('pending')"
             [class.active-filter]="currentFilter === 'pending'" style="cursor: pointer;">
             <span class="stat-label">CHỜ XỬ LÝ</span>
             <span class="stat-value">{{ pendingCount }}</span>
@@ -40,9 +53,14 @@
             <span class="stat-label">ĐÃ TƯ VẤN</span>
             <span class="stat-value">{{ advisedCount }}</span>
         </div>
+        <div class="stat-card stat-consultation-failed" (click)="filterByStatus('consultation_failed')"
+            [class.active-filter]="currentFilter === 'consultation_failed'" style="cursor: pointer;">
+            <span class="stat-label">TƯ VẤN<br>THẤT BẠI</span>
+            <span class="stat-value">{{ consultationFailedCount }}</span>
+        </div>
         <div class="stat-card stat-cancelled" (click)="filterByStatus('cancelled')"
             [class.active-filter]="currentFilter === 'cancelled'" style="cursor: pointer;">
-            <span class="stat-label">ĐÃ HUỶ</span>
+            <span class="stat-label">ĐÃ HUỶ<br><span class="stat-sublabel">(khách)</span></span>
             <span class="stat-value">{{ cancelledCount }}</span>
         </div>
     </div>
@@ -101,9 +119,14 @@
                                 <span>Đã tư vấn</span>
                             </label>
                             <label class="dropdown-option">
+                                <input type="checkbox" [checked]="isFilterSelected('status', 'consultation_failed')"
+                                    (change)="toggleFilter('status', 'consultation_failed')">
+                                <span>Tư vấn thất bại</span>
+                            </label>
+                            <label class="dropdown-option">
                                 <input type="checkbox" [checked]="isFilterSelected('status', 'cancelled')"
                                     (change)="toggleFilter('status', 'cancelled')">
-                                <span>Đã hủy</span>
+                                <span>Đã hủy (khách)</span>
                             </label>
                         </div>
                     </div>
@@ -187,8 +210,19 @@
         </div>
     </div>
 
-    <div class="table-scrollable">
-        <table class="data-table">
+    <div class="table-scrollable prescription-table-wrap">
+        <table class="data-table data-table--scroll-body">
+            <colgroup>
+                <col class="rx-col-check" />
+                <col class="rx-col-id" />
+                <col class="rx-col-date" />
+                <col class="rx-col-name" />
+                <col class="rx-col-phone" />
+                <col class="rx-col-qty" />
+                <col class="rx-col-img" />
+                <col class="rx-col-status" />
+                <col class="rx-col-remind" *ngIf="isAdmin" />
+            </colgroup>
             <thead>
                 <tr>
                     <th width="50">
@@ -201,9 +235,12 @@
                     <th>NGÀY GỬI</th>
                     <th>KHÁCH HÀNG</th>
                     <th>SĐT</th>
-                    <th>SẢN PHẨM</th>
+                    <th>SP</th>
                     <th>HÌNH ẢNH</th>
                     <th>TRẠNG THÁI</th>
+                    <th *ngIf="isAdmin" class="rx-remind-th" scope="col" title="Nhắc nhở dược sĩ">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -215,12 +252,51 @@
                         </label>
                     </td>
                     <td>{{ item.prescriptionId || '-' }}</td>
-                    <td>{{ formatDate(item.createdAt) || '-' }}</td>
+                    <td>{{ formatDateDayOnly(item.createdAt) || '-' }}</td>
                     <td>{{ item.full_name || 'Khách vãng lai' }}</td>
                     <td>{{ item.phone || '-' }}</td>
                     <td>{{ item.medicines_requested?.length || 0 }}</td>
                     <td>{{ item.images?.length > 0 ? 'Có' : 'Không' }}</td>
-                    <td>{{ getStatusLabel(item.status) }}</td>
+                    <td class="rx-status-cell">
+                        <div class="rx-status-stack">
+                            <span class="rx-status-badge" [ngClass]="getPrescriptionStatusBadgeClass(item)">
+                                {{ getPrescriptionStatusDisplay(item) }}
+                            </span>
+                            @if (hasPrescriptionCustomerReview(item)) {
+                                <div class="rx-review-stars" role="img" [attr.aria-label]="getPrescriptionReviewStarCount(item) + ' trên 5 sao'">
+                                    @for (s of prescriptionReviewStarSlots; track s) {
+                                        <i
+                                            class="bi rx-review-star-icon"
+                                            [ngClass]="s <= getPrescriptionReviewStarCount(item) ? 'bi-star-fill rx-review-star-icon--on' : 'bi-star-fill rx-review-star-icon--off'"
+                                            aria-hidden="true"
+                                        ></i>
+                                    }
+                                </div>
+                            }
+                            @if (prescriptionWaitingElapsedLine(item); as elapsedLine) {
+                                <div class="rx-status-elapsed">{{ elapsedLine }}</div>
+                            }
+                        </div>
+                    </td>
+                    <td *ngIf="isAdmin" class="rx-remind-cell" (click)="$event.stopPropagation()">
+                        <ng-container *ngIf="showAdminRemindBellCell(item); else remindCellEmpty">
+                            <button
+                                type="button"
+                                class="rx-remind-btn"
+                                [ngClass]="{
+                                    'rx-remind-btn--due': canSendPrescriptionReminder(item),
+                                    'rx-remind-btn--soon': !canSendPrescriptionReminder(item)
+                                }"
+                                [disabled]="!canSendPrescriptionReminder(item) || isRemindInProgress(item)"
+                                [attr.title]="prescriptionRemindButtonTitle(item)"
+                                aria-label="Nhắc nhở dược sĩ"
+                                (click)="onRemindPharmacistClick(item, $event)"
+                            >
+                                <i class="bi bi-bell-fill" [class.spin]="isRemindInProgress(item)"></i>
+                            </button>
+                        </ng-container>
+                        <ng-template #remindCellEmpty><span class="rx-remind-placeholder"></span></ng-template>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -228,7 +304,7 @@
     <!-- Modal -->
     <div class="modal-wrapper" *ngIf="isModalOpen">
         <div class="modal-backdrop" (click)="closeModal()"></div>
-        <div class="modal-content">
+        <div class="modal-content" [class.modal-content--view-only]="isAdminPharmacistAssignmentLocked">
             <div class="modal-header">
                 <div class="header-titles">
                     <h5 class="modal-title">MÃ ĐƠN THUỐC</h5>
@@ -248,15 +324,20 @@
                     </p>
                 </div>
 
-                <div class="form-group mt-3" style="margin-top: 15px;">
-                    <label
-                        style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Ghi
-                        chú:</label>
-                    <textarea class="form-control" rows="3" disabled
-                        style="width: 100%; border-radius: 6px; border: 1px solid var(--color-neutral-40); padding: 10px; resize: none; background-color: var(--color-bg-secondary); color: var(--color-text-primary);">{{ selectedPrescription?.note }}</textarea>
+                <div *ngIf="selectedPrescription?.cancel_reason" class="prescription-cancel-reason mt-2">
+                    <span class="prescription-cancel-reason__label">Lý do huỷ (khách):</span>
+                    <span class="prescription-cancel-reason__text">{{ selectedPrescription.cancel_reason }}</span>
                 </div>
 
-                <div class="list-section mt-3" style="margin-top: 20px;">
+                <div class="form-group mt-3" style="margin-top: 10px;">
+                    <label
+                        style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 5px;">Ghi
+                        chú:</label>
+                    <textarea class="form-control" rows="2" disabled
+                        style="width: 100%; border-radius: 6px; border: 1px solid var(--color-neutral-40); resize: none; background-color: var(--color-bg-secondary); color: var(--color-text-primary);">{{ selectedPrescription?.note }}</textarea>
+                </div>
+
+                <div class="list-section mt-3" style="margin-top: 12px;">
                     <label
                         style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Danh
                         sách cần tư
@@ -272,11 +353,8 @@
                                 style="color: var(--color-text-tertiary);"></i>
                         </div>
                         <div class="item-info" style="flex: 1; display: flex; flex-direction: column;">
-                            <span class="item-name"
-                                style="color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px;">Hình ảnh
-                                đơn
-                                thuốc</span>
-                            <span style="font-size: 12px; color: var(--color-text-tertiary);">
+                            <span class="item-name prescription-modal-product-name">Hình ảnh đơn thuốc</span>
+                            <span class="prescription-modal-product-meta">
                                 {{ selectedPrescription?.images?.length }} hình ảnh được đính kèm
                             </span>
                         </div>
@@ -292,44 +370,86 @@
                         </div>
                         <div class="item-info"
                             style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; flex-direction: column;">
-                                <span class="item-name"
-                                    style="color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px;">
+                            <div class="prescription-modal-product-col">
+                                <span class="item-name prescription-modal-product-name">
                                     {{ med?.name || ('Tên sản phẩm ' + (i + 1)) }}
                                 </span>
-                                <span *ngIf="med?.sku" style="font-size: 12px; color: var(--color-text-tertiary);">SKU:
-                                    {{ med.sku }}</span>
+                                <span *ngIf="med?.sku" class="prescription-modal-product-meta">SKU: {{ med.sku }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-            <div class="form-group mt-3" style="margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+                <div *ngIf="getStatusHistoryRows(selectedPrescription).length > 0" class="prescription-status-history">
+                    <h6 class="prescription-status-history__title">Lịch sử trạng thái</h6>
+                    <ul class="prescription-status-history__list">
+                        <li *ngFor="let row of getStatusHistoryRows(selectedPrescription)"
+                            class="prescription-status-history__item"
+                            [ngClass]="'prescription-status-history__item--' + row.tone">
+                            <span class="prescription-status-history__label">{{ row.label }}</span>
+                            <span class="prescription-status-history__meta">{{ formatDate(row.changedAt) }} · {{ row.changedBy }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div *ngIf="hasPrescriptionCustomerReview(selectedPrescription)" class="prescription-customer-review">
+                    <h6 class="prescription-customer-review__title">Phản hồi từ khách hàng</h6>
+                    <div class="rx-review-stars rx-review-stars--modal" role="img" [attr.aria-label]="getPrescriptionReviewStarCount(selectedPrescription) + ' trên 5 sao'">
+                        <i
+                            *ngFor="let s of prescriptionReviewStarSlots"
+                            class="bi rx-review-star-icon"
+                            [ngClass]="s <= getPrescriptionReviewStarCount(selectedPrescription) ? 'bi-star-fill rx-review-star-icon--on' : 'bi-star-fill rx-review-star-icon--off'"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    @if (getPrescriptionCustomerReviewText(selectedPrescription); as reviewNote) {
+                        <p class="prescription-customer-review__text">{{ reviewNote }}</p>
+                    } @else {
+                        <p class="prescription-customer-review__empty">Khách không ghi thêm nhận xét.</p>
+                    }
+                    <p *ngIf="selectedPrescription?.user_prescription_reviewed_at" class="prescription-customer-review__meta">
+                        Đánh giá lúc {{ formatDate(selectedPrescription.user_prescription_reviewed_at) }}
+                    </p>
+                </div>
+
+            <div class="form-group mt-3" style="margin-top: 12px; border-top: 1px solid var(--color-neutral-30); padding-top: 12px;"
+                [class.prescription-modal-assignment--readonly]="isAdminPharmacistAssignmentLocked">
                 <label
-                    style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Phân
+                    style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 6px;">Phân
                     dược sĩ</label>
-                <select class="form-control" [(ngModel)]="editedPharmacistId" [disabled]="isPharmacist"
-                    style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--color-neutral-40); outline: none;">
-                    <option value="">Chọn dược sĩ</option>
-                    <option *ngFor="let p of pharmacists" [value]="p._id">Dược sĩ {{ p.pharmacistName }}</option>
-                </select>
-                <small *ngIf="isAdmin" style="display: block; margin-top: 8px; color: var(--color-text-secondary);">
-                    Admin chỉ thực hiện phân công đơn thuốc cho dược sĩ.
-                </small>
+                <div *ngIf="isAdminPharmacistAssignmentLocked" class="prescription-assignment-readonly-display">
+                    {{ getAssignedPharmacistDisplayLabel() }}
+                </div>
+                <div *ngIf="!isAdminPharmacistAssignmentLocked" class="rx-pharmacist-select"
+                    (click)="$event.stopPropagation()">
+                    <button type="button" class="rx-pharmacist-select__trigger" (click)="togglePharmacistAssignDropdown($event)"
+                        [disabled]="isPharmacist" [attr.aria-expanded]="showPharmacistAssignDropdown"
+                        [class.rx-pharmacist-select__trigger--open]="showPharmacistAssignDropdown">
+                        <span class="rx-pharmacist-select__trigger-text">{{ pharmacistAssignTriggerLabel() }}</span>
+                        <i class="bi bi-chevron-down rx-pharmacist-select__chevron" aria-hidden="true"></i>
+                    </button>
+                    <ul *ngIf="showPharmacistAssignDropdown && !isPharmacist" class="rx-pharmacist-select__panel" role="listbox">
+                        <li role="option" class="rx-pharmacist-select__option rx-pharmacist-select__option--placeholder"
+                            [class.rx-pharmacist-select__option--active]="isPharmacistAssignOptionSelected('')"
+                            (click)="choosePharmacistAssign('')">Chọn dược sĩ</li>
+                        <li *ngFor="let p of pharmacists" role="option" class="rx-pharmacist-select__option"
+                            [class.rx-pharmacist-select__option--active]="isPharmacistAssignOptionSelected(p._id)"
+                            (click)="choosePharmacistAssign(p._id)">Dược sĩ {{ p.pharmacistName }}</li>
+                    </ul>
+                </div>
                 <small *ngIf="isPharmacist"
                     style="display: block; margin-top: 8px; color: var(--color-text-secondary);">
                     Dược sĩ không thay đổi người phân công, chỉ cập nhật trạng thái xử lý đơn.
                 </small>
             </div>
         </div>
-        <div class="modal-footer"
-            style="display: flex; justify-content: flex-end; gap: 10px; padding: 15px 20px; background-color: var(--color-bg-secondary); border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-            <button type="button" class="btn btn-cancel" (click)="closeModal()"
-                style="padding: 8px 16px; border: 1px solid var(--color-neutral-40); background-color: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 6px; cursor: pointer;">Hủy</button>
-            <button type="button" id="btn-submit-prescription" class="btn btn-primary" (click)="onPrimaryButtonClick()"
-                [disabled]="isSaving || (isAdmin && !editedPharmacistId)"
-                style="padding: 10px 24px; border: none; background: var(--color-primary); color: white; border-radius: 8px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 10px rgba(74, 85, 162, 0.25); transition: all 0.2s; min-width: 140px;"
-                [style.opacity]="isSaving ? '0.7' : '1'" [style.cursor]="isSaving ? 'not-allowed' : 'pointer'">
+        <div class="modal-footer prescription-modal-footer" *ngIf="!isAdminPharmacistAssignmentLocked">
+            <button *ngIf="isPharmacistUnreachableDetail" type="button" class="btn btn-primary" (click)="onUnreachableContactAgainClick()"
+                [disabled]="isSaving">
+                Liên lạc lại
+            </button>
+            <button *ngIf="!isPharmacistUnreachableDetail" type="button" id="btn-submit-prescription" class="btn btn-primary" (click)="onPrimaryButtonClick()"
+                [disabled]="isSaving || (isAdmin && !editedPharmacistId)">
                 <span *ngIf="!isSaving">{{ primaryButtonLabel }}</span>
                 <span *ngIf="isSaving"><i class="bi bi-arrow-repeat spin"></i> Đang gửi...</span>
             </button>
@@ -399,3 +519,24 @@
             <button type="button" class="status-dialog-close" (click)="closeStatusDialog()">&times;</button>
         </div>
     </div>
+
+    <!-- Sau lần liên hệ thứ 2 (unreachable): hoàn thành vs thất bại -->
+    <div class="status-dialog-backdrop status-dialog-backdrop--outcome" *ngIf="unreachableOutcomeDialog.show">
+        <div class="status-dialog-card">
+            <h4 class="status-dialog-title">Kết quả sau lần liên hệ thứ hai</h4>
+            <p class="status-dialog-message">
+                Chọn kết quả cho đơn <strong>{{ selectedPrescription?.prescriptionId }}</strong>.
+            </p>
+            <div class="status-dialog-actions status-dialog-actions--wrap">
+                <button type="button" class="btn btn-primary" (click)="unreachableOutcomeComplete()">
+                    Hoàn thành tư vấn
+                </button>
+                <button type="button" class="btn btn-danger-outline" (click)="unreachableOutcomeFailed()">
+                    Tư vấn thất bại
+                </button>
+            </div>
+            <button type="button" class="status-dialog-close" (click)="closeUnreachableOutcomeDialog()">&times;</button>
+        </div>
+    </div>
+
+</div>

@@ -717,6 +717,24 @@
     /* Slightly higher if needed, but consistent */
 }
 
+/* Modal đặt câu hỏi/đánh giá: tiêu đề luôn trắng trên nền xanh header */
+.vc_review_modal_overlay .vc_modal_header h5 {
+    color: #ffffff !important;
+}
+
+/* Bản modal hỏi đáp/review: bỏ chiều cao tối thiểu để tránh khoảng trắng thừa phía dưới */
+.vc_review_modal_overlay .vc_modal_container {
+    min-height: 0 !important;
+    height: auto;
+    max-height: min(88vh, 760px);
+}
+
+/* Nút đóng (X) màu trắng trên header xanh */
+.vc_review_modal_overlay .vc_modal_header .btn-close {
+    filter: invert(1) brightness(2);
+    opacity: 1;
+}
+
 .vc_modal_container {
     background: white;
     width: 95%;

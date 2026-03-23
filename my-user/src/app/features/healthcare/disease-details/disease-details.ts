@@ -98,6 +98,8 @@ export class DiseaseDetails implements OnInit, OnDestroy {
   };
 
   private prefilledDisease: any = null;
+  /** `id` trên URL /benh/:id — dùng khi API thiếu slug để khớp consultations_disease. */
+  private diseaseRouteParamId = '';
   // Alias between disease-group and blog-topic slugs
   private readonly relatedTopicAliasMap: Record<string, string> = {
     'than-kinh-tinh-than': 'benh-ve-than-kinh',
@@ -233,16 +235,17 @@ export class DiseaseDetails implements OnInit, OnDestroy {
   }
 
   /**
-   * Khóa `sku` trong consultations_disease phải trùng lúc POST câu hỏi:
-   * ưu tiên slug CMS, không có thì dùng id (tránh GET theo id trong khi DB lưu theo slug).
+   * Khóa `sku` trong consultations_disease phải trùng lúc POST/GET:
+   * slug CMS → id bài → id trên URL /benh/:id.
    */
   consultationSku(d: { slug?: string; id?: unknown } | null | undefined): string {
-    if (!d) return '';
-    const slug = (d as any).slug;
-    if (slug != null && String(slug).trim() !== '') return String(slug).trim();
-    const id = (d as any).id;
-    if (id != null && String(id).trim() !== '') return String(id).trim();
-    return '';
+    if (d) {
+      const slug = (d as any).slug;
+      if (slug != null && String(slug).trim() !== '') return String(slug).trim();
+      const id = (d as any).id;
+      if (id != null && String(id).trim() !== '') return String(id).trim();
+    }
+    return String(this.diseaseRouteParamId || '').trim();
   }
 
   private applyDiseaseConsultationPayload(res: any): void {
@@ -277,6 +280,7 @@ export class DiseaseDetails implements OnInit, OnDestroy {
   }
 
   loadDisease(id: string, hasPrefill: boolean = false) {
+    this.diseaseRouteParamId = String(id || '').trim();
     // Luôn cuộn về đầu trang khi load bệnh mới
     window.scrollTo({ top: 0, behavior: 'instant' });
 
@@ -1299,6 +1303,46 @@ export class DiseaseDetails implements OnInit, OnDestroy {
     }
 
     return url;
+  }
+
+  /**
+   * Phản hồi chính thức từ panel dược sĩ — `answeredBy` từ PATCH /api/admin/consultations_disease/reply (tên dược sĩ).
+   */
+  officialAnswerByRaw(q: { answeredBy?: string } | null | undefined): string {
+    return String(q?.answeredBy ?? '').trim();
+  }
+
+  officialAnswerIsAdminResponder(q: { answeredBy?: string } | null | undefined): boolean {
+    return this.officialAnswerByRaw(q) === 'Admin';
+  }
+
+  /**
+   * Tên người trả lời chính thức — luôn ưu tiên `answeredBy` từ DB (tên dược sĩ).
+   * Không dùng nhãn VitaCare; thiếu tên thì hiển thị "Dược sĩ".
+   */
+  officialAnswerAuthorDisplay(q: { answeredBy?: string } | null | undefined): string {
+    const by = this.officialAnswerByRaw(q);
+    if (by === 'Admin') return 'Quản trị viên';
+    if (!by || by === 'Pharmacist') return 'Dược sĩ';
+    return by;
+  }
+
+  officialAnswerRoleBadge(q: { answeredBy?: string } | null | undefined): string {
+    return this.officialAnswerIsAdminResponder(q) ? 'Quản trị viên' : 'Dược sĩ';
+  }
+
+  officialAnswerInitials(q: { answeredBy?: string } | null | undefined): string {
+    const label = this.officialAnswerAuthorDisplay(q);
+    if (label === 'Dược sĩ') return 'DS';
+    if (label === 'Quản trị viên') return 'QT';
+    const parts = label.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    if (parts.length === 1 && parts[0].length >= 2) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return 'DS';
   }
 
   formatDate(dateStr: string | null): string {

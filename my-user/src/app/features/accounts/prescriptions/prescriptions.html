@@ -1,31 +1,29 @@
-<!-- Prescriptions Management Component — layout neo tab giống Thông báo -->
+<!-- Prescriptions Management Component — neo tiêu đề + tìm kiếm + tab (giống Thông báo) -->
 <div class="prescriptions-container vc_container pt-2 pb-5">
     <div class="prescriptions-page-wrapper">
-        <!-- Header Section (IntersectionObserver: bật khung giả khi đã cuộn qua tiêu đề) -->
-        <div class="prescriptions-header" #prescriptionsHeader>
-            <div>
-                <h1 class="prescriptions-title">ĐƠN THUỐC CỦA TÔI</h1>
-                <p>Theo dõi yêu cầu tư vấn đơn thuốc của bạn</p>
-            </div>
-            <div class="search-container">
-                <div class="search-box">
-                    <button type="button" class="search-icon-btn" (click)="performSearch()">
-                        <i class="bi bi-search search-icon"></i>
-                    </button>
-                    <input #searchInput type="text" [(ngModel)]="searchQuery"
-                        placeholder="Tìm kiếm theo mã đơn hàng hoặc tên sản phẩm" class="search-input"
-                        (keyup.enter)="performSearch()" />
-                    <button *ngIf="searchQuery" type="button" class="clear-btn" (click)="clearSearch()">
-                        <i class="bi bi-x-circle-fill clear-icon"></i>
-                    </button>
+        <div class="prescriptions-sticky-sentinel" #prescriptionsStickySentinel aria-hidden="true"></div>
+        <div class="prescriptions-sticky-block" [class.prescriptions-sticky-block--backdrop]="stickyTabBackdrop">
+            <div class="prescriptions-header">
+                <div>
+                    <h1 class="prescriptions-title">ĐƠN THUỐC CỦA TÔI</h1>
+                    <p>Theo dõi yêu cầu tư vấn đơn thuốc của bạn</p>
+                </div>
+                <div class="search-container">
+                    <div class="search-box">
+                        <button type="button" class="search-icon-btn" (click)="performSearch()">
+                            <i class="bi bi-search search-icon"></i>
+                        </button>
+                        <input #searchInput type="text" [(ngModel)]="searchQuery"
+                            placeholder="Tìm kiếm theo mã đơn hàng hoặc tên sản phẩm" class="search-input"
+                            (keyup.enter)="performSearch()" />
+                        <button *ngIf="searchQuery" type="button" class="clear-btn" (click)="clearSearch()">
+                            <i class="bi bi-x-circle-fill clear-icon"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="prescriptions-body-panel">
-            <nav class="prescriptions-tab-nav"
-                [class.prescriptions-tab-nav--backdrop]="stickyTabBackdrop"
-                aria-label="Lọc đơn thuốc theo trạng thái">
+            <nav class="prescriptions-tab-nav" aria-label="Lọc đơn thuốc theo trạng thái">
                 <div class="tab-navigation">
                     <div class="tab-list">
                         <button *ngFor="let tab of tabs" class="tab-button" [class.active]="activeTab === tab.id"
@@ -37,7 +35,9 @@
                 </div>
                 <div class="prescriptions-scroll-fade" aria-hidden="true"></div>
             </nav>
+        </div>
 
+        <div class="prescriptions-body-panel">
             <div class="prescriptions-list-panel">
                 <div class="prescriptions-content-wrapper">
                     <div class="prescriptions-content">
@@ -79,7 +79,9 @@
                                         </div>
                                         <div class="product-details">
                                             <h3 class="product-name">{{ getMedicineName(medicine) || 'Thuốc' }}</h3>
-                                            <p class="product-price">Đang cập nhật</p>
+                                        <p class="product-price" [class.failed-contact-note]="isConsultationFailed(prescription)">
+                                            {{ isConsultationFailed(prescription) ? getConsultationFailedNote(prescription) : 'Đang cập nhật' }}
+                                        </p>
                                         </div>
                                     </div>
                                     <div class="product-right">
@@ -110,7 +112,9 @@
                                         </div>
                                         <div class="product-details">
                                             <h3 class="product-name">Đơn thuốc (hình ảnh)</h3>
-                                            <p class="product-price">{{ prescription.note || 'Đang chờ xử lý' }}</p>
+                                            <p class="product-price" [class.failed-contact-note]="isConsultationFailed(prescription)">
+                                                {{ isConsultationFailed(prescription) ? getConsultationFailedNote(prescription) : (prescription.note || 'Đang chờ xử lý') }}
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="product-right">
@@ -148,10 +152,36 @@
                                 Hủy tư vấn
                             </button>
 
-                            <!-- Đã tư vấn / Đã hủy / Chưa thể liên hệ: chỉ có Tư vấn lại -->
-                            <button
-                                *ngIf="prescription.status === 'advised' || prescription.status === 'cancelled' || prescription.status === 'unreachable'"
-                                class="action-btn repurchase-btn"
+                            <!-- Đã tư vấn: chưa đánh giá → Đánh giá + Tư vấn lại; đã đánh giá → Tư vấn lại + nhãn xám -->
+                            <ng-container *ngIf="prescription.status === 'advised'">
+                                <button *ngIf="!isPrescriptionReviewed(prescription)" type="button"
+                                    class="action-btn review-prescription-btn"
+                                    (click)="openReviewModal(prescription, $event)">
+                                    Đánh giá đơn thuốc
+                                </button>
+                                <button type="button" class="action-btn repurchase-btn"
+                                    (click)="reconsult(prescription); $event.stopPropagation()">
+                                    Tư vấn lại
+                                </button>
+                                <button *ngIf="isPrescriptionReviewed(prescription)" type="button"
+                                    class="action-btn reviewed-badge" disabled aria-label="Đơn này đã được đánh giá">
+                                    Đã đánh giá
+                                </button>
+                            </ng-container>
+
+                            <ng-container *ngIf="isConsultationFailed(prescription)">
+                                <button type="button" class="action-btn unreachable-badge-btn" disabled>
+                                    Không thể liên lạc
+                                </button>
+                                <button type="button" class="action-btn repurchase-btn"
+                                    (click)="reconsult(prescription); $event.stopPropagation()">
+                                    Tư vấn lại
+                                </button>
+                            </ng-container>
+
+                            <!-- Đã hủy / Chưa thể liên hệ: Tư vấn lại -->
+                            <button *ngIf="prescription.status === 'cancelled' || prescription.status === 'unreachable'"
+                                type="button" class="action-btn repurchase-btn"
                                 (click)="reconsult(prescription); $event.stopPropagation()">
                                 Tư vấn lại
                             </button>
@@ -172,6 +202,41 @@
             </div>
         </div>
     </div>
+    <!-- Đánh giá đơn đã tư vấn -->
+    <div class="modal-overlay review-prescription-overlay" *ngIf="showReviewModal" (click)="closeReviewModal()">
+        <div class="modal-content review-prescription-dialog" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">Đánh giá đơn thuốc</h2>
+                <button type="button" class="close-btn" (click)="closeReviewModal()" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="modal-body review-prescription-body">
+                <p class="review-prescription-code" *ngIf="prescriptionToReview as pr">
+                    Mã đơn: <strong>{{ pr.prescriptionId }}</strong>
+                </p>
+                <p class="review-prescription-hint">Bạn đánh giá mức độ hài lòng về lần tư vấn (1–5 sao).</p>
+                <div class="review-star-row" role="group" aria-label="Chọn số sao">
+                    <button type="button" *ngFor="let s of [1,2,3,4,5]" class="review-star-btn"
+                        [class.is-active]="reviewRating >= s" (click)="setReviewStars(s)"
+                        [attr.aria-pressed]="reviewRating >= s" [attr.aria-label]="s + ' sao'">
+                        <i class="bi" [ngClass]="reviewRating >= s ? 'bi-star-fill' : 'bi-star'"></i>
+                    </button>
+                </div>
+                <label class="review-note-label" for="rxReviewNote">Ghi chú (không bắt buộc)</label>
+                <textarea id="rxReviewNote" class="review-note-input" rows="3" [(ngModel)]="reviewNote"
+                    maxlength="2000" placeholder="Chia sẻ thêm trải nghiệm của bạn..."></textarea>
+            </div>
+            <div class="modal-footer review-prescription-footer">
+                <button type="button" class="action-btn cancel-btn review-prescription-cancel" (click)="closeReviewModal()"
+                    [disabled]="reviewSubmitting">Hủy</button>
+                <button type="button" class="action-btn repurchase-btn" (click)="submitPrescriptionReview()"
+                    [disabled]="reviewSubmitting || reviewRating < 1">
+                    <span *ngIf="!reviewSubmitting">Gửi đánh giá</span>
+                    <span *ngIf="reviewSubmitting">Đang gửi...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Cancel Consultation Request Modal -->
     <div class="modal-overlay" *ngIf="showCancelModal" (click)="closeCancelModal()">
         <div class="cancel-modal-content" (click)="$event.stopPropagation()">
@@ -230,8 +295,8 @@
                             </div>
                             <div class="prescription-item-body">
                                 <span class="prescription-date">{{ formatDate(p.createdAt) }}</span>
-                                <span class="prescription-note-preview">
-                                    {{ p.note || 'Không có ghi chú' }}
+                                <span class="prescription-note-preview" [class.failed-contact-note]="isConsultationFailed(p)">
+                                    {{ isConsultationFailed(p) ? getConsultationFailedNote(p) : (p.note || 'Không có ghi chú') }}
                                 </span>
                             </div>
                         </div>
@@ -305,8 +370,28 @@
 
                         <div class="detail-section">
                             <h3 class="section-title">Ghi chú</h3>
-                            <div class="detail-note">
-                                {{ detail.note || 'Không có ghi chú' }}
+                            <div class="detail-note" [class.failed-contact-note]="isConsultationFailed(detail)">
+                                {{ isConsultationFailed(detail) ? getConsultationFailedNote(detail) : (detail.note || 'Không có ghi chú') }}
+                            </div>
+                        </div>
+
+                        <div class="detail-section" *ngIf="detail.status === 'advised' && isPrescriptionReviewed(detail)">
+                            <h3 class="section-title">Đánh giá của bạn</h3>
+                            <div class="prescription-review-box">
+                                <div class="prescription-review-stars" aria-label="Số sao đánh giá">
+                                    <i class="bi bi-star-fill" *ngFor="let _ of getPrescriptionReviewStars(detail)"></i>
+                                    <span class="prescription-review-rating">
+                                        {{ $any(detail).user_prescription_rating }}/5
+                                    </span>
+                                </div>
+                                <div class="prescription-review-note"
+                                    *ngIf="$any(detail).user_prescription_review && $any(detail).user_prescription_review.trim()">
+                                    {{ $any(detail).user_prescription_review }}
+                                </div>
+                                <div class="prescription-review-note prescription-review-note--empty"
+                                    *ngIf="!$any(detail).user_prescription_review || !$any(detail).user_prescription_review.trim()">
+                                    Không có nội dung đánh giá thêm.
+                                </div>
                             </div>
                         </div>
 
@@ -382,8 +467,30 @@
                         Hủy tư vấn
                     </button>
 
-                    <button
-                        *ngIf="detail.status === 'advised' || detail.status === 'cancelled' || detail.status === 'unreachable'"
+                    <ng-container *ngIf="detail.status === 'advised'">
+                        <button *ngIf="!isPrescriptionReviewed(detail)" type="button"
+                            class="action-btn review-prescription-btn" (click)="openReviewModal(detail)">
+                            Đánh giá đơn thuốc
+                        </button>
+                        <button type="button" class="action-btn repurchase-btn" (click)="reconsult(detail)">
+                            Tư vấn lại
+                        </button>
+                        <button *ngIf="isPrescriptionReviewed(detail)" type="button" class="action-btn reviewed-badge"
+                            disabled>
+                            Đã đánh giá
+                        </button>
+                    </ng-container>
+
+                    <ng-container *ngIf="isConsultationFailed(detail)">
+                        <button type="button" class="action-btn unreachable-badge-btn" disabled>
+                            Không thể liên lạc
+                        </button>
+                        <button type="button" class="action-btn repurchase-btn" (click)="reconsult(detail)">
+                            Tư vấn lại
+                        </button>
+                    </ng-container>
+
+                    <button *ngIf="detail.status === 'cancelled' || detail.status === 'unreachable'" type="button"
                         class="action-btn repurchase-btn" (click)="reconsult(detail)">
                         Tư vấn lại
                     </button>

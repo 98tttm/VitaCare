@@ -1,19 +1,20 @@
 <div class="container page-container consultation-product-container">
-    <!-- Breadcrumb -->
-    <div class="breadcrumb text-sm mb-1 font-medium" style="color: var(--color-neutral-60);">
-        Quản lý Tư vấn <span class="mx-1">/</span>
-        <span style="color: var(--color-primary);">
-            {{ selectedProduct ? selectedProduct.sku : 'Tư vấn sản phẩm' }}
-        </span>
+    <app-admin-mascot-loading *ngIf="isLoadingProductList || isLoadingProductDetail"
+        [message]="consultationLoadingMessage" />
+    <ng-container *ngIf="!isLoadingProductList && !isLoadingProductDetail">
+    <!-- Breadcrumb (outside header block) -->
+    <div class="breadcrumb text-sm mb-1 font-medium">
+        Quản lý Tư vấn <span class="mx-1">/</span> <span class="current">Tư vấn sản phẩm</span>
     </div>
 
-    <!-- Page Header - Fixed Title -->
-    <div class="page-header py-2"
-        style="background: var(--color-bg-light); border-radius: 16px; padding: 12px 22px; box-shadow: var(--shadow-sm); margin-bottom: 12px;">
-        <h1 class="content-title"
-            style="margin: 0; font-size: 22px; text-transform: uppercase; color: var(--color-primary); font-weight: bold;">
-            {{ selectedProduct ? selectedProduct.sku : 'Tư vấn sản phẩm' }}
-        </h1>
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Tư vấn sản phẩm</h1>
+    </div>
+    <div class="top-back-row" *ngIf="selectedProduct">
+        <button (click)="goBackToProducts()" class="btn-back-main btn-back-top">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+        </button>
     </div>
 
     <!-- Stats Container - Consistent with other pages -->
@@ -23,12 +24,13 @@
             <span class="stat-label">TỔNG CÂU HỎI</span>
             <span class="stat-value">{{ totalQuestions }}</span>
         </div>
-        <div class="stat-card stat-pending" (click)="filterByStatus('pending')"
-            [class.active-filter]="currentFilter === 'pending'" style="cursor: pointer;">
-            <span class="stat-label">CẦN PHẢN HỒI</span>
-            <span class="stat-value">{{ pendingCount }}</span>
+        <div class="stat-card stat-pending" (click)="filterByStatus(isPharmacist ? 'needs' : 'pending')"
+            [class.active-filter]="currentFilter === (isPharmacist ? 'needs' : 'pending')" style="cursor: pointer;"
+            [attr.aria-label]="isPharmacist ? 'Cần giải quyết' : 'Chưa phân công'">
+            <span class="stat-label">{{ isPharmacist ? 'CẦN GIẢI QUYẾT' : 'CHƯA PHÂN CÔNG' }}</span>
+            <span class="stat-value">{{ isPharmacist ? needsCount : pendingCount }}</span>
         </div>
-        <div class="stat-card stat-assigned" (click)="filterByStatus('assigned')"
+        <div class="stat-card stat-assigned" *ngIf="!isPharmacist" (click)="filterByStatus('assigned')"
             [class.active-filter]="currentFilter === 'assigned'" style="cursor: pointer;">
             <span class="stat-label">ĐÃ PHÂN CÔNG</span>
             <span class="stat-value">{{ assignedCount }}</span>
@@ -96,13 +98,14 @@
     <!-- 2. QUESTIONS TABLE VIEW (For Selected Product) -->
     <ng-container *ngIf="selectedProduct">
         <div class="selected-product-info" style="margin-bottom: 20px;">
+            <div class="selected-product-media">
+                <img *ngIf="selectedProduct.image" [src]="selectedProduct.image" [alt]="selectedProduct.productName || selectedProduct.sku">
+                <i *ngIf="!selectedProduct.image" class="bi bi-image"></i>
+            </div>
             <div class="product-details">
                 <h2 style="color: #6a1b9a;">Sản phẩm: {{ selectedProduct.productName }}</h2>
-                <span>Mã SKU: {{ selectedProduct.sku }} • {{ selectedProduct.pendingCount ?? selectedProduct.unansweredCount ?? 0 }} câu hỏi mới</span>
+                <span>Mã SKU: {{ selectedProduct.sku }} • {{ (selectedProduct.pendingCount ?? selectedProduct.unansweredCount ?? 0) + (selectedProduct.assignedCount || 0) }} câu hỏi cần xử lý</span>
             </div>
-            <button (click)="goBackToProducts()" class="btn-back-main">
-                <i class="bi bi-arrow-left"></i> Quay lại danh sách
-            </button>
         </div>
 
         <div class="filter-bar">
@@ -187,37 +190,62 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th width="150">NGÀY HỎI</th>
-                        <th width="180">KHÁCH HÀNG</th>
-                        <th>NỘI DUNG CÂU HỎI</th>
+                        <th width="130">MÃ YÊU CẦU</th>
+                        <th width="300">SẢN PHẨM</th>
+                        <th width="160">THỜI GIAN</th>
+                        <th *ngIf="!isPharmacist" width="180">NGƯỜI ĐƯỢC PHÂN CÔNG</th>
                         <th width="150">TRẠNG THÁI</th>
                         <th width="100">THAO TÁC</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of filteredQuestions" (click)="openDetailModal(item)">
-                        <td>{{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-                        <td>{{ item.full_name || 'Khách vãng lai' }}</td>
+                    <tr *ngFor="let item of filteredQuestions">
                         <td>
-                            <div
-                                style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                {{ item.question }}
-                            </div>
+                            {{ getQuestionRequestCode(item) || '-' }}
                         </td>
                         <td>
+                            <div class="question-product-trigger"
+                                (click)="openDetailModal(item); $event.stopPropagation()"
+                                title="Nhấn để mở popup chi tiết"
+                                style="max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ item.productName || selectedProduct.productName }}
+                            </div>
+                            <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">
+                                SKU: {{ item.productSku || selectedProduct.sku }}
+                            </div>
+                            <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                KH: {{ item.full_name || 'Khách vãng lai' }}
+                            </div>
+                        </td>
+                        <td>{{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                        <td *ngIf="!isPharmacist">
+                            <div style="max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ getAssignedPharmacistLabel(item) }}
+                            </div>
+                        </td>
+                        <td class="status-cell">
                             <div class="status-badge" [ngClass]="getQuestionStatusClass(item)">
                                 <span class="status-dot"></span>
                                 <span class="status-text">{{ getQuestionStatusText(item) }}</span>
                             </div>
-                            <div *ngIf="item.answer && item.answeredBy"
+                            <div *ngIf="item.answer && item.answeredBy" class="status-meta status-meta--answered">
+                                Cập nhật bởi: {{ item.answeredBy }}
+                            </div>
+                            <div *ngIf="!item.answer && item.assignedBy"
                                 style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">
-                                Bởi: {{ item.answeredBy }}
+                                Phân công bởi: {{ item.assignedBy }}
                             </div>
                         </td>
-                        <td>
-                            <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;">{{ (!item.answer
-                                || item.status === 'unreviewed' || item.status === 'pending' || item.status === 'assigned') ?
-                                'Trả lời' : 'Sửa' }}</button>
+                        <td class="action-cell">
+                            <button *ngIf="canShowViewAction(item) && isPharmacist" class="action-edit-icon-btn"
+                                type="button"
+                                aria-label="Chỉnh sửa câu trả lời"
+                                (click)="openDetailModal(item, true); $event.stopPropagation()">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button *ngIf="canShowViewAction(item) && !isPharmacist" class="btn btn-primary"
+                                (click)="openDetailModal(item); $event.stopPropagation()"
+                                style="padding: 4px 12px; font-size: 12px;">Xem</button>
                         </td>
                     </tr>
                 </tbody>
@@ -228,6 +256,7 @@
             </div>
         </div>
     </ng-container>
+    </ng-container>
 </div>
 
 <!-- Trả lời Modal (Existing structure preserved) -->
@@ -236,16 +265,23 @@
     <div class="modal-content">
         <div class="modal-header">
             <div class="header-titles">
-                <h5 class="modal-title">TRẢ LỜI CÂU HỎI</h5>
+                <h5 class="modal-title">TRẢ LỜI TƯ VẤN SẢN PHẨM</h5>
                 <span class="modal-subtitle">{{ formatDate(selectedQuestion?.createdAt) }}</span>
             </div>
             <button type="button" class="close-btn" (click)="closeModal()">&times;</button>
         </div>
         <div class="modal-body scrollable">
             <div class="info-section mb-3">
-                <h6 style="color: var(--color-text-primary); font-weight: 600; margin-bottom: 5px;">Sản phẩm:</h6>
-                <p style="margin: 0; color: var(--color-text-secondary);">{{ selectedQuestion?.productName }} (Mã: {{
-                    selectedQuestion?.productSku }})</p>
+                <div class="info-product-row">
+                    <img *ngIf="selectedProduct?.image" class="info-product-thumb" [src]="selectedProduct.image"
+                        alt="Ảnh sản phẩm" />
+                    <div class="info-product-text">
+                        <h6 style="color: var(--color-text-primary); font-weight: 600; margin-bottom: 5px;">Sản phẩm:</h6>
+                        <p style="margin: 0; color: var(--color-text-secondary);">
+                            {{ selectedQuestion?.productName }} (Mã: {{ selectedQuestion?.productSku }})
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div class="info-section mb-3" style="margin-top: 15px;">
@@ -265,33 +301,33 @@
                     dung trả
                     lời:</label>
                 <textarea class="form-control" rows="4" [(ngModel)]="replyContent"
+                    [disabled]="isAdmin || !canEditSelectedReply()"
                     [placeholder]="isAdmin ? 'Nhập câu trả lời (để trống nếu muốn phân công cho dược sĩ)...' : 'Nhập câu trả lời của bạn...'"
                     style="width: 100%; border-radius: 6px; border: 1px solid var(--color-neutral-40); padding: 10px; resize: none; color: var(--color-text-primary);"></textarea>
             </div>
 
-            <div class="form-group mt-3" style="margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+            <div *ngIf="canAdminAssignSelectedQuestion()" class="form-group mt-3" style="margin-top: 15px;">
                 <label
-                    style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Dược sĩ
-                    được phân công</label>
-                <select class="form-control" [(ngModel)]="editedPharmacistId" [disabled]="isPharmacist || !!replyContent.trim()"
-                    style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--color-neutral-40); outline: none;">
-                    <option value="">Chọn dược sĩ</option>
-                    <option *ngFor="let p of pharmacists" [value]="p._id">Dược sĩ {{ p.pharmacistName }}</option>
+                    style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Phân công
+                    đến dược sĩ:</label>
+                <select class="form-control modal-pharmacist-select" [(ngModel)]="editedPharmacistId"
+                    style="width: 100%; border-radius: 6px; border: 1px solid var(--color-neutral-40); padding: 10px; color: var(--color-text-primary);">
+                    <option value="">-- Chọn dược sĩ --</option>
+                    <option *ngFor="let pharmacist of pharmacists" [value]="pharmacist._id">
+                        {{ pharmacist.pharmacistName || pharmacist.fullname || pharmacist.adminname || 'Dược sĩ' }}
+                    </option>
                 </select>
-                <small *ngIf="isAdmin" style="display: block; margin-top: 8px; color: var(--color-text-secondary);">
-                    Phân cho dược sĩ khi không đủ chuyên môn trả lời tư vấn                </small>
-                <small *ngIf="isPharmacist" style="display: block; margin-top: 8px; color: var(--color-text-secondary);">
-                    Bạn đang đăng nhập vai trò dược sĩ và chỉ có thể trả lời câu hỏi được phân công.
+                <small style="display: block; margin-top: 6px; color: var(--color-text-secondary);">
+                    Chọn dược sĩ rồi bấm Phân công để chuyển xử lý câu hỏi này.
                 </small>
             </div>
+
         </div>
-        <div class="modal-footer"
+        <div class="modal-footer" *ngIf="canEditSelectedReply()"
             style="display: flex; justify-content: flex-end; gap: 10px; padding: 15px 20px; background-color: var(--color-bg-secondary); border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-            <button type="button" class="btn btn-cancel" (click)="closeModal()"
-                style="padding: 8px 16px; border: 1px solid var(--color-neutral-40); background-color: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 6px; cursor: pointer;">Hủy</button>
             <button type="button" class="btn btn-primary" (click)="saveQuestion()"
-                style="padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">Lưu
-                trả lời</button>
+                style="padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">{{ isAdmin ? 'Phân công' :
+                'Lưu trả lời' }}</button>
         </div>
     </div>
 

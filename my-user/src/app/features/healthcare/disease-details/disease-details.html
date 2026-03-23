@@ -522,14 +522,15 @@
                                     <div class="answer-item bg-light p-3 rounded-3 mb-2"
                                         style="border-left: 6px solid #00589f !important; background-color: #f1f3f7 !important;"
                                         *ngIf="q.answer">
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <img src="https://res.cloudinary.com/dpjkzxjl2/image/upload/v1771155535/Artboard_7_c4h7h2.png"
-                                                class="rounded-circle border" width="30" height="30"
-                                                alt="VitaCare Logo">
-                                            <span class="fw-bold text-vc-primary">VitaCare</span>
-                                            <span class="badge"
-                                                style="background-color: #00589f !important; color: white !important; font-size: 0.7rem;">
-                                                {{ q.answeredBy === 'Pharmacist' ? 'Dược sĩ' : 'Quản trị viên' }}
+                                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                            <div
+                                                class="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold official-answer-avatar"
+                                                [class.official-answer-avatar--admin]="officialAnswerIsAdminResponder(q)"
+                                                aria-hidden="true">{{ officialAnswerInitials(q) }}</div>
+                                            <span class="fw-bold text-vc-primary">{{ officialAnswerAuthorDisplay(q) }}</span>
+                                            <span class="badge official-answer-role-badge"
+                                                [class.official-answer-role-badge--admin]="officialAnswerIsAdminResponder(q)">
+                                                {{ officialAnswerRoleBadge(q) }}
                                             </span>
                                         </div>
                                         <p class="answer-content mb-1 text-secondary" style="font-size: 0.9rem;">{{

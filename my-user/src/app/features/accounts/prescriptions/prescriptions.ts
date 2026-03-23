@@ -33,7 +33,8 @@ interface Tab {
   styleUrl: './prescriptions.css',
 })
 export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestroy {
-  @ViewChild('prescriptionsHeader', { read: ElementRef }) prescriptionsHeaderRef?: ElementRef<HTMLElement>;
+  @ViewChild('prescriptionsStickySentinel', { read: ElementRef })
+  prescriptionsStickySentinelRef?: ElementRef<HTMLElement>;
   @ViewChild('searchInput') searchInput?: ElementRef;
 
   /** Bật lớp nền che khi đã cuộn qua tiêu đề (giống Thông báo). */
@@ -80,6 +81,13 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
   showCancelModal = false;
   prescriptionToCancel: Prescription | null = null;
 
+  /** Đánh giá đơn đã tư vấn */
+  showReviewModal = false;
+  prescriptionToReview: Prescription | null = null;
+  reviewRating = 0;
+  reviewNote = '';
+  reviewSubmitting = false;
+
   ngOnInit(): void {
     if (this.userId) {
       this.fetchPrescriptions(this.userId);
@@ -117,10 +125,10 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
   }
 
   /**
-   * Giống Thông báo: khi khối tiêu đề không còn giao viewport dưới header site, bật lớp nền che.
+   * Giống Thông báo: sentinel trước khối sticky — khi cuộn qua, bật lớp nền che phía trên khối neo.
    */
   private setupPrescriptionsHeaderBackdropObserver(): void {
-    const el = this.prescriptionsHeaderRef?.nativeElement;
+    const el = this.prescriptionsStickySentinelRef?.nativeElement;
     if (!el || typeof IntersectionObserver === 'undefined') return;
 
     const accountHost = el.closest('app-account');
@@ -183,7 +191,7 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
 
     // Filter by tab
     if (this.activeTab !== 'all') {
-      filtered = filtered.filter((p) => p.status === this.activeTab);
+      filtered = filtered.filter((p) => this.getEffectiveTabStatus(p.status) === this.activeTab);
     }
 
     // Filter by search query
@@ -212,9 +220,15 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
       if (tab.id === 'all') {
         tab.count = all.length;
       } else {
-        tab.count = all.filter((p) => p.status === tab.id).length;
+        tab.count = all.filter((p) => this.getEffectiveTabStatus(p.status) === tab.id).length;
       }
     });
+  }
+
+  private getEffectiveTabStatus(status: string): string {
+    const s = String(status || '').trim().toLowerCase();
+    if (s === 'consultation_failed') return 'unreachable';
+    return s;
   }
 
   // Status label mapping
@@ -223,6 +237,7 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
       pending: 'CHỜ XỬ LÝ',
       waiting: 'CHỜ TƯ VẤN',
       advised: 'ĐÃ TƯ VẤN',
+      consultation_failed: 'Tư vấn thất bại',
       unreachable: 'CHƯA THỂ LIÊN HỆ',
       cancelled: 'ĐÃ HỦY',
     };
@@ -235,10 +250,117 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
       pending: 'status-pending',
       waiting: 'status-waiting',
       advised: 'status-advised',
+      consultation_failed: 'status-consultation-failed',
       unreachable: 'status-unreachable',
       cancelled: 'status-cancelled',
     };
     return classMap[status] || 'status-pending';
+  }
+
+  isConsultationFailed(prescription: Prescription): boolean {
+    return String(prescription?.status || '').trim().toLowerCase() === 'consultation_failed';
+  }
+
+  getConsultationFailedNote(prescription: Prescription): string {
+    const pharmacistName = String((prescription as any)?.pharmacistName || '').trim();
+    const displayName = pharmacistName || 'dược sĩ';
+    return `Dược sĩ ${displayName} đã cố gắng liên lạc tư vấn nhưng không thể liên lạc.
+Nếu bạn muốn tư vấn lại hãy nhấn Tư vấn lại, dược sĩ sẽ liên lạc lại với bạn sớm nhất.`;
+  }
+
+  /** Đơn đã tư vấn và khách đã gửi đánh giá (theo DB). */
+  isPrescriptionReviewed(p: Prescription): boolean {
+    const r = Number((p as any).user_prescription_rating);
+    if (Number.isFinite(r) && r >= 1 && r <= 5) return true;
+    const at = String((p as any).user_prescription_reviewed_at || '').trim();
+    return !!at;
+  }
+
+  getPrescriptionReviewStars(p: Prescription): number[] {
+    const r = Number((p as any).user_prescription_rating);
+    const safe = Number.isFinite(r) ? Math.min(5, Math.max(0, Math.round(r))) : 0;
+    return Array.from({ length: safe }, (_, i) => i);
+  }
+
+  openReviewModal(prescription: Prescription, event?: Event): void {
+    event?.stopPropagation();
+    if (this.isPrescriptionReviewed(prescription)) return;
+    this.prescriptionToReview = prescription;
+    this.reviewRating = 0;
+    this.reviewNote = '';
+    this.showReviewModal = true;
+  }
+
+  closeReviewModal(): void {
+    this.showReviewModal = false;
+    this.prescriptionToReview = null;
+    this.reviewRating = 0;
+    this.reviewNote = '';
+    this.reviewSubmitting = false;
+  }
+
+  setReviewStars(n: number): void {
+    this.reviewRating = n;
+  }
+
+  submitPrescriptionReview(): void {
+    const p = this.prescriptionToReview;
+    const uid = String(this.userId || '').trim();
+    if (!p || !uid || this.reviewSubmitting) return;
+    if (this.reviewRating < 1 || this.reviewRating > 5) {
+      this.toast.showError('Vui lòng chọn từ 1 đến 5 sao.');
+      return;
+    }
+    const key = String(p.prescriptionId || (p as any)._id || '').trim();
+    if (!key) {
+      this.toast.showError('Không xác định được mã đơn thuốc.');
+      return;
+    }
+    this.reviewSubmitting = true;
+    this.prescriptionService
+      .submitPrescriptionReview(key, {
+        user_id: uid,
+        rating: this.reviewRating,
+        note: this.reviewNote.trim(),
+      })
+      .subscribe({
+        next: (res) => {
+          this.reviewSubmitting = false;
+          if (!res?.success) {
+            this.toast.showError(res?.message || 'Không gửi được đánh giá.');
+            return;
+          }
+          const item = res.item as Prescription | undefined;
+          if (item) {
+            this.applyPrescriptionPatchFromServer(p, item);
+          } else {
+            (p as any).user_prescription_rating = this.reviewRating;
+            (p as any).user_prescription_review = this.reviewNote.trim();
+            (p as any).user_prescription_reviewed_at = new Date().toISOString();
+          }
+          this.closeReviewModal();
+          this.toast.showSuccess(res.message || 'Cảm ơn bạn đã đánh giá.');
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.reviewSubmitting = false;
+          const msg = err?.error?.message || err?.message || 'Không gửi được đánh giá.';
+          this.toast.showError(msg);
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  private applyPrescriptionPatchFromServer(prev: Prescription, updated: Prescription): void {
+    const match = (x: Prescription) =>
+      x.prescriptionId === prev.prescriptionId || String((x as any)._id) === String((prev as any)._id);
+    const i = this.prescriptions.findIndex(match);
+    if (i !== -1) {
+      Object.assign(this.prescriptions[i], updated);
+    }
+    if (this.selectedPrescription && match(this.selectedPrescription)) {
+      Object.assign(this.selectedPrescription, updated);
+    }
   }
 
   formatDate(dateStr: string): string {
@@ -329,6 +451,41 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
 
   /** Bắt đầu tư vấn lại từ một đơn thuốc */
   reconsult(prescription: Prescription): void {
+    if (this.isConsultationFailed(prescription)) {
+      const key = String(prescription.prescriptionId || (prescription as any)._id || '').trim();
+      if (!key) {
+        this.toast.showError('Không xác định được mã đơn thuốc.');
+        return;
+      }
+      this.prescriptionService
+        .requestRecontact(key, { user_id: String(this.userId || '').trim() || undefined })
+        .subscribe({
+          next: (res) => {
+            if (!res?.success) {
+              this.toast.showError(res?.message || 'Không thể gửi yêu cầu tư vấn lại.');
+              return;
+            }
+            const item = res.item;
+            if (item) {
+              this.applyPrescriptionPatchFromServer(prescription, item);
+            } else {
+              prescription.status = 'waiting' as any;
+              (prescription as any).updatedAt = new Date().toISOString();
+            }
+            this.updateTabCounts();
+            this.onDetailSearchChange();
+            this.toast.showSuccess(res?.message || 'Đã gửi yêu cầu tư vấn lại.');
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            const msg = err?.error?.message || err?.message || 'Không thể gửi yêu cầu tư vấn lại.';
+            this.toast.showError(msg);
+            this.cdr.detectChanges();
+          },
+        });
+      return;
+    }
+
     this.consultationCartService.setFromPrescription({
       contactName: prescription.full_name,
       contactPhone: prescription.phone,

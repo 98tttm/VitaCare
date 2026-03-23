@@ -1560,7 +1560,43 @@
     border-color: #00589F !important;
 }
 
-.reply-item,
+/* Chỉ avatar phản hồi chính thức — KHÔNG gộp .reply-item (sẽ co còn 30px → chữ xếp dọc từng ký tự). */
+.official-answer-avatar {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  font-size: 0.65rem;
+  background-color: #00589f;
+}
+
+.consultation-item .reply-item {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.consultation-item .reply-content,
+.consultation-item .answer-content {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.official-answer-avatar--admin {
+  background-color: #5c4a7a;
+}
+
+.official-answer-role-badge {
+  background-color: #00589f !important;
+  color: #fff !important;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.official-answer-role-badge--admin {
+  background-color: #5c4a7a !important;
+}
+
 .answer-item {
     border-left: 6px solid #00589F !important;
     background-color: #f8faff !important;

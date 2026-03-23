@@ -20,6 +20,58 @@
     overflow: visible;
 }
 
+/* ===== Neo: tiêu đề + tìm kiếm + tab (cuộn trang — khối dính dưới header site, giống Thông báo) ===== */
+.prescriptions-sticky-sentinel {
+    height: 1px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.prescriptions-sticky-block {
+    position: sticky;
+    top: var(--vc-account-sidebar-sticky-top, 164px);
+    z-index: 2;
+    margin: 0 0 12px;
+    padding: 8px 0 6px;
+    background: var(--color-bg-light);
+    box-shadow: none;
+    isolation: isolate;
+    overflow: visible;
+}
+
+.prescriptions-sticky-block .prescriptions-header {
+    margin-bottom: 12px;
+}
+
+.prescriptions-sticky-block .prescriptions-tab-nav {
+    margin-bottom: 0;
+}
+
+.prescriptions-sticky-block.prescriptions-sticky-block--backdrop .prescriptions-scroll-fade {
+    opacity: 1;
+}
+
+.prescriptions-sticky-block.prescriptions-sticky-block--backdrop::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    width: max(100vw, calc(100% + 240px));
+    height: 112px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    transform: translateX(-50%);
+    background: var(--color-bg-light);
+    z-index: 3;
+    pointer-events: none;
+}
+
 /* ===== HEADER ===== */
 .prescriptions-header {
     margin-bottom: 32px;
@@ -147,15 +199,12 @@
     overflow: visible;
 }
 
+/* Khung tab — nằm trong .prescriptions-sticky-block, không sticky riêng */
 .prescriptions-tab-nav {
-    position: sticky;
-    top: var(--vc-account-sidebar-sticky-top, 164px);
-    z-index: 2;
-    margin: 0 0 12px;
-    padding: 8px 0 6px;
-    background: var(--color-bg-light);
-    box-shadow: none;
-    isolation: isolate;
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
     overflow: visible;
 }
 
@@ -177,28 +226,6 @@
         rgba(229, 238, 248, 0.16) 82%,
         rgba(229, 238, 248, 0) 100%
     );
-}
-
-.prescriptions-tab-nav.prescriptions-tab-nav--backdrop .prescriptions-scroll-fade {
-    opacity: 1;
-}
-
-.prescriptions-tab-nav.prescriptions-tab-nav--backdrop::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 100%;
-    width: max(100vw, calc(100% + 240px));
-    height: 112px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: none;
-    box-shadow: none;
-    transform: translateX(-50%);
-    background: var(--color-bg-light);
-    z-index: 3;
-    pointer-events: none;
 }
 
 .prescriptions-list-panel {
@@ -435,12 +462,12 @@
 .prescription-wrapper {
     margin-bottom: 24px;
     background: white;
-    border-radius: 15px 0 0 0;
+    border-radius: 5px;
     padding: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     border: 1px solid transparent;
     transition: all 0.3s ease;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .prescription-wrapper:hover {
@@ -456,7 +483,7 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    border-radius: 15px 0 0 0;
+    border-radius: 5px 5px 0 0;
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 0;
@@ -544,6 +571,11 @@
     /* #ffe8e8 */
     color: var(--color-danger);
     /* #c42326 */
+}
+
+.status-consultation-failed {
+    background: #ffe9e9;
+    color: #b42318;
 }
 
 .status-processing_return,
@@ -921,6 +953,148 @@
     background: var(--color-neutral-80) !important;
     border: 1px solid var(--color-neutral-80) !important;
     color: white !important;
+    cursor: not-allowed;
+}
+
+/* Đánh giá đơn thuốc (đã tư vấn) — cùng họ màu CTA */
+.action-btn.review-prescription-btn {
+    background: var(--color-primary) !important;
+    color: white !important;
+    border: 1px solid var(--color-primary) !important;
+    border-radius: 4px;
+}
+
+.action-btn.review-prescription-btn:hover {
+    background: var(--color-primary-hover) !important;
+    border-color: var(--color-primary-hover) !important;
+}
+
+/* Nhãn đơn đã có đánh giá — nhỏ, xám */
+.action-btn.reviewed-badge,
+.reviewed-badge {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    background: #e2e8f0 !important;
+    color: #64748b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    cursor: default !important;
+    opacity: 1 !important;
+}
+
+.action-btn.unreachable-badge-btn,
+.unreachable-badge-btn {
+    background: #e5e7eb !important;
+    color: #6b7280 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    cursor: not-allowed !important;
+    opacity: 1 !important;
+}
+
+.prescription-detail-modal .modal-footer .footer-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Popup đánh giá — trên modal chi tiết */
+.review-prescription-overlay.modal-overlay {
+    z-index: calc(var(--z-modal, 1050) + 40);
+}
+
+.review-prescription-dialog {
+    max-width: 440px;
+}
+
+.review-prescription-body {
+    padding: 12px 20px 16px;
+}
+
+.review-prescription-code {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    font-family: 'Inter', sans-serif;
+}
+
+.review-prescription-hint {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.45;
+}
+
+.review-star-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.review-star-btn {
+    border: none;
+    background: transparent;
+    padding: 4px 6px;
+    cursor: pointer;
+    color: #cbd5e1;
+    font-size: 30px;
+    line-height: 1;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.review-star-btn:hover,
+.review-star-btn.is-active {
+    color: #f59e0b;
+    transform: scale(1.05);
+}
+
+.review-star-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.review-note-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text-primary);
+}
+
+.review-note-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--color-neutral-40);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.review-note-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.review-prescription-footer {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.review-prescription-cancel:disabled {
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
@@ -1511,8 +1685,8 @@
 }
 
 .prescription-detail-modal {
-    max-width: 1000px;
-    width: 95%;
+    max-width: 840px;
+    width: 88%;
     max-height: 90vh;
     display: flex;
     flex-direction: column;
@@ -1538,7 +1712,7 @@
 }
 
 .prescription-detail-column {
-    flex: 0 0 70%;
+    flex: 0 0 66%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1595,6 +1769,44 @@
     font-size: 14px;
     color: var(--color-text-primary);
     white-space: pre-line;
+}
+
+.prescription-review-box {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #f6ddb0;
+    background: #fffaf1;
+}
+
+.prescription-review-stars {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #f59e0b;
+    margin-bottom: 8px;
+}
+
+.prescription-review-stars i {
+    font-size: 15px;
+}
+
+.prescription-review-rating {
+    margin-left: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #9a6700;
+}
+
+.prescription-review-note {
+    font-size: 14px;
+    color: var(--color-text-primary);
+    white-space: pre-line;
+    line-height: 1.45;
+}
+
+.prescription-review-note--empty {
+    color: var(--color-text-secondary);
+    font-style: italic;
 }
 
 .prescription-detail-content {
@@ -1673,13 +1885,30 @@
 
 /* Left column: prescriptions list (like order detail) */
 .prescription-list-column {
-    flex: 0 0 30%;
+    flex: 0 0 34%;
     display: flex;
     flex-direction: column;
     border-right: 1px solid var(--color-neutral-40);
     background-color: var(--color-neutral-20);
     min-width: 0;
     overflow: hidden;
+}
+
+/* Search ở cột trái modal: co theo cột, không tràn ngang */
+.prescription-list-column .search-section {
+    padding: var(--spacing-3);
+}
+
+.prescription-list-column .search-box {
+    width: 100%;
+    margin: 0;
+}
+
+.prescription-list-column .search-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .prescription-list {
@@ -1716,7 +1945,8 @@
 .prescription-item-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 8px;
     margin-bottom: 4px;
 }
 
@@ -1733,7 +1963,12 @@
     border-radius: var(--radius-full);
     font-weight: var(--font-weight-medium);
     font-family: 'Inter', sans-serif;
-    text-transform: uppercase;
+    text-transform: none;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
 }
 
 .prescription-item-body {
@@ -1753,6 +1988,12 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.failed-contact-note {
+    color: #c36a1f !important;
+    font-style: italic;
+    font-weight: 400;
 }
 
 @media (max-width: 768px) {

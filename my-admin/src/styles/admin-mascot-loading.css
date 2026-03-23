@@ -58,12 +58,14 @@
 .admin-mascot-loading .loading-container {
   width: 100%;
   position: relative;
-  padding-top: 50px;
+  /* Đủ chỗ mascot chạy ngang; gọn hơn để thanh loading không bị lệch xa mascot */
+  padding-top: 42px;
 }
 
 .admin-mascot-loading .mascot-shipping {
   position: absolute;
-  bottom: 10px;
+  /* Sát mép trên thanh loading (trước đây bottom: 10px làm mascot “lơ” cao) */
+  bottom: 0;
   left: 10%;
   width: 60px;
   z-index: 2;

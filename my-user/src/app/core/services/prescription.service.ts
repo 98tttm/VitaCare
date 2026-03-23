@@ -8,7 +8,7 @@ export interface Prescription {
     consultation_type: string;
     images: string[];
     medicines_requested: string[];
-    status: 'pending' | 'waiting' | 'advised' | 'unreachable' | 'cancelled';
+    status: 'pending' | 'waiting' | 'advised' | 'consultation_failed' | 'unreachable' | 'cancelled';
     current_status: {
         status: string;
         changedAt: string;
@@ -23,6 +23,10 @@ export interface Prescription {
     completedAt?: string;
     cancel_reason?: string;
     is_follow_up: boolean;
+    /** Đánh giá sau khi đã tư vấn (PATCH /review) */
+    user_prescription_rating?: number;
+    user_prescription_review?: string;
+    user_prescription_reviewed_at?: string;
 }
 
 import { Injectable, inject } from '@angular/core';
@@ -44,5 +48,27 @@ export class PrescriptionService {
                     return of({ success: false, items: [], message: err.message });
                 })
             );
+    }
+
+    submitPrescriptionReview(
+        prescriptionKey: string,
+        body: { user_id: string; rating: number; note?: string },
+    ): Observable<{ success: boolean; message?: string; item?: Prescription }> {
+        const id = encodeURIComponent(String(prescriptionKey || '').trim());
+        return this.http.patch<{ success: boolean; message?: string; item?: Prescription }>(
+            `${this.apiUrl}/${id}/review`,
+            body,
+        );
+    }
+
+    requestRecontact(
+        prescriptionKey: string,
+        body: { user_id?: string },
+    ): Observable<{ success: boolean; message?: string; item?: Prescription }> {
+        const id = encodeURIComponent(String(prescriptionKey || '').trim());
+        return this.http.patch<{ success: boolean; message?: string; item?: Prescription }>(
+            `${this.apiUrl}/${id}/recontact`,
+            body || {},
+        );
     }
 }
