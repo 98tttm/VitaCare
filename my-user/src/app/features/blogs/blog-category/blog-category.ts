@@ -103,9 +103,9 @@ export class BlogCategory implements OnInit {
       slug: 'dinh-duong',
       keywords: ['chế độ dinh dưỡng', 'dinh dưỡng', 'ăn ngon', 'thực phẩm', 'ăn kiêng'],
       subcategories: [
-        { name: 'Ăn ngon khỏe', slug: 'an-ngon-khoe', icon: 'assets/images/homepage/blogs/an_gi.jpg', count: 0, countKeywords: ['ăn ngon', 'thực đơn', 'món ăn', 'khỏe'] },
-        { name: 'Thực phẩm dinh dưỡng', slug: 'thuc-pham-dinh-duong', icon: 'assets/images/homepage/blogs/ngu_ngon.jpg', count: 0, countKeywords: ['thực phẩm', 'dinh dưỡng', 'vitamin', 'bổ sung'] },
-        { name: 'Chế độ ăn kiêng', slug: 'che-do-an-kieng', icon: 'assets/images/homepage/blogs/cam_cum.webp', count: 0, countKeywords: ['ăn kiêng', 'giảm cân', 'low carb', 'keto'] }
+        { name: 'Ăn ngon khỏe', slug: 'an-ngon-khoe', icon: 'assets/images/homepage/blogs/chung.webp', count: 0, countKeywords: ['ăn ngon', 'thực đơn', 'món ăn', 'khỏe'] },
+        { name: 'Thực phẩm dinh dưỡng', slug: 'thuc-pham-dinh-duong', icon: 'assets/images/homepage/blogs/chung.webp', count: 0, countKeywords: ['thực phẩm', 'dinh dưỡng', 'vitamin', 'bổ sung'] },
+        { name: 'Chế độ ăn kiêng', slug: 'che-do-an-kieng', icon: 'assets/images/homepage/blogs/chung.webp', count: 0, countKeywords: ['ăn kiêng', 'giảm cân', 'low carb', 'keto'] }
       ]
     },
     {
@@ -234,8 +234,8 @@ export class BlogCategory implements OnInit {
     const categoryName = this.currentCategoryItems.name;
 
     this.currentCategoryItems.subcategories.forEach((sub: any) => {
-      const kw = (sub.countKeywords && sub.countKeywords.length ? sub.countKeywords : [sub.name]).join(',');
-      const url = `${base}?limit=1&page=1&category=${encodeURIComponent(categoryName)}&keywords=${encodeURIComponent(kw)}`;
+      // Đếm đúng theo subcategory để đồng nhất với danh sách bài khi click vào từng ô con.
+      const url = `${base}?limit=1&page=1&category=${encodeURIComponent(categoryName)}&subcategory=${encodeURIComponent(sub.name)}`;
 
       this.http.get<any>(url).subscribe({
         next: (res) => {

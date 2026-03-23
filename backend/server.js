@@ -11846,6 +11846,34 @@ app.get('/api/admin/users', async (req, res) => {
       ordersMap[String(row._id)] = Number(row.total_orders) || 0;
     });
 
+    const userIds = users
+      .map((u) => String(u.user_id || u._id || '').trim())
+      .filter(Boolean);
+
+    const addressMap = {};
+    if (userIds.length > 0) {
+      const addressDocs = await addressesCollection()
+        .find({
+          $or: [
+            { user_id: { $in: userIds } },
+            { userId: { $in: userIds } }
+          ]
+        })
+        .sort({ isDefault: -1, createdAt: 1 })
+        .toArray();
+
+      for (const addr of addressDocs) {
+        const key = String(addr.user_id || addr.userId || '').trim();
+        if (!key || addressMap[key]) continue;
+        const fullAddress = String(
+          addr.fullAddress ||
+          [addr.detail, addr.ward, addr.district, addr.province].filter(Boolean).join(', ')
+        ).trim();
+        if (!fullAddress) continue;
+        addressMap[key] = fullAddress;
+      }
+    }
+
     // 3. Gán lại totalspent + tiering cho từng user (và đồng bộ vào DB)
     const bulkOps = [];
     const data = users.map((u) => {
@@ -11869,7 +11897,8 @@ app.get('/api/admin/users', async (req, res) => {
         ...u,
         totalspent: finalTotal,
         tiering,
-        total_orders
+        total_orders,
+        defaultAddress: addressMap[uid] || ''
       };
     });
 

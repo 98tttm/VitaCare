@@ -215,7 +215,12 @@ export class Blog implements OnInit {
   }
 
   private normalizeBlog(b: any): BlogItem {
-    const categoryName = b.category?.name || b.categoryName || 'Góc sức khoẻ';
+    const categoryName =
+      (Array.isArray(b.categories) && b.categories[0]?.name) ||
+      b.category?.name ||
+      (typeof b.category === 'string' ? b.category : '') ||
+      b.categoryName ||
+      'Góc sức khoẻ';
     const slugRaw = (b.slug || b.url || '')?.trim();
     const idStr = b._id != null ? String(b._id) : '';
     const slug = this.normalizeSlug(slugRaw || '') || idStr;
