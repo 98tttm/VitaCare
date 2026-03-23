@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject, HostListener, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, HostListener, ChangeDetectorRef, DestroyRef, ElementRef, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConsultationService } from '../services/consultation.service';
@@ -15,7 +15,11 @@ import { catchError } from 'rxjs/operators';
   templateUrl: './consultationprescription.html',
   styleUrl: './consultationprescription.css',
 })
-export class Consultationprescription implements OnInit {
+export class Consultationprescription implements OnInit, OnDestroy {
+  @ViewChild('consultationPrescriptionRoot') consultationPrescriptionRoot?: ElementRef<HTMLElement>;
+  @ViewChild('prescriptionDetailModalPortal') prescriptionDetailModalPortal?: ElementRef<HTMLDivElement>;
+  @ViewChild('statusDialogPortal') statusDialogPortal?: ElementRef<HTMLDivElement>;
+  @ViewChild('outcomeDialogPortal') outcomeDialogPortal?: ElementRef<HTMLDivElement>;
   prescriptions: any[] = [];
   filteredPrescriptions: any[] = [];
   pharmacists: any[] = [];
@@ -90,8 +94,48 @@ export class Consultationprescription implements OnInit {
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private router: Router,
-    private destroyRef: DestroyRef
+    private destroyRef: DestroyRef,
+    @Inject(DOCUMENT) private document: Document
   ) { }
+
+  private attachPrescriptionModalToBody(): void {
+    const el = this.prescriptionDetailModalPortal?.nativeElement;
+    if (!el || el.parentElement === this.document.body) return;
+    this.document.body.appendChild(el);
+  }
+
+  private restorePrescriptionModalFromBody(): void {
+    const el = this.prescriptionDetailModalPortal?.nativeElement;
+    const host = this.consultationPrescriptionRoot?.nativeElement;
+    if (!el || !host || el.parentElement !== this.document.body) return;
+    host.appendChild(el);
+  }
+
+  private attachStatusDialogToBody(): void {
+    const el = this.statusDialogPortal?.nativeElement;
+    if (!el || el.parentElement === this.document.body) return;
+    this.document.body.appendChild(el);
+  }
+
+  private restoreStatusDialogFromBody(): void {
+    const el = this.statusDialogPortal?.nativeElement;
+    const host = this.consultationPrescriptionRoot?.nativeElement;
+    if (!el || !host || el.parentElement !== this.document.body) return;
+    host.appendChild(el);
+  }
+
+  private attachOutcomeDialogToBody(): void {
+    const el = this.outcomeDialogPortal?.nativeElement;
+    if (!el || el.parentElement === this.document.body) return;
+    this.document.body.appendChild(el);
+  }
+
+  private restoreOutcomeDialogFromBody(): void {
+    const el = this.outcomeDialogPortal?.nativeElement;
+    const host = this.consultationPrescriptionRoot?.nativeElement;
+    if (!el || !host || el.parentElement !== this.document.body) return;
+    host.appendChild(el);
+  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -107,6 +151,12 @@ export class Consultationprescription implements OnInit {
         this.syncFocusFromRoute();
         this.loadData();
       });
+  }
+
+  ngOnDestroy(): void {
+    this.restoreOutcomeDialogFromBody();
+    this.restoreStatusDialogFromBody();
+    this.restorePrescriptionModalFromBody();
   }
 
   private syncFocusFromRoute(): void {
@@ -840,9 +890,14 @@ export class Consultationprescription implements OnInit {
     this.editedPharmacistId = String(pid || '').trim();
     this.showPharmacistAssignDropdown = false;
     this.isModalOpen = true;
+    this.cdr.detectChanges();
+    setTimeout(() => this.attachPrescriptionModalToBody(), 0);
   }
 
   closeModal() {
+    this.restoreOutcomeDialogFromBody();
+    this.restoreStatusDialogFromBody();
+    this.restorePrescriptionModalFromBody();
     this.statusDialog.show = false;
     this.unreachableOutcomeDialog.show = false;
     this.isModalOpen = false;
@@ -1086,8 +1141,9 @@ export class Consultationprescription implements OnInit {
   get primaryButtonLabel(): string {
     if (!this.selectedPrescription) return 'Lưu';
     if (this.isAdmin) return 'Phân công';
-    if (this.selectedPrescription.status === 'pending') return 'Gửi yêu cầu';
-    if (this.selectedPrescription.status === 'waiting') return 'Cập nhật trạng thái';
+    const status = String(this.selectedPrescription.status || '').trim().toLowerCase();
+    if (status === 'pending') return 'Gửi yêu cầu';
+    if (status === 'waiting') return 'Cập nhật trạng thái';
     return 'Lưu thay đổi';
   }
 
@@ -1100,13 +1156,20 @@ export class Consultationprescription implements OnInit {
       return;
     }
 
-    // Với trạng thái "Đang tư vấn" thì hỏi tiếp Đã liên hệ / Chưa thể liên hệ
-    if (this.selectedPrescription.status === 'waiting') {
+    const status = String(this.selectedPrescription.status || '').trim().toLowerCase();
+
+    // Dược sĩ: với đơn "Chờ xử lý" hoặc "Đang tư vấn" đều mở popup xác nhận trạng thái tư vấn.
+    if (
+      status === 'pending' ||
+      status === 'waiting'
+    ) {
       this.statusDialog.show = true;
+      this.cdr.detectChanges();
+      setTimeout(() => this.attachStatusDialogToBody(), 0);
       return;
     }
 
-    if (this.selectedPrescription.status === 'unreachable') {
+    if (status === 'unreachable') {
       this.showNotification(
         'Vui lòng dùng nút "Liên lạc lại" để ghi nhận và cập nhật kết quả.',
         'warning'
@@ -1115,9 +1178,9 @@ export class Consultationprescription implements OnInit {
     }
 
     if (
-      this.selectedPrescription.status === 'advised' ||
-      this.selectedPrescription.status === 'cancelled' ||
-      this.selectedPrescription.status === 'consultation_failed'
+      status === 'advised' ||
+      status === 'cancelled' ||
+      status === 'consultation_failed'
     ) {
       this.showNotification('Đơn đã kết thúc. Không cần cập nhật thêm.', 'warning');
       return;
@@ -1128,17 +1191,20 @@ export class Consultationprescription implements OnInit {
   }
 
   closeStatusDialog() {
+    this.restoreStatusDialogFromBody();
     this.statusDialog.show = false;
   }
 
   markAsContacted() {
     if (!this.selectedPrescription) return;
+    this.restoreStatusDialogFromBody();
     this.statusDialog.show = false;
     this.savePrescription('advised', 'Đơn thuốc đã được cập nhật sang trạng thái Đã tư vấn.');
   }
 
   markAsUnreachable() {
     if (!this.selectedPrescription) return;
+    this.restoreStatusDialogFromBody();
     this.statusDialog.show = false;
     this.savePrescription('unreachable', 'Đơn thuốc đã được cập nhật sang trạng thái Chưa thể liên hệ.');
   }
@@ -1158,20 +1224,25 @@ export class Consultationprescription implements OnInit {
     }
 
     this.unreachableOutcomeDialog.show = true;
+    this.cdr.detectChanges();
+    setTimeout(() => this.attachOutcomeDialogToBody(), 0);
   }
 
   closeUnreachableOutcomeDialog(): void {
+    this.restoreOutcomeDialogFromBody();
     this.unreachableOutcomeDialog.show = false;
   }
 
   unreachableOutcomeComplete(): void {
     if (!this.selectedPrescription) return;
+    this.restoreOutcomeDialogFromBody();
     this.unreachableOutcomeDialog.show = false;
     this.savePrescription('advised', 'Đã cập nhật: Hoàn thành tư vấn.');
   }
 
   unreachableOutcomeFailed(): void {
     if (!this.selectedPrescription) return;
+    this.restoreOutcomeDialogFromBody();
     this.unreachableOutcomeDialog.show = false;
     this.savePrescription('consultation_failed', 'Đã đánh dấu tư vấn thất bại (không liên lạc được sau lần 2).');
   }

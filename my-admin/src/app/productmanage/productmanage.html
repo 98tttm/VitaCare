@@ -544,7 +544,7 @@
     </div>
 
     <!-- Add/Edit Product Modal -->
-    <div class="modal-wrapper" *ngIf="isProductModalOpen">
+    <div #productModalPortal class="modal-wrapper pm-product-modal-wrap" *ngIf="isProductModalOpen">
         <div class="modal-backdrop" (click)="closeProductModal()"></div>
         <div class="modal-content-wrapper modal-lg pm-product-modal">
             <div class="modal-header">
@@ -789,6 +789,9 @@
                 <button type="button" class="btn btn-cancel-light" (click)="closeProductModal()">
                     ĐÓNG
                 </button>
+                <button type="button" class="btn btn-preview-light" (click)="openProductQuickPreview()">
+                    XEM TRƯỚC
+                </button>
                 <button type="button" class="btn btn-submit-premium" (click)="startDetailEdit()">
                     CHỈNH SỬA THÔNG TIN
                 </button>
@@ -806,8 +809,12 @@
         </div>
     </div>
 
+    <div #productQuickViewPortal>
+        <app-product-quick-view></app-product-quick-view>
+    </div>
+
     <!-- Delete Confirmation Modal -->
-    <div class="modal-wrapper" *ngIf="isConfirmModalOpen">
+    <div class="modal-wrapper pm-confirm-modal-wrap" *ngIf="isConfirmModalOpen">
         <div class="modal-backdrop" (click)="closeConfirmModal()"></div>
         <div class="modal-content-wrapper compact">
             <div class="modal-header compact-header"
@@ -825,7 +832,7 @@
             </div>
             <div class="modal-footer compact-footer" style="background: transparent; border-top: none;">
                 <button type="button" class="btn btn-cancel" (click)="closeConfirmModal()">
-                    <i class="bi bi-x"></i> Hủy
+                    Hủy
                 </button>
                 <button type="button" class="btn btn-danger" (click)="confirmDelete()"
                     style="background-color: var(--color-danger); color: white;">Xóa ngay</button>

@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductGallery } from '../product-gallery/product-gallery';
 import { ProductInfoSummary } from '../product-info-summary/product-info-summary';
-import { QuickViewService } from '../../../core/services/quick-view.service';
-import { ProductService } from '../../../core/services/product.service';
+import { QuickViewService } from '../../core/services/quick-view.service';
+import { ProductService } from '../../core/services/product.service';
 
 @Component({
   selector: 'app-product-quick-view',

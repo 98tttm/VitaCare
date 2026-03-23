@@ -5,11 +5,12 @@ import {
   AfterViewInit,
   Inject,
   HostListener,
+  effect,
   ChangeDetectorRef,
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, DatePipe, DOCUMENT } from '@angular/common';
 import { ProductService } from '../services/product.service';
 import { FormsModule } from '@angular/forms';
 import { QuillEditorComponent } from 'ngx-quill';
@@ -20,6 +21,8 @@ import { getProductCategoryIconSrc } from './productmanage-icon';
 import { AdminMascotLoadingComponent } from '../shared/admin-mascot-loading/admin-mascot-loading.component';
 import { VcFlatpickrDirective } from '../shared/vc-flatpickr/vc-flatpickr.directive';
 import { VcSearchableSelectComponent } from '../shared/vc-searchable-select/vc-searchable-select.component';
+import { ProductQuickView } from '../product-quick-view/product-quick-view';
+import { QuickViewService } from '../../core/services/quick-view.service';
 
 /** Khóa sắp xếp trong UI (map sang field Mongo khi gọi API) */
 type SortKind = 'updated' | 'price' | 'name' | 'stock' | 'sold';
@@ -55,16 +58,21 @@ interface Product {
     AdminMascotLoadingComponent,
     VcFlatpickrDirective,
     VcSearchableSelectComponent,
+    ProductQuickView,
   ],
   providers: [ProductService],
   templateUrl: './productmanage.html',
   styleUrl: './productmanage.css',
 })
 export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
+  private readonly quickPreviewOpenBodyClass = 'pm-quick-preview-open';
   products: Product[] = [];
   filteredProducts: Product[] = [];
   searchTerm: string = '';
   @ViewChild('productManageRoot', { read: ElementRef }) private productManageRoot?: ElementRef<HTMLElement>;
+  @ViewChild('productModalPortal') productModalPortal?: ElementRef<HTMLDivElement>;
+  @ViewChild('productPreviewModalPortal') productPreviewModalPortal?: ElementRef<HTMLDivElement>;
+  @ViewChild('productQuickViewPortal') productQuickViewPortal?: ElementRef<HTMLDivElement>;
   @ViewChild('pmStickyNavBar', { read: ElementRef }) private pmStickyNavBar?: ElementRef<HTMLElement>;
   @ViewChild('pmTableHeadHScroll') pmTableHeadHScroll?: ElementRef<HTMLElement>;
   @ViewChild('pmTableBodyHScroll') pmTableBodyHScroll?: ElementRef<HTMLElement>;
@@ -95,6 +103,8 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
 
   // Modal State
   isProductModalOpen: boolean = false;
+  isPreviewModalOpen: boolean = false;
+  previewSelectedImage: string = '';
   isEditMode: boolean = false;
   currentProductId: string | null = null;
   /** Mở từ bảng/thẻ (xem chi tiết): form khóa; toolbar "Chỉnh sửa" → mở khóa ngay */
@@ -115,6 +125,18 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
   /** Form chi tiết đang ở chế độ chỉ xem (chưa bấm Chỉnh sửa thông tin) */
   get productModalFieldsLocked(): boolean {
     return this.isEditMode && this.isDetailViewLocked;
+  }
+
+  get previewProduct(): any {
+    return this.newProduct || null;
+  }
+
+  get selectedCategoryPathLabel(): string {
+    const names: string[] = [];
+    if (this.modalL1Id && this.categoryMap[this.modalL1Id]?.name) names.push(this.categoryMap[this.modalL1Id].name);
+    if (this.modalL2Id && this.categoryMap[this.modalL2Id]?.name) names.push(this.categoryMap[this.modalL2Id].name);
+    if (this.modalL3Id && this.categoryMap[this.modalL3Id]?.name) names.push(this.categoryMap[this.modalL3Id].name);
+    return names.join(' / ');
   }
 
   // Delete Modal State
@@ -284,8 +306,54 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     @Inject(ProductService) private productService: ProductService,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+    private quickViewService: QuickViewService,
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    effect(() => {
+      const isOpen = this.quickViewService.visible();
+      this.document.body.classList.toggle(this.quickPreviewOpenBodyClass, !!isOpen);
+    });
+  }
+
+  private attachProductModalToBody(): void {
+    const el = this.productModalPortal?.nativeElement;
+    if (!el || el.parentElement === this.document.body) return;
+    this.document.body.appendChild(el);
+  }
+
+  private attachProductPreviewModalToBody(): void {
+    const el = this.productPreviewModalPortal?.nativeElement;
+    if (!el || el.parentElement === this.document.body) return;
+    this.document.body.appendChild(el);
+  }
+
+  private restoreProductModalFromBody(): void {
+    const el = this.productModalPortal?.nativeElement;
+    const host = this.productManageRoot?.nativeElement;
+    if (!el || !host || el.parentElement !== this.document.body) return;
+    host.appendChild(el);
+  }
+
+  private restoreProductPreviewModalFromBody(): void {
+    const el = this.productPreviewModalPortal?.nativeElement;
+    const host = this.productManageRoot?.nativeElement;
+    if (!el || !host || el.parentElement !== this.document.body) return;
+    host.appendChild(el);
+  }
+
+  private attachQuickViewHostToBody(): void {
+    const el = this.productQuickViewPortal?.nativeElement;
+    if (!el || el.parentElement === this.document.body) return;
+    this.document.body.appendChild(el);
+  }
+
+  private restoreQuickViewHostFromBody(): void {
+    const el = this.productQuickViewPortal?.nativeElement;
+    const host = this.productManageRoot?.nativeElement;
+    if (!el || !host || el.parentElement !== this.document.body) return;
+    host.appendChild(el);
+  }
 
   /** Đóng panel Lọc khi chạm/click ra ngoài (class riêng — tránh nhầm với dropdown-container khác). */
   private closeFilterIfPointerOutside(target: EventTarget | null): void {
@@ -355,6 +423,7 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.attachQuickViewHostToBody();
     this.syncPmStickyChromeHeight();
     const bar = this.pmStickyNavBar?.nativeElement;
     if (bar && typeof ResizeObserver !== 'undefined') {
@@ -364,6 +433,10 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.document.body.classList.remove(this.quickPreviewOpenBodyClass);
+    this.restoreQuickViewHostFromBody();
+    this.restoreProductPreviewModalFromBody();
+    this.restoreProductModalFromBody();
     this.pmStickyNavResizeObserver?.disconnect();
     this.pmStickyNavResizeObserver = null;
     this.cancelCloseMega();
@@ -1438,6 +1511,8 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
     this.isSavingProduct = false;
     this.resetForm();
     this.isProductModalOpen = true;
+    this.cdr.detectChanges();
+    setTimeout(() => this.attachProductModalToBody(), 0);
   }
 
   /**
@@ -1502,7 +1577,11 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
           this.currentProductId = id;
           this.isDetailViewLocked = startLocked;
           this.isProductModalOpen = true;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.attachProductModalToBody();
+            this.cdr.markForCheck();
+          }, 0);
         }
       },
       error: () => {
@@ -1559,12 +1638,53 @@ export class Productmanage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   closeProductModal() {
+    this.closeProductQuickPreview();
+    this.restoreProductModalFromBody();
     this.isProductModalOpen = false;
     this.isDetailViewLocked = false;
     this.detailFormSnapshot = null;
     this.isSavingProduct = false;
     this.restockQty = null;
     this.cdr.markForCheck();
+  }
+
+  openProductQuickPreview(): void {
+    const product = this.previewProduct;
+    if (!product) return;
+    this.attachQuickViewHostToBody();
+    this.cdr.detectChanges();
+    setTimeout(() => this.quickViewService.open(product), 0);
+  }
+
+  closeProductQuickPreview(): void {
+    this.restoreProductPreviewModalFromBody();
+    this.isPreviewModalOpen = false;
+    this.previewSelectedImage = '';
+  }
+
+  onPreviewBackdropClick(event: MouseEvent): void {
+    if ((event.target as HTMLElement).classList.contains('pm-preview-overlay')) {
+      this.closeProductQuickPreview();
+    }
+  }
+
+  getPreviewImages(product: any): string[] {
+    if (!product) return [];
+    const gallery = Array.isArray(product.gallery) ? product.gallery : [];
+    const first = product.image ? [product.image] : [];
+    return Array.from(new Set([...first, ...gallery].filter((u) => typeof u === 'string' && u.trim() !== '')));
+  }
+
+  getPrimaryPreviewImage(product: any): string {
+    const imgs = this.getPreviewImages(product);
+    return imgs.length > 0 ? imgs[0]! : '';
+  }
+
+  getPreviewDetailUrl(product: any): string {
+    const id = String(product?._id ?? '').trim();
+    const slug = String(product?.slug ?? '').trim();
+    const key = slug || id;
+    return key ? `http://localhost:56552/product/${key}` : 'http://localhost:56552/';
   }
 
   openProductDetail(product: any, event: MouseEvent) {

@@ -793,15 +793,16 @@ input[type="checkbox"] {
 
 /* MODAL STYLES */
 .modal-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: fixed !important;
+    inset: 0;
     width: 100vw;
     height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    padding: 16px;
+    z-index: 2147483646 !important;
 }
 
 .modal-backdrop {
@@ -814,7 +815,7 @@ input[type="checkbox"] {
 
 .modal-content-wrapper {
     position: relative;
-    z-index: 2001;
+    z-index: 2147483647 !important;
     background-color: var(--color-bg-secondary);
     width: 600px;
     max-width: 90%;
@@ -839,7 +840,7 @@ input[type="checkbox"] {
 }
 
 .modal-content-wrapper.modal-lg {
-    width: 800px;
+    width: min(700px, 92vw);
     border-radius: 18px;
     overflow: hidden;
 }

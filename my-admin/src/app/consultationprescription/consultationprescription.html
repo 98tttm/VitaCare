@@ -1,4 +1,4 @@
-<div class="container page-container consultation-prescription-container">
+<div #consultationPrescriptionRoot class="container page-container consultation-prescription-container">
     <!-- Breadcrumb -->
     <div class="breadcrumb text-sm mb-1 font-medium" style="color: var(--color-neutral-60);">
         Quản lý Tư vấn <span class="mx-1">/</span>
@@ -302,7 +302,7 @@
         </table>
     </div>
     <!-- Modal -->
-    <div class="modal-wrapper" *ngIf="isModalOpen">
+    <div #prescriptionDetailModalPortal class="modal-wrapper" *ngIf="isModalOpen">
         <div class="modal-backdrop" (click)="closeModal()"></div>
         <div class="modal-content" [class.modal-content--view-only]="isAdminPharmacistAssignmentLocked">
             <div class="modal-header">
@@ -501,7 +501,7 @@
 </div>
 
     <!-- Dialog chọn trạng thái khi đang tư vấn -->
-    <div class="status-dialog-backdrop" *ngIf="statusDialog.show">
+    <div #statusDialogPortal class="status-dialog-backdrop" *ngIf="statusDialog.show">
         <div class="status-dialog-card">
             <h4 class="status-dialog-title">Cập nhật trạng thái đơn thuốc</h4>
             <p class="status-dialog-message">
@@ -521,7 +521,7 @@
     </div>
 
     <!-- Sau lần liên hệ thứ 2 (unreachable): hoàn thành vs thất bại -->
-    <div class="status-dialog-backdrop status-dialog-backdrop--outcome" *ngIf="unreachableOutcomeDialog.show">
+    <div #outcomeDialogPortal class="status-dialog-backdrop status-dialog-backdrop--outcome" *ngIf="unreachableOutcomeDialog.show">
         <div class="status-dialog-card">
             <h4 class="status-dialog-title">Kết quả sau lần liên hệ thứ hai</h4>
             <p class="status-dialog-message">

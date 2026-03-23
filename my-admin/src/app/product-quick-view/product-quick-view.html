@@ -1,0 +1,37 @@
+<div class="vc_modal_overlay" *ngIf="quickViewService.visible()" (click)="onBackdropClick($event)">
+    <div class="vc_modal_container" *ngIf="quickViewProduct as product">
+        <div class="vc_modal_header">
+            <h4 class="mb-0">THÔNG TIN SẢN PHẨM</h4>
+            <div class="vc_header_actions">
+                <a [routerLink]="['/product', getProductSlug(product)]" (click)="closeQuickView()"
+                    class="view-full-details-link-header">
+                    Xem chi tiết sản phẩm <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+                <button class="vc_close_btn" (click)="closeQuickView()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="vc_modal_body">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Left: Gallery (Sticky) -->
+                    <div class="col-lg-5 mb-4 mb-lg-0 vc_sticky_gallery" [style.zIndex]="isGalleryModalOpen ? 101 : 5">
+                        <app-product-gallery [product]="product" [selectedImage]="selectedImage"
+                            (imageSelected)="onImageSelected($event)"
+                            (modalToggled)="isGalleryModalOpen = $event"></app-product-gallery>
+                    </div>
+
+                    <!-- Right: Info Summary -->
+                    <div class="col-lg-7">
+                        <app-product-info-summary [quantity]="quickViewService.quantity()"
+                            (quantityChange)="onQuantityChange($event)" [product]="product">
+                        </app-product-info-summary>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

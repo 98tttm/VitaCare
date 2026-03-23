@@ -1,0 +1,544 @@
+/* ============================= */
+/* INLINE MODAL STYLES */
+/* ============================= */
+
+.vc_modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2147483647 !important;
+}
+
+.vc_modal_container {
+    background-color: #fff;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    border-radius: 16px;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: vc_slide_up 0.3s ease-out;
+    transition: max-width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.vc_modal_container.full-detail {
+    max-width: 1200px;
+    /* Wider for full info */
+}
+
+@keyframes vc_slide_up {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.vc_modal_header {
+    padding: 15px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 100;
+    /* Higher than gallery */
+}
+
+.vc_modal_header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #00589f;
+    letter-spacing: 0.5px;
+}
+
+.vc_close_btn {
+    background: #E5EEF8;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.vc_close_btn:hover {
+    background: #e0e0e0;
+    color: #ff4d4f;
+    transform: rotate(90deg);
+}
+
+.vc_header_actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vc_modal_body {
+    padding: 8px 24px 24px 24px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.vc_modal_body.full-scroll {
+    overflow-y: visible;
+    /* Use container scroll */
+}
+
+/* Strictly Fixed Gallery Column - Ensuring No Movement */
+.vc_sticky_gallery {
+    position: sticky;
+    top: 20px !important;
+    align-self: start;
+    z-index: 5;
+    height: fit-content;
+    margin-top: 15px;
+}
+
+/* Fix: Clear overlap from sticky header */
+:host ::ng-deep .vc_brand_origin_box {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+}
+
+/* Trending Bar - Balanced 2-line layout */
+:host ::ng-deep .vc_trending_bar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    font-size: 20px !important;
+    padding: 12px 20px !important;
+    margin-bottom: 12px !important;
+    background-color: #fff9db !important;
+    border: 1px solid #fff3bf !important;
+    border-radius: 8px !important;
+}
+
+:host ::ng-deep .vc_trending_stats {
+    padding-left: 20px !important;
+    color: #666 !important;
+    font-size: 14px !important;
+    margin-top: 2px !important;
+}
+
+/* Scaling child components and images */
+:host ::ng-deep app-product-gallery {
+    display: block;
+    max-width: 100%;
+}
+
+:host ::ng-deep .product-gallery-main {
+    max-height: 400px !important;
+    object-fit: contain !important;
+}
+
+:host ::ng-deep .product-name {
+    font-size: 1.1rem !important;
+    margin-bottom: 8px !important;
+    color: #111 !important;
+}
+
+/* Force VitaCare Brand Color for all blue info elements */
+:host ::ng-deep .text-primary,
+:host ::ng-deep a.text-primary,
+:host ::ng-deep .vc_meta_link {
+    color: #00589f !important;
+}
+
+/* Promotional Badges - Strictly One Line */
+:host ::ng-deep .vc_pd_footer_badges {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    margin-left: -5px !important;
+    padding-left: 0 !important;
+    width: 100% !important;
+}
+
+:host ::ng-deep .vc_badge_item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+}
+
+:host ::ng-deep .vc_badge_icon {
+    width: 30px !important;
+    height: 30px !important;
+    flex-shrink: 0 !important;
+}
+
+:host ::ng-deep .vc_badge_icon img {
+    width: 26px !important;
+    height: 26px !important;
+}
+
+:host ::ng-deep .vc_badge_text {
+    flex-shrink: 1 !important;
+}
+
+:host ::ng-deep .vc_badge_text strong {
+    font-size: 11px !important;
+    display: block !important;
+}
+
+:host ::ng-deep .vc_badge_text span {
+    font-size: 9.5px !important;
+    display: block !important;
+}
+
+.view-full-details-link-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    background-color: #00589f;
+    transition: all 0.2s;
+    border: 1px solid #00589f;
+    box-shadow: 0 2px 8px rgba(0, 88, 159, 0.2);
+}
+
+.view-full-details-link-header:hover {
+    background-color: #004a86;
+    border-color: #004a86;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 88, 159, 0.3);
+}
+
+/* Expanded Specific Sections */
+.vc_section_container {
+    background: #fff;
+    border-radius: 12px;
+}
+
+.vc_section_header h5 {
+    color: #00589f;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.vc_faq_question {
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.vc_faq_question:hover {
+    color: #00589f;
+}
+
+.vc_faq_answer {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Responsiveness for modal body */
+@media (max-width: 991px) {
+    .vc_modal_container {
+        width: 95%;
+    }
+
+    .vc_modal_body {
+        padding: 16px;
+    }
+
+    .vc_modal_container.full-detail {
+        max-width: 95%;
+    }
+}
+/* ============================= */
+/* INLINE MODAL STYLES */
+/* ============================= */
+
+.vc_modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2147483647 !important;
+}
+
+.vc_modal_container {
+    background-color: #fff;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    border-radius: 16px;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: vc_slide_up 0.3s ease-out;
+    transition: max-width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.vc_modal_container.full-detail {
+    max-width: 1200px;
+    /* Wider for full info */
+}
+
+@keyframes vc_slide_up {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.vc_modal_header {
+    padding: 15px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 100;
+    /* Higher than gallery */
+}
+
+.vc_modal_header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #00589f;
+    letter-spacing: 0.5px;
+}
+
+.vc_close_btn {
+    background: #E5EEF8;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.vc_close_btn:hover {
+    background: #e0e0e0;
+    color: #ff4d4f;
+    transform: rotate(90deg);
+}
+
+.vc_header_actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vc_modal_body {
+    padding: 8px 24px 24px 24px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.vc_modal_body.full-scroll {
+    overflow-y: visible;
+    /* Use container scroll */
+}
+
+/* Strictly Fixed Gallery Column - Ensuring No Movement */
+.vc_sticky_gallery {
+    position: sticky;
+    top: 20px !important;
+    align-self: start;
+    z-index: 5;
+    height: fit-content;
+    margin-top: 15px;
+}
+
+/* Fix: Clear overlap from sticky header */
+:host ::ng-deep .vc_brand_origin_box {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+}
+
+/* Trending Bar - Balanced 2-line layout */
+:host ::ng-deep .vc_trending_bar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    font-size: 20px !important;
+    padding: 12px 20px !important;
+    margin-bottom: 12px !important;
+    background-color: #fff9db !important;
+    border: 1px solid #fff3bf !important;
+    border-radius: 8px !important;
+}
+
+:host ::ng-deep .vc_trending_stats {
+    padding-left: 20px !important;
+    color: #666 !important;
+    font-size: 14px !important;
+    margin-top: 2px !important;
+}
+
+/* Scaling child components and images */
+:host ::ng-deep app-product-gallery {
+    display: block;
+    max-width: 100%;
+}
+
+:host ::ng-deep .product-gallery-main {
+    max-height: 400px !important;
+    object-fit: contain !important;
+}
+
+:host ::ng-deep .product-name {
+    font-size: 1.1rem !important;
+    margin-bottom: 8px !important;
+    color: #111 !important;
+}
+
+/* Force VitaCare Brand Color for all blue info elements */
+:host ::ng-deep .text-primary,
+:host ::ng-deep a.text-primary,
+:host ::ng-deep .vc_meta_link {
+    color: #00589f !important;
+}
+
+/* Promotional Badges - Strictly One Line */
+:host ::ng-deep .vc_pd_footer_badges {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    margin-left: -5px !important;
+    padding-left: 0 !important;
+    width: 100% !important;
+}
+
+:host ::ng-deep .vc_badge_item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+}
+
+:host ::ng-deep .vc_badge_icon {
+    width: 30px !important;
+    height: 30px !important;
+    flex-shrink: 0 !important;
+}
+
+:host ::ng-deep .vc_badge_icon img {
+    width: 26px !important;
+    height: 26px !important;
+}
+
+:host ::ng-deep .vc_badge_text {
+    flex-shrink: 1 !important;
+}
+
+:host ::ng-deep .vc_badge_text strong {
+    font-size: 11px !important;
+    display: block !important;
+}
+
+:host ::ng-deep .vc_badge_text span {
+    font-size: 9.5px !important;
+    display: block !important;
+}
+
+.view-full-details-link-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    background-color: #00589f;
+    transition: all 0.2s;
+    border: 1px solid #00589f;
+    box-shadow: 0 2px 8px rgba(0, 88, 159, 0.2);
+}
+
+.view-full-details-link-header:hover {
+    background-color: #004a86;
+    border-color: #004a86;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 88, 159, 0.3);
+}
+
+/* Expanded Specific Sections */
+.vc_section_container {
+    background: #fff;
+    border-radius: 12px;
+}
+
+.vc_section_header h5 {
+    color: #00589f;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.vc_faq_question {
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.vc_faq_question:hover {
+    color: #00589f;
+}
+
+.vc_faq_answer {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Responsiveness for modal body */
+@media (max-width: 991px) {
+    .vc_modal_container {
+        width: 95%;
+    }
+
+    .vc_modal_body {
+        padding: 16px;
+    }
+
+    .vc_modal_container.full-detail {
+        max-width: 95%;
+    }
+}

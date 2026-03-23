@@ -1,4 +1,4 @@
-<div class="container promotion-manage-container">
+<div #promotionManageRoot class="container promotion-manage-container">
     <!-- Breadcrumb -->
     <div class="breadcrumb text-sm mb-1 font-medium" style="color: var(--color-neutral-60);">
         Quản lý khuyến mãi <span class="mx-1">/</span>
@@ -258,7 +258,7 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal-wrapper" *ngIf="isDeleteConfirmModalOpen">
+    <div #promotionDeleteModalPortal class="modal-wrapper" *ngIf="isDeleteConfirmModalOpen">
         <div class="modal-backdrop" (click)="closeDeleteConfirmModal()"></div>
         <div class="modal-content-wrapper compact">
             <div class="modal-header compact-header">
@@ -280,7 +280,7 @@
     </div>
 
     <!-- Add/Edit Promotion Modal -->
-    <div class="modal-wrapper" *ngIf="isModalOpen">
+    <div #promotionModalPortal class="modal-wrapper" *ngIf="isModalOpen">
         <div class="modal-backdrop" (click)="closeModal()"></div>
         <div class="modal-content-wrapper modal-lg">
             <div class="modal-header">

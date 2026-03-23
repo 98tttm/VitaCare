@@ -129,3 +129,92 @@ select.form-control:hover,
     background-color: var(--vc-dropdown-hover-bg) !important;
     color: #0a0a0a !important;
 }
+
+/* Admin global modal/popup layer: centered + above header */
+body .modal-wrapper,
+body .modal-overlay,
+body .popup-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100dvh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    z-index: 2147483646 !important;
+}
+
+body .modal-wrapper > .modal-backdrop,
+body .modal-wrapper > .overlay,
+body .modal-overlay > .modal-backdrop,
+body .popup-overlay::before {
+    z-index: 0 !important;
+}
+
+body .modal-wrapper > .modal-content-wrapper,
+body .modal-wrapper > .modal-content,
+body .modal-overlay > .modal-content,
+body .popup-overlay > .popup-content {
+    position: relative !important;
+    z-index: 2147483647 !important;
+    max-height: min(88vh, 880px) !important;
+}
+
+/* Product manage detail popup: below preview overlay layer */
+body .modal-wrapper.pm-product-modal-wrap {
+    z-index: 2147483200 !important;
+}
+
+body .modal-wrapper.pm-product-modal-wrap > .modal-content-wrapper {
+    z-index: 2147483201 !important;
+}
+
+/* While quick preview is open, force product detail modal below it */
+body.pm-quick-preview-open .modal-wrapper.pm-product-modal-wrap {
+    z-index: 2147482000 !important;
+}
+
+body.pm-quick-preview-open .modal-wrapper.pm-product-modal-wrap > .modal-content-wrapper {
+    z-index: 2147482001 !important;
+}
+
+/* Keep other modal layers below product detail popup */
+body .modal-wrapper:not(.pm-product-modal-wrap) {
+    z-index: 2147483000 !important;
+}
+
+body .modal-wrapper:not(.pm-product-modal-wrap) > .modal-content-wrapper,
+body .modal-wrapper:not(.pm-product-modal-wrap) > .modal-content {
+    z-index: 2147483001 !important;
+}
+
+/* Keep admin popups a bit smaller on desktop */
+body .modal-wrapper > .modal-content-wrapper.modal-lg,
+body .modal-wrapper > .modal-content.modal-lg {
+    width: min(720px, 92vw) !important;
+    max-width: min(720px, 92vw) !important;
+}
+
+body .modal-wrapper > .modal-content-wrapper:not(.modal-lg):not(.compact):not(.grouping-modal):not(.customer-edit-modal),
+body .modal-wrapper > .modal-content:not(.modal-lg):not(.compact):not(.grouping-modal) {
+    max-width: min(760px, 92vw) !important;
+}
+
+/* Customer detail address modal also follows global layer rules */
+body .admin-addr-modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483646 !important;
+}
+
+body .admin-addr-modal {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: min(680px, 92vw) !important;
+    max-height: 88vh !important;
+    z-index: 2147483647 !important;
+}
