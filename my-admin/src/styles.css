@@ -6,3 +6,63 @@
 a {
     text-decoration: underline;
 }
+
+/* Admin dropdown/select unified style: white bg, black text, brand-blue hover */
+:root {
+    --vc-dropdown-brand: #00589f;
+    --vc-dropdown-hover-bg: rgba(0, 88, 159, 0.12);
+}
+
+/* Native selects used across admin screens */
+select,
+select.form-control,
+.form-control select {
+    background-color: #ffffff !important;
+    color: #0a0a0a !important;
+    border-color: var(--color-neutral-40, #e0e0e0) !important;
+}
+
+select:hover,
+select.form-control:hover,
+.form-control select:hover {
+    border-color: var(--vc-dropdown-brand) !important;
+    box-shadow: 0 0 0 2px var(--vc-dropdown-hover-bg) !important;
+}
+
+/* Shared custom dropdown panels/menus */
+.dropdown-popup,
+.dropdown-menu-multilevel,
+.dropdown-submenu,
+.sort-dropdown-menu,
+.target-panel,
+.customer-target-popup,
+.profile-dropdown,
+.export-menu {
+    background-color: #ffffff !important;
+    color: #0a0a0a !important;
+}
+
+/* Shared items in custom dropdowns */
+.dropdown-item,
+.dropdown-option,
+.sort-option-btn,
+.sort-row-label,
+.export-menu-item,
+.profile-dropdown li a,
+.target-toggle,
+.multi-select-item,
+.customer-target-popup .popup-list label {
+    color: #0a0a0a !important;
+}
+
+.dropdown-item:hover,
+.dropdown-option:hover,
+.sort-option-btn:hover,
+.sort-row-label:hover,
+.export-menu-item:hover,
+.profile-dropdown li a:hover,
+.multi-select-item:hover,
+.customer-target-popup .popup-list label:hover {
+    background-color: var(--vc-dropdown-hover-bg) !important;
+    color: #0a0a0a !important;
+}

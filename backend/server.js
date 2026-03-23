@@ -77,7 +77,7 @@ const DiseaseGroupModel = mongoose.model('disease_groups_metadata', genericSchem
 
 // --- CUSTOMER TIERING HELPERS ---
 /**
- * Tính tiering từ tổng tiền đã chi (chỉ tính đơn đã giao thành công).
+ * Tính tiering từ tổng tiền đã chi (chỉ tính đơn trạng thái unreview).
  * Ngưỡng mặc định (có thể chỉnh lại theo business):
  *  - < 3.000.000đ: Đồng
  *  - 3.000.000 – < 10.000.000đ: Bạc
@@ -88,6 +88,72 @@ function getTierFromTotalSpent(total) {
   if (t >= 10_000_000) return 'Vàng';
   if (t >= 3_000_000) return 'Bạc';
   return 'Đồng';
+}
+
+/** Chỉ tính totalspent/tiering từ các đơn ở trạng thái unreview. */
+const SUCCESS_ORDER_STATUSES_FOR_SPENDING = ['unreview'];
+
+function normalizeUserIdForSpending(raw) {
+  if (raw == null) return '';
+  return String(raw).trim();
+}
+
+/**
+ * Recompute totalspent + tiering từ toàn bộ đơn thành công của 1 user.
+ * Dùng khi đơn đổi trạng thái để tránh lệch tier theo thời gian.
+ */
+async function recomputeUserTotalSpentAndTier(rawUserId) {
+  const rawNorm = normalizeUserIdForSpending(rawUserId);
+  if (!rawNorm) return null;
+
+  const userQuery = [{ user_id: rawNorm }, { _id: rawNorm }];
+  if (mongoose.Types.ObjectId.isValid(rawNorm)) {
+    userQuery.push({ _id: new mongoose.Types.ObjectId(rawNorm) });
+  }
+  const userDoc = await usersCollection().findOne(
+    { $or: userQuery },
+    { projection: { user_id: 1, _id: 1 } }
+  );
+
+  const userId = normalizeUserIdForSpending(userDoc?.user_id || rawNorm);
+  const candidates = Array.from(new Set([
+    rawNorm,
+    userId,
+    normalizeUserIdForSpending(userDoc?._id),
+  ].filter(Boolean)));
+
+  const rows = await ordersCollection().aggregate([
+    { $match: { status: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
+    {
+      $addFields: {
+        user_id_norm: {
+          $trim: { input: { $toString: { $ifNull: ['$user_id', ''] } } }
+        }
+      }
+    },
+    { $match: { $expr: { $in: ['$user_id_norm', candidates] } } },
+    {
+      $group: {
+        _id: null,
+        totalspent: { $sum: { $ifNull: ['$totalAmount', 0] } }
+      }
+    }
+  ]).toArray();
+
+  const totalspent = Number(rows?.[0]?.totalspent) || 0;
+  const tiering = getTierFromTotalSpent(totalspent);
+  if (userDoc?._id != null) {
+    await usersCollection().updateOne(
+      { _id: userDoc._id },
+      { $set: { totalspent, tiering } },
+    );
+  } else {
+    await usersCollection().updateOne(
+      { user_id: userId },
+      { $set: { totalspent, tiering } },
+    );
+  }
+  return { user_id: userId, totalspent, tiering };
 }
 
 const app = express();
@@ -1636,6 +1702,15 @@ app.post('/api/orders', async (req, res) => {
       console.warn('[POST /api/orders] Cannot update stock or promotion usage:', e.message);
     }
 
+    // Đồng bộ totalspent/tiering ngay nếu đơn này đã ở trạng thái thành công.
+    if (uid && SUCCESS_ORDER_STATUSES_FOR_SPENDING.includes(String(orderDoc.status || '').toLowerCase())) {
+      try {
+        await recomputeUserTotalSpentAndTier(uid);
+      } catch (e) {
+        console.warn('[POST /api/orders] Cannot recompute customer spending:', e.message);
+      }
+    }
+
     // Tạo thông báo "đơn hàng mới" cho user (chỉ khi có user_id)
     if (uid) {
       try {
@@ -2085,6 +2160,15 @@ app.put('/api/orders/:id/cancel', async (req, res) => {
         inventoryReleased: true,
       },
     });
+    // Huỷ đơn sẽ ảnh hưởng totalspent/tiering nếu đơn trước đó từng được tính là thành công.
+    try {
+      const userId = doc.user_id || doc.userId;
+      if (userId) {
+        await recomputeUserTotalSpentAndTier(userId);
+      }
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/cancel] Cannot recompute customer spending:', e.message);
+    }
     // Tạo thông báo huỷ đơn hàng
     try {
       const userId = doc.user_id || doc.userId;
@@ -2189,6 +2273,16 @@ app.put('/api/orders/:id/confirm-received', async (req, res) => {
       },
     });
 
+    // "unreview" là đơn đã hoàn tất => cộng totalspent và xét lại tier ngay.
+    try {
+      const userId = doc.user_id || doc.userId;
+      if (userId) {
+        await recomputeUserTotalSpentAndTier(userId);
+      }
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/confirm-received] Cannot recompute customer spending:', e.message);
+    }
+
     // Tạo thông báo đã nhận hàng
     try {
       const userId = doc.user_id || doc.userId;
@@ -2245,6 +2339,15 @@ app.put('/api/orders/:id/confirm-returned', async (req, res) => {
         inventoryReleased: true,
       },
     });
+    // Hoàn trả đơn có thể làm giảm totalspent và đổi tier.
+    try {
+      const userId = doc.user_id || doc.userId;
+      if (userId) {
+        await recomputeUserTotalSpentAndTier(userId);
+      }
+    } catch (e) {
+      console.warn('[PUT /api/orders/:id/confirm-returned] Cannot recompute customer spending:', e.message);
+    }
 
     try {
       const user_id = doc.user_id || doc.userId || 'guest';
@@ -7811,6 +7914,33 @@ app.patch('/api/users/me', async (req, res) => {
   }
 });
 
+// GET /api/users/me?user_id=... - Lấy snapshot user mới nhất (không gồm mật khẩu)
+app.get('/api/users/me', async (req, res) => {
+  try {
+    const user_id = String(req.query?.user_id || '').trim();
+    if (!user_id) {
+      return res.status(400).json({ success: false, message: 'Thiếu user_id.' });
+    }
+
+    const query = [{ user_id }, { _id: user_id }];
+    if (mongoose.Types.ObjectId.isValid(user_id)) {
+      query.push({ _id: new mongoose.Types.ObjectId(user_id) });
+    }
+
+    const user = await usersCollection().findOne(
+      { $or: query },
+      { projection: { password: 0 } }
+    );
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Người dùng không tồn tại.' });
+    }
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error('Get profile error:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ.' });
+  }
+});
+
 // POST /api/users/me/upload-avatar — multipart giống KM: lưu Mongo + URL ngắn, tránh gửi base64 qua JSON
 app.post('/api/users/me/upload-avatar', uploadPromoBannerImage, async (req, res) => {
   try {
@@ -7935,98 +8065,117 @@ app.patch('/api/users/me/phone', async (req, res) => {
   }
 });
 
-// POST /api/chat - Chatbot tư vấn sức khỏe + gợi ý sản phẩm từ MongoDB (Gemini API)
+// POST /api/chat — VitaBot: ngữ cảnh MongoDB + Replicate (ưu tiên) hoặc Gemini (dự phòng)
+const vitabot = require('./vitabot-chat');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODEL = process.env.GEMINI_CHAT_MODEL || 'gemini-2.0-flash';
-
-const SYSTEM_PROMPT = `Bạn là VitaBot của VitaCare - nền tảng chăm sóc sức khỏe và dược phẩm.
-Nhiệm vụ:
-- Trả lời ngắn gọn, chính xác về sức khỏe, thuốc, thực phẩm chức năng (không kê đơn).
-- Khi người dùng hỏi mua gì, cần gợi ý sản phẩm, bạn sẽ được cung cấp danh sách sản phẩm thực từ kho VitaCare. Chỉ gợi ý sản phẩm có trong danh sách đó. Với mỗi sản phẩm gợi ý, hãy kèm link xem chi tiết dạng: /product/<slug> (ví dụ: /product/collagen-da).
-- Không thay thế bác sĩ; khuyến khích đến cơ sở y tế khi cần.
-Trả lời bằng tiếng Việt.`;
-
-/** Lấy danh sách sản phẩm từ MongoDB để đưa vào ngữ cảnh chatbot (tìm theo từ khóa hoặc lấy mới nhất) */
-async function getProductContextForChat(userMessage, maxProducts = 25) {
-  if (!mongoose.connection || !mongoose.connection.db) return '';
-  const col = productsCollection();
-  const catsCol = categoriesCollection();
-  let filter = {};
-  const trimmed = String(userMessage || '').trim();
-  const words = trimmed
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .split(/\s+/)
-    .filter((w) => w.length >= 2);
-  if (words.length > 0) {
-    filter.$or = words.slice(0, 5).map((w) => ({ name: { $regex: escapeRegExp(w), $options: 'i' } }));
-  }
-  const items = await col
-    .find(filter)
-    .sort({ _id: -1 })
-    .limit(maxProducts)
-    .project({ name: 1, price: 1, slug: 1, categoryId: 1 })
-    .toArray();
-  if (!items || items.length === 0) {
-    return '';
-  }
-  const categoryIds = [...new Set(items.map((p) => p.categoryId).filter(Boolean))];
-  const categoryMap = {};
-  if (categoryIds.length > 0) {
-    const cats = await catsCol.find({ _id: { $in: categoryIds } }).project({ _id: 1, name: 1 }).toArray();
-    cats.forEach((c) => {
-      const id = getId(c);
-      if (id) categoryMap[id] = c.name || '';
-    });
-  }
-  const lines = items.map((p) => {
-    const slug = p.slug || getId(p);
-    const price = p.price != null ? Number(p.price).toLocaleString('vi-VN') : 'Liên hệ';
-    const catIdStr = p.categoryId ? getId({ _id: p.categoryId }) : null;
-    const cat = catIdStr ? categoryMap[catIdStr] || '' : '';
-    return `- ${p.name || 'Sản phẩm'} | ${price}₫ | /product/${slug}${cat ? ` | ${cat}` : ''}`;
-  });
-  return `[Danh sách sản phẩm từ kho VitaCare (tên | giá | link | danh mục)]:\n${lines.join('\n')}`;
-}
-
-function buildGeminiContents(history, newMessage, productContext = '') {
-  const contents = [];
-  if (history && Array.isArray(history)) {
-    for (const turn of history) {
-      const role = turn.role === 'model' ? 'model' : 'user';
-      const text = turn.parts?.find((p) => p.text)?.text || turn.text || '';
-      if (text) contents.push({ role, parts: [{ text }] });
-    }
-  }
-  let userText = newMessage;
-  if (contents.length === 0) {
-    userText = `${SYSTEM_PROMPT}\n\n${productContext ? productContext + '\n\n' : ''}[Người dùng]: ${newMessage}`;
-  } else if (productContext) {
-    userText = `[Cập nhật danh sách sản phẩm gợi ý]\n${productContext}\n\n[Người dùng]: ${newMessage}`;
-  }
-  contents.push({ role: 'user', parts: [{ text: userText }] });
-  return contents;
-}
+const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN || '';
+const REPLICATE_MODEL = process.env.REPLICATE_MODEL || 'qwen/qwen3-235b-a22b-instruct-2507';
 
 app.post('/api/chat', async (req, res) => {
   try {
-    if (!GEMINI_API_KEY) {
-      return res.status(503).json({
-        success: false,
-        message: 'Chatbot tạm thời chưa khả dụng. Vui lòng cấu hình GEMINI_API_KEY trong môi trường.',
-      });
-    }
     const { message, history = [] } = req.body || {};
     const text = typeof message === 'string' ? message.trim() : '';
     if (!text) {
       return res.status(400).json({ success: false, message: 'Thiếu nội dung tin nhắn.' });
     }
+
+    const explicitProduct = vitabot.userExplicitlyWantsProductCatalog(text);
+    /** Chỉ đưa catalogue vào prompt sau vài lượt hoặc khi khách hỏi mua/gợi ý rõ — tránh gợi ý SP sau 1 câu */
+    const includeProductCatalog = explicitProduct || history.length >= 4;
+
+    const frontendBase = (process.env.FRONTEND_URL || 'http://localhost:4200').replace(/\/$/, '');
+    const systemPrompt =
+      vitabot.getVitabotSystemPrompt(frontendBase) +
+      vitabot.getTriageInstructionSuffix({
+        historyLength: history.length,
+        catalogIncluded: includeProductCatalog,
+        explicitProductRequest: explicitProduct,
+      });
+
     let productContext = '';
-    try {
-      productContext = await getProductContextForChat(text, 25);
-    } catch (e) {
-      console.warn('[POST /api/chat] getProductContextForChat error:', e.message);
+    let storeContext = '';
+    let blogContext = '';
+    if (includeProductCatalog) {
+      try {
+        productContext = await vitabot.getProductContextForChat(
+          { productsCollection, categoriesCollection },
+          text,
+          25
+        );
+      } catch (e) {
+        console.warn('[POST /api/chat] getProductContextForChat error:', e.message);
+      }
     }
-    const contents = buildGeminiContents(history, text, productContext);
+    try {
+      storeContext = await vitabot.getStoreContextForChat(storeSystemCollection, 40);
+    } catch (e) {
+      console.warn('[POST /api/chat] getStoreContextForChat error:', e.message);
+    }
+    try {
+      blogContext = await vitabot.getVitaCareKnowledgeContext({
+        db: mongoose.connection?.db || null,
+        baseUrl: frontendBase,
+        maxBlogItems: 20,
+      });
+    } catch (e) {
+      console.warn('[POST /api/chat] getVitaCareKnowledgeContext error:', e.message);
+    }
+
+    const sendChatSuccess = async (replyText) => {
+      const replyAbsolutized = vitabot.absolutizeVitabotLinks(replyText, frontendBase);
+      let products = [];
+      try {
+        products = await vitabot.enrichProductCardsFromReply(replyAbsolutized, productsCollection);
+      } catch (e) {
+        console.warn('[POST /api/chat] enrichProductCardsFromReply:', e.message);
+      }
+      res.json({ success: true, reply: replyAbsolutized, products });
+    };
+
+    if (REPLICATE_API_TOKEN) {
+      try {
+        const reply = await vitabot.runReplicateChat({
+          token: REPLICATE_API_TOKEN,
+          model: REPLICATE_MODEL,
+          history,
+          message: text,
+          productContext,
+          storeContext,
+          blogContext,
+          systemPrompt,
+        });
+        await sendChatSuccess(reply);
+        return;
+      } catch (repErr) {
+        const detail = String(repErr?.message || repErr || 'unknown').slice(0, 500);
+        console.error('[POST /api/chat] Replicate error:', detail);
+        if (!GEMINI_API_KEY) {
+          return res.status(502).json({
+            success: false,
+            message: `Replicate: ${detail}`,
+          });
+        }
+        console.warn('[POST /api/chat] Fallback sang Gemini sau lỗi Replicate.');
+      }
+    }
+
+    if (!GEMINI_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        message:
+          'Chatbot chưa cấu hình. Thêm REPLICATE_API_TOKEN (Replicate) hoặc GEMINI_API_KEY (Google AI) trong backend/.env.',
+      });
+    }
+
+    const contents = vitabot.buildGeminiContents(
+      history,
+      text,
+      productContext,
+      storeContext,
+      blogContext,
+      systemPrompt
+    );
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
     const payload = {
       contents: contents.map((c) => ({ role: c.role, parts: c.parts })),
@@ -8060,7 +8209,7 @@ app.post('/api/chat', async (req, res) => {
       } else if (response.status === 429) {
         userMsg = 'Vượt giới hạn gọi API. Vui lòng thử lại sau.';
       } else if (errMsg && typeof errMsg === 'string' && errMsg.length < 120) {
-        userMsg = errMsg; /* trả về lỗi từ Gemini nếu ngắn gọn */
+        userMsg = errMsg;
       }
       return res.status(response.status >= 500 ? 502 : 400).json({
         success: false,
@@ -8070,7 +8219,7 @@ app.post('/api/chat', async (req, res) => {
     const candidate = data?.candidates?.[0];
     const part = candidate?.content?.parts?.[0];
     const replyText = part?.text?.trim() || 'Xin lỗi, tôi chưa trả lời được. Bạn thử hỏi lại nhé.';
-    res.json({ success: true, reply: replyText });
+    await sendChatSuccess(replyText);
   } catch (err) {
     console.error('[POST /api/chat] Error:', err);
     const msg = err.message || 'Lỗi máy chủ. Vui lòng thử lại.';
@@ -9071,6 +9220,18 @@ app.put('/api/admin/orders/:id', async (req, res) => {
     const data = await OrderModel.findOneAndUpdate({ $or: query }, body, { new: true });
     if (!data) return res.status(404).json({ success: false, message: 'Order not found' });
 
+    // Nếu trạng thái thay đổi, đồng bộ lại totalspent/tiering của khách hàng tương ứng.
+    if (newStatus && oldDoc && newStatus !== oldDoc.status) {
+      try {
+        const userId = data.user_id || oldDoc.user_id;
+        if (userId) {
+          await recomputeUserTotalSpentAndTier(userId);
+        }
+      } catch (e) {
+        console.warn('[PUT /api/admin/orders/:id] Cannot recompute customer spending:', e.message);
+      }
+    }
+
     // Lưu notice cho user khi admin thay đổi trạng thái đơn hàng
     if (newStatus && oldDoc && newStatus !== oldDoc.status) {
       const userId = data.user_id || oldDoc.user_id;
@@ -9844,10 +10005,18 @@ app.get('/api/admin/users', async (req, res) => {
 
     // 2. Aggregate tổng chi tiêu theo user_id chỉ với đơn đã giao thành công
     const spendingAgg = await OrderModel.aggregate([
-      { $match: { status: 'delivered' } },
+      { $match: { status: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
+      {
+        $addFields: {
+          user_id_norm: {
+            $trim: { input: { $toString: { $ifNull: ['$user_id', ''] } } }
+          }
+        }
+      },
+      { $match: { user_id_norm: { $ne: '' } } },
       {
         $group: {
-          _id: '$user_id',
+          _id: '$user_id_norm',
           totalspent: { $sum: { $ifNull: ['$totalAmount', 0] } }
         }
       }
@@ -9874,8 +10043,7 @@ app.get('/api/admin/users', async (req, res) => {
     const data = users.map((u) => {
       const uid = String(u.user_id || u._id || '');
       const aggSpent = spendingMap[uid] ?? 0;
-      const totalspent = typeof u.totalspent === 'number' ? u.totalspent : aggSpent;
-      const finalTotal = Math.max(totalspent, aggSpent);
+      const finalTotal = aggSpent;
       const tiering = getTierFromTotalSpent(finalTotal);
       const total_orders = ordersMap[uid] ?? 0;
 

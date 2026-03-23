@@ -316,11 +316,11 @@
 
                     <div class="form-group">
                         <label class="form-label">Loại khuyến mãi<span class="required-mark">*</span></label>
-                        <select class="form-control" [(ngModel)]="currentPromotion.type">
-                            <option value="customer">Khách hàng (Customer)</option>
-                            <option value="category">Danh mục (Category)</option>
-                            <option value="product">Sản phẩm (Product)</option>
-                        </select>
+                        <vc-searchable-select
+                            [(ngModel)]="currentPromotion.type"
+                            [options]="promotionTypeOptions"
+                            placeholder="Chọn loại khuyến mãi">
+                        </vc-searchable-select>
                     </div>
 
                     <!-- Target Customer (for Customer type) -->
@@ -521,18 +521,20 @@
 
                     <div class="form-group">
                         <label class="form-label">Phạm vi áp dụng<span class="required-mark">*</span></label>
-                        <select class="form-control" [(ngModel)]="currentPromotion.scope">
-                            <option value="order">Đơn hàng (giảm vào tiền hàng)</option>
-                            <option value="shipping">Vận chuyển (giảm vào phí ship)</option>
-                        </select>
+                        <vc-searchable-select
+                            [(ngModel)]="currentPromotion.scope"
+                            [options]="promotionScopeOptions"
+                            placeholder="Chọn phạm vi áp dụng">
+                        </vc-searchable-select>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Loại giảm giá<span class="required-mark">*</span></label>
-                        <select class="form-control" [(ngModel)]="currentPromotion.discount_type">
-                            <option value="amount">Số tiền</option>
-                            <option value="percent">Phần trăm (%)</option>
-                        </select>
+                        <vc-searchable-select
+                            [(ngModel)]="currentPromotion.discount_type"
+                            [options]="promotionDiscountTypeOptions"
+                            placeholder="Chọn loại giảm giá">
+                        </vc-searchable-select>
                     </div>
 
                     <div class="form-group">

@@ -41,6 +41,10 @@ export interface UserMeResponse {
 export class InfoApiService {
   constructor(private http: HttpClient) {}
 
+  getMe(user_id: string): Observable<UserMeResponse> {
+    return this.http.get<UserMeResponse>(`${API}/users/me`, { params: { user_id } });
+  }
+
   updateProfile(payload: UpdateProfilePayload): Observable<UserMeResponse> {
     return this.http.patch<UserMeResponse>(`${API}/users/me`, payload);
   }

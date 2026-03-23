@@ -6,6 +6,7 @@ import { OrderService } from '../services/order.service';
 import { ProductService } from '../services/product.service';
 import { CustomerService } from '../services/customer.service';
 import { forkJoin } from 'rxjs';
+import { VcSearchableSelectComponent } from '../shared/vc-searchable-select/vc-searchable-select.component';
 
 interface Promotion {
   _id?: string;
@@ -44,12 +45,26 @@ export type PromotionSortKind = 'start_date' | 'end_date' | 'usage' | 'name' | '
 @Component({
   selector: 'app-promotionmanage',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, VcSearchableSelectComponent],
   providers: [PromotionService, OrderService, ProductService, CustomerService],
   templateUrl: './promotionmanage.html',
   styleUrl: './promotionmanage.css'
 })
 export class Promotionmanage implements OnInit {
+  readonly promotionTypeOptions = [
+    { value: 'customer', label: 'Khách hàng (Customer)' },
+    { value: 'category', label: 'Danh mục (Category)' },
+    { value: 'product', label: 'Sản phẩm (Product)' },
+  ];
+  readonly promotionScopeOptions = [
+    { value: 'order', label: 'Đơn hàng (giảm vào tiền hàng)' },
+    { value: 'shipping', label: 'Vận chuyển (giảm vào phí ship)' },
+  ];
+  readonly promotionDiscountTypeOptions = [
+    { value: 'amount', label: 'Số tiền' },
+    { value: 'percent', label: 'Phần trăm (%)' },
+  ];
+
   promotions: Promotion[] = [];
   filteredPromotions: Promotion[] = [];
   searchTerm: string = '';

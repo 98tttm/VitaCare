@@ -37,7 +37,7 @@ export function vcNormalizeVnSearch(s: string): string {
   ],
 })
 export class VcSearchableSelectComponent implements ControlValueAccessor {
-  @Input() options: { value: string; label: string }[] = [];
+  @Input() options: { value: any; label: string }[] = [];
   @Input() placeholder = '';
   @Input() filterPlaceholder = 'Gõ để tìm…';
   @Input() disabled = false;
@@ -47,23 +47,23 @@ export class VcSearchableSelectComponent implements ControlValueAccessor {
 
   @Output() readonly inputBlur = new EventEmitter<void>();
 
-  value = '';
+  value: any = '';
   filterText = '';
   open = false;
 
   /** Đóng panel sau blur ô combobox (tránh chọn option bị đóng sớm). */
   private vcBlurCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
-  private onChange: (v: string) => void = () => {};
+  private onChange: (v: any) => void = () => {};
   private onTouched: () => void = () => {};
 
   constructor(private host: ElementRef<HTMLElement>) {}
 
-  writeValue(v: string | null): void {
+  writeValue(v: any): void {
     this.value = v ?? '';
   }
 
-  registerOnChange(fn: (v: string) => void): void {
+  registerOnChange(fn: (v: any) => void): void {
     this.onChange = fn;
   }
 
@@ -76,12 +76,12 @@ export class VcSearchableSelectComponent implements ControlValueAccessor {
   }
 
   get selectedLabel(): string {
-    const o = this.options.find((x) => x.value === this.value);
+    const o = this.options.find((x) => Object.is(x.value, this.value));
     return o?.label ?? '';
   }
 
-  get filteredOptions(): { value: string; label: string }[] {
-    const raw = this.allowCustomValue ? this.value : this.filterText;
+  get filteredOptions(): { value: any; label: string }[] {
+    const raw = this.allowCustomValue ? String(this.value ?? '') : this.filterText;
     const q = vcNormalizeVnSearch(raw);
     if (!q) return this.options;
     return this.options.filter((o) =>
@@ -139,7 +139,7 @@ export class VcSearchableSelectComponent implements ControlValueAccessor {
     }
   }
 
-  selectOption(opt: { value: string; label: string }, ev: MouseEvent): void {
+  selectOption(opt: { value: any; label: string }, ev: MouseEvent): void {
     ev.stopPropagation();
     this.clearVcBlurTimer();
     this.value = opt.value;
@@ -148,7 +148,7 @@ export class VcSearchableSelectComponent implements ControlValueAccessor {
     this.filterText = '';
   }
 
-  onOptionMouseDown(opt: { value: string; label: string }, ev: MouseEvent): void {
+  onOptionMouseDown(opt: { value: any; label: string }, ev: MouseEvent): void {
     ev.preventDefault();
     this.selectOption(opt, ev);
   }

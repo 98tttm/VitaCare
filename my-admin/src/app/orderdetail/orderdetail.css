@@ -733,6 +733,50 @@
     letter-spacing: -0.02em;
 }
 
+/* --- Admin tạo đơn: chọn hình thức nhận hàng --- */
+.od-delivery-method {
+    margin-bottom: 14px;
+}
+
+.od-delivery-method__label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-primary, #0f172a);
+    margin-bottom: 8px;
+}
+
+.od-delivery-method__actions {
+    display: inline-flex;
+    gap: 8px;
+    padding: 4px;
+    border-radius: 999px;
+    background: #eef2ff;
+    border: 1px solid #dbe4ff;
+}
+
+.od-delivery-method__btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: #334155;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.od-delivery-method__btn:hover {
+    color: var(--color-primary, #3c4db5);
+    background: rgba(0, 88, 159, 0.08);
+}
+
+.od-delivery-method__btn--active {
+    color: #fff;
+    background: var(--color-primary, #3c4db5);
+    box-shadow: 0 4px 10px rgba(0, 88, 159, 0.2);
+}
+
 /* --- Chọn cửa hàng (dược sĩ) — đồng bộ my-user đặt hàng / nhận tại nhà thuốc --- */
 .order-pharmacy-section {
     margin-top: 8px;

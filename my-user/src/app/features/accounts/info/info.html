@@ -15,37 +15,99 @@
         (change)="onAvatarFileSelected($event)" aria-hidden="true" tabindex="-1">
 
       <!-- Khung: livestream; khi đã chụp thì ảnh phủ lên trên, Hủy sẽ bỏ ảnh và thấy lại livestream -->
-      <div class="avatar-modal-preview avatar-modal-preview--live">
-        <video #cameraVideo class="avatar-modal-video" playsinline muted></video>
-        @if (capturedImageUrl) {
-          <img [src]="capturedImageUrl" alt="Ảnh đã chụp" class="avatar-modal-preview-captured">
-        }
-        @if (cameraError && !capturedImageUrl) {
-          <div class="avatar-modal-preview-overlay">
-            <span class="avatar-modal-preview-overlay-text">{{ cameraError }}</span>
-            <button type="button" class="avatar-modal-btn avatar-modal-btn-retry" (click)="triggerAvatarCamera()">
-              Thử lại
+      @if (showAvatarCropper && cropImageSrc) {
+        <div
+          class="avatar-cropper-stage"
+          (mousedown)="onCropPointerDown($event)"
+          (mousemove)="onCropPointerMove($event)"
+          (mouseup)="onCropPointerUp()"
+          (mouseleave)="onCropPointerUp()"
+          (touchstart)="onCropPointerDown($event)"
+          (touchmove)="onCropPointerMove($event)"
+          (touchend)="onCropPointerUp()"
+        >
+          <img [src]="cropImageSrc" alt="Ảnh cần cắt" class="avatar-cropper-image" [style.transform]="getCropImageTransform()" />
+          <div class="avatar-cropper-mask"></div>
+          <div class="avatar-cropper-ring"></div>
+        </div>
+        <div class="avatar-cropper-zoom">
+          <label for="avatarZoomRange">Phóng to / Thu nhỏ</label>
+          <input
+            id="avatarZoomRange"
+            type="range"
+            [min]="cropMinScale"
+            [max]="cropMaxScale"
+            step="0.01"
+            [value]="cropScale"
+            (input)="onCropScaleInput($event)"
+          />
+        </div>
+        <div class="avatar-modal-actions">
+          <button type="button" class="avatar-modal-btn avatar-modal-btn-upload" (click)="closeAvatarCropper()">
+            <i class="bi bi-arrow-left"></i> Quay lại
+          </button>
+          <button type="button" class="avatar-modal-btn avatar-modal-btn-capture" (click)="confirmCropAvatar()">
+            <i class="bi bi-check-lg"></i> Lưu ảnh cắt
+          </button>
+        </div>
+      } @else if (showPresetAvatarPicker) {
+        <div class="preset-avatar-grid" role="listbox" aria-label="Danh sách avatar mặc định">
+          @for (avatar of presetAvatars; track avatar) {
+            <button
+              type="button"
+              class="preset-avatar-item"
+              [class.preset-avatar-item--selected]="selectedPresetAvatar === avatar"
+              (click)="selectPresetAvatar(avatar)"
+              [attr.aria-selected]="selectedPresetAvatar === avatar"
+            >
+              <img [src]="avatar" alt="Avatar mặc định" />
             </button>
-          </div>
-        }
-      </div>
-      <div class="avatar-modal-actions">
-        @if (capturedImageUrl) {
-          <button type="button" class="avatar-modal-btn avatar-modal-btn-capture" (click)="saveCapturedImage()">
-            <i class="bi bi-check-lg"></i> Lưu
+          }
+        </div>
+        <div class="avatar-modal-actions">
+          <button type="button" class="avatar-modal-btn avatar-modal-btn-upload" (click)="closePresetAvatarPicker()">
+            <i class="bi bi-arrow-left"></i> Quay lại chụp ảnh
           </button>
-          <button type="button" class="avatar-modal-btn avatar-modal-btn-upload" (click)="discardCapturedImage()">
-            <i class="bi bi-x-lg"></i> Hủy
+          <button type="button" class="avatar-modal-btn avatar-modal-btn-capture" (click)="savePresetAvatar()" [disabled]="!selectedPresetAvatar">
+            <i class="bi bi-crop"></i> Cắt avatar này
           </button>
-        } @else {
-          <button type="button" class="avatar-modal-btn avatar-modal-btn-upload" (click)="triggerAvatarUpload()">
-            <i class="bi bi-upload"></i> Tải ảnh lên
-          </button>
-          <button type="button" class="avatar-modal-btn avatar-modal-btn-capture" (click)="captureFromVideo()" [disabled]="!cameraStream">
-            <i class="bi bi-camera-fill"></i> Chụp
-          </button>
-        }
-      </div>
+        </div>
+      } @else {
+        <div class="avatar-modal-preview avatar-modal-preview--live">
+          <video #cameraVideo class="avatar-modal-video" playsinline muted></video>
+          @if (capturedImageUrl) {
+            <img [src]="capturedImageUrl" alt="Ảnh đã chụp" class="avatar-modal-preview-captured">
+          }
+          @if (cameraError && !capturedImageUrl) {
+            <div class="avatar-modal-preview-overlay">
+              <span class="avatar-modal-preview-overlay-text">{{ cameraError }}</span>
+              <button type="button" class="avatar-modal-btn avatar-modal-btn-retry" (click)="triggerAvatarCamera()">
+                Thử lại
+              </button>
+            </div>
+          }
+        </div>
+        <div class="avatar-modal-actions">
+          @if (capturedImageUrl) {
+            <button type="button" class="avatar-modal-btn avatar-modal-btn-capture" (click)="saveCapturedImage()">
+              <i class="bi bi-crop"></i> Cắt ảnh
+            </button>
+            <button type="button" class="avatar-modal-btn avatar-modal-btn-upload" (click)="discardCapturedImage()">
+              <i class="bi bi-x-lg"></i> Hủy
+            </button>
+          } @else {
+            <button type="button" class="avatar-modal-btn avatar-modal-btn-upload" (click)="triggerAvatarUpload()">
+              <i class="bi bi-upload"></i> Tải ảnh lên
+            </button>
+            <button type="button" class="avatar-modal-btn avatar-modal-btn-upload" (click)="openPresetAvatarPicker()">
+              <i class="bi bi-person-badge"></i> Chọn avatar có sẵn
+            </button>
+            <button type="button" class="avatar-modal-btn avatar-modal-btn-capture" (click)="captureFromVideo()" [disabled]="!cameraStream">
+              <i class="bi bi-camera-fill"></i> Chụp
+            </button>
+          }
+        </div>
+      }
     </div>
   </div>
 }
@@ -198,16 +260,8 @@
                     <div class="name-row">
                       <h4 class="name">{{ fullName }}</h4>
                       @if (tiering) {
-                        <span class="info-tier-badge">
-                          {{
-                            tiering === 'gold'
-                              ? 'Vàng'
-                              : tiering === 'silver'
-                                ? 'Bạc'
-                                : tiering === 'bronze'
-                                  ? 'Đồng'
-                                  : tiering
-                          }}
+                        <span class="info-tier-badge" [ngClass]="getTierClass(tiering)">
+                          {{ getTierLabel(tiering) }}
                         </span>
                       }
                     </div>

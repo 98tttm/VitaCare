@@ -31,7 +31,21 @@ const TRY_ALTERNATES: Record<string, string[]> = {
   'Biên Hòa': ['Biên Hòa', 'Đồng Nai'],
   'Đồng Nai': ['Đồng Nai', 'Biên Hòa'],
   'Hà Tĩnh': ['Hà Tĩnh', 'Ha Tinh'],
-  'Ha Tinh': ['Hà Tĩnh', 'Ha Tinh']
+  'Ha Tinh': ['Hà Tĩnh', 'Ha Tinh'],
+  'Bà Rịa - Vũng Tàu': ['Bà Rịa - Vũng Tàu', 'Vũng Tàu'],
+  'Bà Rịa-Vũng Tàu': ['Bà Rịa - Vũng Tàu', 'Vũng Tàu'],
+  'Hồ Chí Minh': [
+    'Hồ Chí Minh',
+    'TP Hồ Chí Minh',
+    'TP. Hồ Chí Minh',
+    'TP HCM',
+    'TP.HCM',
+    'Thành phố Hồ Chí Minh',
+    'HCM'
+  ],
+  'TP.HCM': ['TP.HCM', 'TP HCM', 'HCM', 'Hồ Chí Minh', 'TP Hồ Chí Minh'],
+  'TP HCM': ['TP HCM', 'TP.HCM', 'HCM', 'Hồ Chí Minh', 'TP Hồ Chí Minh'],
+  HCM: ['HCM', 'TP.HCM', 'TP HCM', 'Hồ Chí Minh']
 };
 
 export function primaryApiTinhFromCentroid(centroidName: string): string {
@@ -47,4 +61,52 @@ export function apiTinhQueryVariants(centroidName: string): string[] {
     return [...set];
   }
   return [primary];
+}
+
+/** Chuẩn hóa để khớp tên tỉnh linh hoạt (dấu, viết tắt, ký tự đặc biệt). */
+function normalizeProvinceName(v: string): string {
+  return v
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\b(tp|tp\.|thanh pho|tinh|city|province)\b/g, ' ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Alias phục vụ khớp mềm khi tên địa giới mới/cũ khác nhau giữa map và DB.
+ * Key là tên chuẩn hóa.
+ */
+const SOFT_EQUIVALENTS: Record<string, string[]> = {
+  'thua thien hue': ['hue'],
+  hue: ['thua thien hue'],
+  'khanh hoa': ['nha trang'],
+  'nha trang': ['khanh hoa'],
+  'nghe an': ['vinh'],
+  vinh: ['nghe an'],
+  'dong nai': ['bien hoa'],
+  'bien hoa': ['dong nai'],
+  'ba ria vung tau': ['vung tau'],
+  'vung tau': ['ba ria vung tau'],
+  'ho chi minh': ['tp hcm', 'tphcm', 'hcm'],
+  tphcm: ['ho chi minh', 'hcm'],
+  hcm: ['ho chi minh', 'tphcm']
+};
+
+/**
+ * Trả về tất cả alias phục vụ lọc mềm phía frontend (khi query API cứng không khớp DB).
+ */
+export function provinceSoftAliasesFromCentroid(centroidName: string): string[] {
+  const base = apiTinhQueryVariants(centroidName);
+  const out = new Set<string>(base);
+
+  for (const raw of base) {
+    const n = normalizeProvinceName(raw);
+    const extra = SOFT_EQUIVALENTS[n] || [];
+    for (const e of extra) out.add(e);
+  }
+
+  return [...out];
 }

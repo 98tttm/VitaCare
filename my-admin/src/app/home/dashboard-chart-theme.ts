@@ -31,8 +31,18 @@ export const chartAnimation = {
 };
 
 export function doughnutSegmentBorder(isDark: boolean): string {
-  return isDark ? '#1e293b' : '#ffffff';
+  return isDark ? 'rgba(15, 23, 42, 0.78)' : '#ffffff';
 }
+
+export const doughnutPaletteDark = {
+  blueStrong: '#63c7ee',
+  blue: '#61afd8',
+  blueDeep: '#6f8fff',
+  purple: '#b39cf2',
+  amber: '#e3bb56',
+  red: '#dc7f88',
+  slate: '#a9b6c8',
+} as const;
 
 /** Vùng dưới đường: gradient xanh → tím (theo đường chéo nhẹ) */
 export function revenueFillGradient(

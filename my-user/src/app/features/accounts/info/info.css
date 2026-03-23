@@ -267,6 +267,104 @@
   gap: 12px;
 }
 
+.preset-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.avatar-cropper-stage {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111827;
+  margin-bottom: 12px;
+  touch-action: none;
+  cursor: grab;
+}
+
+.avatar-cropper-stage:active {
+  cursor: grabbing;
+}
+
+.avatar-cropper-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  max-width: none;
+  max-height: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.avatar-cropper-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.avatar-cropper-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 210px;
+  height: 210px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  pointer-events: none;
+}
+
+.avatar-cropper-zoom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.avatar-cropper-zoom label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.avatar-cropper-zoom input[type='range'] {
+  width: 100%;
+}
+
+.preset-avatar-item {
+  border: 2px solid var(--color-neutral-40);
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.preset-avatar-item:hover {
+  border-color: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.preset-avatar-item--selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(39, 90, 171, 0.2);
+}
+
+.preset-avatar-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
 .avatar-modal-btn {
   display: flex;
   align-items: center;
@@ -334,9 +432,26 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
+  border: 1px solid transparent;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.05), 0 2px 4px rgba(15, 23, 42, 0.18);
+}
+
+.info-tier-badge.vc_action_tier--bronze {
   background: radial-gradient(circle at 0 0, #feedc7, #ea580c);
   color: #7c2d12;
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.05), 0 2px 4px rgba(15, 23, 42, 0.18);
+  border-color: rgba(217, 119, 6, 0.85);
+}
+
+.info-tier-badge.vc_action_tier--silver {
+  background: radial-gradient(circle at 0 0, #f9fafb, #d1d5db);
+  color: #111827;
+  border-color: rgba(75, 85, 99, 0.65);
+}
+
+.info-tier-badge.vc_action_tier--gold {
+  background: radial-gradient(circle at 0 0, #fef9c3, #f59e0b);
+  color: #78350f;
+  border-color: rgba(234, 179, 8, 0.85);
 }
 
 /* Row layout (Ngày sinh + Giới tính, SĐT + Email) */

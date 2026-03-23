@@ -840,6 +840,8 @@ input[type="checkbox"] {
 
 .modal-content-wrapper.modal-lg {
     width: 800px;
+    border-radius: 18px;
+    overflow: hidden;
 }
 
 .modal-content-wrapper.compact {

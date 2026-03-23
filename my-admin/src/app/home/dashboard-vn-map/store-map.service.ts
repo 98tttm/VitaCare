@@ -54,6 +54,75 @@ interface StoresApiResponse {
 export class StoreMapService {
   private readonly http = inject(HttpClient);
 
+  private normalizeProvinceName(v: string): string {
+    return (v || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/\b(tp|tp\.|thanh pho|tinh|city|province)\b/g, ' ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private extractStoreTinh(store: DashboardStore): string {
+    const direct = store.dia_chi?.tinh_thanh?.trim();
+    if (direct) return direct;
+    const full = store.dia_chi?.dia_chi_day_du || '';
+    const parts = full
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return parts[parts.length - 1] || '';
+  }
+
+  /** Lấy toàn bộ cửa hàng (không filter tỉnh). */
+  fetchAllStores(): Observable<DashboardStore[]> {
+    const limit = 500;
+    const params = new HttpParams().set('limit', String(limit)).set('page', '1');
+    return this.http.get<StoresApiResponse>(`${API_BASE}/api/stores`, { params }).pipe(
+      switchMap((first) => {
+        const total = Number(first.total) || 0;
+        const data = [...(first.data || [])];
+        const totalPages = Math.max(1, Math.ceil(total / limit));
+        if (totalPages <= 1) return of(data);
+
+        const rest: Observable<StoresApiResponse>[] = [];
+        for (let p = 2; p <= totalPages; p++) {
+          const pp = new HttpParams().set('limit', String(limit)).set('page', String(p));
+          rest.push(this.http.get<StoresApiResponse>(`${API_BASE}/api/stores`, { params: pp }));
+        }
+        return forkJoin(rest).pipe(
+          map((pages) => {
+            for (const pg of pages) data.push(...(pg.data || []));
+            return data;
+          })
+        );
+      })
+    );
+  }
+
+  /**
+   * Fallback khi query cứng theo tỉnh không ra dữ liệu:
+   * - tải toàn bộ stores
+   * - lọc bằng tên tỉnh chuẩn hóa + alias (hỗ trợ map tên cũ/mới, tỉnh/thành phố)
+   */
+  private fuzzyFilterByProvince(allStores: DashboardStore[], variants: string[]): DashboardStore[] {
+    const normalized = new Set(
+      variants
+        .map((v) => this.normalizeProvinceName(v))
+        .filter(Boolean)
+    );
+    if (!normalized.size) return [];
+
+    return allStores.filter((s) => {
+      const rawTinh = this.extractStoreTinh(s);
+      const st = this.normalizeProvinceName(rawTinh);
+      if (!st) return false;
+      return normalized.has(st);
+    });
+  }
+
   /** Lấy toàn bộ cửa hàng theo tỉnh (phân trang nếu > limit). */
   fetchAllStoresForProvince(tinhThanh: string): Observable<DashboardStore[]> {
     const limit = 500;
@@ -98,7 +167,14 @@ export class StoreMapService {
     return this.fetchAllStoresForProvince(first).pipe(
       switchMap((stores) => {
         if (stores.length > 0 || others.length === 0) {
-          return of({ stores, usedTinh: first });
+          if (stores.length > 0) return of({ stores, usedTinh: first });
+          // Đến cuối vẫn rỗng -> thử khớp mềm từ toàn bộ DB.
+          return this.fetchAllStores().pipe(
+            map((all) => {
+              const fuzzy = this.fuzzyFilterByProvince(all, variants);
+              return { stores: fuzzy, usedTinh: `${first} (khớp mềm)` };
+            })
+          );
         }
         return this.fetchStoresWithVariants(others);
       })

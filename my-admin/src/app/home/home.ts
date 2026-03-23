@@ -31,6 +31,7 @@ import { DashboardVnMapComponent } from './dashboard-vn-map/dashboard-vn-map.com
 import {
   VC,
   chartAnimation,
+  doughnutPaletteDark,
   doughnutSegmentBorder,
   prescriptionStatusColors,
   revenueFillGradient,
@@ -191,8 +192,8 @@ export class Home implements OnInit {
   private updateChartDefaults(isDark: boolean) {
     if (typeof Chart === 'undefined') return;
     Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
-    Chart.defaults.color = isDark ? '#cbd5e1' : VC.neutral;
-    Chart.defaults.borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(10, 10, 10, 0.08)';
+    Chart.defaults.color = isDark ? '#e6edf7' : VC.neutral;
+    Chart.defaults.borderColor = isDark ? 'rgba(148, 163, 184, 0.26)' : 'rgba(10, 10, 10, 0.08)';
   }
 
   loadData() {
@@ -401,7 +402,7 @@ export class Home implements OnInit {
           borderWidth: 3,
           pointRadius: 4,
           pointHoverRadius: 7,
-          pointBackgroundColor: isDark ? '#1e293b' : '#ffffff',
+          pointBackgroundColor: isDark ? '#f8fafc' : '#ffffff',
           pointBorderColor: (context: any) => {
             const i = context.dataIndex;
             const n = context.dataset.data.length;
@@ -421,7 +422,7 @@ export class Home implements OnInit {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: isDark ? VC.primaryHover : '#1e293b',
+            backgroundColor: isDark ? '#0f2744' : '#1e293b',
             padding: 12,
             titleFont: { size: 14, weight: 'bold' },
             bodyFont: { size: 13 },
@@ -437,17 +438,17 @@ export class Home implements OnInit {
           x: {
             grid: { display: false },
             ticks: {
-              color: isDark ? '#94a3b8' : VC.neutral,
+              color: isDark ? '#c7d3e3' : VC.neutral,
               font: { size: 11 }
             }
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: isDark ? 'rgba(255,255,255,0.06)' : vcRgba(VC.primary, 0.06)
+              color: isDark ? 'rgba(148, 163, 184, 0.22)' : vcRgba(VC.primary, 0.06)
             },
             ticks: {
-              color: isDark ? '#94a3b8' : VC.neutral,
+              color: isDark ? '#c7d3e3' : VC.neutral,
               font: { size: 11 },
               callback: (v: any) => v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v.toLocaleString()
             }
@@ -487,10 +488,18 @@ export class Home implements OnInit {
         labels,
         datasets: [{
           data,
-          backgroundColor: [...prescriptionStatusColors],
+          backgroundColor: isDark
+            ? [
+                doughnutPaletteDark.amber,
+                doughnutPaletteDark.blueDeep,
+                doughnutPaletteDark.slate,
+                doughnutPaletteDark.blueStrong,
+                doughnutPaletteDark.red
+              ]
+            : [...prescriptionStatusColors],
           borderColor: doughnutSegmentBorder(isDark),
-          borderWidth: 2,
-          hoverOffset: 10
+          borderWidth: isDark ? 0.8 : 2,
+          hoverOffset: isDark ? 6 : 10
         }]
       },
       options: {
@@ -504,7 +513,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 10,
               padding: 8,
-              color: isDark ? '#cbd5e1' : VC.neutral,
+              color: isDark ? '#e6edf7' : VC.neutral,
               font: { size: 10 }
             }
           }
@@ -551,14 +560,16 @@ export class Home implements OnInit {
         labels: ['Đang diễn ra', 'Sắp diễn ra', 'Đã kết thúc'],
         datasets: [{
           data: [activeCount, upcomingCount, endedCount],
-          backgroundColor: [
-            vcRgba(VC.primary, 0.94),
-            vcRgba(VC.warning, 0.9),
-            vcRgba(VC.infoStrong, isDark ? 0.55 : 0.48)
-          ],
+          backgroundColor: isDark
+            ? [
+                doughnutPaletteDark.blueDeep,
+                doughnutPaletteDark.amber,
+                doughnutPaletteDark.slate
+              ]
+            : [vcRgba(VC.primary, 0.94), vcRgba(VC.warning, 0.9), vcRgba(VC.infoStrong, 0.48)],
           borderColor: doughnutSegmentBorder(isDark),
-          borderWidth: 2,
-          hoverOffset: 10
+          borderWidth: isDark ? 0.8 : 2,
+          hoverOffset: isDark ? 6 : 10
         }]
       },
       options: {
@@ -570,7 +581,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 10,
               padding: 8,
-              color: isDark ? '#cbd5e1' : VC.neutral,
+              color: isDark ? '#e6edf7' : VC.neutral,
               font: { size: 10 }
             }
           }
@@ -596,14 +607,16 @@ export class Home implements OnInit {
         labels: ['Hoàn tất', 'Chờ xử lý', 'Khác'],
         datasets: [{
           data: [delivered, pending, other],
-          backgroundColor: [
-            vcRgba(VC.primaryLight, 0.95),
-            vcRgba(VC.warning, 0.9),
-            vcRgba(VC.info, 0.82)
-          ],
-          borderWidth: 2,
+          backgroundColor: isDark
+            ? [
+                doughnutPaletteDark.blueStrong,
+                doughnutPaletteDark.amber,
+                doughnutPaletteDark.purple
+              ]
+            : [vcRgba(VC.primaryLight, 0.95), vcRgba(VC.warning, 0.9), vcRgba(VC.info, 0.82)],
+          borderWidth: isDark ? 0.8 : 2,
           borderColor: doughnutSegmentBorder(isDark),
-          hoverOffset: 10
+          hoverOffset: isDark ? 6 : 10
         }]
       },
       options: {
@@ -615,7 +628,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 10,
               padding: 8,
-              color: isDark ? '#cbd5e1' : VC.neutral,
+              color: isDark ? '#e6edf7' : VC.neutral,
               font: { size: 10 }
             }
           }
@@ -655,10 +668,18 @@ export class Home implements OnInit {
         labels,
         datasets: [{
           data,
-          backgroundColor: [...prescriptionStatusColors],
+          backgroundColor: isDark
+            ? [
+                doughnutPaletteDark.amber,
+                doughnutPaletteDark.blueDeep,
+                doughnutPaletteDark.slate,
+                doughnutPaletteDark.blueStrong,
+                doughnutPaletteDark.red
+              ]
+            : [...prescriptionStatusColors],
           borderColor: doughnutSegmentBorder(isDark),
-          borderWidth: 2,
-          hoverOffset: 10
+          borderWidth: isDark ? 0.8 : 2,
+          hoverOffset: isDark ? 6 : 10
         }]
       },
       options: {
@@ -672,7 +693,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 10,
               padding: 8,
-              color: isDark ? '#cbd5e1' : VC.neutral,
+              color: isDark ? '#e6edf7' : VC.neutral,
               font: { size: 10 }
             }
           }
@@ -712,14 +733,16 @@ export class Home implements OnInit {
         labels,
         datasets: [{
           data,
-          backgroundColor: [
-            vcRgba(VC.warning, 0.92),
-            vcRgba(VC.primary, 0.9),
-            vcRgba(VC.primaryLight, 0.88)
-          ],
+          backgroundColor: isDark
+            ? [
+                doughnutPaletteDark.amber,
+                doughnutPaletteDark.blueDeep,
+                doughnutPaletteDark.blueStrong
+              ]
+            : [vcRgba(VC.warning, 0.92), vcRgba(VC.primary, 0.9), vcRgba(VC.primaryLight, 0.88)],
           borderColor: doughnutSegmentBorder(isDark),
-          borderWidth: 2,
-          hoverOffset: 10
+          borderWidth: isDark ? 0.8 : 2,
+          hoverOffset: isDark ? 6 : 10
         }]
       },
       options: {
@@ -733,7 +756,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 10,
               padding: 8,
-              color: isDark ? '#cbd5e1' : VC.neutral,
+              color: isDark ? '#e6edf7' : VC.neutral,
               font: { size: 10 }
             }
           }
@@ -768,13 +791,12 @@ export class Home implements OnInit {
         labels: ['Chờ xử lý', 'Đã trả lời'],
         datasets: [{
           data: [pending, answered],
-          backgroundColor: [
-            vcRgba(VC.warning, 0.9),
-            vcRgba(VC.primaryLight, 0.88)
-          ],
+          backgroundColor: isDark
+            ? [doughnutPaletteDark.amber, doughnutPaletteDark.blueStrong]
+            : [vcRgba(VC.warning, 0.9), vcRgba(VC.primaryLight, 0.88)],
           borderColor: doughnutSegmentBorder(isDark),
-          borderWidth: 2,
-          hoverOffset: 10
+          borderWidth: isDark ? 0.8 : 2,
+          hoverOffset: isDark ? 6 : 10
         }]
       },
       options: {
@@ -788,7 +810,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 10,
               padding: 8,
-              color: isDark ? '#cbd5e1' : VC.neutral,
+              color: isDark ? '#e6edf7' : VC.neutral,
               font: { size: 10 }
             }
           }
@@ -872,16 +894,16 @@ export class Home implements OnInit {
             ticks: {
               autoSkip: true,
               maxTicksLimit: 12,
-              color: isDark ? '#94a3b8' : VC.neutral,
+              color: isDark ? '#c7d3e3' : VC.neutral,
               font: { size: 10 }
             }
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: isDark ? 'rgba(255,255,255,0.06)' : vcRgba(VC.primary, 0.06)
+              color: isDark ? 'rgba(148, 163, 184, 0.22)' : vcRgba(VC.primary, 0.06)
             },
-            ticks: { precision: 0, color: isDark ? '#94a3b8' : VC.neutral }
+            ticks: { precision: 0, color: isDark ? '#c7d3e3' : VC.neutral }
           }
         }
       }
@@ -922,7 +944,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 12,
               padding: 8,
-              color: isDark ? '#cbd5e1' : '#64748b',
+              color: isDark ? '#e6edf7' : '#64748b',
               font: { size: 10 }
             }
           }
@@ -955,14 +977,16 @@ export class Home implements OnInit {
         labels: Object.keys(tiers),
         datasets: [{
           data: Object.values(tiers),
-          backgroundColor: [
-            vcRgba(VC.warning, 0.85),
-            vcRgba(VC.primaryLight, 0.88),
-            vcRgba(VC.primary, 0.92)
-          ],
+          backgroundColor: isDark
+            ? [
+                doughnutPaletteDark.amber,
+                doughnutPaletteDark.blueStrong,
+                doughnutPaletteDark.blueDeep
+              ]
+            : [vcRgba(VC.warning, 0.85), vcRgba(VC.primaryLight, 0.88), vcRgba(VC.primary, 0.92)],
           borderColor: doughnutSegmentBorder(isDark),
-          borderWidth: 2,
-          hoverOffset: 10
+          borderWidth: isDark ? 0.8 : 2,
+          hoverOffset: isDark ? 6 : 10
         }]
       },
       options: {
@@ -974,7 +998,7 @@ export class Home implements OnInit {
             labels: {
               boxWidth: 12,
               padding: 8,
-              color: isDark ? '#cbd5e1' : VC.neutral,
+              color: isDark ? '#e6edf7' : VC.neutral,
               font: { size: 10 }
             }
           }
@@ -1031,13 +1055,13 @@ export class Home implements OnInit {
           x: {
             beginAtZero: true,
             grid: {
-              color: isDark ? 'rgba(255,255,255,0.06)' : vcRgba(VC.primary, 0.06)
+              color: isDark ? 'rgba(148, 163, 184, 0.22)' : vcRgba(VC.primary, 0.06)
             },
-            ticks: { color: isDark ? '#94a3b8' : VC.neutral, font: { size: 10 } }
+            ticks: { color: isDark ? '#c7d3e3' : VC.neutral, font: { size: 10 } }
           },
           y: {
             grid: { display: false },
-            ticks: { color: isDark ? '#cbd5e1' : '#334155', font: { size: 11 } }
+            ticks: { color: isDark ? '#e6edf7' : '#334155', font: { size: 11 } }
           }
         }
       }

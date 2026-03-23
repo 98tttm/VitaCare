@@ -415,6 +415,97 @@
   border-bottom-left-radius: 4px;
 }
 
+.chat-turn--model {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 92%;
+}
+
+.chat-bubble-text--rich {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.chat-bubble-text--rich .chat-inline-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+
+.chat-product-cards {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chat-product-card {
+  flex: 0 0 112px;
+  scroll-snap-align: start;
+  border-radius: 12px;
+  border: 1px solid var(--color-primary-lighter, #cce0f0);
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 88, 159, 0.08);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.chat-product-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 88, 159, 0.14);
+}
+
+.chat-product-card-img-wrap {
+  height: 76px;
+  background: var(--color-primary-bg, #e8f4fc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-product-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-product-card-ph {
+  font-size: 1.5rem;
+  color: var(--color-neutral-60, #999);
+}
+
+.chat-product-card-body {
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-product-card-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.chat-product-card-price {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
 .chat-bubble--typing {
   padding: 14px 18px;
 }

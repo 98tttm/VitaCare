@@ -56,14 +56,43 @@
       <div #chatList class="chat-messages">
         @if (messagesList().length === 0) {
         <div class="chat-welcome">
-          <p>Xin chào! Bạn có thể hỏi về sức khỏe, thuốc, thực phẩm chức năng hoặc gợi ý sản phẩm.</p>
+          <p>Xin chào! Bạn có thể hỏi về sức khỏe, thuốc hoặc gợi ý sản phẩm. Với triệu chứng chung, VitaBot sẽ hỏi
+            thêm vài ý (đối tượng, thời gian, mức độ) trước khi gợi ý mua hàng.</p>
         </div>
         }
         @for (turn of messagesList(); track $index) {
-        <div class="chat-bubble" [class.chat-bubble--user]="turn.role === 'user'"
-          [class.chat-bubble--model]="turn.role === 'model'">
+        @if (turn.role === 'user') {
+        <div class="chat-bubble chat-bubble--user">
           <span class="chat-bubble-text">{{ turn.parts[0]?.text }}</span>
         </div>
+        } @else {
+        <div class="chat-turn chat-turn--model">
+          <div class="chat-bubble chat-bubble--model">
+            <div class="chat-bubble-text chat-bubble-text--rich"
+              [innerHTML]="formatModelHtml(turn.parts[0]?.text ?? '')"></div>
+          </div>
+          @if (turn.products?.length) {
+          <div class="chat-product-cards" role="list">
+            @for (p of turn.products!; track p.slug) {
+            <a [routerLink]="['/product', p.slug]" class="chat-product-card" role="listitem">
+              <div class="chat-product-card-img-wrap">
+                @if (p.image) {
+                <img [src]="p.image" [alt]="p.name" loading="lazy" (error)="productImgError($event)" />
+                }
+                @if (!p.image) {
+                <i class="bi bi-image chat-product-card-ph" aria-hidden="true"></i>
+                }
+              </div>
+              <div class="chat-product-card-body">
+                <span class="chat-product-card-name">{{ p.name }}</span>
+                <span class="chat-product-card-price">{{ formatProductPrice(p.price) }}</span>
+              </div>
+            </a>
+            }
+          </div>
+          }
+        </div>
+        }
         }
         @if (sending()) {
         <div class="chat-bubble chat-bubble--model chat-bubble--typing">
@@ -75,8 +104,11 @@
       <div class="chat-error" role="alert">{{ errorMessage() }}</div>
       }
       <div class="chat-input-wrap">
-        <input type="text" class="chat-input" placeholder="Nhập câu hỏi..." [value]="inputText()"
-          (input)="inputText.set($any($event.target).value)" (keydown.enter)="$event.preventDefault(); sendMessage()" />
+        <input #chatInput type="text" class="chat-input" name="vitabotInput" placeholder="Nhập câu hỏi..."
+          [ngModel]="inputText()" (ngModelChange)="inputText.set($event)"
+          (compositionend)="syncInputFromDom()"
+          (input)="syncInputFromDom()"
+          (keydown)="onChatInputKeydown($event)" autocomplete="off" spellcheck="true" />
         <button type="button" class="chat-send" aria-label="Gửi" [disabled]="sending() || !inputText().trim()"
           (click)="sendMessage()">
           <i class="bi bi-send-fill"></i>

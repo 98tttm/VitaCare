@@ -145,6 +145,10 @@ export class Orderdetail implements OnInit {
     return this.isCreateMode && !this.isEditMode && this.auth.isPharmacistAccount();
   }
 
+  get isAdminCreateOrder(): boolean {
+    return this.isCreateMode && !this.isEditMode && !this.auth.isPharmacistAccount();
+  }
+
   @HostListener('document:click', ['$event'])
   closeCreateSelectOnOutside(ev: MouseEvent) {
     const t = ev.target as HTMLElement;
@@ -173,9 +177,11 @@ export class Orderdetail implements OnInit {
       this.fetchLocations();
       this.prefetchAllProducts();
       this.fetchPromoSupportData();
+      this.fetchStoreLocationsForPharmacist();
       if (this.auth.isPharmacistAccount()) {
         this.newOrder.atPharmacy = true;
-        this.fetchStoreLocationsForPharmacist();
+      } else {
+        this.newOrder.atPharmacy = false;
       }
     } else if (id) {
       this.fetchOrderDetail(id);
@@ -914,6 +920,36 @@ export class Orderdetail implements OnInit {
     this.cdr.markForCheck();
   }
 
+  setCreateDeliveryMethod(method: 'home' | 'pharmacy'): void {
+    const pickup = method === 'pharmacy';
+    this.newOrder.atPharmacy = pickup;
+    if (pickup) {
+      this.newOrder.shippingInfo.address = '';
+      this.newOrder.shippingInfo.city = '';
+      this.newOrder.shippingInfo.district = '';
+      this.newOrder.shippingInfo.ward = '';
+      this.districts = [];
+      this.wards = [];
+      this.newOrder.pharmacyAddress = '';
+      this.selectedStore = null;
+      if (!this.allPharmacyLocations.length) {
+        this.fetchStoreLocationsForPharmacist();
+      }
+    } else {
+      this.pharmacyProvince = '';
+      this.pharmacyDistrict = '';
+      this.pharmacyWard = '';
+      this.availableDistricts = [];
+      this.availableWards = [];
+      this.availableStores = [];
+      this.selectedStore = null;
+      this.storeSearchKeyword = '';
+      this.newOrder.pharmacyAddress = '';
+    }
+    this.calculateTotal();
+    this.cdr.markForCheck();
+  }
+
   /** Cùng định dạng payload my-user khi atPharmacy */
   private buildPharmacyAddressFromStore(s: any): string {
     if (!s) return '';
@@ -1011,7 +1047,22 @@ export class Orderdetail implements OnInit {
       pharmacistWalkIn: false,
       createdByAdmin: creators.createdByAdmin,
       createdByPharmacist: null,
+      pickupStoreId: this.newOrder.atPharmacy ? (this.selectedStore?.ma_cua_hang || '') : '',
+      pharmacyAddress: this.newOrder.atPharmacy ? String(this.newOrder.pharmacyAddress || '').trim() : '',
     };
+
+    if (payload.atPharmacy) {
+      if (!payload.pickupStoreId || !payload.pharmacyAddress) {
+        this.showNotification('Vui lòng chọn nhà thuốc nhận hàng.', 'warning');
+        return;
+      }
+    } else {
+      if (!this.newOrder.shippingInfo?.city || !this.newOrder.shippingInfo?.district || !this.newOrder.shippingInfo?.ward || !this.newOrder.shippingInfo?.address) {
+        this.showNotification('Vui lòng nhập đầy đủ địa chỉ giao hàng tận nơi.', 'warning');
+        return;
+      }
+    }
+
     this.isLoading = true;
     this.orderService.createOrder(payload).subscribe({
       next: (res) => {

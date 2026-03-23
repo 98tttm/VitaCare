@@ -35,7 +35,7 @@
               "src/styles/vitacare-datepicker.css",
               "src/styles/post-bootstrap-fonts.css",
               "src/styles/variables.css",
-              "node_modules/maplibre-gl/dist/maplibre-gl.css"
+              "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.min.js"

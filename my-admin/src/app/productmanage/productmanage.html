@@ -627,28 +627,32 @@
                     <div class="pm-form-row-3">
                         <div class="form-group">
                             <label class="form-label"><i class="bi bi-1-circle"></i> Danh mục cấp 1:</label>
-                            <select class="form-control premium-select" [(ngModel)]="modalL1Id" (change)="onL1Change()">
-                                <option value="">-- Chọn danh mục cấp 1 --</option>
-                                <option *ngFor="let cat of categoriesL1" [value]="cat._id">{{ cat.name }}</option>
-                            </select>
+                            <vc-searchable-select
+                                [(ngModel)]="modalL1Id"
+                                [options]="modalCategoryL1Options"
+                                placeholder="-- Chọn danh mục cấp 1 --"
+                                (ngModelChange)="onL1Change()">
+                            </vc-searchable-select>
                         </div>
                         <div class="form-group" [class.hidden-layer]="!modalL1Id" style="transition: all 0.3s ease;">
                             <label class="form-label"><i class="bi bi-2-circle"></i> Danh mục cấp 2:</label>
-                            <select class="form-control premium-select" [(ngModel)]="modalL2Id" (change)="onL2Change()"
-                                [disabled]="!modalL1Id">
-                                <option value="">-- Chọn danh mục cấp 2 --</option>
-                                <option *ngFor="let cat of getSubCategories(modalL1Id)" [value]="cat._id">{{ cat.name }}
-                                </option>
-                            </select>
+                            <vc-searchable-select
+                                [(ngModel)]="modalL2Id"
+                                [options]="modalCategoryL2Options"
+                                [disabled]="!modalL1Id"
+                                placeholder="-- Chọn danh mục cấp 2 --"
+                                (ngModelChange)="onL2Change()">
+                            </vc-searchable-select>
                         </div>
                         <div class="form-group" [class.hidden-layer]="!modalL2Id" style="transition: all 0.3s ease;">
                             <label class="form-label"><i class="bi bi-3-circle"></i> Danh mục cấp 3:</label>
-                            <select class="form-control premium-select" [(ngModel)]="modalL3Id" (change)="onL3Change()"
-                                [disabled]="!modalL2Id">
-                                <option value="">-- Chọn danh mục cấp 3 --</option>
-                                <option *ngFor="let cat of getSubCategories(modalL2Id)" [value]="cat._id">{{ cat.name }}
-                                </option>
-                            </select>
+                            <vc-searchable-select
+                                [(ngModel)]="modalL3Id"
+                                [options]="modalCategoryL3Options"
+                                [disabled]="!modalL2Id"
+                                placeholder="-- Chọn danh mục cấp 3 --"
+                                (ngModelChange)="onL3Change()">
+                            </vc-searchable-select>
                         </div>
                     </div>
 
@@ -680,9 +684,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Đơn vị tính:</label>
-                            <select class="form-control" [(ngModel)]="newProduct.unit">
-                                <option *ngFor="let u of units" [value]="u">{{ u }}</option>
-                            </select>
+                            <vc-searchable-select
+                                [(ngModel)]="newProduct.unit"
+                                [options]="unitOptions"
+                                placeholder="Chọn đơn vị tính">
+                            </vc-searchable-select>
                         </div>
                     </div>
 
@@ -731,17 +737,19 @@
 
                     <div class="form-group">
                         <label class="form-label">Cần kê đơn?</label>
-                        <select class="form-control" [(ngModel)]="newProduct.prescription">
-                            <option [ngValue]="false">----KHÔNG</option>
-                            <option [ngValue]="true">CÓ</option>
-                        </select>
+                        <vc-searchable-select
+                            [(ngModel)]="newProduct.prescription"
+                            [options]="prescriptionOptions"
+                            placeholder="Chọn trạng thái kê đơn">
+                        </vc-searchable-select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Trạng thái hiển thị</label>
-                        <select class="form-control" [(ngModel)]="newProduct.status">
-                            <option value="active">----Hiển thị</option>
-                            <option value="hidden">Ẩn</option>
-                        </select>
+                        <vc-searchable-select
+                            [(ngModel)]="newProduct.status"
+                            [options]="statusOptions"
+                            placeholder="Chọn trạng thái hiển thị">
+                        </vc-searchable-select>
                     </div>
 
                     <div class="form-group">
