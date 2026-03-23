@@ -1,402 +1,366 @@
 <div class="vc_container pt-2">
-  <!-- Breadcrumb -->
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb-vc">
-      <li class="breadcrumb-item"><a routerLink="/nhathuocvitacare">Trang chủ</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Thông tin trung tâm bảo hành</li>
-    </ol>
-  </nav>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb-vc">
+            <li class="breadcrumb-item"><a routerLink="/nhathuocvitacare">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Thông tin trung tâm bảo hành</li>
+        </ol>
+    </nav>
 
-  <div class="pc-layout">
-    <!-- Sidebar (reuse links pattern) -->
-    <aside class="pc-sidebar">
-      <div class="pc-sidebar-header">
-        <span class="pc-icon-list">☰</span> Bài viết trong danh mục
-      </div>
-      <ul class="pc-menu">
-        <li><a [routerLink]="['/chinh-sach/gioi-thieu']" routerLinkActive="active"
-            [routerLinkActiveOptions]="{exact: true}">Giới thiệu nhà thuốc</a></li>
-        <li><a [routerLink]="['/chinh-sach/giay-phep-kinh-doanh']" routerLinkActive="active">Giấy phép kinh
-            doanh</a></li>
-        <li><a [routerLink]="['/chinh-sach/quy-che-hoat-dong']" routerLinkActive="active">Quy chế hoạt động</a>
-        </li>
-        <li><a [routerLink]="['/chinh-sach/chinh-sach-dat-coc']" routerLinkActive="active">Chính sách đặt
-            cọc</a></li>
-        <li><a [routerLink]="['/chinh-sach/chinh-sach-noi-dung']" routerLinkActive="active">Chính sách nội
-            dung</a></li>
-        <li><a [routerLink]="['/chinh-sach/chinh-sach-doi-tra']" routerLinkActive="active">Chính sách đổi trả
-            thuốc</a></li>
-        <li><a [routerLink]="['/chinh-sach/chinh-sach-giao-hang']" routerLinkActive="active">Chính sách giao
-            hàng</a></li>
-        <li><a [routerLink]="['/chinh-sach/chinh-sach-bao-mat']" routerLinkActive="active">Chính sách bảo
-            mật</a></li>
-        <li><a [routerLink]="['/chinh-sach/chinh-sach-thanh-toan']" routerLinkActive="active">Chính sách thanh
-            toán</a></li>
-        <li><a [routerLink]="['/chinh-sach/chinh-sach-bao-mat-du-lieu']" routerLinkActive="active">Chính sách
-            bảo mật dữ liệu cá nhân</a></li>
-        <li><a [routerLink]="['/chinh-sach/thong-tin-trung-tam-bao-hanh']" routerLinkActive="active">Thông tin
-            trung tâm bảo hành máy thiết bị y tế từng hãng</a></li>
-        <li><a [routerLink]="['/chinh-sach/dieu-khoan-su-dung']" routerLinkActive="active">Điều khoản sử dụng
-            VitaCare 247</a></li>
-      </ul>
-    </aside>
+    <div class="pc-layout">
+        <!-- Sidebar -->
+        <aside class="pc-sidebar">
+            <div class="pc-sidebar-header">
+                <span class="pc-icon-list">☰</span> Bài viết trong danh mục
+            </div>
 
-    <!-- Main Content -->
-    <main class="pc-content">
-      <h1 class="pc-title">Thông tin trung tâm bảo hành máy thiết bị y tế từng hãng</h1>
-
-      <div class="pc-section">
-        <p>
-          Dưới đây là danh sách các trung tâm bảo hành theo từng hãng/nhà cung cấp (NCC) mà VitaCare tổng hợp để Quý
-          khách tiện liên hệ.
-          Quý khách vui lòng đọc kỹ lưu ý của từng hãng trước khi mang/ gửi thiết bị bảo hành.
-        </p>
-
-        <h3>Danh sách trung tâm bảo hành</h3>
-
-        <!-- OMRON -->
-        <h4>1) OMRON</h4>
-        <p><strong>Loại hàng:</strong></p>
-        <ul>
-          <li>Máy đo huyết áp</li>
-          <li>Máy xông khí dung (bảo hành online: gọi hãng hủy bảo hành online)</li>
-          <li>Nhiệt kế</li>
-        </ul>
-        <p><strong>Địa chỉ TTBH:</strong></p>
-        <ul>
-          <li><strong>TP.HCM:</strong> Tầng 4, Tòa nhà Jasmine 1 Hà Đô Centrosa Garden, Số 200 Đường 3/2, Phường Hòa
-            Hưng, TP. Hồ Chí Minh</li>
-          <li><strong>Hà Nội:</strong> 15-17 Đặng Tiến Đông, P. Đống Đa, Hà Nội</li>
-        </ul>
-        <p><strong>Thông tin liên hệ TTBH:</strong></p>
-        <ul>
-          <li>Tổng đài CSKH OMRON Việt Nam</li>
-          <li><strong>Hotline:</strong> 1800 646 958</li>
-          <li><strong>Zalo OA:</strong> OMRON Healthcare VN</li>
-        </ul>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Mọi yêu cầu bảo hành/sửa chữa/thông tin sản phẩm chỉ được thực hiện tại TTBH khi đã tạo yêu cầu thông qua
-            tổng đài CSKH.</li>
-          <li>Thời gian làm việc: 08:00–12:00 &amp; 13:00–17:00 (Thứ Hai – Thứ Bảy).</li>
-        </ul>
-        <hr />
-
-        <!-- MICROLIFE & BIOHEALTH -->
-        <h4>2) MICROLIFE &amp; BIOHEALTH</h4>
-        <p><strong>Loại hàng:</strong></p>
-        <ul>
-          <li>Máy đo huyết áp Microlife</li>
-          <li>Nhiệt kế Microlife</li>
-          <li>Máy xông Microlife NEB200</li>
-          <li>Máy đo SpO2 OXY200</li>
-          <li>Máy xông khí dung Biohealth NEB PRO</li>
-        </ul>
-        <p><strong>Địa chỉ TTBH:</strong></p>
-        <ul>
-          <li><strong>Trụ sở chính (TP.HCM):</strong> Công Ty CP Thiết Bị Y Sinh, 89 Trần Văn Dư, Phường Tân Bình,
-            TP.HCM</li>
-          <li><strong>Chi nhánh (Hà Nội):</strong> A2-BT6 Khu đô thị mới Hạ Đình, Phường Thanh Liệt, TP. Hà Nội</li>
-        </ul>
-        <p><strong>Thông tin người nhận tại TTBH:</strong></p>
-        <ul>
-          <li><strong>Anh Hân</strong> (Phòng Kỹ Thuật) - <strong>SĐT:</strong> 0869 179 671</li>
-          <li><strong>Anh Phong</strong> (Phòng Kỹ Thuật) - <strong>SĐT:</strong> 0336 689 374</li>
-        </ul>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú bên trong kiện hàng gồm: Tên, số điện thoại,
-            địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
-        </ul>
-        <hr />
-
-        <!-- AND & EASY MAX -->
-        <h4>3) AND &amp; EASY MAX</h4>
-        <p><strong>Loại hàng:</strong></p>
-        <ul>
-          <li>Máy đo huyết áp</li>
-          <li>Máy hút mũi (Co Lean Duck, Co Lean Bear)</li>
-          <li>Máy đo đường huyết Easy Max Mini (không đổi đơn vị)</li>
-        </ul>
-        <p><strong>Địa chỉ TTBH:</strong> 76 Sương Nguyệt Anh, Phường Bến Thành, TP.HCM</p>
-        <p><strong>Thông tin người nhận tại TTBH:</strong> Trần Thành Long - <strong>SĐT:</strong> 0328 817 878</p>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú bên trong kiện hàng gồm: Tên, số điện thoại,
-            địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
-        </ul>
-        <hr />
-
-        <!-- NỆM CHỐNG LOÉT YH MEDICAL -->
-        <h4>4) NỆM CHỐNG LOÉT YH MEDICAL</h4>
-        <p><strong>Loại hàng:</strong> Nệm chống loét YH Medical</p>
-        <p>
-          Quý khách vui lòng quét mã QR bên dưới hoặc truy cập Website bảo hành Yteco để kích hoạt bảo hành online.
-        </p>
-        <p>
-          <img src="assets/images/policy/pill-shield.png" alt="QR bảo hành Yteco" />
-        </p>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Sau khi truy cập trang, vui lòng chọn “Đăng ký bảo hành” và điền thông tin thiết bị.</li>
-          <li>Chuẩn bị: Số Serial/Lot Number và Ngày mua hàng (Demo Lot Number nếu được yêu cầu).</li>
-        </ul>
-        <hr />
-
-        <!-- MEDIUSA -->
-        <h4>5) MEDIUSA</h4>
-        <p><strong>Loại hàng:</strong></p>
-        <ul>
-          <li>Máy đo huyết áp / Máy nhiệt kế</li>
-          <li>Máy đo đường huyết (đổi được đơn vị)</li>
-        </ul>
-        <p><strong>Địa chỉ TTBH:</strong> 154-156 Khánh Hội, Phường Khánh Hội, TP.HCM</p>
-        <p><strong>Liên hệ:</strong> <strong>Hotline:</strong> 0964 980 099 hoặc 1800 9009</p>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện thoại, địa
-            chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
-        </ul>
-        <hr />
-
-        <!-- VÂN LONG -->
-        <h4>6) VÂN LONG (Yuwell / Fuji / Pangao / SpO2 Oromi / A4)</h4>
-        <p><strong>Loại hàng:</strong> Thiết bị thuộc các hãng: Yuwell, Fuji, Pangao, SpO2 Oromi, A4</p>
-        <p><strong>Địa chỉ TTBH:</strong> 373/14 đường Nguyễn Kiệm, phường Đức Nhuận, TP.HCM</p>
-        <p><strong>Liên hệ:</strong> Phòng kỹ thuật: <strong>0984 840 440</strong></p>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện thoại, địa
-            chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
-        </ul>
-        <hr />
-
-        <!-- ACCU-CHEK -->
-        <h4>7) ACCU-CHEK (Roche Việt Nam)</h4>
-        <p><strong>Loại hàng:</strong> Máy đo đường huyết (không đổi đơn vị)</p>
-        <p><strong>Địa chỉ TTBH:</strong></p>
-        <p>
-          Trung tâm bảo hành máy đo đường huyết Accu-Chek - Công ty TNHH Roche Việt Nam (TP.HCM)<br />
-          Tầng 27, Tòa nhà Pearl Plaza, 561A Điện Biên Phủ, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh
-        </p>
-        <p><strong>Thông tin người nhận tại TTBH:</strong> Chị Trâm - <strong>SĐT:</strong> 0906 382 078</p>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Kèm 01 giấy ghi chú gồm: Tên, số điện thoại, địa chỉ, ...</li>
-          <li>Ghi rõ lỗi của máy.</li>
-          <li>Kiện hàng cần được gửi trực tiếp tầng 27, Tòa nhà Pearl Plaza.</li>
-          <li>Nên gửi qua đơn vị chuyển phát nhanh (VNPost, Viettel, ...) để tránh thất lạc.</li>
-        </ul>
-        <hr />
-
-        <!-- NIPRO & 3P -->
-        <h4>8) NIPRO &amp; 3P</h4>
-        <p><strong>Địa chỉ nhận bảo hành:</strong> FPT Telecom - Số 336-340 Huỳnh Tấn Phát, Phường Tân Thuận, TP.HCM</p>
-        <p><strong>Đầu mối nhận hàng:</strong></p>
-        <ul>
-          <li>Tên: Bảo hành máy Nipro _ FPT MediCare</li>
-          <li>SĐT: 0786 765 428 (Chị Minh)</li>
-        </ul>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Khi cần hướng dẫn sử dụng, thắc mắc sản phẩm, hỗ trợ app, bảo hành sản phẩm, Quý khách vui lòng liên hệ
-            trực tiếp đơn vị phụ trách qua nút “Liên hệ hỗ trợ” trên ứng dụng hoặc gửi tin nhắn đến fanpage Chăm sóc
-            khách hàng.</li>
-          <li>Mọi yêu cầu bảo hành/sửa chữa/thông tin sản phẩm NIPRO &amp; 3P chỉ được thực hiện tại TTBH khi đã tạo yêu
-            cầu thông qua Link tiếp nhận bảo hành.</li>
-        </ul>
-        <hr />
-
-        <!-- HALIO -->
-        <h4>9) HALIO</h4>
-        <p><strong>Loại hàng:</strong></p>
-        <ul>
-          <li>Máy tăm nước</li>
-          <li>Bàn chải điện</li>
-        </ul>
-        <p><strong>Địa chỉ TTBH:</strong> Số 13 Đường 34, Khu phố 2, Phường An Khánh, Thành Phố Thủ Đức</p>
-        <p><strong>Thời gian nhận hàng bảo hành:</strong> Thứ 2 đến Thứ 6 (Sáng: 08:30 - 12:00; Chiều: 13:00 - 16:30)
-        </p>
-        <p><strong>Liên hệ:</strong> Trung tâm bảo hành Halio Việt Nam: <strong>0909 606 003</strong></p>
-        <p><strong>Quy trình bảo hành:</strong></p>
-        <ul>
-          <li><strong>Bước 1:</strong> Điền thông tin đăng ký bảo hành tại Link đăng ký bảo hành hoặc quét mã QR bên
-            dưới.</li>
-        </ul>
-        <p>
-          <img src="assets/images/policy/pill.png" alt="QR đăng ký bảo hành Halio" />
-        </p>
-        <ul>
-          <li><strong>Bước 2:</strong> Khi gửi máy về TTBH, vui lòng gửi kèm:
-            <ul>
-              <li>Hóa đơn mua hàng</li>
-              <li>Mã bảo hành của sản phẩm (đi kèm hộp sản phẩm)</li>
-              <li>01 phiếu thông tin bảo hành: Ngày gửi, cửa hàng, người gửi - SĐT, địa chỉ, chi tiết lỗi sản phẩm, danh
-                sách phụ kiện đi kèm</li>
+            <ul class="pc-menu">
+                <li><a [routerLink]="['/policy/gioi-thieu']" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{exact: true}">Giới thiệu nhà thuốc</a></li>
+                <li><a [routerLink]="['/policy/giay-phep-kinh-doanh']" routerLinkActive="active">Giấy phép kinh
+                        doanh</a></li>
+                <li><a [routerLink]="['/policy/quy-che-hoat-dong']" routerLinkActive="active">Quy chế hoạt động</a>
+                </li>
+                <li><a [routerLink]="['/policy/chinh-sach-dat-coc']" routerLinkActive="active">Chính sách đặt
+                        cọc</a></li>
+                <li><a [routerLink]="['/policy/chinh-sach-noi-dung']" routerLinkActive="active">Chính sách nội
+                        dung</a></li>
+                <li><a [routerLink]="['/policy/chinh-sach-doi-tra']" routerLinkActive="active">Chính sách đổi trả
+                        thuốc</a></li>
+                <li><a [routerLink]="['/policy/chinh-sach-giao-hang']" routerLinkActive="active">Chính sách giao
+                        hàng</a></li>
+                <li><a [routerLink]="['/policy/chinh-sach-bao-mat']" routerLinkActive="active">Chính sách bảo
+                        mật</a></li>
+                <li><a [routerLink]="['/policy/chinh-sach-thanh-toan']" routerLinkActive="active">Chính sách thanh
+                        toán</a></li>
+                <li><a [routerLink]="['/policy/chinh-sach-bao-mat-du-lieu']" routerLinkActive="active">Chính sách
+                        bảo mật dữ liệu cá nhân</a></li>
+                <li><a [routerLink]="['/policy/thong-tin-trung-tam-bao-hanh']" routerLinkActive="active">Thông tin
+                        trung tâm bảo hành máy thiết bị y tế từng hãng</a></li>
+                <li><a [routerLink]="['/policy/dieu-khoan-su-dung']" routerLinkActive="active">Điều khoản sử dụng
+                        VitaCare 247</a></li>
             </ul>
-          </li>
-          <li><strong>Bước 3:</strong> Tra cứu kết quả xử lý bảo hành: <a href="#" target="_blank" rel="noopener">Tại
-              đây</a></li>
-          <li><em>*Lưu ý: Vui lòng gửi đầy đủ và chính xác thông tin theo yêu cầu khi gửi máy về TTBH.</em></li>
-        </ul>
-        <hr />
+        </aside>
 
-        <!-- ORAL-B -->
-        <h4>10) ORAL-B</h4>
-        <p><strong>Loại hàng:</strong> Bàn chải (Khách chịu phí gửi, hãng chịu phí trả)</p>
-        <p><strong>Địa chỉ TTBH:</strong></p>
-        <ul>
-          <li><strong>Miền Nam:</strong> 373 Nguyễn Thượng Hiền, Phường Vườn Lài, TP.HCM</li>
-          <li><strong>Miền Trung:</strong> Công ty TNHH Điện Tử - Điện lạnh Trung Phước - 88 Duy Tân, Phường Hòa Cường,
-            TP. Đà Nẵng</li>
-          <li><strong>Miền Bắc:</strong> Trạm Hà Yên - Số 126 ngõ 169 phố Tây Sơn, Phường Kim Liên, Thành phố Hà Nội
-          </li>
-        </ul>
-        <p><strong>Liên hệ:</strong></p>
-        <ul>
-          <li><strong>Tổng đài:</strong> 1900 585 893 - 1800 1592</li>
-          <li><strong>Miền Trung:</strong> Ms Thúy Nga - 0911 464 920</li>
-          <li><strong>Miền Bắc:</strong> 0944 863 806 / 024-2241 3329</li>
-        </ul>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Sau khi gửi hàng về hãng, shop vui lòng mail cho: <strong>kinhdoanh@brandpartner.vn</strong> thông báo
-            thông tin sản phẩm gửi bảo hành (shop gửi, người gửi, ngày gửi, gửi trạm nào, số vận đơn...) và yêu cầu gửi
-            trả về cho shop.</li>
-        </ul>
-        <hr />
+        <!-- Main Content -->
+        <main class="pc-content">
+            <h1 class="pc-title">Thông tin trung tâm bảo hành máy thiết bị y tế từng hãng</h1>
 
-        <!-- ON CALL PLUS -->
-        <h4>11) ON CALL PLUS</h4>
-        <p><strong>Loại hàng:</strong> Máy đo đường huyết</p>
-        <p><strong>Địa chỉ TTBH:</strong> Trung tâm bảo hành Acon: kho A5 - số 10 Trần Trọng Cung, P. Tân Thuận, TP.HCM
-        </p>
-        <p><strong>Liên hệ:</strong> SĐT kỹ thuật: <strong>028 3977 1526</strong></p>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện thoại, địa
-            chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
-        </ul>
-        <hr />
+            <div class="pc-section">
+                <p>
+                    Dưới đây là danh sách các trung tâm bảo hành theo từng hãng/nhà cung cấp (NCC) mà VitaCare tổng hợp
+                    để Quý khách tiện liên hệ. Quý khách vui lòng đọc kỹ lưu ý của từng hãng trước khi mang/ gửi thiết
+                    bị bảo hành.
+                </p>
 
-        <!-- FACARE -->
-        <h4>12) FACARE</h4>
-        <p><strong>Loại hàng:</strong> Máy đo đường huyết Facare</p>
-        <p><strong>Địa chỉ TTBH:</strong></p>
-        <ul>
-          <li><strong>VPGD Miền Bắc:</strong> Số 69, KM15, Quốc lộ 3, Xã Phúc Thịnh, TP. Hà Nội</li>
-          <li><strong>VPGD Miền Nam:</strong> Số 123, Đường D1, Phường Phước Long, TP. Hồ Chí Minh</li>
-        </ul>
-        <p><strong>Liên hệ:</strong></p>
-        <ul>
-          <li><strong>Miền Bắc:</strong> 0979 251 796</li>
-          <li><strong>Miền Nam:</strong> Mr Quảng - 0974 498 088</li>
-        </ul>
-        <hr />
+                <h3>Danh sách trung tâm bảo hành</h3>
 
-        <!-- JUMBER (SPO2) -->
-        <h4>13) JUMBER (SpO2)</h4>
-        <p><strong>Trường hợp 1:</strong> Đổi 1-1 trong 7 ngày (NCC Gia Hưng dán tem BH online / Huyền Anh có phiếu BH)
-        </p>
-        <p><strong>Địa chỉ/ liên hệ:</strong> Liên hệ SĐT trên hộp để được hướng dẫn gửi bảo hành</p>
+                <h4>1) OMRON</h4>
+                <p><strong>Loại hàng:</strong></p>
+                <ul>
+                    <li>Máy đo huyết áp</li>
+                    <li>Máy xông khí dung (bảo hành online: gọi hãng hủy bảo hành online)</li>
+                    <li>Nhiệt kế</li>
+                </ul>
+                <p><strong>Địa chỉ TTBH:</strong></p>
+                <ul>
+                    <li>TP.HCM: Tầng 4, Tòa nhà Jasmine 1 Hà Đô Centrosa Garden, Số 200 Đường 3/2, Phường Hòa Hưng, TP.
+                        Hồ Chí Minh</li>
+                    <li>Hà Nội: 15-17 Đặng Tiến Đông, P. Đống Đa, Hà Nội</li>
+                </ul>
+                <p><strong>Thông tin liên hệ TTBH:</strong></p>
+                <ul>
+                    <li>Tổng đài CSKH OMRON Việt Nam</li>
+                    <li>Hotline: 1800 646 958</li>
+                    <li>Zalo OA: OMRON Healthcare VN</li>
+                </ul>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Mọi yêu cầu bảo hành/sửa chữa/thông tin sản phẩm chỉ được thực hiện tại TTBH khi đã tạo yêu cầu
+                        thông qua tổng đài CSKH.</li>
+                    <li>Thời gian làm việc: 08:00–12:00 & 13:00–17:00 (Thứ Hai – Thứ Bảy).</li>
+                </ul>
 
-        <p style="margin-top:12px;"><strong>Trường hợp 2:</strong> Đổi 1-1 trong 7 ngày (NCC Phan Anh - có phiếu bảo
-          hành)</p>
-        <p><strong>Lưu ý chung:</strong> Xem vỏ hộp để biết sản phẩm thuộc NCC nào.</p>
+                <h4>2) MICROLIFE & BIOHEALTH</h4>
+                <p><strong>Loại hàng:</strong></p>
+                <ul>
+                    <li>Máy đo huyết áp Microlife</li>
+                    <li>Nhiệt kế Microlife</li>
+                    <li>Máy xông Microlife NEB200</li>
+                    <li>Máy đo SpO2 OXY200</li>
+                    <li>Máy xông khí dung Biohealth NEB PRO</li>
+                </ul>
+                <p><strong>Địa chỉ TTBH:</strong></p>
+                <ul>
+                    <li>Trụ sở chính (TP.HCM): Công Ty CP Thiết Bị Y Sinh, 89 Trần Văn Dư, Phường Tân Bình, TP.HCM</li>
+                    <li>Chi nhánh (Hà Nội): A2-BT6 Khu đô thị mới Hạ Đình, Phường Thanh Liệt, TP. Hà Nội</li>
+                </ul>
+                <p><strong>Thông tin người nhận tại TTBH:</strong></p>
+                <ul>
+                    <li>Anh Hân (Phòng Kỹ Thuật) - SĐT: 0869 179 671</li>
+                    <li>Anh Phong (Phòng Kỹ Thuật) - SĐT: 0336 689 374</li>
+                </ul>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú bên trong kiện hàng gồm: Tên, số
+                        điện thoại, địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
+                </ul>
 
-        <p><strong>NCC Gia Hưng:</strong> TTBH HCM: Số 46 Đường A, Khu ADC, P. Phú Thạch, Q. Tân Phú, TP.HCM</p>
-        <p><strong>Người nhận:</strong> Thái Bảo - <strong>SĐT:</strong> 0989 542 850</p>
+                <h4>3) AND & EASY MAX</h4>
+                <p><strong>Loại hàng:</strong></p>
+                <ul>
+                    <li>Máy đo huyết áp</li>
+                    <li>Máy hút mũi (Co Lean Duck, Co Lean Bear)</li>
+                    <li>Máy đo đường huyết Easy Max Mini (không đổi đơn vị)</li>
+                </ul>
+                <p><strong>Địa chỉ TTBH:</strong> 76 Sương Nguyệt Anh, Phường Bến Thành, TP.HCM</p>
+                <p><strong>Thông tin người nhận tại TTBH:</strong> Trần Thành Long - SĐT: 0328 817 878</p>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú bên trong kiện hàng gồm: Tên, số
+                        điện thoại, địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
+                </ul>
 
-        <p><strong>NCC Phan Anh:</strong> T3-T4 Hồng Lĩnh, Phường 15, Quận 10, TP.HCM</p>
-        <p><strong>Người nhận:</strong> Chị Huệ - <strong>SĐT:</strong> 0909 488 316</p>
+                <h4>4) NỆM CHỐNG LOÉT YH MEDICAL</h4>
+                <p><strong>Loại hàng:</strong> Nệm chống loét YH Medical</p>
+                <p>Quý khách vui lòng quét mã QR bên dưới hoặc truy cập Website bảo hành Yteco để kích hoạt bảo hành
+                    online.</p>
+                <p>
+                    <img src="assets/images/policy/qr.png" alt="QR bảo hành Yteco"
+                        style="max-width: 300px; margin: 10px auto; display: block;" />
+                </p>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Sau khi truy cập trang, vui lòng chọn “Đăng ký bảo hành” và điền thông tin thiết bị.</li>
+                    <li>Chuẩn bị: Số Serial/Lot Number và Ngày mua hàng (Demo Lot Number nếu được yêu cầu).</li>
+                </ul>
 
-        <p><strong>NCC Hợp Phú (Đại Dương):</strong> Cty Hợp Phú, số 1A 48 Bích Câu, Đống Đa, Hà Nội</p>
-        <p><strong>Người nhận:</strong> Phương - <strong>SĐT:</strong> 0357 822 596</p>
+                <h4>5) MEDIUSA</h4>
+                <p><strong>Loại hàng:</strong></p>
+                <ul>
+                    <li>Máy đo huyết áp / Máy nhiệt kế</li>
+                    <li>Máy đo đường huyết (đổi được đơn vị)</li>
+                </ul>
+                <p><strong>Địa chỉ TTBH:</strong> 154-156 Khánh Hội, Phường Khánh Hội, TP.HCM</p>
+                <p><strong>Liên hệ:</strong> Hotline: 0964 980 099 hoặc 1800 9009</p>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện
+                        thoại, địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
+                </ul>
 
-        <p><strong>NCC Huyền Anh (Bắc Hà):</strong> Liên hệ SĐT trên tem phụ: <strong>024 3775 9909</strong></p>
+                <h4>6) VÂN LONG (Yuwell / Fuji / Pangao / SpO2 Oromi / A4)</h4>
+                <p><strong>Loại hàng:</strong> Thiết bị thuộc các hãng: Yuwell, Fuji, Pangao, SpO2 Oromi, A4</p>
+                <p><strong>Địa chỉ TTBH:</strong> 373/14 đường Nguyễn Kiệm, phường Đức Nhuận, TP.HCM</p>
+                <p><strong>Liên hệ:</strong> Phòng kỹ thuật: 0984 840 440</p>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện
+                        thoại, địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
+                </ul>
 
-        <p><strong>Lưu ý khi gửi máy:</strong></p>
-        <ul>
-          <li>Kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện thoại, địa chỉ, ... để TTBH gửi máy sau khi hoàn tất
-            bảo hành.</li>
-        </ul>
-        <hr />
+                <h4>7) ACCU-CHEK (Roche Việt Nam)</h4>
+                <p><strong>Loại hàng:</strong> Máy đo đường huyết (không đổi đơn vị)</p>
+                <p><strong>Địa chỉ TTBH:</strong></p>
+                <ul>
+                    <li>Trung tâm bảo hành máy đo đường huyết Accu-Chek - Công ty TNHH Roche Việt Nam (TP.HCM)</li>
+                    <li>Tầng 27, Tòa nhà Pearl Plaza, 561A Điện Biên Phủ, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh</li>
+                </ul>
+                <p><strong>Thông tin người nhận tại TTBH:</strong> Chị Trâm - SĐT: 0906 382 078</p>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Kèm 01 giấy ghi chú gồm: Tên, số điện thoại, địa chỉ, ...</li>
+                    <li>Ghi rõ lỗi của máy.</li>
+                    <li>Kiện hàng cần được gửi trực tiếp tầng 27, Tòa nhà Pearl Plaza.</li>
+                    <li>Nên gửi qua đơn vị chuyển phát nhanh (VNPost, Viettel, ...) để tránh thất lạc.</li>
+                </ul>
 
-        <!-- BEURER -->
-        <h4>14) BEURER (HỢP PHÁT)</h4>
-        <p><strong>Loại hàng:</strong> Máy nhiệt kế</p>
-        <ul>
-          <li>FT15 - Nhiệt kế đầu mềm (có phiếu bảo hành)</li>
-          <li>FT65 - Nhiệt kế điện tử đo tai trán (phiếu BH dán trên thân máy)</li>
-          <li>FT90 - Nhiệt kế hồng ngoại (phiếu BH dán trên thân máy)</li>
-        </ul>
-        <p><strong>Địa chỉ TTBH:</strong></p>
-        <ul>
-          <li><strong>TP.HCM:</strong> Số 61 đường số 3 Cư Xá Lữ Gia, P.15, Q.11, TP.HCM</li>
-          <li><strong>Hà Nội:</strong> 22 Xã Đàn, Q. Đống Đa, Hà Nội</li>
-        </ul>
-        <p><strong>Liên hệ:</strong></p>
-        <ul>
-          <li><strong>TP.HCM Hotline:</strong> 0904 534 158</li>
-          <li><strong>Hà Nội:</strong> 024 7306 6889</li>
-        </ul>
-        <p><strong>Lưu ý:</strong></p>
-        <ul>
-          <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện thoại, địa
-            chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
-        </ul>
+                <h4>8) NIPRO & 3P</h4>
+                <p><strong>Địa chỉ nhận bảo hành:</strong> FPT Telecom - Số 336-340 Huỳnh Tấn Phát, Phường Tân Thuận,
+                    TP.HCM</p>
+                <p><strong>Đầu mối nhận hàng:</strong></p>
+                <ul>
+                    <li>Tên: Bảo hành máy Nipro _ FPT MediCare</li>
+                    <li>SĐT: 0786 765 428 (Chị Minh)</li>
+                </ul>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Khi cần hướng dẫn sử dụng, thắc mắc sản phẩm, hỗ trợ app, bảo hành sản phẩm, Quý khách vui lòng
+                        liên hệ trực tiếp đơn vị phụ trách qua nút “Liên hệ hỗ trợ” trên ứng dụng hoặc gửi tin nhắn đến
+                        fanpage Chăm sóc khách hàng.</li>
+                    <li>Mọi yêu cầu bảo hành/sửa chữa/thông tin sản phẩm NIPRO & 3P chỉ được thực hiện tại TTBH khi đã
+                        tạo yêu cầu thông qua Link tiếp nhận bảo hành.</li>
+                </ul>
 
-        <h3 style="margin-top:18px;">Lưu ý chung khi gửi/ mang thiết bị bảo hành</h3>
-        <ul>
-          <li>Chuẩn bị hóa đơn/phiếu bảo hành (nếu có), phụ kiện đi kèm (nếu hãng yêu cầu).</li>
-          <li>Ghi rõ tình trạng lỗi, thời điểm phát sinh và các thao tác đã thử (nếu có) để kỹ thuật kiểm tra nhanh hơn.
-          </li>
-          <li>Nếu gửi chuyển phát nhanh, vui lòng đóng gói chắc chắn và ghi đầy đủ thông tin người gửi/nhận theo hướng
-            dẫn của TTBH.</li>
-          <li>Khuyến nghị gọi hotline hãng/NCC trước khi gửi để xác nhận địa chỉ nhận, thời gian làm việc và quy trình
-            tiếp nhận mới nhất.</li>
-        </ul>
-      </div>
-    </main>
-  </div>
+                <h4>9) HALIO</h4>
+                <p><strong>Loại hàng:</strong></p>
+                <ul>
+                    <li>Máy tăm nước</li>
+                    <li>Bàn chải điện</li>
+                </ul>
+                <p><strong>Địa chỉ TTBH:</strong> Số 13 Đường 34, Khu phố 2, Phường An Khánh, Thành Phố Thủ Đức</p>
+                <p><strong>Thời gian nhận hàng bảo hành:</strong> Thứ 2 đến Thứ 6 (Sáng: 08:30 - 12:00; Chiều: 13:00 -
+                    16:30)</p>
+                <p><strong>Liên hệ:</strong> Trung tâm bảo hành Halio Việt Nam: 0909 606 003</p>
+                <p><strong>Quy trình bảo hành:</strong></p>
+                <ul>
+                    <li>Bước 1: Điền thông tin đăng ký bảo hành tại Link đăng ký bảo hành hoặc quét mã QR bên dưới.<br>
+                        <img src="assets/images/policy/qr.png" alt="QR đăng ký bảo hành Halio"
+                            style="max-width: 300px; margin: 10px auto; display: block;" />
+                    </li>
+                    <li>Bước 2: Khi gửi máy về TTBH, vui lòng gửi kèm:
+                        <ul>
+                            <li>Hóa đơn mua hàng</li>
+                            <li>Mã bảo hành của sản phẩm (đi kèm hộp sản phẩm)</li>
+                            <li>01 phiếu thông tin bảo hành: Ngày gửi, cửa hàng, người gửi - SĐT, địa chỉ, chi tiết lỗi
+                                sản phẩm, danh sách phụ kiện đi kèm</li>
+                        </ul>
+                    </li>
+                    <li>Bước 3: Tra cứu kết quả xử lý bảo hành: Tại đây</li>
+                </ul>
+                <p><em>*Lưu ý: Vui lòng gửi đầy đủ và chính xác thông tin theo yêu cầu khi gửi máy về TTBH.</em></p>
 
-  <!-- Feature Icons Footer -->
-  <div class="pc-features">
-    <div class="pc-feature-item">
-      <div class="pc-feature-icon">
-        <img src="assets/images/policy/pill.png" alt="Thuốc chính hãng">
-      </div>
-      <div class="pc-feature-text">
-        <strong>THUỐC CHÍNH HÃNG</strong>
-        <span>đa dạng và chuyên sâu</span>
-      </div>
+                <h4>10) ORAL-B</h4>
+                <p><strong>Loại hàng:</strong> Bàn chải (Khách chịu phí gửi, hãng chịu phí trả)</p>
+                <p><strong>Địa chỉ TTBH:</strong></p>
+                <ul>
+                    <li>Miền Nam: 373 Nguyễn Thượng Hiền, Phường Vườn Lài, TP.HCM</li>
+                    <li>Miền Trung: Công ty TNHH Điện Tử - Điện lạnh Trung Phước - 88 Duy Tân, Phường Hòa Cường, TP. Đà
+                        Nẵng</li>
+                    <li>Miền Bắc: Trạm Hà Yên - Số 126 ngõ 169 phố Tây Sơn, Phường Kim Liên, Thành phố Hà Nội</li>
+                </ul>
+                <p><strong>Liên hệ:</strong></p>
+                <ul>
+                    <li>Tổng đài: 1900 585 893 - 1800 1592</li>
+                    <li>Miền Trung: Ms Thúy Nga - 0911 464 920</li>
+                    <li>Miền Bắc: 0944 863 806 / 024-2241 3329</li>
+                </ul>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Sau khi gửi hàng về hãng, shop vui lòng mail cho: kinhdoanh@brandpartner.vn thông báo thông tin
+                        sản phẩm gửi bảo hành (shop gửi, người gửi, ngày gửi, gửi trạm nào, số vận đơn...) và yêu cầu
+                        gửi trả về cho shop.</li>
+                </ul>
+
+                <h4>11) ON CALL PLUS</h4>
+                <p><strong>Loại hàng:</strong> Máy đo đường huyết</p>
+                <p><strong>Địa chỉ TTBH:</strong> Trung tâm bảo hành Acon: kho A5 - số 10 Trần Trọng Cung, P. Tân Thuận,
+                    TP.HCM</p>
+                <p><strong>Liên hệ:</strong> SĐT kỹ thuật: 028 3977 1526</p>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện
+                        thoại, địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
+                </ul>
+
+                <h4>12) FACARE</h4>
+                <p><strong>Loại hàng:</strong> Máy đo đường huyết Facare</p>
+                <p><strong>Địa chỉ TTBH:</strong></p>
+                <ul>
+                    <li>VPGD Miền Bắc: Số 69, KM15, Quốc lộ 3, Xã Phúc Thịnh, TP. Hà Nội</li>
+                    <li>VPGD Miền Nam: Số 123, Đường D1, Phường Phước Long, TP. Hồ Chí Minh</li>
+                </ul>
+                <p><strong>Liên hệ:</strong></p>
+                <ul>
+                    <li>Miền Bắc: 0979 251 796</li>
+                    <li>Miền Nam: Mr Quảng - 0974 498 088</li>
+                </ul>
+
+                <h4>13) JUMBER (SpO2)</h4>
+                <p><strong>Trường hợp 1:</strong> Đổi 1-1 trong 7 ngày (NCC Gia Hưng dán tem BH online / Huyền Anh có
+                    phiếu BH)</p>
+                <p><strong>Địa chỉ/ liên hệ:</strong> Liên hệ SĐT trên hộp để được hướng dẫn gửi bảo hành</p>
+                <p><strong>Trường hợp 2:</strong> Đổi 1-1 trong 7 ngày (NCC Phan Anh - có phiếu bảo hành)</p>
+                <p><strong>Lưu ý chung:</strong> Xem vỏ hộp để biết sản phẩm thuộc NCC nào.</p>
+                <ul>
+                    <li><strong>NCC Gia Hưng:</strong> TTBH HCM: Số 46 Đường A, Khu ADC, P. Phú Thạch, Q. Tân Phú,
+                        TP.HCM | Người nhận: Thái Bảo - SĐT: 0989 542 850</li>
+                    <li><strong>NCC Phan Anh:</strong> T3-T4 Hồng Lĩnh, Phường 15, Quận 10, TP.HCM | Người nhận: Chị Huệ
+                        - SĐT: 0909 488 316</li>
+                    <li><strong>NCC Hợp Phú (Đại Dương):</strong> Cty Hợp Phú, số 1A 48 Bích Câu, Đống Đa, Hà Nội |
+                        Người nhận: Phương - SĐT: 0357 822 596</li>
+                    <li><strong>NCC Huyền Anh (Bắc Hà):</strong> Liên hệ SĐT trên tem phụ: 024 3775 9909</li>
+                </ul>
+                <p><strong>Lưu ý khi gửi máy:</strong></p>
+                <ul>
+                    <li>Kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện thoại, địa chỉ, ... để TTBH gửi máy sau
+                        khi hoàn tất bảo hành.</li>
+                </ul>
+
+                <h4>14) BEURER (HỢP PHÁT)</h4>
+                <p><strong>Loại hàng:</strong> Máy nhiệt kế</p>
+                <ul>
+                    <li>FT15 - Nhiệt kế đầu mềm (có phiếu bảo hành)</li>
+                    <li>FT65 - Nhiệt kế điện tử đo tai trán (phiếu BH dán trên thân máy)</li>
+                    <li>FT90 - Nhiệt kế hồng ngoại (phiếu BH dán trên thân máy)</li>
+                </ul>
+                <p><strong>Địa chỉ TTBH:</strong></p>
+                <ul>
+                    <li>TP.HCM: Số 61 đường số 3 Cư Xá Lữ Gia, P.15, Q.11, TP.HCM</li>
+                    <li>Hà Nội: 22 Xã Đàn, Q. Đống Đa, Hà Nội</li>
+                </ul>
+                <p><strong>Liên hệ:</strong></p>
+                <ul>
+                    <li>TP.HCM Hotline: 0904 534 158</li>
+                    <li>Hà Nội: 024 7306 6889</li>
+                </ul>
+                <p><strong>Lưu ý:</strong></p>
+                <ul>
+                    <li>Khi gửi máy bảo hành, Quý khách vui lòng kèm 01 giấy ghi chú trong kiện hàng gồm: Tên, số điện
+                        thoại, địa chỉ, ... để TTBH gửi máy sau khi hoàn tất bảo hành.</li>
+                </ul>
+
+                <h3 style="margin-top: 20px;">Lưu ý chung khi gửi/ mang thiết bị bảo hành</h3>
+                <ul>
+                    <li>Chuẩn bị hóa đơn/phiếu bảo hành (nếu có), phụ kiện đi kèm (nếu hãng yêu cầu).</li>
+                    <li>Ghi rõ tình trạng lỗi, thời điểm phát sinh và các thao tác đã thử (nếu có) để kỹ thuật kiểm tra
+                        nhanh hơn.</li>
+                    <li>Nếu gửi chuyển phát nhanh, vui lòng đóng gói chắc chắn và ghi đầy đủ thông tin người gửi/nhận
+                        theo hướng dẫn của TTBH.</li>
+                    <li>Khuyến nghị gọi hotline hãng/NCC trước khi gửi để xác nhận địa chỉ nhận, thời gian làm việc và
+                        quy trình tiếp nhận mới nhất.</li>
+                </ul>
+            </div>
+        </main>
     </div>
-    <div class="pc-feature-item">
-      <div class="pc-feature-icon">
-        <img src="assets/images/policy/change.png" alt="Đổi trả">
-      </div>
-      <div class="pc-feature-text">
-        <strong>ĐỔI TRẢ TRONG 30 NGÀY</strong>
-        <span>kể cả thuốc đã bóc seal</span>
-      </div>
+
+    <!-- Feature Icons Footer -->
+    <div class="pc-features">
+        <div class="pc-feature-item">
+            <div class="pc-feature-icon">
+                <img src="assets/images/policy/pill.png" alt="Thuốc chính hãng">
+            </div>
+            <div class="pc-feature-text">
+                <strong>THUỐC CHÍNH HÃNG</strong>
+                <span>đa dạng và chuyên sâu</span>
+            </div>
+        </div>
+        <div class="pc-feature-item">
+            <div class="pc-feature-icon">
+                <img src="assets/images/policy/change.png" alt="Đổi trả">
+            </div>
+            <div class="pc-feature-text">
+                <strong>ĐỔI TRẢ TRONG 30 NGÀY</strong>
+                <span>kể cả thuốc đã bóc seal</span>
+            </div>
+        </div>
+        <div class="pc-feature-item">
+            <div class="pc-feature-icon">
+                <img src="assets/images/policy/pill-shield.png" alt="Cam kết">
+            </div>
+            <div class="pc-feature-text">
+                <strong>CAM KẾT 100%</strong>
+                <span>chất lượng sản phẩm</span>
+            </div>
+        </div>
+        <div class="pc-feature-item">
+            <div class="pc-feature-icon">
+                <img src="assets/images/policy/shipping.png" alt="Vận chuyển">
+            </div>
+            <div class="pc-feature-text">
+                <strong>MIỄN PHÍ VẬN CHUYỂN</strong>
+                <span>theo chính sách giao hàng</span>
+            </div>
+        </div>
     </div>
-    <div class="pc-feature-item">
-      <div class="pc-feature-icon">
-        <img src="assets/images/policy/pill-shield.png" alt="Cam kết">
-      </div>
-      <div class="pc-feature-text">
-        <strong>CAM KẾT 100%</strong>
-        <span>chất lượng sản phẩm</span>
-      </div>
-    </div>
-    <div class="pc-feature-item">
-      <div class="pc-feature-icon">
-        <img src="assets/images/policy/shipping.png" alt="Vận chuyển">
-      </div>
-      <div class="pc-feature-text">
-        <strong>MIỄN PHÍ VẬN CHUYỂN</strong>
-        <span>theo chính sách giao hàng</span>
-      </div>
-    </div>
-  </div>
 </div>

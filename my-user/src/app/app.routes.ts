@@ -189,5 +189,8 @@ export const routes: Routes = [
     path: 'benh/:id',
     loadComponent: () => import('./features/healthcare/disease-details/disease-details').then(m => m.DiseaseDetails),
   },
-  { path: '**', redirectTo: HOME_ROUTE_SEGMENT },
+  {
+    path: '**',
+    loadComponent: () => import('./features/pages/expired-link/expired-link').then(m => m.ExpiredLink)
+  }
 ];
