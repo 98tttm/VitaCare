@@ -1340,6 +1340,36 @@
     transition: background-color 0.2s, border-color 0.2s, filter 0.2s;
 }
 
+.prescription-modal-footer .btn-outline-primary {
+    background: transparent;
+    border: 1px solid #00589f;
+    color: #00589f;
+    font-family: var(--font-family-base, 'Inter', system-ui, sans-serif);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, filter 0.2s;
+}
+
+.prescription-modal-footer .btn-outline-primary:hover:not(:disabled) {
+    background-color: #00589f;
+    border-color: #00589f;
+    color: #fff;
+    filter: brightness(1.02);
+}
+
+.prescription-modal-footer .btn-outline-primary:focus-visible {
+    outline: 2px solid rgba(0, 88, 159, 0.45);
+    outline-offset: 2px;
+}
+
+.prescription-modal-footer .btn-outline-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 .prescription-modal-footer .btn-primary:hover:not(:disabled) {
     background-color: #00487f;
     border-color: #00487f;

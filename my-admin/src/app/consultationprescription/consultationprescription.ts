@@ -50,6 +50,12 @@ export class Consultationprescription implements OnInit, OnDestroy {
   /** Dropdown tùy chỉnh phân công dược sĩ (thay select native để style được panel). */
   showPharmacistAssignDropdown = false;
 
+  /**
+   * Khi admin bấm chuông (nhắc nhở đơn lâu), cho phép "mở khóa tạm thời"
+   * để admin phân công lại dược sĩ khác ngay trên modal.
+   */
+  private forceUnlockAssignmentForPrescriptionId: string | null = null;
+
   // Multiple filters support
   filters: any = {
     status: [] as string[],
@@ -282,21 +288,33 @@ export class Consultationprescription implements OnInit, OnDestroy {
   /** Đủ điều kiện gửi nhắc nhở: waiting + đã phân công + ≥ 2 giờ. */
   canSendPrescriptionReminder(item: any): boolean {
     if (!this.isAdmin || !item || !this.isPrescriptionRowWaiting(item)) return false;
+    // Dữ liệu có thể thiếu pharmacist_id nhưng vẫn có tên (import JSON / legacy).
     const pid = String(item.pharmacist_id ?? item.pharmacistId ?? '').trim();
-    if (!pid) return false;
+    const pname = String(item.pharmacistName ?? item.pharmacist_name ?? '').trim();
+    const hasAssigned = !!(pid || pname);
+    if (!hasAssigned) return false;
     const since = this.getWaitingSinceDate(item);
     if (!since) return false;
     return Date.now() - since.getTime() >= Consultationprescription.REMIND_AFTER_MS;
   }
 
+  /** Điều kiện cho phép phân công lại (không phụ thuộc mốc 2 giờ). */
+  canReassignPrescription(item: any): boolean {
+    if (!this.isAdmin || !item || !this.isPrescriptionRowWaiting(item)) return false;
+    const pid = String(item.pharmacist_id ?? item.pharmacistId ?? '').trim();
+    const pname = String(item.pharmacistName ?? item.pharmacist_name ?? '').trim();
+    return !!(pid || pname);
+  }
+
   prescriptionRemindButtonTitle(item: any): string {
     if (!this.isAdmin || !this.isPrescriptionRowWaiting(item)) return '';
     const pid = String(item.pharmacist_id ?? item.pharmacistId ?? '').trim();
-    if (!pid) return 'Chưa phân công dược sĩ — không gửi nhắc nhở được.';
+    const pname = String(item.pharmacistName ?? item.pharmacist_name ?? '').trim();
+    if (!pid && !pname) return 'Chưa phân công dược sĩ — không thể phân công lại.';
     if (!this.canSendPrescriptionReminder(item)) {
-      return 'Sau 2 giờ kể từ lúc phân công mới gửi nhắc nhở tới dược sĩ.';
+      return 'Chưa đủ 2 giờ để gửi nhắc nhở; bạn vẫn có thể phân công lại dược sĩ.';
     }
-    return 'Gửi nhắc nhở tới dược sĩ';
+    return 'Phân công lại dược sĩ (mở modal để chọn)';
   }
 
   /** Đã tư vấn xong và khách đã chấm 1–5 sao (PATCH /api/prescriptions/:id/review). */
@@ -329,33 +347,41 @@ export class Consultationprescription implements OnInit, OnDestroy {
 
   onRemindPharmacistClick(item: any, event: Event): void {
     event.stopPropagation();
-    if (!this.canSendPrescriptionReminder(item)) return;
-    const key = this.prescriptionRemindRowKey(item);
-    if (!key || this.remindingPrescriptionKey) return;
-    const apiId = String(item.prescriptionId || item._id || '').trim();
-    if (!apiId) return;
-    this.remindingPrescriptionKey = key;
-    this.consultationService.remindPrescriptionPharmacist(apiId).subscribe({
-      next: (res) => {
-        this.remindingPrescriptionKey = null;
-        if (res?.success) {
-          this.showNotification(res.message || 'Đã gửi nhắc nhở tới dược sĩ.', 'success');
-        } else {
-          this.showNotification(res?.message || 'Không gửi được nhắc nhở.', 'error');
-        }
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        this.remindingPrescriptionKey = null;
-        const msg =
-          err?.error?.message ||
-          (typeof err?.error === 'string' ? err.error : '') ||
-          err?.message ||
-          'Không gửi được nhắc nhở.';
-        this.showNotification(msg, 'error');
-        this.cdr.markForCheck();
-      },
-    });
+    if (!this.canReassignPrescription(item)) {
+      this.showNotification(this.prescriptionRemindButtonTitle(item) || 'Không thể phân công lại.', 'warning');
+      return;
+    }
+
+    // Bấm chuông: mở modal và bật chế độ phân công lại luôn.
+    this.openDetailModal(item);
+    this.enableReassignInModal();
+  }
+
+  private prescriptionUnlockKey(p: any): string {
+    if (!p) return '';
+    return String(p.prescriptionId || p.id || p._id || '').trim();
+  }
+
+  /** Admin mở khóa phân công lại ngay trong modal (khi đơn đủ điều kiện “nhắc nhở”). */
+  enableReassignInModal(): void {
+    if (!this.isAdmin || !this.selectedPrescription) return;
+    if (!this.canReassignPrescription(this.selectedPrescription)) {
+      this.showNotification(this.prescriptionRemindButtonTitle(this.selectedPrescription) || 'Không thể phân công lại.', 'warning');
+      return;
+    }
+    this.forceUnlockAssignmentForPrescriptionId = this.prescriptionUnlockKey(this.selectedPrescription);
+    this.showNotification('Đã mở phân công lại. Hãy chọn dược sĩ mới và bấm "Phân công".', 'warning');
+    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.showPharmacistAssignDropdown = true;
+      this.cdr.markForCheck();
+    }, 0);
+  }
+
+  get isReassignModeActive(): boolean {
+    if (!this.isAdmin || !this.selectedPrescription) return false;
+    const selId = this.prescriptionUnlockKey(this.selectedPrescription);
+    return !!(this.forceUnlockAssignmentForPrescriptionId && selId && this.forceUnlockAssignmentForPrescriptionId === selId);
   }
 
   /**
@@ -377,6 +403,15 @@ export class Consultationprescription implements OnInit, OnDestroy {
    */
   get isAdminPharmacistAssignmentLocked(): boolean {
     if (!this.selectedPrescription || !this.isAdmin) return false;
+    const selId = this.prescriptionUnlockKey(this.selectedPrescription);
+    // Khi force unlock đúng đơn đang chọn => cho phép phân công lại dù đã có pharmacist.
+    if (
+      this.forceUnlockAssignmentForPrescriptionId &&
+      selId &&
+      this.forceUnlockAssignmentForPrescriptionId === selId
+    ) {
+      return false;
+    }
     return this.prescriptionRowHasAssignedPharmacist(this.selectedPrescription);
   }
 
@@ -889,6 +924,7 @@ export class Consultationprescription implements OnInit, OnDestroy {
     const pid = item.pharmacist_id ?? item.pharmacistId ?? item.pharmacistID ?? '';
     this.editedPharmacistId = String(pid || '').trim();
     this.showPharmacistAssignDropdown = false;
+    this.forceUnlockAssignmentForPrescriptionId = null;
     this.isModalOpen = true;
     this.cdr.detectChanges();
     setTimeout(() => this.attachPrescriptionModalToBody(), 0);
@@ -903,6 +939,8 @@ export class Consultationprescription implements OnInit, OnDestroy {
     this.isModalOpen = false;
     this.selectedPrescription = null;
     this.showPharmacistAssignDropdown = false;
+    this.forceUnlockAssignmentForPrescriptionId = null;
+    this.editedPharmacistId = '';
   }
 
   pharmacistAssignTriggerLabel(): string {
@@ -975,6 +1013,19 @@ export class Consultationprescription implements OnInit, OnDestroy {
       if (!pharmacist) {
         this.isSaving = false;
         this.showNotification('Không tìm thấy thông tin dược sĩ', 'error');
+        return;
+      }
+
+      // Khi admin mở chế độ "phân công lại do bấm chuông", chọn trùng người cũ sẽ không tạo được thông báo mới.
+      const selId = this.prescriptionUnlockKey(this.selectedPrescription);
+      if (
+        this.forceUnlockAssignmentForPrescriptionId &&
+        selId &&
+        this.forceUnlockAssignmentForPrescriptionId === selId &&
+        String(originalPharmacistId || '').trim() === String(this.editedPharmacistId || '').trim()
+      ) {
+        this.isSaving = false;
+        this.showNotification('Vui lòng chọn dược sĩ KHÁC để hệ thống thông báo lại.', 'warning');
         return;
       }
 

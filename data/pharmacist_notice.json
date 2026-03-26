@@ -1,0 +1,722 @@
+[{
+  "_id": {
+    "$oid": "69c03d58afafcbb7fcf190f0"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bại não trẻ em",
+  "createdAt": {
+    "$date": "2026-03-22T19:04:56.389Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/bai-nao-tre-em-6.html",
+    "questionId": "69c03d58afafcbb7fcf190ef",
+    "productName": "Bại não trẻ em",
+    "full_name": "Ánh Linh"
+  },
+  "resolvedAt": {
+    "$date": "2026-03-22T19:09:18.577Z"
+  },
+  "consultedByName": "Phan Thị Ánh Linh"
+},
+{
+  "_id": {
+    "$oid": "69c04c5b6e77a9e81a72fe4b"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000008",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-22T20:08:59.689Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000008",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c04fd46e77a9e81a72ff16"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE263491238",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-22T20:23:48.880Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE263491238",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c05e4f5db28bc21149d558"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000009",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-22T21:25:35.486Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000009",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000009",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "advised"
+  },
+  "updatedAt": {
+    "$date": "2026-03-22T21:25:51.547Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c0d2e96da1dd2d82a17459"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000010",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-23T05:43:05.755Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000010",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000010",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "advised"
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T05:43:35.005Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c0d3a76da1dd2d82a1748a"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000011",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-23T05:46:15.622Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000011",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000011",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "unreachable"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T09:34:37.342Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c107f53c92cbba9a3fe96a"
+  },
+  "type": "consultation_product_assigned",
+  "title": "Bạn vừa được phân công tư vấn sản phẩm (108131)",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-23T09:29:25.685Z"
+  },
+  "link": "/admin/consultation-product?sku=108131",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "sku": "108131",
+    "questionId": "69c0f3f66ba5857aa1b904e2",
+    "productName": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+    "assignedAt": {
+      "$date": "2026-03-23T09:29:25.685Z"
+    },
+    "assignedBy": "Admin",
+    "questionStatus": "answered"
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T10:03:15.277Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c11ee1bcf3d3b1ba09b2a0"
+  },
+  "type": "consultation_product_assigned",
+  "title": "Bạn vừa được phân công tư vấn sản phẩm (101214)",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-23T11:07:13.222Z"
+  },
+  "link": "/admin/consultation-product?sku=101214",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "sku": "101214",
+    "questionId": "69c11ca4b66bcc8babf799d6",
+    "questionStatus": "answered",
+    "productName": "Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)",
+    "assignedAt": {
+      "$date": "2026-03-23T11:07:13.222Z"
+    },
+    "assignedBy": "Admin"
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T14:04:41.096Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c11f41bcf3d3b1ba09b2c1"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bỏng mắt",
+  "createdAt": {
+    "$date": "2026-03-23T11:08:49.570Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/bong-mat.html",
+    "questionId": "69c11f41bcf3d3b1ba09b2bf",
+    "productName": "Bỏng mắt",
+    "full_name": "Ánh Linh"
+  },
+  "consultedByName": "Phan Thị Ánh Linh",
+  "resolvedAt": {
+    "$date": "2026-03-23T11:09:15.493Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c11f7fbcf3d3b1ba09b2e2"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bạch sản",
+  "createdAt": {
+    "$date": "2026-03-23T11:09:51.804Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/bach-san.html",
+    "questionId": "69c11f7fbcf3d3b1ba09b2e0",
+    "productName": "Bạch sản",
+    "full_name": "Ánh Linh"
+  },
+  "consultedByName": "Test",
+  "resolvedAt": {
+    "$date": "2026-03-23T11:10:54.212Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c14c86a3ba29226154cbe5"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000012",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-23T14:21:58.672Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000012",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000012",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "unreachable"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:44:41.343Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c17ac94b5aabfd1f4898bf"
+  },
+  "type": "consultation_prescription_reminder",
+  "title": "Nhắc nhở: đơn thuốc PRE100000012 chưa được cập nhật trạng thái tư vấn",
+  "message": "Quản trị viên nhắc bạn xử lý đơn tư vấn thuốc đã phân công. Vui lòng liên hệ khách và cập nhật trạng thái.",
+  "createdAt": {
+    "$date": "2026-03-23T17:39:21.592Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000012",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000012",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "waiting"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c182f74b5aabfd1f489ab3"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "0101010101 vừa hỏi về bệnh Bệnh mất ngủ ở người già",
+  "createdAt": {
+    "$date": "2026-03-23T18:14:15.318Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/benh-mat-ngu-o-nguoi-gia.html",
+    "questionId": "69c182f74b5aabfd1f489aaf",
+    "productName": "Bệnh mất ngủ ở người già",
+    "full_name": "0101010101"
+  },
+  "consultedByName": "Test",
+  "resolvedAt": {
+    "$date": "2026-03-24T05:18:07.147Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c20c6ea37da62f4c56af63"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Khách vãng lai 9793 vừa hỏi về bệnh Bệnh màng đáy mỏng",
+  "createdAt": {
+    "$date": "2026-03-24T04:00:46.627Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/benh-mang-day-mong.html",
+    "questionId": "69c20c6ea37da62f4c56af61",
+    "productName": "Bệnh màng đáy mỏng",
+    "full_name": "Khách vãng lai 9793"
+  },
+  "consultedByName": "Phan Thị Ánh Linh",
+  "resolvedAt": {
+    "$date": "2026-03-24T05:18:46.927Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c2182ea37da62f4c56af97"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bệnh não gan",
+  "createdAt": {
+    "$date": "2026-03-24T04:50:54.336Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/benh-nao-gan.html",
+    "questionId": "69c2182ea37da62f4c56af95",
+    "productName": "Bệnh não gan",
+    "full_name": "Ánh Linh"
+  },
+  "consultedByName": "Test",
+  "resolvedAt": {
+    "$date": "2026-03-24T05:19:06.961Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c21f37a37da62f4c56b14f"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bệnh thần kinh",
+  "createdAt": {
+    "$date": "2026-03-24T05:20:55.189Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/benh-than-kinh.html",
+    "questionId": "69c21f37a37da62f4c56b14d",
+    "productName": "Bệnh thần kinh",
+    "full_name": "Ánh Linh"
+  },
+  "consultedByName": "Phan Thị Ánh Linh",
+  "resolvedAt": {
+    "$date": "2026-03-24T05:21:28.095Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c2200da37da62f4c56b1e5"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000013",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-24T05:24:29.857Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000013",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000013",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "unreachable"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T09:34:05.021Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c220fd3a1116f77f28f5f4"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bại não",
+  "createdAt": {
+    "$date": "2026-03-24T05:28:29.344Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/bai-nao-1191.html",
+    "questionId": "69c220fd3a1116f77f28f5f2",
+    "productName": "Bại não",
+    "full_name": "Ánh Linh"
+  },
+  "consultedByName": "Phan Thị Ánh Linh",
+  "resolvedAt": {
+    "$date": "2026-03-24T05:28:43.911Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c2241c3a1116f77f28f83a"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000015",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-24T05:41:48.386Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000015",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000015",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "advised"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:42:28.004Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c224b13a1116f77f28f866"
+  },
+  "type": "consultation_prescription_reminder",
+  "title": "Nhắc nhở: đơn thuốc PRE100000012 chưa được cập nhật trạng thái tư vấn",
+  "message": "Quản trị viên nhắc bạn xử lý đơn tư vấn thuốc đã phân công. Vui lòng liên hệ khách và cập nhật trạng thái.",
+  "createdAt": {
+    "$date": "2026-03-24T05:44:17.169Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000012",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000012",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "waiting"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c224ef3a1116f77f28f888"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000014",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-24T05:45:19.322Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000014",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000014",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "advised"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:45:28.303Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c226d83a1116f77f28f97a"
+  },
+  "type": "consultation_product_assigned",
+  "title": "Bạn vừa được phân công tư vấn sản phẩm (100589)",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-24T05:53:28.070Z"
+  },
+  "link": "/admin/consultation-product?sku=100589",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "sku": "100589",
+    "questionId": "69c225223a1116f77f28f89e",
+    "questionStatus": "answered",
+    "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+    "assignedAt": {
+      "$date": "2026-03-24T05:53:28.070Z"
+    },
+    "assignedBy": "Admin"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:56:14.260Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c226df3a1116f77f28f982"
+  },
+  "type": "consultation_product_assigned",
+  "title": "Bạn vừa được phân công tư vấn sản phẩm (100589)",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-24T05:53:35.513Z"
+  },
+  "link": "/admin/consultation-product?sku=100589",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "sku": "100589",
+    "questionId": "69c2252b3a1116f77f28f8a1",
+    "questionStatus": "answered",
+    "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+    "assignedAt": {
+      "$date": "2026-03-24T05:53:35.513Z"
+    },
+    "assignedBy": "Admin"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:56:14.260Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c259cdfe6171a8c5145e4f"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000016",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-24T09:30:53.279Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000016",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000016",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "advised"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T09:33:35.428Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c262acfe6171a8c5145fa0"
+  },
+  "type": "consultation_product_assigned",
+  "title": "Bạn vừa được phân công tư vấn sản phẩm (100588)",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-24T10:08:44.756Z"
+  },
+  "link": "/admin/consultation-product?sku=100588",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "sku": "100588",
+    "questionId": "69c2614cfe6171a8c5145f66",
+    "questionStatus": "answered",
+    "productName": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)",
+    "assignedAt": {
+      "$date": "2026-03-24T10:08:44.756Z"
+    },
+    "assignedBy": "Admin"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T10:19:28.360Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c266f6fe6171a8c514605b"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bệnh bò điên",
+  "createdAt": {
+    "$date": "2026-03-24T10:27:02.106Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": true,
+  "meta": {
+    "sku": "benh/benh-bo-dien.html",
+    "questionId": "69c266f6fe6171a8c5146059",
+    "productName": "Bệnh bò điên",
+    "full_name": "Ánh Linh"
+  },
+  "consultedByName": "Phan Thị Ánh Linh",
+  "resolvedAt": {
+    "$date": "2026-03-24T10:27:59.280Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c299e721a03f7f829278a7"
+  },
+  "type": "consultation_disease",
+  "title": "Câu hỏi tư vấn bệnh mới",
+  "message": "Ánh Linh vừa hỏi về bệnh Bệnh Marchiafava-Bignami",
+  "createdAt": {
+    "$date": "2026-03-24T14:04:23.619Z"
+  },
+  "link": "/admin/consultation-disease",
+  "roles": [
+    "pharmacist"
+  ],
+  "resolved": false,
+  "meta": {
+    "sku": "benh/benh-marchiafava-bignami.html",
+    "questionId": "69c299e721a03f7f829278a5",
+    "productName": "Bệnh Marchiafava-Bignami",
+    "full_name": "Ánh Linh"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c36f23a7fbea3439c640bf"
+  },
+  "type": "consultation_prescription_assigned",
+  "title": "Bạn vừa được phân công tư vấn đơn thuốc PRE100000018",
+  "message": "",
+  "createdAt": {
+    "$date": "2026-03-25T05:14:11.370Z"
+  },
+  "link": "/admin/consultation-prescription?prescriptionId=PRE100000018",
+  "roles": [
+    "pharmacist"
+  ],
+  "meta": {
+    "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "prescriptionId": "PRE100000018",
+    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "pharmacistName": "Phan Thị Ánh Linh",
+    "prescriptionStatus": "unreachable"
+  },
+  "updatedAt": {
+    "$date": "2026-03-25T05:24:21.690Z"
+  }
+}]

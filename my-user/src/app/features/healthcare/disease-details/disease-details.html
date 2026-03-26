@@ -273,7 +273,7 @@
                         </div>
                         <div class="dd-related-grid">
                             <a *ngFor="let rel of disease.related_diseases.slice(0, 10)" class="dd-related-item"
-                                [routerLink]="getInternalUrl(rel.slug, 'benh')">
+                                [routerLink]="getRelatedDiseaseLink(rel)">
                                 <i class="bi bi-arrow-right-circle-fill"></i>
                                 {{ rel.name }}
                             </a>
@@ -601,6 +601,18 @@
     <!-- Loading State -->
     <div class="dd-loading-state" *ngIf="loading">
         <app-loading-shipping text="Đang xử lý..."></app-loading-shipping>
+    </div>
+
+    <!-- Không tìm thấy bài (tránh trang trắng khi slug thông báo không khớp DB) -->
+    <div class="vc_container py-5" *ngIf="!loading && error && !disease">
+        <div class="alert alert-light border text-center py-5" style="max-width: 560px; margin: 0 auto;">
+            <i class="bi bi-journal-x text-secondary d-block mb-3" style="font-size: 2.5rem;"></i>
+            <h2 class="h5 fw-bold mb-2">Không tìm thấy bài viết bệnh</h2>
+            <p class="text-muted mb-4">
+                Đường dẫn có thể đã đổi hoặc chưa có dữ liệu. Vui lòng tìm lại từ Tra cứu bệnh.
+            </p>
+            <a href="#" class="btn btn-vc-basic" (click)="navigateToDiseaseList($event)">Đi tới Tra cứu bệnh</a>
+        </div>
     </div>
 
 

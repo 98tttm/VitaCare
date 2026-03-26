@@ -1,0 +1,781 @@
+[{
+  "_id": {
+    "$oid": "69c01c71456c64ab62b1e305"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000023 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-22T16:44:33.596Z"
+  },
+  "link": "/admin/orders/detail/69c01c71456c64ab62b1e304",
+  "meta": {
+    "order_id": "ORD000023",
+    "order_mongo_id": "69c01c71456c64ab62b1e304"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c0466c4eca362d5b96f4ca"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-22T19:43:40.564Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000008"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-22T20:22:36.452Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c05d605db28bc21149d52e"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-22T21:21:36.091Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000009"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-22T21:25:51.544Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c0bfd9a2de4fc23e876131"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-23T04:21:45.002Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000010"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-23T05:43:35.004Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c0d3896da1dd2d82a17476"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-23T05:45:45.879Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000011"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T09:34:37.339Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c0f3f66ba5857aa1b904e3"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Ánh Linh vừa gửi câu hỏi về sản phẩm \"Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)\".",
+  "createdAt": {
+    "$date": "2026-03-23T08:04:06.578Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "108131",
+    "questionId": "69c0f3f66ba5857aa1b904e2",
+    "productName": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+    "fullName": "Ánh Linh",
+    "userId": "CUS000028",
+    "assignedAt": {
+      "$date": "2026-03-23T09:29:25.679Z"
+    },
+    "assignedBy": "Admin",
+    "assignedPharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "assignedPharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "assignedPharmacistName": "Phan Thị Ánh Linh"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-23T10:03:15.269Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c11ca4b66bcc8babf799d7"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Ánh Linh vừa gửi câu hỏi về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\".",
+  "createdAt": {
+    "$date": "2026-03-23T10:57:40.212Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "101214",
+    "questionId": "69c11ca4b66bcc8babf799d6",
+    "productName": "Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)",
+    "fullName": "Ánh Linh",
+    "userId": "CUS000029",
+    "assignedAt": {
+      "$date": "2026-03-23T11:07:13.199Z"
+    },
+    "assignedBy": "Admin",
+    "assignedPharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "assignedPharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "assignedPharmacistName": "Phan Thị Ánh Linh"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-23T14:04:41.091Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c12002bcf3d3b1ba09b361"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000024 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T11:12:02.910Z"
+  },
+  "link": "/admin/orders/detail/69c12002bcf3d3b1ba09b360",
+  "meta": {
+    "order_id": "ORD000024",
+    "order_mongo_id": "69c12002bcf3d3b1ba09b360"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c1222f39916786be8ca40d"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000025 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T11:21:19.784Z"
+  },
+  "link": "/admin/orders/detail/69c1222f39916786be8ca40c",
+  "meta": {
+    "order_id": "ORD000025",
+    "order_mongo_id": "69c1222f39916786be8ca40c"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c130ad073945861059caa1"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000026 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T12:23:09.035Z"
+  },
+  "link": "/admin/orders/detail/69c130ad073945861059caa0",
+  "meta": {
+    "order_id": "ORD000026",
+    "order_mongo_id": "69c130ad073945861059caa0"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c1323feceafeeaca2c21ca"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000027 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T12:29:51.283Z"
+  },
+  "link": "/admin/orders/detail/69c1323feceafeeaca2c21c9",
+  "meta": {
+    "order_id": "ORD000027",
+    "order_mongo_id": "69c1323feceafeeaca2c21c9"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c13288eceafeeaca2c21cd"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000028 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T12:31:04.531Z"
+  },
+  "link": "/admin/orders/detail/69c13288eceafeeaca2c21cc",
+  "meta": {
+    "order_id": "ORD000028",
+    "order_mongo_id": "69c13288eceafeeaca2c21cc"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c14c53a3ba29226154cbb9"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-23T14:21:07.638Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000012"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T05:44:41.339Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c180324b5aabfd1f48998b"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000029 từ Linh Phan Thị Ánh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T18:02:26.958Z"
+  },
+  "link": "/admin/orders/detail/69c180324b5aabfd1f48998a",
+  "meta": {
+    "order_id": "ORD000029",
+    "order_mongo_id": "69c180324b5aabfd1f48998a"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c182b84b5aabfd1f489a7f"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000030 từ Tôi là tester đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T18:13:12.421Z"
+  },
+  "link": "/admin/orders/detail/69c182b84b5aabfd1f489a7e",
+  "meta": {
+    "order_id": "ORD000030",
+    "order_mongo_id": "69c182b84b5aabfd1f489a7e"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c183454b5aabfd1f489b1d"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "0101010101 vừa gửi câu hỏi về sản phẩm \"Dầu dưỡng da ban đêm NNO Nourishing Night Oil giúp dưỡng ẩm, phục hồi da\".",
+  "createdAt": {
+    "$date": "2026-03-23T18:15:33.532Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "101176",
+    "questionId": "69c183454b5aabfd1f489b1c",
+    "productName": "Dầu dưỡng da ban đêm NNO Nourishing Night Oil giúp dưỡng ẩm, phục hồi da",
+    "fullName": "0101010101",
+    "userId": "CUS000031"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": false
+},
+{
+  "_id": {
+    "$oid": "69c1a6262b2f13a162d00d9d"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000031 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-23T20:44:22.762Z"
+  },
+  "link": "/admin/orders/detail/69c1a6262b2f13a162d00d9c",
+  "meta": {
+    "order_id": "ORD000031",
+    "order_mongo_id": "69c1a6262b2f13a162d00d9c"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c20eeaa37da62f4c56af67"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Khách vãng lai 5011 vừa gửi câu hỏi về sản phẩm \"Siro Pediakid Immuno-Fort hỗ trợ tăng đề kháng, giúp bảo vệ sức khỏe (125ml)\".",
+  "createdAt": {
+    "$date": "2026-03-24T04:11:22.759Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "100400",
+    "questionId": "69c20eeaa37da62f4c56af66",
+    "productName": "Siro Pediakid Immuno-Fort hỗ trợ tăng đề kháng, giúp bảo vệ sức khỏe (125ml)",
+    "fullName": "Khách vãng lai 5011",
+    "userId": ""
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": false
+},
+{
+  "_id": {
+    "$oid": "69c20fbca37da62f4c56af6a"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Khách vãng lai 001 vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-24T04:14:52.779Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000013"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T09:34:05.017Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c210bda37da62f4c56af6c"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000032 từ Phạm Thái Huỳnh Hương đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-24T04:19:09.835Z"
+  },
+  "link": "/admin/orders/detail/69c210bda37da62f4c56af6b",
+  "meta": {
+    "order_id": "ORD000032",
+    "order_mongo_id": "69c210bda37da62f4c56af6b"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c210e6a37da62f4c56af6e"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000033 từ Linh Phan Thị Ánh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-24T04:19:50.716Z"
+  },
+  "link": "/admin/orders/detail/69c210e6a37da62f4c56af6d",
+  "meta": {
+    "order_id": "ORD000033",
+    "order_mongo_id": "69c210e6a37da62f4c56af6d"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c21529a37da62f4c56af78"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000034 từ Linh Tester Web đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-24T04:38:01.641Z"
+  },
+  "link": "/admin/orders/detail/69c21529a37da62f4c56af77",
+  "meta": {
+    "order_id": "ORD000034",
+    "order_mongo_id": "69c21529a37da62f4c56af77"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c215f4a37da62f4c56af83"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Linh Tester Web vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-24T04:41:24.600Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000014"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T05:45:28.302Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c217e8a37da62f4c56af91"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Ánh Linh vừa gửi câu hỏi về sản phẩm \"Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)\".",
+  "createdAt": {
+    "$date": "2026-03-24T04:49:44.246Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "108132",
+    "questionId": "69c217e8a37da62f4c56af90",
+    "productName": "Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)",
+    "fullName": "Ánh Linh",
+    "userId": "CUS000028"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": false
+},
+{
+  "_id": {
+    "$oid": "69c222733a1116f77f28f73f"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000035 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-24T05:34:43.464Z"
+  },
+  "link": "/admin/orders/detail/69c222733a1116f77f28f73e",
+  "meta": {
+    "order_id": "ORD000035",
+    "order_mongo_id": "69c222733a1116f77f28f73e"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c223da3a1116f77f28f82b"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-24T05:40:42.606Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000015"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T05:42:28.001Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c224dc3a1116f77f28f879"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-24T05:45:00.016Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000016"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T09:33:35.415Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c225223a1116f77f28f89f"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Ánh Linh vừa gửi câu hỏi về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\".",
+  "createdAt": {
+    "$date": "2026-03-24T05:46:10.035Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "100589",
+    "questionId": "69c225223a1116f77f28f89e",
+    "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+    "fullName": "Ánh Linh",
+    "userId": "CUS000028",
+    "assignedAt": {
+      "$date": "2026-03-24T05:53:35.512Z"
+    },
+    "assignedBy": "Admin",
+    "assignedPharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "assignedPharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "assignedPharmacistName": "Phan Thị Ánh Linh"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T05:56:14.260Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c2252b3a1116f77f28f8a2"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Ánh Linh vừa gửi câu hỏi về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\".",
+  "createdAt": {
+    "$date": "2026-03-24T05:46:19.776Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "100589",
+    "questionId": "69c2252b3a1116f77f28f8a1",
+    "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+    "fullName": "Ánh Linh",
+    "userId": "CUS000028",
+    "assignedAt": {
+      "$date": "2026-03-24T05:53:35.512Z"
+    },
+    "assignedBy": "Admin",
+    "assignedPharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "assignedPharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "assignedPharmacistName": "Phan Thị Ánh Linh"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T05:56:14.260Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c2612efe6171a8c5145f5c"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-24T10:02:22.234Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000017"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": false
+},
+{
+  "_id": {
+    "$oid": "69c2614cfe6171a8c5145f67"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Ánh Linh vừa gửi câu hỏi về sản phẩm \"Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)\".",
+  "createdAt": {
+    "$date": "2026-03-24T10:02:52.036Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "100588",
+    "questionId": "69c2614cfe6171a8c5145f66",
+    "productName": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)",
+    "fullName": "Ánh Linh",
+    "userId": "CUS000028",
+    "assignedAt": {
+      "$date": "2026-03-24T10:08:44.748Z"
+    },
+    "assignedBy": "Admin",
+    "assignedPharmacistEmail": "linhpta23411@st.uel.edu.vn",
+    "assignedPharmacistId": "82ecab9dcee6e2faeb8c93ee",
+    "assignedPharmacistName": "Phan Thị Ánh Linh"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-24T10:19:28.356Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c299c821a03f7f829278a0"
+  },
+  "type": "consultation_product",
+  "title": "Câu hỏi tư vấn sản phẩm mới",
+  "message": "Ánh Linh vừa gửi câu hỏi về sản phẩm \"Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)\".",
+  "createdAt": {
+    "$date": "2026-03-24T14:03:52.077Z"
+  },
+  "link": "/admin/consultation-product",
+  "meta": {
+    "sku": "100505",
+    "questionId": "69c299c821a03f7f8292789f",
+    "productName": "Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)",
+    "fullName": "Ánh Linh",
+    "userId": "CUS000028"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": false
+},
+{
+  "_id": {
+    "$oid": "69c35af2a7fbea3439c63fdc"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000036 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-25T03:48:02.247Z"
+  },
+  "link": "/admin/orders/detail/69c35af2a7fbea3439c63fdb",
+  "meta": {
+    "order_id": "ORD000036",
+    "order_mongo_id": "69c35af2a7fbea3439c63fdb"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c35afea7fbea3439c63fe2"
+  },
+  "type": "order_pending",
+  "title": "Đơn hàng mới chờ xác nhận",
+  "message": "Đơn ORD000037 từ Ánh Linh đang chờ xác nhận.",
+  "createdAt": {
+    "$date": "2026-03-25T03:48:14.138Z"
+  },
+  "link": "/admin/orders/detail/69c35afea7fbea3439c63fe1",
+  "meta": {
+    "order_id": "ORD000037",
+    "order_mongo_id": "69c35afea7fbea3439c63fe1"
+  },
+  "roles": [
+    "admin"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c36f08a7fbea3439c640a7"
+  },
+  "type": "consultation_prescription",
+  "title": "Đơn tư vấn thuốc mới",
+  "message": "Ánh Linh vừa gửi đơn tư vấn thuốc.",
+  "createdAt": {
+    "$date": "2026-03-25T05:13:44.634Z"
+  },
+  "link": "/admin/consultation-prescription",
+  "meta": {
+    "prescriptionId": "PRE100000018"
+  },
+  "roles": [
+    "admin"
+  ],
+  "resolved": true,
+  "resolvedAt": {
+    "$date": "2026-03-25T05:24:21.682Z"
+  }
+}]

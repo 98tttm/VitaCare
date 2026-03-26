@@ -77,7 +77,7 @@ const DiseaseGroupModel = mongoose.model('disease_groups_metadata', genericSchem
 
 // --- CUSTOMER TIERING HELPERS ---
 /**
- * Tính tiering từ tổng tiền đã chi (chỉ tính đơn trạng thái unreview).
+ * Tính tiering từ tổng tiền đã chi của các đơn giao thành công.
  * Ngưỡng mặc định (có thể chỉnh lại theo business):
  *  - < 3.000.000đ: Đồng
  *  - 3.000.000 – < 10.000.000đ: Bạc
@@ -90,8 +90,8 @@ function getTierFromTotalSpent(total) {
   return 'Đồng';
 }
 
-/** Chỉ tính totalspent/tiering từ các đơn ở trạng thái unreview. */
-const SUCCESS_ORDER_STATUSES_FOR_SPENDING = ['unreview'];
+/** Tính totalspent/tiering từ toàn bộ trạng thái thể hiện giao thành công (mới + legacy). */
+const SUCCESS_ORDER_STATUSES_FOR_SPENDING = ['delivered', 'unreview', 'reviewed', 'completed', 'received'];
 
 function normalizeUserIdForSpending(raw) {
   if (raw == null) return '';
@@ -123,19 +123,31 @@ async function recomputeUserTotalSpentAndTier(rawUserId) {
   ].filter(Boolean)));
 
   const rows = await ordersCollection().aggregate([
-    { $match: { status: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
     {
       $addFields: {
+        status_norm: {
+          $trim: { input: { $toLower: { $toString: { $ifNull: ['$status', ''] } } } }
+        },
         user_id_norm: {
           $trim: { input: { $toString: { $ifNull: ['$user_id', ''] } } }
         }
       }
     },
+    { $match: { status_norm: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
     { $match: { $expr: { $in: ['$user_id_norm', candidates] } } },
     {
       $group: {
         _id: null,
-        totalspent: { $sum: { $ifNull: ['$totalAmount', 0] } }
+        totalspent: {
+          $sum: {
+            $toDouble: {
+              $ifNull: [
+                '$totalAmount',
+                { $ifNull: ['$total', { $ifNull: ['$amount', 0] }] }
+              ]
+            }
+          }
+        }
       }
     }
   ]).toArray();
@@ -8019,71 +8031,66 @@ app.get('/api/diseases', async (req, res) => {
   }
 });
 
-app.get('/api/diseases/:id', async (req, res) => {
-  try {
-    const id = String(req.params.id || '').trim();
-    if (!id) return res.status(400).json({ message: 'Not found' });
-    const db = mongoose.connection.db;
-    const col = await resolveDiseaseCollection(db);
-    // Chuẩn hoá slug/id lấy từ Long Châu để khớp với dữ liệu MongoDB.
-    // Ví dụ các dạng đầu vào:
-    //   "benh/di-tinh-mong-tinh-103.html"
-    //   "di-tinh-mong-tinh-103.html"
-    //   "di-tinh-mong-tinh-103"
-    //   "benh-peyronie.html"
-    // sẽ được map về nhiều biến thể ứng viên để khớp với cả slug và id trong DB.
-    const baseCandidates = new Set();
-    baseCandidates.add(id);
-    const withoutBenhPrefix = id.replace(/^benh\//i, '');
-    baseCandidates.add(withoutBenhPrefix);
-    const withoutHtml = id.replace(/\.html?$/i, '');
-    baseCandidates.add(withoutHtml);
-    const withoutPrefixAndHtml = withoutBenhPrefix.replace(/\.html?$/i, '');
-    baseCandidates.add(withoutPrefixAndHtml);
+/**
+ * Tìm 1 document bệnh trong Mongo (hoặc fallback benh.json) theo slug/id URL.
+ * Dùng lại cho GET /api/diseases/:id và khi resolve slug từ consultations_disease.
+ */
+async function findDiseaseDocByLookupId(col, idRaw) {
+  const id = String(idRaw || '').trim();
+  if (!id) return null;
 
-    const allCandidates = new Set();
-    for (const raw of baseCandidates) {
-      if (!raw) continue;
-      const v = String(raw).trim();
-      if (!v) continue;
+  const baseCandidates = new Set();
+  baseCandidates.add(id);
+  const withoutBenhPrefix = id.replace(/^benh\//i, '');
+  baseCandidates.add(withoutBenhPrefix);
+  const withoutHtml = id.replace(/\.html?$/i, '');
+  baseCandidates.add(withoutHtml);
+  const withoutPrefixAndHtml = withoutBenhPrefix.replace(/\.html?$/i, '');
+  baseCandidates.add(withoutPrefixAndHtml);
 
-      // Bản gốc
-      allCandidates.add(v);
-
-      // Thêm/bỏ tiền tố "benh/"
-      if (!v.startsWith('benh/')) {
-        allCandidates.add(`benh/${v}`);
-      } else {
-        allCandidates.add(v.replace(/^benh\//i, ''));
-      }
-
-      // Thêm/bỏ đuôi ".html"
+  const allCandidates = new Set();
+  for (const raw of baseCandidates) {
+    if (!raw) continue;
+    const v = String(raw).trim();
+    if (!v) continue;
+    allCandidates.add(v);
+    if (!v.startsWith('benh/')) {
+      allCandidates.add(`benh/${v}`);
+      // Slug trong DB thường là `benh/ten-benh-123.html` — bắt buộc có .html đúng chỗ
       if (!/\.html?$/i.test(v)) {
-        allCandidates.add(`${v}.html`);
-      } else {
-        allCandidates.add(v.replace(/\.html?$/i, ''));
+        allCandidates.add(`benh/${v}.html`);
       }
+    } else {
+      allCandidates.add(v.replace(/^benh\//i, ''));
     }
-
-    const or = [];
-    for (const value of allCandidates) {
-      if (!value) continue;
-      or.push({ slug: value }, { id: value });
+    if (!/\.html?$/i.test(v)) {
+      allCandidates.add(`${v}.html`);
+    } else {
+      allCandidates.add(v.replace(/\.html?$/i, ''));
     }
+  }
 
-    // Nếu id là ObjectId hợp lệ thì thử thêm vào danh sách tìm kiếm
-    if (mongoose.Types.ObjectId.isValid(id) && String(new mongoose.Types.ObjectId(id)) === id) {
-      or.push({ _id: new mongoose.Types.ObjectId(id) });
-    }
+  const or = [];
+  for (const value of allCandidates) {
+    if (!value) continue;
+    or.push({ slug: value }, { id: value });
+  }
+  // `id` trong JSON nguồn có thể là số (vd. 1) trong khi URL truyền chuỗi "1"
+  if (/^\d+$/.test(id)) {
+    const n = Number(id);
+    if (Number.isFinite(n)) or.push({ id: n });
+  }
+  if (mongoose.Types.ObjectId.isValid(id) && String(new mongoose.Types.ObjectId(id)) === id) {
+    or.push({ _id: new mongoose.Types.ObjectId(id) });
+  }
 
-    const query = { $or: or };
-    let doc = await col.findOne(query);
+  let doc = await col.findOne({ $or: or });
 
-    // Nếu MongoDB không có, fallback sang data/benh.json để đảm bảo luôn có dữ liệu hiển thị
-    if (!doc) {
-      const local = loadLocalDiseases();
-      if (Array.isArray(local) && local.length > 0) {
-        doc = local.find((item) => {
+  if (!doc) {
+    const local = loadLocalDiseases();
+    if (Array.isArray(local) && local.length > 0) {
+      doc =
+        local.find((item) => {
           if (!item) return false;
           const slug = String(item.slug || '').trim();
           const numericId = item.id;
@@ -8098,6 +8105,94 @@ app.get('/api/diseases/:id', async (req, res) => {
           }
           return false;
         }) || null;
+    }
+  }
+
+  return doc || null;
+}
+
+/**
+ * Slug URL ngắn (vd. benh-nao-gan) có thể khác slug trong DB (vd. benh-nao-gan-545.html).
+ */
+async function findDiseaseDocByFuzzySlug(col, idRaw) {
+  const id = String(idRaw || '').trim();
+  if (!id || id.length < 2) return null;
+  const esc = escapeRegExp(id);
+  const or = [
+    { slug: { $regex: new RegExp(`^${esc}(-[0-9]+)?(\\.html)?$`, 'i') } },
+    { slug: { $regex: new RegExp(`[/-]${esc}(-[0-9]+)?(\\.html)?$`, 'i') } },
+    { id: { $regex: new RegExp(`^${esc}(-[0-9]+)?$`, 'i') } },
+    { slug: { $regex: new RegExp(`^${esc}(-|$|\\.|-)`, 'i') } },
+  ];
+  try {
+    const d = await col.findOne({ $or: or });
+    return d || null;
+  } catch (e) {
+    console.warn('[findDiseaseDocByFuzzySlug]', e?.message || e);
+    return null;
+  }
+}
+
+app.get('/api/diseases/:id', async (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim();
+    if (!id) return res.status(400).json({ message: 'Not found' });
+    const db = mongoose.connection.db;
+    const col = await resolveDiseaseCollection(db);
+
+    let doc = await findDiseaseDocByLookupId(col, id);
+
+    /**
+     * Thông báo / link đôi khi chỉ có slug rút gọn (vd. benh-nao-gan) trong khi
+     * consultations_disease.sku lưu bản đầy đủ (vd. benh-nao-gan-545 / benh/...html).
+     * Lấy đúng sku trong consultations rồi tra lại bài bệnh.
+     */
+    let cdoc = null;
+    if (!doc) {
+      try {
+        const consultCol = mongoose.connection.db.collection('consultations_disease');
+        const cands = getDiseaseSkuLookupCandidates(id);
+        cdoc = cands.length ? await consultCol.findOne({ sku: { $in: cands } }) : null;
+        if (!cdoc && id.length >= 2) {
+          const esc = escapeRegExp(id);
+          cdoc = await consultCol.findOne({
+            $or: [
+              { sku: { $regex: new RegExp(`^${esc}-`, 'i') } },
+              { sku: { $regex: new RegExp(`^${esc}(\\.html)?$`, 'i') } },
+              { sku: { $regex: new RegExp(`^${esc}/`, 'i') } },
+              { sku: { $regex: new RegExp(`${esc}\\.html`, 'i') } },
+              { sku: { $regex: new RegExp(`[/-]${esc}(\\.html)?$`, 'i') } },
+              { sku: { $regex: new RegExp(`^${esc}`, 'i') } },
+            ],
+          });
+        }
+        if (cdoc && cdoc.sku) {
+          const resolved = String(cdoc.sku).trim();
+          if (resolved) {
+            doc = await findDiseaseDocByLookupId(col, resolved);
+          }
+        }
+      } catch (e) {
+        console.warn('[GET /api/diseases/:id] consultations_disease resolve:', e?.message || e);
+      }
+    }
+
+    if (!doc) {
+      doc = await findDiseaseDocByFuzzySlug(col, id);
+    }
+
+    if (!doc && cdoc && cdoc.productName) {
+      try {
+        const pn = String(cdoc.productName).trim();
+        if (pn.length >= 2) {
+          const escN = escapeRegExp(pn);
+          doc = await col.findOne({ name: { $regex: new RegExp(`^${escN}$`, 'i') } });
+          if (!doc) {
+            doc = await col.findOne({ headline: { $regex: new RegExp(`^${escN}$`, 'i') } });
+          }
+        }
+      } catch (e) {
+        console.warn('[GET /api/diseases/:id] name resolve:', e?.message || e);
       }
     }
 
@@ -11813,19 +11908,31 @@ app.get('/api/admin/users', async (req, res) => {
 
     // 2. Aggregate tổng chi tiêu theo user_id chỉ với đơn đã giao thành công
     const spendingAgg = await OrderModel.aggregate([
-      { $match: { status: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
       {
         $addFields: {
+          status_norm: {
+            $trim: { input: { $toLower: { $toString: { $ifNull: ['$status', ''] } } } }
+          },
           user_id_norm: {
             $trim: { input: { $toString: { $ifNull: ['$user_id', ''] } } }
           }
         }
       },
+      { $match: { status_norm: { $in: SUCCESS_ORDER_STATUSES_FOR_SPENDING } } },
       { $match: { user_id_norm: { $ne: '' } } },
       {
         $group: {
           _id: '$user_id_norm',
-          totalspent: { $sum: { $ifNull: ['$totalAmount', 0] } }
+          totalspent: {
+            $sum: {
+              $toDouble: {
+                $ifNull: [
+                  '$totalAmount',
+                  { $ifNull: ['$total', { $ifNull: ['$amount', 0] }] }
+                ]
+              }
+            }
+          }
         }
       }
     ]);

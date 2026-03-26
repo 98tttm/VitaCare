@@ -1,0 +1,3384 @@
+[{
+  "_id": {
+    "$oid": "69ad1fedb4c68c74bdd3cb6b"
+  },
+  "user_id": "CUS000001",
+  "type": "order_created",
+  "title": "Đơn hàng mới được tạo",
+  "message": "Đơn hàng ORD000015 đã được đặt thành công và đang chờ xử lý.",
+  "createdAt": {
+    "$date": "2026-03-08T07:01:21.270Z"
+  },
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000015"
+},
+{
+  "_id": {
+    "$oid": "69ad1fedb4c68c74bdd3cb6c"
+  },
+  "user_id": "CUS000001",
+  "type": "order_updated",
+  "title": "Cập nhật trạng thái đơn hàng",
+  "message": "Đơn hàng ORD000012 đã được chuyển sang trạng thái \"Đang giao\".",
+  "createdAt": {
+    "$date": "2026-03-08T05:06:21.270Z"
+  },
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000012"
+},
+{
+  "_id": {
+    "$oid": "69ad1fedb4c68c74bdd3cb6d"
+  },
+  "user_id": "CUS000001",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Bạn có đơn thuốc mới cần được tư vấn. Vui lòng xem chi tiết.",
+  "createdAt": {
+    "$date": "2026-03-07T07:06:21.270Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": ""
+},
+{
+  "_id": {
+    "$oid": "69ad1fedb4c68c74bdd3cb6e"
+  },
+  "user_id": "CUS000001",
+  "type": "prescription_updated",
+  "title": "Cập nhật đơn thuốc tư vấn",
+  "message": "Đơn thuốc tư vấn của bạn đã được cập nhật trạng thái mới.",
+  "createdAt": {
+    "$date": "2026-03-06T07:06:21.270Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": ""
+},
+{
+  "_id": {
+    "$oid": "69ad1fedb4c68c74bdd3cb6f"
+  },
+  "user_id": "CUS000001",
+  "type": "health_check",
+  "title": "Dữ liệu kiểm tra sức khỏe mới",
+  "message": "Kết quả kiểm tra sức khỏe của bạn đã được lưu vào Sổ sức khỏe.",
+  "createdAt": {
+    "$date": "2026-03-05T07:06:21.270Z"
+  },
+  "read": true,
+  "link": "/health",
+  "linkLabel": "Xem sổ sức khỏe",
+  "meta": ""
+},
+{
+  "_id": {
+    "$oid": "69b5632d50aa0805d1c508d5"
+  },
+  "user_id": "CUS000026",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Bông viên Niva YB1 làm sạch vết thương, thấm máu và dịch tiết (50 viên)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-14T13:31:25.500Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "107998"
+},
+{
+  "_id": {
+    "$oid": "69b920633a4b604d5c35d5fb"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Nước Yến Cao Cấp Nunest Không Đường (6 hũ x 70ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T09:35:31.436Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101527"
+},
+{
+  "_id": {
+    "$oid": "69b928b63a4b604d5c35d601"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T10:11:02.650Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b92e8f52285558e749d1ef"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T10:35:59.079Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b9526da6bf496e718af6b4"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T13:09:01.664Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b954b91b785b0674e54c67"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T13:18:49.497Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b95a8a6d8f6155a25755da"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T13:43:38.694Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b95a926d8f6155a25755dc"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T13:43:46.352Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b95c7e6d8f6155a2575614"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T13:51:58.052Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b9630f6d8f6155a257563e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000010 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-17T14:19:59.540Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000010"
+},
+{
+  "_id": {
+    "$oid": "69b963296d8f6155a257564b"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000010 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-17T14:20:25.557Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000010"
+},
+{
+  "_id": {
+    "$oid": "69b9634a6d8f6155a257564f"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000010 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-17T14:20:58.817Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000010"
+},
+{
+  "_id": {
+    "$oid": "69b964196d8f6155a257566d"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000010 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-17T14:24:25.149Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000010"
+},
+{
+  "_id": {
+    "$oid": "69b9670f6d8f6155a257566f"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T14:37:03.144Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b9877225060bd209865657"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T16:55:14.935Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b9879425060bd209865659"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T16:55:48.546Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b9bc848eb5706e4f2c43f8"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T20:41:40.515Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b9bcfd96e723575ff4cf47"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-17T20:43:41.074Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69b9bd3196e723575ff4cf4a"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-17T20:44:33.309Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69b9bd6396e723575ff4cf4d"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-17T20:45:23.421Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69ba48ff915fbc3cf58bc8e3"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Viên uống Bone Builder Drlife bổ sung canxi và vitamin cho xương (60 viên)\" đã được gửi thành công.",
+  "createdAt": "2026-03-18T06:41:03.060Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100587"
+},
+{
+  "_id": {
+    "$oid": "69ba8654e4d4cde83e1bab3d"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\" đã được gửi thành công.",
+  "createdAt": "2026-03-18T11:02:44.447Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100589"
+},
+{
+  "_id": {
+    "$oid": "69bce005f0ba8e66f1ada95d"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000011 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T05:49:57.467Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000011"
+},
+{
+  "_id": {
+    "$oid": "69bcfc55f0ba8e66f1ada993"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000012 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T07:50:45.881Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000012"
+},
+{
+  "_id": {
+    "$oid": "69bcfce3f0ba8e66f1ada995"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000013 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T07:53:07.753Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000013"
+},
+{
+  "_id": {
+    "$oid": "69bd0168f0ba8e66f1ada9cc"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000013 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T08:12:24.177Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000013"
+},
+{
+  "_id": {
+    "$oid": "69bd14213be997ecf635953d"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000012 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T09:32:17.003Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000012"
+},
+{
+  "_id": {
+    "$oid": "69bd28b911eb64596abf943f"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000013 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T11:00:09.607Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000013"
+},
+{
+  "_id": {
+    "$oid": "69bd2dfa11eb64596abf944b"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000013 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-20T11:22:34.527Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000013"
+},
+{
+  "_id": {
+    "$oid": "69bd31df11eb64596abf9454"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000012 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T11:39:11.569Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000012"
+},
+{
+  "_id": {
+    "$oid": "69bd31ec11eb64596abf9456"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000012 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-20T11:39:24.727Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000012"
+},
+{
+  "_id": {
+    "$oid": "69bd324511eb64596abf9458"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000014 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T11:40:53.543Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000014"
+},
+{
+  "_id": {
+    "$oid": "69bd325811eb64596abf9471"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000011 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T11:41:12.967Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000011"
+},
+{
+  "_id": {
+    "$oid": "69bd342699c3909d88f86383"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000011 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T11:48:54.415Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000011"
+},
+{
+  "_id": {
+    "$oid": "69bd342e99c3909d88f8638c"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000014 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T11:49:02.454Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000014"
+},
+{
+  "_id": {
+    "$oid": "69bd342f99c3909d88f86390"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000014 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T11:49:03.535Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000014"
+},
+{
+  "_id": {
+    "$oid": "69bd34ec99c3909d88f86393"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000014 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-20T11:52:12.909Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000014"
+},
+{
+  "_id": {
+    "$oid": "69bd36b399c3909d88f86395"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000011 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-20T11:59:47.909Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000011"
+},
+{
+  "_id": {
+    "$oid": "69bd36ef99c3909d88f86398"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000015 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T12:00:47.467Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000015"
+},
+{
+  "_id": {
+    "$oid": "69bd36fe99c3909d88f863a8"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000015 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T12:01:02.020Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000015"
+},
+{
+  "_id": {
+    "$oid": "69bd36ff99c3909d88f863ac"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000015 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T12:01:03.076Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000015"
+},
+{
+  "_id": {
+    "$oid": "69bd37ab99c3909d88f863ae"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000015 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-20T12:03:55.704Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000015"
+},
+{
+  "_id": {
+    "$oid": "69bd4cf33f5266798d3d85a6"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000016 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T13:34:43.248Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000016"
+},
+{
+  "_id": {
+    "$oid": "69bd4d2c3f5266798d3d85a8"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000017 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T13:35:40.064Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69bd4d5e3f5266798d3d85c5"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000017 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T13:36:30.324Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69bd4d5f3f5266798d3d85c9"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000017 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T13:36:31.396Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69bd4d653f5266798d3d85d2"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000016 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T13:36:37.482Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000016"
+},
+{
+  "_id": {
+    "$oid": "69bd4d663f5266798d3d85d6"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000016 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T13:36:38.994Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000016"
+},
+{
+  "_id": {
+    "$oid": "69bd4d8c3f5266798d3d85d8"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000017 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-20T13:37:16.129Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69bd596b3f5266798d3d85dd"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000016 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T14:27:55.096Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000016"
+},
+{
+  "_id": {
+    "$oid": "69bd59823f5266798d3d85f1"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000016 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-20T14:28:18.662Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000016"
+},
+{
+  "_id": {
+    "$oid": "69bd59863f5266798d3d85f5"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000016 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-20T14:28:22.322Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000016"
+},
+{
+  "_id": {
+    "$oid": "69bd5cfc3f5266798d3d8608"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Son dưỡng môi Vaseline Lip hồng xinh dưỡng ẩm, màu hồng tự nhiên (7g)\" đã được gửi thành công.",
+  "createdAt": "2026-03-20T14:43:08.204Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101208"
+},
+{
+  "_id": {
+    "$oid": "69bd689f3f5266798d3d8620"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Viên nam lực Bang Cevrai cải thiện chức năng sinh lý nam giới (60 viên)\" đã được gửi thành công.",
+  "createdAt": "2026-03-20T15:32:47.402Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100591"
+},
+{
+  "_id": {
+    "$oid": "69bd70413f5266798d3d8623"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Viên uống Calci K2 Dao Nordic Health bổ sung canxi, chống loãng xương (60 viên)\" đã được gửi thành công.",
+  "createdAt": "2026-03-20T16:05:21.581Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100592"
+},
+{
+  "_id": {
+    "$oid": "69bd71933f5266798d3d8624"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000016 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-20T16:10:59.684Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000016"
+},
+{
+  "_id": {
+    "$oid": "69bd71ac3f5266798d3d8627"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-20T16:11:24.624Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bd726fec937c7e41905b98"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\" đã được gửi thành công.",
+  "createdAt": "2026-03-20T16:14:39.393Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100589"
+},
+{
+  "_id": {
+    "$oid": "69bd726fec937c7e41905b99"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)\" đã được gửi thành công.",
+  "createdAt": "2026-03-20T16:14:39.394Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100590"
+},
+{
+  "_id": {
+    "$oid": "69bd726fec937c7e41905b9a"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Dung dịch uống Antot Thymo Traphaco tăng cường sức đề kháng (2 vỉ x 10 ống x 10ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-20T16:14:39.402Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100581"
+},
+{
+  "_id": {
+    "$oid": "69bd88b8ec937c7e41905b9e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000017 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T17:49:44.485Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69bd8937ec937c7e41905ba0"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000018 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T17:51:51.107Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000018"
+},
+{
+  "_id": {
+    "$oid": "69bd8d6fb11ee22eb662f634"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000019 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-20T18:09:51.462Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000019"
+},
+{
+  "_id": {
+    "$oid": "69bea76782752b54e1e57ab6"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-21T14:12:55.335Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000004"
+},
+{
+  "_id": {
+    "$oid": "69bea77182752b54e1e57ab8"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-21T14:13:05.414Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000005"
+},
+{
+  "_id": {
+    "$oid": "69bea7a482752b54e1e57aba"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được tạo. Dược sĩ sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-21T14:13:56.470Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000006"
+},
+{
+  "_id": {
+    "$oid": "69bec4dd82752b54e1e57add"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000020 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-21T16:18:37.859Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000020"
+},
+{
+  "_id": {
+    "$oid": "69bec6ae12679b4d1d4a104a"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000021 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-21T16:26:22.254Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000021"
+},
+{
+  "_id": {
+    "$oid": "69bed71485e77fa30b7636b3"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000022 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-21T17:36:20.395Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000022"
+},
+{
+  "_id": {
+    "$oid": "69bed9af85e77fa30b7636d5"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000022 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-21T17:47:27.320Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000022"
+},
+{
+  "_id": {
+    "$oid": "69bed9b185e77fa30b7636d9"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000022 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-21T17:47:29.546Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000022"
+},
+{
+  "_id": {
+    "$oid": "69bed9ba85e77fa30b7636db"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000022 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-21T17:47:38.457Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000022"
+},
+{
+  "_id": {
+    "$oid": "69beed4258d6f7dbd8e95a5f"
+  },
+  "user_id": "CUS000028",
+  "type": "review_reply",
+  "title": "Có phản hồi cho đánh giá của bạn",
+  "message": "Ánh Linh đã trả lời đánh giá của bạn về sản phẩm \"Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)\".",
+  "createdAt": "2026-03-21T19:10:58.871Z",
+  "read": true,
+  "link": "/product/100590",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100590"
+},
+{
+  "_id": {
+    "$oid": "69beef51ca1e589a3c413991"
+  },
+  "user_id": "CUS000028",
+  "type": "review_reply",
+  "title": "Có phản hồi cho đánh giá của bạn",
+  "message": "Ánh Linh đánh dấu đánh giá của bạn là hữu ích về sản phẩm \"Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)\".",
+  "createdAt": "2026-03-21T19:19:45.080Z",
+  "read": false,
+  "link": "/product/100590",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100590"
+},
+{
+  "_id": {
+    "$oid": "69beefb8ca1e589a3c413993"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đã trả lời câu hỏi của bạn về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:21:28.322Z",
+  "read": true,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef10617272325e8396899"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đánh dấu câu hỏi của bạn là hữu ích về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:27:02.518Z",
+  "read": true,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef16617272325e839689a"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đánh dấu phản hồi của bạn là hữu ích về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:28:38.697Z",
+  "read": false,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef4605805b939a4447382"
+  },
+  "user_id": "CUS000028",
+  "type": "review_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho đánh giá của bạn",
+  "message": "Người dùng đánh dấu đánh giá của bạn là hữu ích về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:41:20.338Z",
+  "read": false,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef4645805b939a4447383"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Người dùng đánh dấu câu hỏi của bạn là hữu ích về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:41:24.278Z",
+  "read": false,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef4665805b939a4447384"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Người dùng đánh dấu phản hồi của bạn là hữu ích về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:41:26.111Z",
+  "read": false,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef4685805b939a4447385"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Người dùng đánh dấu phản hồi của bạn là hữu ích về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:41:28.578Z",
+  "read": false,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef4825805b939a4447386"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đánh dấu câu hỏi của bạn là hữu ích về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\".",
+  "createdAt": "2026-03-21T19:41:54.328Z",
+  "read": false,
+  "link": "/product/101205",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef5235805b939a4447388"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-21T19:44:35.341Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef5525805b939a444738a"
+  },
+  "user_id": "CUS000029",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-21T19:45:22.416Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101205"
+},
+{
+  "_id": {
+    "$oid": "69bef95c846562fb17c1f12d"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bại não trẻ em\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-21T20:02:36.283Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem thông báo",
+  "meta": "benh/bai-nao-tre-em-6.html"
+},
+{
+  "_id": {
+    "$oid": "69bf6ec68cfe308b30e68f3c"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đã trả lời câu hỏi của bạn về bệnh \"Bại não trẻ em\".",
+  "createdAt": "2026-03-22T04:23:34.261Z",
+  "read": true,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69bf700dddb36c5befe4ca51"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đã trả lời câu hỏi của bạn về bệnh \"Bại não trẻ em\".",
+  "createdAt": "2026-03-22T04:29:01.988Z",
+  "read": false,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69bf7179ddb36c5befe4ca64"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đánh dấu câu hỏi của bạn là hữu ích về bệnh \"Bại não trẻ em\".",
+  "createdAt": "2026-03-22T04:35:05.524Z",
+  "read": true,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69bf74c39312f0dc6b47fc24"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đánh dấu phản hồi của bạn là hữu ích về bệnh \"Bại não trẻ em\".",
+  "createdAt": "2026-03-22T04:49:07.170Z",
+  "read": false,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69bf79d09312f0dc6b47fc60"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000021 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-22T05:10:40.299Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000021"
+},
+{
+  "_id": {
+    "$oid": "69bffd5c29e4f6710de3b29c"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000020 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-22T14:31:56.400Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000020"
+},
+{
+  "_id": {
+    "$oid": "69bffdcc29e4f6710de3b2c5"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bệnh thần kinh\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-22T14:33:48.163Z",
+  "read": false,
+  "link": "/benh/benh-than-kinh",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "benh-than-kinh",
+  "meta_label": "Bệnh thần kinh"
+},
+{
+  "_id": {
+    "$oid": "69bffe5229e4f6710de3b2e2"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000006 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-22T14:36:02.872Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000006"
+},
+{
+  "_id": {
+    "$oid": "69c018d6cd411287555c891d"
+  },
+  "user_id": "CUS000026",
+  "type": "qa_reply",
+  "title": "Câu hỏi về bệnh đã có phản hồi",
+  "message": "Câu hỏi của bạn về bệnh \"Chàm môi\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-22T16:29:10.959Z",
+  "read": false,
+  "link": "/benh/cham-moi-1378",
+  "linkLabel": "Xem phản hồi",
+  "meta": "cham-moi-1378",
+  "meta_label": "Chàm môi"
+},
+{
+  "_id": {
+    "$oid": "69c018eecd411287555c8924"
+  },
+  "user_id": "CUS000026",
+  "type": "qa_reply",
+  "title": "Câu hỏi về bệnh đã có phản hồi",
+  "message": "Câu hỏi của bạn về bệnh \"Chàm môi\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-22T16:29:34.445Z",
+  "read": false,
+  "link": "/benh/cham-moi-1378",
+  "linkLabel": "Xem phản hồi",
+  "meta": "cham-moi-1378",
+  "meta_label": "Chàm môi"
+},
+{
+  "_id": {
+    "$oid": "69c01c71456c64ab62b1e306"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000023 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-22T16:44:33.581Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000023"
+},
+{
+  "_id": {
+    "$oid": "69c02118906fc37b8d66c78e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000023 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-22T17:04:24.034Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000023"
+},
+{
+  "_id": {
+    "$oid": "69c02278ac39226b34df1a22"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000023 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-22T17:10:16.937Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000023"
+},
+{
+  "_id": {
+    "$oid": "69c03857ae15186202a5f6e0"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bại não trẻ em\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-22T18:43:35.106Z",
+  "read": false,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69c03c39b3a69dce69694326"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bại não trẻ em\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-22T19:00:09.814Z",
+  "read": false,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69c03d58afafcbb7fcf190f1"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bại não trẻ em\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-22T19:04:56.398Z",
+  "read": false,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69c03e5e9883752d66b6b6e1"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Phan Thị Ánh Linh\" trả lời.",
+  "createdAt": "2026-03-22T19:09:18.583Z",
+  "read": false,
+  "link": "/benh/bai-nao-tre-em-6",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bai-nao-tre-em-6",
+  "meta_label": "Bại não trẻ em"
+},
+{
+  "_id": {
+    "$oid": "69c045874eca362d5b96f4ad"
+  },
+  "user_id": "CUS000029",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-22T19:39:51.523Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000007"
+},
+{
+  "_id": {
+    "$oid": "69c0466c4eca362d5b96f4cb"
+  },
+  "user_id": "CUS000029",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-22T19:43:40.542Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000008"
+},
+{
+  "_id": {
+    "$oid": "69c04c5b6e77a9e81a72fe49"
+  },
+  "user_id": "CUS000029",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000008 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-22T20:08:59.686Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000008"
+},
+{
+  "_id": {
+    "$oid": "69c04d296e77a9e81a72fe91"
+  },
+  "user_id": "CUS000021",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE109081035 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-22T20:12:25.308Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE109081035"
+},
+{
+  "_id": {
+    "$oid": "69c04f8c6e77a9e81a72ff0a"
+  },
+  "user_id": "CUS000029",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE100000008 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-22T20:22:36.468Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000008"
+},
+{
+  "_id": {
+    "$oid": "69c04fd46e77a9e81a72ff13"
+  },
+  "user_id": "CUS000020",
+  "type": "prescription_updated",
+  "title": "Dược sĩ chưa thể liên hệ",
+  "message": "Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc PRE263491238. Vui lòng kiểm tra lại số điện thoại.",
+  "createdAt": "2026-03-22T20:23:48.877Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE263491238"
+},
+{
+  "_id": {
+    "$oid": "69c050da6e77a9e81a72ff35"
+  },
+  "user_id": "CUS000020",
+  "type": "prescription_updated",
+  "title": "Dược sĩ chưa thể liên hệ",
+  "message": "Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc PRE263491238. Vui lòng kiểm tra lại số điện thoại.",
+  "createdAt": "2026-03-22T20:28:10.484Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE263491238"
+},
+{
+  "_id": {
+    "$oid": "69c05630356da248e9d7c5f0"
+  },
+  "user_id": "CUS000020",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE263491238 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-22T20:50:56.763Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE263491238"
+},
+{
+  "_id": {
+    "$oid": "69c05d605db28bc21149d52f"
+  },
+  "user_id": "CUS000029",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-22T21:21:36.073Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000009"
+},
+{
+  "_id": {
+    "$oid": "69c05e4f5db28bc21149d556"
+  },
+  "user_id": "CUS000029",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000009 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-22T21:25:35.483Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000009"
+},
+{
+  "_id": {
+    "$oid": "69c05e5f5db28bc21149d563"
+  },
+  "user_id": "CUS000029",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE100000009 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-22T21:25:51.551Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000009"
+},
+{
+  "_id": {
+    "$oid": "69c0bfd9a2de4fc23e876132"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-23T04:21:44.982Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000010"
+},
+{
+  "_id": {
+    "$oid": "69c0d2e96da1dd2d82a17457"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000010 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-23T05:43:05.749Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000010"
+},
+{
+  "_id": {
+    "$oid": "69c0d2f46da1dd2d82a17466"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Dược sĩ chưa thể liên hệ",
+  "message": "Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc PRE100000010. Vui lòng kiểm tra lại số điện thoại.",
+  "createdAt": "2026-03-23T05:43:16.895Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000010"
+},
+{
+  "_id": {
+    "$oid": "69c0d3076da1dd2d82a1746b"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE100000010 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-23T05:43:35.006Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000010"
+},
+{
+  "_id": {
+    "$oid": "69c0d3896da1dd2d82a17477"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-23T05:45:45.866Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000011"
+},
+{
+  "_id": {
+    "$oid": "69c0d3a76da1dd2d82a17487"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000011 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-23T05:46:15.615Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000011"
+},
+{
+  "_id": {
+    "$oid": "69c0d3ae6da1dd2d82a17493"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Dược sĩ chưa thể liên hệ",
+  "message": "Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc PRE100000011. Vui lòng kiểm tra lại số điện thoại.",
+  "createdAt": "2026-03-23T05:46:22.911Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000011"
+},
+{
+  "_id": {
+    "$oid": "69c0d3c46da1dd2d82a1749c"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Tư vấn đơn thuốc không thành công",
+  "message": "Sau nhiều lần liên hệ, dược sĩ không thể tư vấn đơn thuốc PRE100000011. Bạn có thể gửi yêu cầu tư vấn lại.",
+  "createdAt": "2026-03-23T05:46:44.110Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000011"
+},
+{
+  "_id": {
+    "$oid": "69c0f3f66ba5857aa1b904e4"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-23T08:04:06.597Z",
+  "read": true,
+  "link": "/product/108131",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "108131",
+  "meta_label": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)"
+},
+{
+  "_id": {
+    "$oid": "69c10fe3074e9e2b5dd9da96"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Câu hỏi sản phẩm đã có phản hồi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-23T10:03:15.280Z",
+  "read": true,
+  "link": "/product/108131",
+  "linkLabel": "Xem phản hồi",
+  "meta": "108131"
+},
+{
+  "_id": {
+    "$oid": "69c11ca4b66bcc8babf799d8"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-23T10:57:40.234Z",
+  "read": false,
+  "link": "/product/101214",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "101214",
+  "meta_label": "Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)"
+},
+{
+  "_id": {
+    "$oid": "69c11d96bcf3d3b1ba09b249"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-23T11:01:42.099Z",
+  "read": false,
+  "link": "/product/108149",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "108149",
+  "meta_label": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)"
+},
+{
+  "_id": {
+    "$oid": "69c11ef9bcf3d3b1ba09b2b3"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "title": "Câu hỏi sản phẩm đã có phản hồi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-23T11:07:37.746Z",
+  "read": false,
+  "link": "/product/101214",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69c11f41bcf3d3b1ba09b2c2"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bỏng mắt\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-23T11:08:49.572Z",
+  "read": false,
+  "link": "/benh/bong-mat",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "bong-mat",
+  "meta_label": "Bỏng mắt"
+},
+{
+  "_id": {
+    "$oid": "69c11f5bbcf3d3b1ba09b2d1"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Phan Thị Ánh Linh\" trả lời.",
+  "createdAt": "2026-03-23T11:09:15.499Z",
+  "read": false,
+  "link": "/benh/bong-mat",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bong-mat",
+  "meta_label": "Bỏng mắt"
+},
+{
+  "_id": {
+    "$oid": "69c11f7fbcf3d3b1ba09b2e3"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bạch sản\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-23T11:09:51.806Z",
+  "read": false,
+  "link": "/benh/bach-san",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "bach-san",
+  "meta_label": "Bạch sản"
+},
+{
+  "_id": {
+    "$oid": "69c11fbebcf3d3b1ba09b325"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Test\" trả lời.",
+  "createdAt": "2026-03-23T11:10:54.216Z",
+  "read": false,
+  "link": "/benh/bach-san",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bach-san",
+  "meta_label": "Bạch sản"
+},
+{
+  "_id": {
+    "$oid": "69c12002bcf3d3b1ba09b362"
+  },
+  "user_id": "CUS000029",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000024 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-23T11:12:02.891Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000024"
+},
+{
+  "_id": {
+    "$oid": "69c12008bcf3d3b1ba09b36c"
+  },
+  "user_id": "CUS000029",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000024 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T11:12:08.796Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000024"
+},
+{
+  "_id": {
+    "$oid": "69c1200cbcf3d3b1ba09b373"
+  },
+  "user_id": "CUS000029",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000024 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T11:12:12.548Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000024"
+},
+{
+  "_id": {
+    "$oid": "69c1222f39916786be8ca40e"
+  },
+  "user_id": "CUS000029",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000025 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-23T11:21:19.756Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000025"
+},
+{
+  "_id": {
+    "$oid": "69c13027073945861059ca2b"
+  },
+  "user_id": "CUS000029",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000025 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:20:55.649Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000025"
+},
+{
+  "_id": {
+    "$oid": "69c13029073945861059ca2f"
+  },
+  "user_id": "CUS000029",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000025 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:20:57.154Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000025"
+},
+{
+  "_id": {
+    "$oid": "69c1306d073945861059ca71"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000020 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:22:05.846Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000020"
+},
+{
+  "_id": {
+    "$oid": "69c130ad073945861059caa2"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000026 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-23T12:23:08.949Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000026"
+},
+{
+  "_id": {
+    "$oid": "69c130b3073945861059caaf"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000026 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:23:15.145Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000026"
+},
+{
+  "_id": {
+    "$oid": "69c130b9073945861059cab1"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000023 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-23T12:23:21.780Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000023"
+},
+{
+  "_id": {
+    "$oid": "69c130bd073945861059cab3"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000023 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-23T12:23:25.265Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000023"
+},
+{
+  "_id": {
+    "$oid": "69c130d8073945861059cacd"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000026 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:23:52.961Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000026"
+},
+{
+  "_id": {
+    "$oid": "69c130e0073945861059cacf"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000026 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-23T12:24:00.706Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000026"
+},
+{
+  "_id": {
+    "$oid": "69c130f8073945861059cae9"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000020 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-23T12:24:24.441Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000020"
+},
+{
+  "_id": {
+    "$oid": "69c1311a073945861059cb20"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000021 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:24:58.192Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000021"
+},
+{
+  "_id": {
+    "$oid": "69c13121073945861059cb30"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000017 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:25:05.271Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69c13122073945861059cb34"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000017 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:25:06.292Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69c13127073945861059cb44"
+  },
+  "user_id": "CUS000026",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD0006 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:25:11.050Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD0006"
+},
+{
+  "_id": {
+    "$oid": "69c13128073945861059cb48"
+  },
+  "user_id": "CUS000026",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD0006 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:25:12.144Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD0006"
+},
+{
+  "_id": {
+    "$oid": "69c1312d073945861059cb58"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000018 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:25:17.630Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000018"
+},
+{
+  "_id": {
+    "$oid": "69c1312f073945861059cb5c"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000018 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:25:19.523Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000018"
+},
+{
+  "_id": {
+    "$oid": "69c13152073945861059cb8e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000019 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:25:54.212Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000019"
+},
+{
+  "_id": {
+    "$oid": "69c13153073945861059cb92"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000019 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:25:55.312Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000019"
+},
+{
+  "_id": {
+    "$oid": "69c1319b073945861059cc03"
+  },
+  "user_id": "CUS000026",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD0007 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:27:07.144Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD0007"
+},
+{
+  "_id": {
+    "$oid": "69c1323feceafeeaca2c21cb"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000027 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-23T12:29:51.279Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000027"
+},
+{
+  "_id": {
+    "$oid": "69c13288eceafeeaca2c21ce"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000028 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-23T12:31:04.518Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000028"
+},
+{
+  "_id": {
+    "$oid": "69c13295eceafeeaca2c21db"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000028 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:31:17.757Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000028"
+},
+{
+  "_id": {
+    "$oid": "69c1329aeceafeeaca2c21e5"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000028 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-23T12:31:22.395Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000028"
+},
+{
+  "_id": {
+    "$oid": "69c132a8eceafeeaca2c21ed"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000028 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-23T12:31:36.053Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000028"
+},
+{
+  "_id": {
+    "$oid": "69c132ceeceafeeaca2c225a"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000027 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-23T12:32:14.573Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000027"
+},
+{
+  "_id": {
+    "$oid": "69c14879a3ba29226154cae2"
+  },
+  "user_id": "CUS000029",
+  "type": "qa_reply",
+  "title": "Câu hỏi sản phẩm đã có phản hồi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-23T14:04:41.097Z",
+  "read": false,
+  "link": "/product/101214",
+  "linkLabel": "Xem phản hồi",
+  "meta": "101214"
+},
+{
+  "_id": {
+    "$oid": "69c14c53a3ba29226154cbba"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-23T14:21:07.591Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000012"
+},
+{
+  "_id": {
+    "$oid": "69c14c86a3ba29226154cbe1"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000012 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-23T14:21:58.666Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000012"
+},
+{
+  "_id": {
+    "$oid": "69c182b84b5aabfd1f489a80"
+  },
+  "user_id": "CUS000031",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000030 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-23T18:13:12.412Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000030"
+},
+{
+  "_id": {
+    "$oid": "69c182f74b5aabfd1f489ab4"
+  },
+  "user_id": "CUS000031",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bệnh mất ngủ ở người già\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-23T18:14:15.409Z",
+  "read": false,
+  "link": "/benh/benh-mat-ngu-o-nguoi-gia",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "benh-mat-ngu-o-nguoi-gia",
+  "meta_label": "Bệnh mất ngủ ở người già"
+},
+{
+  "_id": {
+    "$oid": "69c183364b5aabfd1f489b1b"
+  },
+  "user_id": "CUS000031",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Dầu dưỡng da ban đêm NNO Nourishing Night Oil giúp dưỡng ẩm, phục hồi da\" đã được gửi thành công.",
+  "createdAt": "2026-03-23T18:15:18.605Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101176",
+  "meta_label": "Dầu dưỡng da ban đêm NNO Nourishing Night Oil giúp dưỡng ẩm, phục hồi da"
+},
+{
+  "_id": {
+    "$oid": "69c183454b5aabfd1f489b1e"
+  },
+  "user_id": "CUS000031",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Dầu dưỡng da ban đêm NNO Nourishing Night Oil giúp dưỡng ẩm, phục hồi da\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-23T18:15:33.534Z",
+  "read": false,
+  "link": "/product/101176",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "101176",
+  "meta_label": "Dầu dưỡng da ban đêm NNO Nourishing Night Oil giúp dưỡng ẩm, phục hồi da"
+},
+{
+  "_id": {
+    "$oid": "69c1a6262b2f13a162d00d9e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000031 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-23T20:44:22.738Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000031"
+},
+{
+  "_id": {
+    "$oid": "69c20c6ea37da62f4c56af64"
+  },
+  "user_id": "GUEST_1771159852043_628",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bệnh màng đáy mỏng\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T04:00:46.633Z",
+  "read": false,
+  "link": "/benh/benh-mang-day-mong",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "benh-mang-day-mong",
+  "meta_label": "Bệnh màng đáy mỏng"
+},
+{
+  "_id": {
+    "$oid": "69c21529a37da62f4c56af7c"
+  },
+  "user_id": "CUS000032",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000034 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-24T04:38:01.631Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000034"
+},
+{
+  "_id": {
+    "$oid": "69c215f4a37da62f4c56af84"
+  },
+  "user_id": "CUS000032",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-24T04:41:24.593Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000014"
+},
+{
+  "_id": {
+    "$oid": "69c21737a37da62f4c56af88"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000021 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-24T04:46:47.284Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000021"
+},
+{
+  "_id": {
+    "$oid": "69c21751a37da62f4c56af8a"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000017 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-24T04:47:13.291Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000017"
+},
+{
+  "_id": {
+    "$oid": "69c21777a37da62f4c56af8e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Nước Yến Cao Cấp Nunest Gold (6 hũ x 70ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-24T04:47:51.312Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "101526",
+  "meta_label": "Nước Yến Cao Cấp Nunest Gold (6 hũ x 70ml)"
+},
+{
+  "_id": {
+    "$oid": "69c217e8a37da62f4c56af92"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T04:49:44.247Z",
+  "read": true,
+  "link": "/product/108132",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "108132",
+  "meta_label": "Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)"
+},
+{
+  "_id": {
+    "$oid": "69c2182ea37da62f4c56af98"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bệnh não gan\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T04:50:54.339Z",
+  "read": true,
+  "link": "/benh/benh-nao-gan",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "benh-nao-gan",
+  "meta_label": "Bệnh não gan"
+},
+{
+  "_id": {
+    "$oid": "69c21d1ba37da62f4c56b032"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000031 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-24T05:11:55.679Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000031"
+},
+{
+  "_id": {
+    "$oid": "69c21d32a37da62f4c56b03e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000031 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-24T05:12:18.111Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000031"
+},
+{
+  "_id": {
+    "$oid": "69c21d48a37da62f4c56b045"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000031 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-24T05:12:40.203Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000031"
+},
+{
+  "_id": {
+    "$oid": "69c21d54a37da62f4c56b049"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Viên uống Heptral 400 Abbott hỗ trợ tăng cường chức năng gan (3 vỉ x 10 viên)\" đã được gửi thành công.",
+  "createdAt": "2026-03-24T05:12:52.898Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100534",
+  "meta_label": "Viên uống Heptral 400 Abbott hỗ trợ tăng cường chức năng gan (3 vỉ x 10 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c21e8fa37da62f4c56b0d8"
+  },
+  "user_id": "CUS000031",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Test\" trả lời.",
+  "createdAt": "2026-03-24T05:18:07.153Z",
+  "read": false,
+  "link": "/benh/benh-mat-ngu-o-nguoi-gia",
+  "linkLabel": "Xem phản hồi",
+  "meta": "benh-mat-ngu-o-nguoi-gia",
+  "meta_label": "Bệnh mất ngủ ở người già"
+},
+{
+  "_id": {
+    "$oid": "69c21eb6a37da62f4c56b112"
+  },
+  "user_id": "GUEST_1771159852043_628",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Phan Thị Ánh Linh\" trả lời.",
+  "createdAt": "2026-03-24T05:18:46.929Z",
+  "read": false,
+  "link": "/benh/benh-mang-day-mong",
+  "linkLabel": "Xem phản hồi",
+  "meta": "benh-mang-day-mong",
+  "meta_label": "Bệnh màng đáy mỏng"
+},
+{
+  "_id": {
+    "$oid": "69c21ecaa37da62f4c56b121"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Test\" trả lời.",
+  "createdAt": "2026-03-24T05:19:06.963Z",
+  "read": true,
+  "link": "/benh/benh-nao-gan",
+  "linkLabel": "Xem phản hồi",
+  "meta": "benh-nao-gan",
+  "meta_label": "Bệnh não gan"
+},
+{
+  "_id": {
+    "$oid": "69c21f37a37da62f4c56b150"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bệnh thần kinh\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T05:20:55.207Z",
+  "read": false,
+  "link": "/benh/benh-than-kinh",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "benh-than-kinh",
+  "meta_label": "Bệnh thần kinh"
+},
+{
+  "_id": {
+    "$oid": "69c21f58a37da62f4c56b160"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Phan Thị Ánh Linh\" trả lời.",
+  "createdAt": "2026-03-24T05:21:28.100Z",
+  "read": true,
+  "link": "/benh/benh-than-kinh",
+  "linkLabel": "Xem phản hồi",
+  "meta": "benh-than-kinh",
+  "meta_label": "Bệnh thần kinh"
+},
+{
+  "_id": {
+    "$oid": "69c21fe7a37da62f4c56b1c9"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000027 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-24T05:23:51.078Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000027"
+},
+{
+  "_id": {
+    "$oid": "69c220fd3a1116f77f28f5f5"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bại não\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T05:28:29.347Z",
+  "read": false,
+  "link": "/benh/bai-nao-1191",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "bai-nao-1191",
+  "meta_label": "Bại não"
+},
+{
+  "_id": {
+    "$oid": "69c2210b3a1116f77f28f606"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Phan Thị Ánh Linh\" trả lời.",
+  "createdAt": "2026-03-24T05:28:43.913Z",
+  "read": false,
+  "link": "/benh/bai-nao-1191",
+  "linkLabel": "Xem phản hồi",
+  "meta": "bai-nao-1191",
+  "meta_label": "Bại não"
+},
+{
+  "_id": {
+    "$oid": "69c222733a1116f77f28f740"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000035 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-24T05:34:43.430Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000035"
+},
+{
+  "_id": {
+    "$oid": "69c222903a1116f77f28f751"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000035 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-24T05:35:12.931Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000035"
+},
+{
+  "_id": {
+    "$oid": "69c222a23a1116f77f28f759"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000035 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-24T05:35:30.217Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000035"
+},
+{
+  "_id": {
+    "$oid": "69c222b13a1116f77f28f75e"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000035 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-24T05:35:45.727Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000035"
+},
+{
+  "_id": {
+    "$oid": "69c222b53a1116f77f28f760"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000035 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-24T05:35:49.103Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000035"
+},
+{
+  "_id": {
+    "$oid": "69c222be3a1116f77f28f763"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Đánh giá đã được gửi",
+  "message": "Đánh giá của bạn về sản phẩm \"Siro Fitobimbi Ferro C Concentrato Fluido bổ sung sắt, kẽm, vitamin C cho cơ thể (200ml)\" đã được gửi thành công.",
+  "createdAt": "2026-03-24T05:35:58.148Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đánh giá",
+  "meta": "100545",
+  "meta_label": "Siro Fitobimbi Ferro C Concentrato Fluido bổ sung sắt, kẽm, vitamin C cho cơ thể (200ml)"
+},
+{
+  "_id": {
+    "$oid": "69c2236f3a1116f77f28f7df"
+  },
+  "user_id": "CUS000032",
+  "type": "order_updated",
+  "title": "Đơn hàng đang được giao",
+  "message": "Đơn hàng ORD000034 đang trên đường giao đến bạn.",
+  "createdAt": "2026-03-24T05:38:55.880Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000034"
+},
+{
+  "_id": {
+    "$oid": "69c223713a1116f77f28f7e3"
+  },
+  "user_id": "CUS000032",
+  "type": "order_updated",
+  "title": "Đơn hàng đã được giao",
+  "message": "Đơn hàng ORD000034 đã được giao thành công. Vui lòng xác nhận nhận hàng.",
+  "createdAt": "2026-03-24T05:38:57.145Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000034"
+},
+{
+  "_id": {
+    "$oid": "69c223da3a1116f77f28f82c"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-24T05:40:42.600Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000015"
+},
+{
+  "_id": {
+    "$oid": "69c2241c3a1116f77f28f837"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000015 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-24T05:41:48.382Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000015"
+},
+{
+  "_id": {
+    "$oid": "69c224443a1116f77f28f84a"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE100000015 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-24T05:42:28.008Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000015"
+},
+{
+  "_id": {
+    "$oid": "69c224c93a1116f77f28f871"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Dược sĩ chưa thể liên hệ",
+  "message": "Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc PRE100000012. Vui lòng kiểm tra lại số điện thoại.",
+  "createdAt": "2026-03-24T05:44:41.344Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000012"
+},
+{
+  "_id": {
+    "$oid": "69c224dc3a1116f77f28f87a"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-24T05:45:00.004Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000016"
+},
+{
+  "_id": {
+    "$oid": "69c224ef3a1116f77f28f885"
+  },
+  "user_id": "CUS000032",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000014 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-24T05:45:19.319Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000014"
+},
+{
+  "_id": {
+    "$oid": "69c224f83a1116f77f28f894"
+  },
+  "user_id": "CUS000032",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE100000014 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-24T05:45:28.304Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000014"
+},
+{
+  "_id": {
+    "$oid": "69c225223a1116f77f28f8a0"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T05:46:10.037Z",
+  "read": false,
+  "link": "/product/100589",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "100589",
+  "meta_label": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c2252b3a1116f77f28f8a3"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T05:46:19.777Z",
+  "read": false,
+  "link": "/product/100589",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "100589",
+  "meta_label": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c226fe3a1116f77f28f996"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Câu hỏi sản phẩm đã có phản hồi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-24T05:54:06.497Z",
+  "read": false,
+  "link": "/product/100589",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100589"
+},
+{
+  "_id": {
+    "$oid": "69c2272e3a1116f77f28f9a3"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Câu hỏi sản phẩm đã có phản hồi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-24T05:54:54.896Z",
+  "read": false,
+  "link": "/product/100589",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100589"
+},
+{
+  "_id": {
+    "$oid": "69c2277e3a1116f77f28f9b4"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Câu hỏi sản phẩm đã có phản hồi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-24T05:56:14.261Z",
+  "read": false,
+  "link": "/product/100589",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100589"
+},
+{
+  "_id": {
+    "$oid": "69c227bb3a1116f77f28f9b8"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Khách đã trả lời câu hỏi của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\".",
+  "createdAt": "2026-03-24T05:57:15.497Z",
+  "read": true,
+  "link": "/product/100589",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100589",
+  "meta_label": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c227d53a1116f77f28f9ba"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Ánh Linh đã trả lời câu hỏi của bạn về sản phẩm \"Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)\".",
+  "createdAt": "2026-03-24T05:57:41.639Z",
+  "read": true,
+  "link": "/product/100589",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100589",
+  "meta_label": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c23f3f1cc1f42f293569e6"
+  },
+  "user_id": "CUS000028",
+  "type": "order_updated",
+  "title": "Bạn đã nhận hàng",
+  "message": "Đơn hàng ORD000027 đã được xác nhận giao thành công, chờ bạn đánh giá.",
+  "createdAt": "2026-03-24T07:37:35.225Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000027"
+},
+{
+  "_id": {
+    "$oid": "69c259cdfe6171a8c5145e4d"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000016 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-24T09:30:53.273Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000016"
+},
+{
+  "_id": {
+    "$oid": "69c25a6ffe6171a8c5145e74"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đã được tư vấn",
+  "message": "Đơn thuốc PRE100000016 đã được tư vấn xong bởi dược sĩ Phan Thị Ánh Linh.",
+  "createdAt": "2026-03-24T09:33:35.442Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000016"
+},
+{
+  "_id": {
+    "$oid": "69c25aadfe6171a8c5145e87"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Dược sĩ chưa thể liên hệ",
+  "message": "Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc PRE100000011. Vui lòng kiểm tra lại số điện thoại.",
+  "createdAt": "2026-03-24T09:34:37.344Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000011"
+},
+{
+  "_id": {
+    "$oid": "69c2612efe6171a8c5145f5d"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-24T10:02:22.189Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000017"
+},
+{
+  "_id": {
+    "$oid": "69c2614cfe6171a8c5145f68"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T10:02:52.038Z",
+  "read": false,
+  "link": "/product/100588",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "100588",
+  "meta_label": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c26530fe6171a8c5146017"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Câu hỏi sản phẩm đã có phản hồi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)\" đã được Phan Thị Ánh Linh giải đáp.",
+  "createdAt": "2026-03-24T10:19:28.362Z",
+  "read": false,
+  "link": "/product/100588",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100588"
+},
+{
+  "_id": {
+    "$oid": "69c266f6fe6171a8c514605c"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bệnh bò điên\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T10:27:02.108Z",
+  "read": false,
+  "link": "/benh/benh-bo-dien",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "benh-bo-dien",
+  "meta_label": "Bệnh bò điên"
+},
+{
+  "_id": {
+    "$oid": "69c2672ffe6171a8c514607e"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Dược sĩ vừa trả lời câu hỏi của bạn",
+  "message": "Câu hỏi về bệnh của bạn vừa được Dược sĩ \"Phan Thị Ánh Linh\" trả lời.",
+  "createdAt": "2026-03-24T10:27:59.289Z",
+  "read": false,
+  "link": "/benh/benh-bo-dien",
+  "linkLabel": "Xem phản hồi",
+  "meta": "benh-bo-dien",
+  "meta_label": "Bệnh bò điên"
+},
+{
+  "_id": {
+    "$oid": "69c299c821a03f7f829278a1"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về sản phẩm \"Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)\" đã được gửi. Dược sĩ sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T14:03:52.087Z",
+  "read": true,
+  "link": "/product/100505",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "100505",
+  "meta_label": "Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c299e721a03f7f829278a8"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_submitted",
+  "title": "Câu hỏi đã được gửi",
+  "message": "Câu hỏi của bạn về \"Bệnh Marchiafava-Bignami\" đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
+  "createdAt": "2026-03-24T14:04:23.626Z",
+  "read": true,
+  "link": "/benh/benh-marchiafava-bignami",
+  "linkLabel": "Xem câu hỏi",
+  "meta": "benh-marchiafava-bignami",
+  "meta_label": "Bệnh Marchiafava-Bignami"
+},
+{
+  "_id": {
+    "$oid": "69c29a2721a03f7f829278ac"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Người dùng đánh dấu câu hỏi của bạn là hữu ích về sản phẩm \"Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)\".",
+  "createdAt": "2026-03-24T14:05:27.249Z",
+  "read": false,
+  "link": "/product/100505",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100505",
+  "meta_label": "Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c29a2d21a03f7f829278ae"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Khách đã trả lời câu hỏi của bạn về sản phẩm \"Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)\".",
+  "createdAt": "2026-03-24T14:05:33.407Z",
+  "read": true,
+  "link": "/product/100505",
+  "linkLabel": "Xem phản hồi",
+  "meta": "100505",
+  "meta_label": "Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)"
+},
+{
+  "_id": {
+    "$oid": "69c29a3721a03f7f829278b4"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "noticeTag": "helpful_like",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Người dùng đánh dấu câu hỏi của bạn là hữu ích về bệnh \"Bệnh Marchiafava-Bignami\".",
+  "createdAt": "2026-03-24T14:05:43.102Z",
+  "read": false,
+  "link": "/benh/benh-marchiafava-bignami",
+  "linkLabel": "Xem phản hồi",
+  "meta": "benh-marchiafava-bignami",
+  "meta_label": "Bệnh Marchiafava-Bignami"
+},
+{
+  "_id": {
+    "$oid": "69c29a3c21a03f7f829278b7"
+  },
+  "user_id": "CUS000028",
+  "type": "qa_reply",
+  "title": "Có phản hồi cho câu hỏi của bạn",
+  "message": "Khách đã trả lời câu hỏi của bạn về bệnh \"Bệnh Marchiafava-Bignami\".",
+  "createdAt": "2026-03-24T14:05:48.686Z",
+  "read": true,
+  "link": "/benh/benh-marchiafava-bignami",
+  "linkLabel": "Xem phản hồi",
+  "meta": "benh-marchiafava-bignami",
+  "meta_label": "Bệnh Marchiafava-Bignami"
+},
+{
+  "_id": {
+    "$oid": "69c35af2a7fbea3439c63fe0"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000036 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-25T03:48:02.220Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000036"
+},
+{
+  "_id": {
+    "$oid": "69c35afea7fbea3439c63fe3"
+  },
+  "user_id": "CUS000028",
+  "type": "order_created",
+  "title": "Đặt hàng thành công",
+  "message": "Đơn hàng ORD000037 đã được tạo và đang chờ xác nhận.",
+  "createdAt": "2026-03-25T03:48:14.134Z",
+  "read": false,
+  "link": "/account",
+  "linkLabel": "Xem đơn hàng",
+  "meta": "ORD000037"
+},
+{
+  "_id": {
+    "$oid": "69c36f08a7fbea3439c640a8"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_created",
+  "title": "Đơn thuốc cần tư vấn",
+  "message": "Yêu cầu tư vấn đơn thuốc của bạn đã được gửi. Chúng tôi sẽ liên hệ trong thời gian sớm nhất.",
+  "createdAt": {
+    "$date": "2026-03-25T05:13:44.587Z"
+  },
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000018"
+},
+{
+  "_id": {
+    "$oid": "69c36f23a7fbea3439c640bb"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Đơn thuốc đang được tư vấn",
+  "message": "Đơn thuốc PRE100000018 đang được tư vấn bởi dược sĩ Phan Thị Ánh Linh. Dược sĩ sẽ liên hệ sớm nhất.",
+  "createdAt": "2026-03-25T05:14:11.354Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000018"
+},
+{
+  "_id": {
+    "$oid": "69c37185a7fbea3439c640f8"
+  },
+  "user_id": "CUS000028",
+  "type": "prescription_updated",
+  "title": "Dược sĩ chưa thể liên hệ",
+  "message": "Dược sĩ chưa thể liên hệ được với bạn về đơn thuốc PRE100000018. Vui lòng kiểm tra lại số điện thoại.",
+  "createdAt": "2026-03-25T05:24:21.703Z",
+  "read": true,
+  "link": "/account",
+  "linkLabel": "Xem đơn thuốc",
+  "meta": "PRE100000018"
+}]

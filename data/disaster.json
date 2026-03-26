@@ -1,452 +1,466 @@
-[
-  {
-    "thang": 1,
-    "nam": 2024,
-    "du_lieu_tinh": [
-      {
-        "id_tinh": "79",
-        "ten_tinh": "Hồ Chí Minh",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 1200,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca tăng nhẹ so với tháng trước"
-          },
-          {
-            "ten_benh": "Tay chân miệng",
-            "so_ca": 450,
-            "muc_do": "Trung bình",
-            "ghi_chu": null
-          }
-        ]
-      },
-      {
-        "id_tinh": "01",
-        "ten_tinh": "Hà Nội",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 800,
-            "muc_do": "Thấp",
-            "ghi_chu": "Thời tiết lạnh, chú ý người già"
-          }
-        ]
-      }
-    ]
+[{
+  "_id": {
+    "$oid": "699197f8d34a9bfc0c7e11e8"
   },
-  {
-    "thang": 8,
-    "nam": 2024,
-    "du_lieu_tinh": [
-      {
-        "id_tinh": "79",
-        "ten_tinh": "Hồ Chí Minh",
-        "dich_benh": [
-          {
-            "ten_benh": "Sởi",
-            "so_ca": 4758,
-            "muc_do": "Báo động đỏ",
-            "ghi_chu": "Tăng hơn 130 lần so với năm 2023"
-          },
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 12013,
-            "muc_do": "Cao",
-            "ghi_chu": "Giảm 27.8% so cùng kỳ năm 2023, cao nhất khu vực phía Nam"
-          },
-          {
-            "ten_benh": "Tay chân miệng",
-            "so_ca": 17882,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca cao nhất cả nước"
-          },
-          {
-            "ten_benh": "Đậu mùa khỉ",
-            "so_ca": 73,
-            "muc_do": "Cảnh báo",
-            "ghi_chu": "Tập trung chủ yếu tại TPHCM và các tỉnh miền Nam"
-          }
-        ]
-      },
-      {
-        "id_tinh": "01",
-        "ten_tinh": "Hà Nội",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 1283,
-            "muc_do": "Trung bình",
-            "ghi_chu": "39 ổ dịch từ đầu năm, 20 ổ dịch đang hoạt động"
-          },
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 612,
-            "muc_do": "Trung bình",
-            "ghi_chu": "Số ca tăng cao trong tuần cuối tháng 10"
-          }
-        ]
-      },
-      {
-        "id_tinh": "75",
-        "ten_tinh": "Đồng Nai",
-        "dich_benh": [
-          {
-            "ten_benh": "Sởi",
-            "so_ca": 6360,
-            "muc_do": "Báo động đỏ",
-            "ghi_chu": "Số ca mắc cao nhất cả nước"
-          },
-          {
-            "ten_benh": "Tay chân miệng",
-            "so_ca": 4968,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca cao thứ 3 cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "74",
-        "ten_tinh": "Bình Dương",
-        "dich_benh": [
-          {
-            "ten_benh": "Sởi",
-            "so_ca": 4745,
-            "muc_do": "Báo động đỏ",
-            "ghi_chu": "Số ca cao thứ 3 cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "96",
-        "ten_tinh": "Cà Mau",
-        "dich_benh": [
-          {
-            "ten_benh": "Sởi",
-            "so_ca": 2405,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca cao thứ 4 cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "66",
-        "ten_tinh": "Đắk Lắk",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 7372,
-            "muc_do": "Cao",
-            "ghi_chu": "Tăng gần 50% so với năm 2023, 3 ca tử vong"
-          }
-        ]
-      },
-      {
-        "id_tinh": "48",
-        "ten_tinh": "Đà Nẵng",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 1800,
-            "muc_do": "Cao",
-            "ghi_chu": "140 ổ dịch nhỏ, tập trung tại Liên Chiểu, Sơn Trà, Cẩm Lệ"
-          }
-        ]
-      },
-      {
-        "id_tinh": "38",
-        "ten_tinh": "Thanh Hóa",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 46600,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca mắc cao nhất cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "34",
-        "ten_tinh": "Thái Bình",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 26345,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca cao thứ 2 cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "40",
-        "ten_tinh": "Nghệ An",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 17949,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca cao thứ 3 cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "42",
-        "ten_tinh": "Hà Tĩnh",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 12807,
-            "muc_do": "Cao",
-            "ghi_chu": null
-          }
-        ]
-      },
-      {
-        "id_tinh": "14",
-        "ten_tinh": "Sơn La",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 10162,
-            "muc_do": "Cao",
-            "ghi_chu": null
-          },
-          {
-            "ten_benh": "Bệnh than",
-            "so_ca": 12,
-            "muc_do": "Cảnh báo",
-            "ghi_chu": "Xuất hiện ca bệnh than"
-          }
-        ]
-      },
-      {
-        "id_tinh": "11",
-        "ten_tinh": "Điện Biên",
-        "dich_benh": [
-          {
-            "ten_benh": "Bệnh than",
-            "so_ca": 12,
-            "muc_do": "Cảnh báo",
-            "ghi_chu": "Xuất hiện ca bệnh than"
-          }
-        ]
-      },
-      {
-        "id_tinh": "82",
-        "ten_tinh": "Tiền Giang",
-        "dich_benh": [
-          {
-            "ten_benh": "Tay chân miệng",
-            "so_ca": 5467,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca cao thứ 2 cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "89",
-        "ten_tinh": "An Giang",
-        "dich_benh": [
-          {
-            "ten_benh": "Tay chân miệng",
-            "so_ca": 4187,
-            "muc_do": "Cao",
-            "ghi_chu": null
-          }
-        ]
-      },
-      {
-        "id_tinh": "87",
-        "ten_tinh": "Đồng Tháp",
-        "dich_benh": [
-          {
-            "ten_benh": "Tay chân miệng",
-            "so_ca": 3717,
-            "muc_do": "Cao",
-            "ghi_chu": null
-          }
-        ]
-      },
-      {
-        "id_tinh": "31",
-        "ten_tinh": "Hải Phòng",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 23000,
-            "muc_do": "Cao",
-            "ghi_chu": "Số ca cao nhất miền Bắc"
-          }
-        ]
-      },
-      {
-        "id_tinh": "44",
-        "ten_tinh": "Quảng Bình",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 100,
-            "muc_do": "Cảnh báo",
-            "ghi_chu": "Có 2 ca tử vong trong tháng"
-          }
-        ]
-      },
-      {
-        "id_tinh": "56",
-        "ten_tinh": "Khánh Hòa",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 50,
-            "muc_do": "Trung bình",
-            "ghi_chu": "Có ca tử vong"
-          }
-        ]
-      },
-      {
-        "id_tinh": "52",
-        "ten_tinh": "Bình Định",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 50,
-            "muc_do": "Trung bình",
-            "ghi_chu": "Có ca tử vong"
-          }
-        ]
-      },
-      {
-        "id_tinh": "58",
-        "ten_tinh": "Phú Yên",
-        "dich_benh": [
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 50,
-            "muc_do": "Trung bình",
-            "ghi_chu": "Có ca tử vong"
-          }
-        ]
-      },
-      {
-        "id_tinh": "84",
-        "ten_tinh": "Trà Vinh",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 425,
-            "muc_do": "Trung bình",
-            "ghi_chu": "Giảm 28.7% so với 2023, 147 ổ dịch"
-          }
-        ]
-      }
-    ]
+  "thang": 1,
+  "nam": 2024,
+  "du_lieu_tinh": [
+    {
+      "id_tinh": "79",
+      "ten_tinh": "Hồ Chí Minh",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 1200,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca tăng nhẹ so với tháng trước"
+        },
+        {
+          "ten_benh": "Tay chân miệng",
+          "so_ca": 450,
+          "muc_do": "Trung bình",
+          "ghi_chu": null
+        }
+      ]
+    },
+    {
+      "id_tinh": "01",
+      "ten_tinh": "Hà Nội",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 800,
+          "muc_do": "Thấp",
+          "ghi_chu": "Thời tiết lạnh, chú ý người già"
+        }
+      ]
+    }
+  ],
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "699197f8d34a9bfc0c7e11e9"
   },
-  {
-    "thang": 12,
-    "nam": 2024,
-    "du_lieu_tinh": [
-      {
-        "id_tinh": "79",
-        "ten_tinh": "Hồ Chí Minh",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 14000,
-            "muc_do": "Cao",
-            "ghi_chu": "Dịch tăng mạnh vào cuối năm, mưa bão phức tạp"
-          }
-        ]
-      },
-      {
-        "id_tinh": "01",
-        "ten_tinh": "Hà Nội",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 300,
-            "muc_do": "Trung bình",
-            "ghi_chu": "Hơn 300 ổ dịch từ đầu năm, là trung tâm dịch miền Bắc"
-          },
-          {
-            "ten_benh": "Cúm mùa",
-            "so_ca": 820,
-            "muc_do": "Trung bình",
-            "ghi_chu": "Tăng 6% so cùng kỳ năm 2024"
-          }
-        ]
-      }
-    ]
+  "thang": 8,
+  "nam": 2024,
+  "du_lieu_tinh": [
+    {
+      "id_tinh": "79",
+      "ten_tinh": "Hồ Chí Minh",
+      "dich_benh": [
+        {
+          "ten_benh": "Sởi",
+          "so_ca": 4758,
+          "muc_do": "Báo động đỏ",
+          "ghi_chu": "Tăng hơn 130 lần so với năm 2023"
+        },
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 12013,
+          "muc_do": "Cao",
+          "ghi_chu": "Giảm 27.8% so cùng kỳ năm 2023, cao nhất khu vực phía Nam"
+        },
+        {
+          "ten_benh": "Tay chân miệng",
+          "so_ca": 17882,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca cao nhất cả nước"
+        },
+        {
+          "ten_benh": "Đậu mùa khỉ",
+          "so_ca": 73,
+          "muc_do": "Cảnh báo",
+          "ghi_chu": "Tập trung chủ yếu tại TPHCM và các tỉnh miền Nam"
+        }
+      ]
+    },
+    {
+      "id_tinh": "01",
+      "ten_tinh": "Hà Nội",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 1283,
+          "muc_do": "Trung bình",
+          "ghi_chu": "39 ổ dịch từ đầu năm, 20 ổ dịch đang hoạt động"
+        },
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 612,
+          "muc_do": "Trung bình",
+          "ghi_chu": "Số ca tăng cao trong tuần cuối tháng 10"
+        }
+      ]
+    },
+    {
+      "id_tinh": "75",
+      "ten_tinh": "Đồng Nai",
+      "dich_benh": [
+        {
+          "ten_benh": "Sởi",
+          "so_ca": 6360,
+          "muc_do": "Báo động đỏ",
+          "ghi_chu": "Số ca mắc cao nhất cả nước"
+        },
+        {
+          "ten_benh": "Tay chân miệng",
+          "so_ca": 4968,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca cao thứ 3 cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "74",
+      "ten_tinh": "Bình Dương",
+      "dich_benh": [
+        {
+          "ten_benh": "Sởi",
+          "so_ca": 4745,
+          "muc_do": "Báo động đỏ",
+          "ghi_chu": "Số ca cao thứ 3 cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "96",
+      "ten_tinh": "Cà Mau",
+      "dich_benh": [
+        {
+          "ten_benh": "Sởi",
+          "so_ca": 2405,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca cao thứ 4 cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "66",
+      "ten_tinh": "Đắk Lắk",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 7372,
+          "muc_do": "Cao",
+          "ghi_chu": "Tăng gần 50% so với năm 2023, 3 ca tử vong"
+        }
+      ]
+    },
+    {
+      "id_tinh": "48",
+      "ten_tinh": "Đà Nẵng",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 1800,
+          "muc_do": "Cao",
+          "ghi_chu": "140 ổ dịch nhỏ, tập trung tại Liên Chiểu, Sơn Trà, Cẩm Lệ"
+        }
+      ]
+    },
+    {
+      "id_tinh": "38",
+      "ten_tinh": "Thanh Hóa",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 46600,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca mắc cao nhất cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "34",
+      "ten_tinh": "Thái Bình",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 26345,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca cao thứ 2 cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "40",
+      "ten_tinh": "Nghệ An",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 17949,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca cao thứ 3 cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "42",
+      "ten_tinh": "Hà Tĩnh",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 12807,
+          "muc_do": "Cao",
+          "ghi_chu": null
+        }
+      ]
+    },
+    {
+      "id_tinh": "14",
+      "ten_tinh": "Sơn La",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 10162,
+          "muc_do": "Cao",
+          "ghi_chu": null
+        },
+        {
+          "ten_benh": "Bệnh than",
+          "so_ca": 12,
+          "muc_do": "Cảnh báo",
+          "ghi_chu": "Xuất hiện ca bệnh than"
+        }
+      ]
+    },
+    {
+      "id_tinh": "11",
+      "ten_tinh": "Điện Biên",
+      "dich_benh": [
+        {
+          "ten_benh": "Bệnh than",
+          "so_ca": 12,
+          "muc_do": "Cảnh báo",
+          "ghi_chu": "Xuất hiện ca bệnh than"
+        }
+      ]
+    },
+    {
+      "id_tinh": "82",
+      "ten_tinh": "Tiền Giang",
+      "dich_benh": [
+        {
+          "ten_benh": "Tay chân miệng",
+          "so_ca": 5467,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca cao thứ 2 cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "89",
+      "ten_tinh": "An Giang",
+      "dich_benh": [
+        {
+          "ten_benh": "Tay chân miệng",
+          "so_ca": 4187,
+          "muc_do": "Cao",
+          "ghi_chu": null
+        }
+      ]
+    },
+    {
+      "id_tinh": "87",
+      "ten_tinh": "Đồng Tháp",
+      "dich_benh": [
+        {
+          "ten_benh": "Tay chân miệng",
+          "so_ca": 3717,
+          "muc_do": "Cao",
+          "ghi_chu": null
+        }
+      ]
+    },
+    {
+      "id_tinh": "31",
+      "ten_tinh": "Hải Phòng",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 23000,
+          "muc_do": "Cao",
+          "ghi_chu": "Số ca cao nhất miền Bắc"
+        }
+      ]
+    },
+    {
+      "id_tinh": "44",
+      "ten_tinh": "Quảng Bình",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 100,
+          "muc_do": "Cảnh báo",
+          "ghi_chu": "Có 2 ca tử vong trong tháng"
+        }
+      ]
+    },
+    {
+      "id_tinh": "56",
+      "ten_tinh": "Khánh Hòa",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 50,
+          "muc_do": "Trung bình",
+          "ghi_chu": "Có ca tử vong"
+        }
+      ]
+    },
+    {
+      "id_tinh": "52",
+      "ten_tinh": "Bình Định",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 50,
+          "muc_do": "Trung bình",
+          "ghi_chu": "Có ca tử vong"
+        }
+      ]
+    },
+    {
+      "id_tinh": "58",
+      "ten_tinh": "Phú Yên",
+      "dich_benh": [
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 50,
+          "muc_do": "Trung bình",
+          "ghi_chu": "Có ca tử vong"
+        }
+      ]
+    },
+    {
+      "id_tinh": "84",
+      "ten_tinh": "Trà Vinh",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 425,
+          "muc_do": "Trung bình",
+          "ghi_chu": "Giảm 28.7% so với 2023, 147 ổ dịch"
+        }
+      ]
+    }
+  ],
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "699197f8d34a9bfc0c7e11ea"
   },
-  {
-    "thang": 1,
-    "nam": 2025,
-    "du_lieu_tinh": [
-      {
-        "id_tinh": "79",
-        "ten_tinh": "Hồ Chí Minh",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 500,
-            "muc_do": "Cao",
-            "ghi_chu": "1 ca tử vong đã được ghi nhận"
-          }
-        ]
-      },
-      {
-        "id_tinh": "74",
-        "ten_tinh": "Bình Dương",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 200,
-            "muc_do": "Cao",
-            "ghi_chu": "1 ca tử vong đã được ghi nhận"
-          }
-        ]
-      },
-      {
-        "id_tinh": "60",
-        "ten_tinh": "Bình Thuận",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 150,
-            "muc_do": "Cao",
-            "ghi_chu": "1 ca tử vong đã được ghi nhận"
-          },
-          {
-            "ten_benh": "Bệnh dại",
-            "so_ca": 10,
-            "muc_do": "Báo động đỏ",
-            "ghi_chu": "10 ca tử vong năm 2024, cao nhất cả nước"
-          }
-        ]
-      },
-      {
-        "id_tinh": "56",
-        "ten_tinh": "Khánh Hòa",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 100,
-            "muc_do": "Cao",
-            "ghi_chu": "1 ca tử vong đã được ghi nhận"
-          }
-        ]
-      },
-      {
-        "id_tinh": "58",
-        "ten_tinh": "Ninh Thuận",
-        "dich_benh": [
-          {
-            "ten_benh": "Sốt xuất huyết",
-            "so_ca": 80,
-            "muc_do": "Cao",
-            "ghi_chu": "1 ca tử vong đã được ghi nhận"
-          }
-        ]
-      }
-    ]
-  }
-]
+  "thang": 12,
+  "nam": 2024,
+  "du_lieu_tinh": [
+    {
+      "id_tinh": "79",
+      "ten_tinh": "Hồ Chí Minh",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 14000,
+          "muc_do": "Cao",
+          "ghi_chu": "Dịch tăng mạnh vào cuối năm, mưa bão phức tạp"
+        }
+      ]
+    },
+    {
+      "id_tinh": "01",
+      "ten_tinh": "Hà Nội",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 300,
+          "muc_do": "Trung bình",
+          "ghi_chu": "Hơn 300 ổ dịch từ đầu năm, là trung tâm dịch miền Bắc"
+        },
+        {
+          "ten_benh": "Cúm mùa",
+          "so_ca": 820,
+          "muc_do": "Trung bình",
+          "ghi_chu": "Tăng 6% so cùng kỳ năm 2024"
+        }
+      ]
+    }
+  ],
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "699197f8d34a9bfc0c7e11eb"
+  },
+  "thang": 1,
+  "nam": 2025,
+  "du_lieu_tinh": [
+    {
+      "id_tinh": "79",
+      "ten_tinh": "Hồ Chí Minh",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 500,
+          "muc_do": "Cao",
+          "ghi_chu": "1 ca tử vong đã được ghi nhận"
+        }
+      ]
+    },
+    {
+      "id_tinh": "74",
+      "ten_tinh": "Bình Dương",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 200,
+          "muc_do": "Cao",
+          "ghi_chu": "1 ca tử vong đã được ghi nhận"
+        }
+      ]
+    },
+    {
+      "id_tinh": "60",
+      "ten_tinh": "Bình Thuận",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 150,
+          "muc_do": "Cao",
+          "ghi_chu": "1 ca tử vong đã được ghi nhận"
+        },
+        {
+          "ten_benh": "Bệnh dại",
+          "so_ca": 10,
+          "muc_do": "Báo động đỏ",
+          "ghi_chu": "10 ca tử vong năm 2024, cao nhất cả nước"
+        }
+      ]
+    },
+    {
+      "id_tinh": "56",
+      "ten_tinh": "Khánh Hòa",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 100,
+          "muc_do": "Cao",
+          "ghi_chu": "1 ca tử vong đã được ghi nhận"
+        }
+      ]
+    },
+    {
+      "id_tinh": "58",
+      "ten_tinh": "Ninh Thuận",
+      "dich_benh": [
+        {
+          "ten_benh": "Sốt xuất huyết",
+          "so_ca": 80,
+          "muc_do": "Cao",
+          "ghi_chu": "1 ca tử vong đã được ghi nhận"
+        }
+      ]
+    }
+  ],
+  "isActive": true
+}]

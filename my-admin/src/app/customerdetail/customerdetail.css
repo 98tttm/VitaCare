@@ -73,6 +73,12 @@
     gap: 24px;
 }
 
+.right-col {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+}
+
 .card {
     background-color: var(--color-bg-secondary);
     border-radius: 12px;
@@ -840,4 +846,15 @@
     font-size: 14px;
     margin-top: 8px;
     cursor: pointer;
+}
+
+@media (max-width: 992px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .right-col {
+        position: static;
+        top: auto;
+    }
 }

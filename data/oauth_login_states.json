@@ -1,0 +1,20 @@
+[{
+  "_id": {
+    "$oid": "69c16e881e4704e8b4002505"
+  },
+  "state": "72917c3f6308a38266f62ac8a56bf7ef",
+  "provider": "google",
+  "createdAt": {
+    "$date": "2026-03-23T16:47:04.798Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c16f9c1e4704e8b40025a2"
+  },
+  "state": "fa9dfb1cd79d491fa47bad2d770c02ed",
+  "provider": "facebook",
+  "createdAt": {
+    "$date": "2026-03-23T16:51:40.992Z"
+  }
+}]

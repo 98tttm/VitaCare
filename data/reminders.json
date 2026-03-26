@@ -1,50 +1,627 @@
-[
+[{
+  "_id": {
+    "$oid": "65af8b9c2d1234567890abcd"
+  },
+  "user_id": "CUS000026",
+  "is_completed": false,
+  "last_completed_date": "2026-03-15T09:45:35.680Z",
+  "start_date": "2026-01-28T00:00:00Z",
+  "end_date": "2026-02-04T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 3,
+  "reminder_times": [
+    "08:00",
+    "13:00",
+    "19:00"
+  ],
+  "config_status": "Active",
+  "med_id": "MED-001",
+  "med_name": "Paracetamol",
+  "dosage": "1 viên, 500mg",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "Sau ăn",
+  "note": "Uống nhiều nước",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "isActive": true,
+  "completion_log": [
     {
-        "_id": "65af8b9c2d1234567890abcd",
-        "user_id": "CUS000026",
-        "is_completed": false,
-        "last_completed_date": "2026-01-28T08:00:00Z",
-        "start_date": "2026-01-28T00:00:00Z",
-        "end_date": "2026-02-04T00:00:00Z",
-        "frequency": "Daily",
-        "times_per_day": 3,
-        "reminder_times": [
-            "08:00",
-            "13:00",
-            "19:00"
-        ],
-        "config_status": "Active",
-        "med_id": "MED-001",
-        "med_name": "Paracetamol",
-        "dosage": "1 viên, 500mg",
-        "unit": "Viên",
-        "route": "Uống",
-        "instruction": "Sau ăn",
-        "note": "Uống nhiều nước",
-        "schedule_status": "Active",
-        "reminder_sound": true
+      "date": "2026-03-14",
+      "time": "08:00"
     },
     {
-        "_id": "65af8b9c2d1234567890abce",
-        "user_id": "CUS000026",
-        "is_completed": false,
-        "last_completed_date": null,
-        "start_date": "2026-01-28T00:00:00Z",
-        "end_date": "2026-02-28T00:00:00Z",
-        "frequency": "Daily",
-        "times_per_day": 1,
-        "reminder_times": [
-            "07:00"
-        ],
-        "config_status": "Active",
-        "med_id": "MED-002",
-        "med_name": "Vitamin C",
-        "dosage": "1 viên",
-        "unit": "Viên",
-        "route": "Uống",
-        "instruction": "Sau ăn",
-        "note": "Uống buổi sáng",
-        "schedule_status": "Active",
-        "reminder_sound": true
+      "date": "2026-03-14",
+      "time": "19:00"
+    },
+    {
+      "date": "2026-03-14",
+      "time": "13:00"
+    },
+    {
+      "date": "2026-03-15",
+      "time": "08:00"
+    },
+    {
+      "date": "2026-03-15",
+      "time": "13:00"
+    },
+    {
+      "date": "2026-03-15",
+      "time": "19:00"
     }
-]
+  ]
+},
+{
+  "_id": {
+    "$oid": "65af8b9c2d1234567890abce"
+  },
+  "user_id": "CUS000026",
+  "is_completed": false,
+  "last_completed_date": "2026-03-15T01:56:03.738Z",
+  "start_date": "2026-01-28T00:00:00Z",
+  "end_date": "2026-02-28T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "07:00"
+  ],
+  "config_status": "Active",
+  "med_id": "MED-002",
+  "med_name": "Vitamin C",
+  "dosage": "1 viên",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "Sau ăn",
+  "note": "Uống buổi sáng",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "isActive": true,
+  "completion_log": [
+    {
+      "date": "2026-03-14",
+      "time": "07:00"
+    },
+    {
+      "date": "2026-03-15",
+      "time": "07:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69bc110929d53d7cbc15a5bd"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-23T07:41:12.025Z",
+  "start_date": "2026-03-21T00:00:00Z",
+  "end_date": "2026-03-24T00:00:00Z",
+  "frequency": "Every 2 days",
+  "times_per_day": 1,
+  "reminder_times": [
+    "08:00"
+  ],
+  "med_id": null,
+  "med_name": "Dạ dày",
+  "dosage": "3",
+  "unit": "Ống",
+  "route": "Uống",
+  "instruction": "Sau ăn",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Dạ dày",
+  "tag_color": "yellow",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [
+    {
+      "date": "2026-03-21",
+      "time": "08:00"
+    }
+  ],
+  "skipped_dates": [
+    "2026-03-23"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-23T07:41:19.660Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bcb65957b85be058621528"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-20T09:43:59.529Z",
+  "start_date": "2026-03-20T00:00:00Z",
+  "end_date": "2026-03-14T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "08:21"
+  ],
+  "med_id": null,
+  "med_name": "cảm",
+  "dosage": "2",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "Sau ăn",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Thuốc cảm",
+  "tag_color": "green",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": []
+},
+{
+  "_id": {
+    "$oid": "69bcb7b657b85be05862152c"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": null,
+  "start_date": "2026-03-20T00:00:00Z",
+  "end_date": "2026-03-07T00:00:00Z",
+  "frequency": "Every 2 days",
+  "times_per_day": 1,
+  "reminder_times": [
+    "08:00"
+  ],
+  "med_id": null,
+  "med_name": "Vitamin",
+  "dosage": "1",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "Trước ăn",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Vitamin",
+  "tag_color": "blue",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": []
+},
+{
+  "_id": {
+    "$oid": "69bcb98d57b85be05862152e"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-23T07:41:14.399Z",
+  "start_date": "2026-03-20T00:00:00Z",
+  "end_date": "2026-03-23T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "09:00"
+  ],
+  "med_id": null,
+  "med_name": "Đau răng",
+  "dosage": "5",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Kháng sinh",
+  "tag_color": "teal",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [
+    {
+      "date": "2026-03-21",
+      "time": "09:00"
+    }
+  ],
+  "skipped_dates": [
+    "2026-03-20",
+    "2026-03-22",
+    "2026-03-23"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-23T07:41:21.352Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bcc01957b85be058621531"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": null,
+  "start_date": "2026-03-02T00:00:00Z",
+  "end_date": "2026-03-07T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "08:00"
+  ],
+  "med_id": null,
+  "med_name": "Thuốc ho",
+  "dosage": "1",
+  "unit": "Viên ",
+  "route": "Uống",
+  "instruction": "Sau ăn",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Thuốc ho",
+  "tag_color": "red",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": []
+},
+{
+  "_id": {
+    "$oid": "69bcc04b57b85be058621532"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-20T10:37:44.776Z",
+  "start_date": "2026-03-09T00:00:00Z",
+  "end_date": "2026-03-20T00:00:00Z",
+  "frequency": "Every 2 days",
+  "times_per_day": 1,
+  "reminder_times": [
+    "08:00"
+  ],
+  "med_id": null,
+  "med_name": "Vitamin",
+  "dosage": "1",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "Không phụ thuộc bữa ăn",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Vitamin",
+  "tag_color": "blue",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": []
+},
+{
+  "_id": {
+    "$oid": "69bcd18257b85be05862153a"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": null,
+  "start_date": "2026-03-20T00:00:00Z",
+  "end_date": "2026-03-22T00:00:00.000Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "08:00"
+  ],
+  "med_id": null,
+  "med_name": "ádfs",
+  "dosage": "",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": null,
+  "tag_color": null,
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [],
+  "skipped_dates": [
+    "2026-03-20",
+    "2026-03-21",
+    "2026-03-29",
+    "2026-03-25",
+    "2026-03-22"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-20T04:58:32.945Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bcdbb7f0ba8e66f1ada959"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-23T07:41:09.988Z",
+  "start_date": "2026-03-20T00:00:00Z",
+  "end_date": "2026-03-23T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "08:00"
+  ],
+  "med_id": null,
+  "med_name": "Thuốc ho",
+  "dosage": "",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": null,
+  "tag_color": null,
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [
+    {
+      "date": "2026-03-20",
+      "time": "08:00"
+    },
+    {
+      "date": "2026-03-21",
+      "time": "08:00"
+    }
+  ],
+  "skipped_dates": [
+    "2026-03-22",
+    "2026-03-23"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-23T07:41:15.841Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bcdedff0ba8e66f1ada95a"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-21T16:27:23.198Z",
+  "start_date": "2026-03-20T00:00:00Z",
+  "end_date": "2026-03-24T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "20:00"
+  ],
+  "med_id": null,
+  "med_name": "Vitamin",
+  "dosage": "",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Vitamin",
+  "tag_color": "blue",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [
+    {
+      "date": "2026-03-20",
+      "time": "20:00"
+    },
+    {
+      "date": "2026-03-21",
+      "time": "20:00"
+    }
+  ],
+  "skipped_dates": [
+    "2026-03-20",
+    "2026-03-22",
+    "2026-03-23",
+    "2026-03-24"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-23T17:44:24.756Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bd14d73be997ecf635953f"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-21T16:27:21.636Z",
+  "start_date": "2026-03-20T00:00:00Z",
+  "end_date": "2026-04-19T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "16:37"
+  ],
+  "med_id": null,
+  "med_name": "tét",
+  "dosage": "",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": null,
+  "tag_color": null,
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [
+    {
+      "date": "2026-03-21",
+      "time": "16:37"
+    }
+  ],
+  "skipped_dates": [
+    "2026-03-20",
+    "2026-03-22",
+    "2026-03-23",
+    "2026-03-24"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-23T17:44:22.493Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bf76629312f0dc6b47fc29"
+  },
+  "user_id": "CUS000029",
+  "is_completed": false,
+  "last_completed_date": "2026-03-23T09:15:37.693Z",
+  "start_date": "2026-03-22T00:00:00Z",
+  "end_date": "2026-03-25T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "12:45"
+  ],
+  "med_id": null,
+  "med_name": "Thuốc ho",
+  "dosage": "1",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "Sau ăn",
+  "note": "",
+  "image_url": null,
+  "tag_label": null,
+  "tag_color": null,
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [
+    {
+      "date": "2026-03-23",
+      "time": "12:45"
+    }
+  ],
+  "skipped_dates": []
+},
+{
+  "_id": {
+    "$oid": "69c17be84b5aabfd1f48990d"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": null,
+  "start_date": "2026-03-24T00:00:00Z",
+  "end_date": "2026-03-25T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "12:00"
+  ],
+  "med_id": null,
+  "med_name": "Đau răng",
+  "dosage": "5",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Kháng sinh",
+  "tag_color": "teal",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [],
+  "skipped_dates": [
+    "2026-03-24"
+  ],
+  "updatedAt": {
+    "$date": "2026-03-24T04:45:36.589Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c17bf34b5aabfd1f48990e"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": "2026-03-24T04:45:32.458Z",
+  "start_date": "2026-03-24T00:00:00Z",
+  "end_date": "2026-03-25T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "11:00"
+  ],
+  "med_id": null,
+  "med_name": "Thuốc ho",
+  "dosage": "",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": null,
+  "tag_color": null,
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [
+    {
+      "date": "2026-03-24",
+      "time": "11:00"
+    }
+  ],
+  "skipped_dates": []
+},
+{
+  "_id": {
+    "$oid": "69c2165ca37da62f4c56af85"
+  },
+  "user_id": "CUS000032",
+  "is_completed": false,
+  "last_completed_date": null,
+  "start_date": "2026-03-24T00:00:00Z",
+  "end_date": "2026-03-29T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "12:40"
+  ],
+  "med_id": null,
+  "med_name": "Thuốc ho",
+  "dosage": "1",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "Sau ăn",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Thuốc ho",
+  "tag_color": "red",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [],
+  "skipped_dates": []
+},
+{
+  "_id": {
+    "$oid": "69c2445dfe6171a8c5145c5b"
+  },
+  "user_id": "CUS000028",
+  "is_completed": false,
+  "last_completed_date": null,
+  "start_date": "2026-03-24T00:00:00Z",
+  "end_date": "2026-04-23T00:00:00Z",
+  "frequency": "Daily",
+  "times_per_day": 1,
+  "reminder_times": [
+    "15:30"
+  ],
+  "med_id": null,
+  "med_name": "Vitamin",
+  "dosage": "",
+  "unit": "Viên",
+  "route": "Uống",
+  "instruction": "",
+  "note": "",
+  "image_url": null,
+  "tag_label": "Vitamin",
+  "tag_color": "blue",
+  "config_status": "Active",
+  "schedule_status": "Active",
+  "reminder_sound": true,
+  "completion_log": [],
+  "skipped_dates": []
+}]

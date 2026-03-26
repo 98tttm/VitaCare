@@ -1,92 +1,270 @@
-[
-  {
-    "slug": "co-xuong-khop",
-    "name": "Cơ xương khớp",
-    "display_order": 1
+[{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a1398"
   },
-  {
-    "slug": "tieu-hoa",
-    "name": "Tiêu hóa",
-    "display_order": 2
+  "slug": "co-xuong-khop",
+  "name": "Cơ xương khớp",
+  "display_order": 1,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.471Z"
   },
-  {
-    "slug": "than-kinh-tinh-than",
-    "name": "Thần kinh - Tinh thần",
-    "display_order": 3
-  },
-  {
-    "slug": "truyen-nhiem",
-    "name": "Truyền nhiễm",
-    "display_order": 4
-  },
-  {
-    "slug": "ung-thu",
-    "name": "Ung thư",
-    "display_order": 5
-  },
-  {
-    "slug": "suc-khoe-sinh-san",
-    "name": "Sức khỏe sinh sản",
-    "display_order": 6
-  },
-  {
-    "slug": "tim-mach",
-    "name": "Tim mạch",
-    "display_order": 7
-  },
-  {
-    "slug": "da-toc-mong",
-    "name": "Da - Tóc - Móng",
-    "display_order": 8
-  },
-  {
-    "slug": "tai-mui-hong",
-    "name": "Tai mũi họng",
-    "display_order": 9
-  },
-  {
-    "slug": "mat",
-    "name": "Mắt",
-    "display_order": 10
-  },
-  {
-    "slug": "than-tiet-nieu",
-    "name": "Thận - Tiết niệu",
-    "display_order": 11
-  },
-  {
-    "slug": "ho-hap",
-    "name": "Hô hấp",
-    "display_order": 12
-  },
-  {
-    "slug": "di-ung",
-    "name": "Dị ứng",
-    "display_order": 13
-  },
-  {
-    "slug": "rang-ham-mat",
-    "name": "Răng hàm mặt",
-    "display_order": 14
-  },
-  {
-    "slug": "suc-khoe-gioi-tinh",
-    "name": "Sức khỏe giới tính",
-    "display_order": 15
-  },
-  {
-    "slug": "tam-than",
-    "name": "Tâm thần",
-    "display_order": 16
-  },
-  {
-    "slug": "mau",
-    "name": "Máu",
-    "display_order": 17
-  },
-  {
-    "slug": "noi-tiet-chuyen-hoa",
-    "name": "Nội tiết - Chuyển hóa",
-    "display_order": 18
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.471Z"
   }
-]
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a1399"
+  },
+  "slug": "tieu-hoa",
+  "name": "Tiêu hóa",
+  "display_order": 2,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a139a"
+  },
+  "slug": "than-kinh-tinh-than",
+  "name": "Thần kinh - Tinh thần",
+  "display_order": 3,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a139b"
+  },
+  "slug": "truyen-nhiem",
+  "name": "Truyền nhiễm",
+  "display_order": 4,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a139c"
+  },
+  "slug": "ung-thu",
+  "name": "Ung thư",
+  "display_order": 5,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a139d"
+  },
+  "slug": "suc-khoe-sinh-san",
+  "name": "Sức khỏe sinh sản",
+  "display_order": 6,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a139e"
+  },
+  "slug": "tim-mach",
+  "name": "Tim mạch",
+  "display_order": 7,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a139f"
+  },
+  "slug": "da-toc-mong",
+  "name": "Da - Tóc - Móng",
+  "display_order": 8,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a0"
+  },
+  "slug": "tai-mui-hong",
+  "name": "Tai mũi họng",
+  "display_order": 9,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a1"
+  },
+  "slug": "mat",
+  "name": "Mắt",
+  "display_order": 10,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a2"
+  },
+  "slug": "than-tiet-nieu",
+  "name": "Thận - Tiết niệu",
+  "display_order": 11,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a3"
+  },
+  "slug": "ho-hap",
+  "name": "Hô hấp",
+  "display_order": 12,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a4"
+  },
+  "slug": "di-ung",
+  "name": "Dị ứng",
+  "display_order": 13,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a5"
+  },
+  "slug": "rang-ham-mat",
+  "name": "Răng hàm mặt",
+  "display_order": 14,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a6"
+  },
+  "slug": "suc-khoe-gioi-tinh",
+  "name": "Sức khỏe giới tính",
+  "display_order": 15,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a7"
+  },
+  "slug": "tam-than",
+  "name": "Tâm thần",
+  "display_order": 16,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a8"
+  },
+  "slug": "mau",
+  "name": "Máu",
+  "display_order": 17,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b55af4b5d37986c39a13a9"
+  },
+  "slug": "noi-tiet-chuyen-hoa",
+  "name": "Nội tiết - Chuyển hóa",
+  "display_order": 18,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T12:56:20.473Z"
+  }
+}]

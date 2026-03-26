@@ -1,4 +1,4 @@
-﻿/* Blog list — layout gọn giống đơn hàng / sản phẩm */
+/* Blog list — layout gọn giống đơn hàng / sản phẩm */
 .blog-manage-container {
     display: flex;
     flex-direction: column;
@@ -131,6 +131,12 @@
     color: white;
     border-color: var(--color-primary) !important;
     transform: translateY(-1px);
+}
+
+.action-btn.active {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+    border-color: var(--color-primary) !important;
 }
 
 /* Filter Bar */
@@ -376,7 +382,7 @@
     font-weight: 700;
 }
 
-/* Sort dropdown specific styles */
+/* Sort dropdown — đồng bộ với quản lý bệnh */
 .sort-dropdown-menu {
     position: absolute;
     top: 100%;
@@ -386,7 +392,9 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     z-index: 1000;
-    min-width: 200px;
+    width: max-content;
+    min-width: 0;
+    max-width: min(280px, 92vw);
     margin-top: 8px;
     overflow: hidden;
 }
@@ -396,40 +404,95 @@
     flex-direction: column;
 }
 
-/* Sort option button refinement */
-.sort-option-btn {
-    width: 100%;
-    padding: 12px 16px;
-    text-align: left;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #f0f0f0;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--color-text-primary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
+.compact-sort-list {
+    padding: 6px 0;
 }
 
-.sort-option-btn:last-child {
+.sort-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sort-row:last-child {
     border-bottom: none;
 }
 
-.sort-option-btn:hover {
+.sort-row.row-active {
+    background-color: var(--color-primary-bg, rgba(0, 88, 159, 0.08));
+}
+
+.sort-row-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-align: left;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.sort-row-label:hover {
     background-color: #daecff;
     color: var(--color-primary);
 }
 
-.sort-option-btn.active {
-    background-color: var(--color-primary-bg);
-    color: var(--color-primary);
-    font-weight: 600;
+.sort-row-label i {
+    font-size: 16px;
+    color: var(--color-primary-light);
+    opacity: 0.9;
+    flex-shrink: 0;
 }
 
-.sort-option-btn i {
-    font-size: 16px;
+.sort-row-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 4px 6px 4px 4px;
+}
+
+.sort-arrow-btn {
+    width: 32px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-neutral-40);
+    border-radius: 6px;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.15s;
+}
+
+.sort-arrow-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: #fff;
+}
+
+.sort-arrow-btn.dir-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.sort-arrow-btn i {
+    font-size: 14px;
+    line-height: 1;
 }
 
 

@@ -1,69 +1,68 @@
-[
+[{
+  "_id": "h1e2a3l4t5h6p7r8o9f0",
+  "user_id": "CUS000026",
+  "full_name": "Phạm Thái Huỳnh Hương",
+  "phone": "0965813408",
+  "gender": "Female",
+  "height_cm": {
+    "value": 165,
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "weight_kg": {
+    "value": 55,
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "bmi_score": {
+    "value": 20.2,
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "bmi_status": "Bình thường",
+  "bmr_score": {
+    "value": 1350,
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "bmr_status": "Trung bình",
+  "blood_pressure": {
+    "systolic": 110,
+    "diastolic": 70,
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "heart_rate": {
+    "value": 75,
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "blood_sugar": {
+    "value": 95,
+    "unit": "mg/dL",
+    "status": "Bình thường",
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "blood_fat": {
+    "cholesterol": 170,
+    "unit": "mg/dL",
+    "status": "Bình thường",
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "bone_density": {
+    "value": -0.5,
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "menstrual_cycle": {
+    "status": "Regular",
+    "days_remaining": 12,
+    "last_period": "2026-01-15",
+    "updatedAt": "2026-01-28T23:50:00Z"
+  },
+  "is_pregnancy": false,
+  "medication_reminders": [
     {
-        "_id": "h1e2a3l4t5h6p7r8o9f0",
-        "user_id": "CUS000026",
-        "full_name": "Phạm Thái Huỳnh Hương",
-        "phone": "0965813408",
-        "gender": "Female",
-        "height_cm": {
-            "value": 165,
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "weight_kg": {
-            "value": 55,
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "bmi_score": {
-            "value": 20.2,
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "bmi_status": "Bình thường",
-        "bmr_score": {
-            "value": 1350,
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "bmr_status": "Trung bình",
-        "blood_pressure": {
-            "systolic": 110,
-            "diastolic": 70,
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "heart_rate": {
-            "value": 75,
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "blood_sugar": {
-            "value": 95,
-            "unit": "mg/dL",
-            "status": "Bình thường",
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "blood_fat": {
-            "cholesterol": 170,
-            "unit": "mg/dL",
-            "status": "Bình thường",
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "bone_density": {
-            "value": -0.5,
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "menstrual_cycle": {
-            "status": "Regular",
-            "days_remaining": 12,
-            "last_period": "2026-01-15",
-            "updatedAt": "2026-01-28T23:50:00Z"
-        },
-        "is_pregnancy": false,
-        "medication_reminders": [
-            {
-                "medicine": "Vitamin C",
-                "time": "08:00",
-                "dosage": "1 tablet",
-                "status": "active"
-            }
-        ],
-        "createdAt": "2026-01-28T23:50:00Z",
-        "updatedAt": "2026-01-28T23:50:00Z"
+      "medicine": "Vitamin C",
+      "time": "08:00",
+      "dosage": "1 tablet",
+      "status": "active"
     }
-]
+  ],
+  "createdAt": "2026-01-28T23:50:00Z",
+  "updatedAt": "2026-01-28T23:50:00Z",
+  "isActive": true
+}]

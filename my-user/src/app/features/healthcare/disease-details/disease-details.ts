@@ -430,6 +430,52 @@ export class DiseaseDetails implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustHtml(fixedHtml);
   }
 
+  /**
+   * Slug bệnh trên route chỉ có 1 segment: `/benh/:id`.
+   * Dữ liệu CMS có thể là `benh/nhom/.../slug-123.html` — lấy segment cuối để khớp API.
+   */
+  normalizeDiseaseRouteId(raw: string): string {
+    if (!raw) return '';
+    let s = String(raw).trim();
+    if (s.startsWith('http')) {
+      try {
+        s = new URL(s).pathname || '';
+      } catch {
+        return '';
+      }
+    }
+    s = s.replace(/^\/+/, '');
+    if (s.toLowerCase().includes('nhathuoclongchau.com.vn/')) {
+      s = s.split('nhathuoclongchau.com.vn/')[1] || s;
+    }
+    s = s.replace(/^benh\//i, '');
+    s = s.replace(/\.html?$/i, '');
+    const parts = s.split('/').filter(Boolean);
+    const last = parts.length ? parts[parts.length - 1] : s;
+    return (last || '').trim();
+  }
+
+  /** Link router cho từng bệnh liên quan (slug đầy đủ hoặc chỉ id Mongo). */
+  getRelatedDiseaseLink(rel: { slug?: string; id?: string | number; _id?: unknown }): any[] {
+    const rawSlug = rel?.slug != null ? String(rel.slug).trim() : '';
+    if (rawSlug) {
+      const id = this.normalizeDiseaseRouteId(rawSlug);
+      if (id) return ['/benh', id];
+    }
+    const oid = rel?._id ?? rel?.id;
+    if (oid != null && oid !== '') {
+      const s =
+        typeof oid === 'object' && oid !== null && '$oid' in (oid as Record<string, unknown>)
+          ? String((oid as { $oid?: string }).$oid)
+          : String(oid);
+      const clean = s.trim();
+      if (clean && clean !== 'undefined') {
+        return ['/benh', clean];
+      }
+    }
+    return ['/disease'];
+  }
+
   /** Chuyển slug/URL bất kỳ thành path nội bộ sạch */
   public getInternalUrl(raw: string, type: string): string {
     if (!raw) return '/';
@@ -453,6 +499,11 @@ export class DiseaseDetails implements OnInit, OnDestroy {
 
     // Xóa đuôi .html
     slug = slug.replace(/\.html$/i, '');
+
+    if (type === 'benh' && slug.includes('/')) {
+      const parts = slug.split('/').filter(Boolean);
+      slug = parts.length ? parts[parts.length - 1] : slug;
+    }
 
     return `/${type}/${slug}`;
   }
@@ -517,8 +568,14 @@ export class DiseaseDetails implements OnInit, OnDestroy {
         event.preventDefault();
 
         let targetUrl = href;
-        if (href.includes('/benh/')) targetUrl = this.getInternalUrl(href, 'benh');
-        else if (href.includes('/blog/') || href.includes('/bai-viet/')) targetUrl = this.getInternalUrl(href, 'blog');
+        if (href.includes('/benh/')) {
+          const pathOnly = href.split(/[?#]/)[0];
+          const rest = pathOnly.split(/\/benh\//i).pop() || '';
+          const id = this.normalizeDiseaseRouteId(rest ? `benh/${rest}` : pathOnly);
+          targetUrl = id ? `/benh/${id}` : this.getInternalUrl(href, 'benh');
+        } else if (href.includes('/blog/') || href.includes('/bai-viet/')) {
+          targetUrl = this.getInternalUrl(href, 'blog');
+        }
 
         window.scrollTo(0, 0);
         this.router.navigateByUrl(targetUrl);

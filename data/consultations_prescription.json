@@ -1,1379 +1,1544 @@
-[
-  {
-    "_id": "7a3dcf845e8d8b638cef08c1",
-    "prescriptionId": "PRE263491238",
-    "user_id": "CUS000020",
-    "full_name": "Phạm Thanh Khánh",
-    "phone": "0707996545",
-    "note": "Dị ứng mẩn ngứa",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3b44d747b5d5d897f4"
-        },
-        "name": "Thuốc Dimenhydrinat 50mg Traphaco chống nôn, chống say tàu xe (10 vỉ x 10 viên)",
-        "sku": "104335",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_7312_4749e5da70.jpg"
-      }
-    ],
-    "status": "unreachable",
-    "current_status": {
+[{
+  "_id": {
+    "$oid": "7a3dcf845e8d8b638cef08c1"
+  },
+  "prescriptionId": "PRE263491238",
+  "user_id": "CUS000020",
+  "full_name": "Phạm Thanh Khánh",
+  "phone": "0707996545",
+  "note": "Dị ứng mẩn ngứa",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [
+    "Thuốc Dimenhydrinat 50mg Traphaco chống nôn, chống say tàu xe (10 vỉ x 10 viên)"
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-03-22T20:50:56.544Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-01-17T13:52:38",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-01-17T14:52:38",
+      "changedBy": "Phạm Thái Huỳnh Hương"
+    },
+    {
       "status": "unreachable",
       "changedAt": "2026-01-17T15:07:38",
       "changedBy": "Phạm Thái Huỳnh Hương"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-17T13:52:38",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-17T14:52:38",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      },
-      {
-        "status": "unreachable",
-        "changedAt": "2026-01-17T15:07:38",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2026-01-17T13:52:38",
-    "updatedAt": "2026-01-17T15:07:38",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    {
+      "status": "advised",
+      "changedAt": "2026-03-22T20:50:56.544Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "createdAt": "2026-01-17T13:52:38",
+  "updatedAt": {
+    "$date": "2026-03-22T20:50:56.683Z"
   },
-  {
-    "_id": "dc451d61de20dcc4fba215a8",
-    "prescriptionId": "PRE370241798",
-    "user_id": "CUS000025",
-    "full_name": "Nguyễn Thu Phương",
-    "phone": "0872974896",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img35.jpg"
-    ],
-    "medicines_requested": [],
-    "status": "unreachable",
-    "current_status": {
-      "status": "unreachable",
-      "changedAt": "2026-01-17T11:17:05",
-      "changedBy": "Nguyễn Khánh Xuân"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-17T08:26:05",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-17T09:21:05",
-        "changedBy": "Nguyễn Khánh Xuân"
-      },
-      {
-        "status": "unreachable",
-        "changedAt": "2026-01-17T11:17:05",
-        "changedBy": "Nguyễn Khánh Xuân"
-      }
-    ],
-    "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
-    "pharmacistName": "Nguyễn Khánh Xuân",
-    "pharmacistPhone": "0387253686",
-    "createdAt": "2026-01-17T08:26:05",
-    "updatedAt": "2026-01-17T11:17:05",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true,
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "642c1a86d80cd5e6bbcbf71e"
   },
-  {
-    "_id": "d229b5cc7b0d8ffe7e2f56dd",
-    "prescriptionId": "PRE096576467",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0749341411",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img30.jpg"
-    ],
-    "medicines_requested": [],
-    "status": "pending",
-    "current_status": {
+  "prescriptionId": "PRE787711521",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0910909880",
+  "note": "Cần tư vấn đơn thuốc này",
+  "consultation_type": "prescription",
+  "images": [
+    "https://example.com/img11.jpg"
+  ],
+  "medicines_requested": [],
+  "status": "waiting",
+  "current_status": {
+    "status": "waiting",
+    "changedAt": "2026-01-16T23:37:22",
+    "changedBy": "Phạm Thái Huỳnh Hương"
+  },
+  "status_history": [
+    {
       "status": "pending",
-      "changedAt": "2026-01-17T00:33:51",
+      "changedAt": "2026-01-16T23:08:22",
       "changedBy": "System"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-17T00:33:51",
-        "changedBy": "System"
-      }
-    ],
-    "pharmacist_id": null,
-    "pharmacistName": null,
-    "pharmacistPhone": null,
-    "createdAt": "2026-01-17T00:33:51",
-    "updatedAt": "2026-01-17T00:33:51",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
-  },
-  {
-    "_id": "642c1a86d80cd5e6bbcbf71e",
-    "prescriptionId": "PRE787711521",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0910909880",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img11.jpg"
-    ],
-    "medicines_requested": [],
-    "status": "waiting",
-    "current_status": {
+    {
       "status": "waiting",
       "changedAt": "2026-01-16T23:37:22",
       "changedBy": "Phạm Thái Huỳnh Hương"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-16T23:08:22",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-16T23:37:22",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2026-01-16T23:08:22",
-    "updatedAt": "2026-01-16T23:37:22",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
+  "pharmacistName": "Phạm Thái Huỳnh Hương",
+  "pharmacistPhone": "0965813408",
+  "createdAt": "2026-01-16T23:08:22",
+  "updatedAt": "2026-01-16T23:37:22",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "8bfc0ce5dc49e86f655ddbb1"
   },
-  {
-    "_id": "9c0aaec73f2d5a54be9ad2ef",
-    "prescriptionId": "PRE194225761",
-    "user_id": "CUS000023",
-    "full_name": "Bùi Mỹ Huy",
-    "phone": "0706960921",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img98.jpg"
-    ],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d88905"
-        },
-        "name": "Viên uống Maca M Male Power hỗ trợ bổ thận, tráng dương (60 viên)",
-        "sku": "100513",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00028718_maca_m_male_power_60v_7335_5f62_large_ee96a5fd36.JPG"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d891af"
-        },
-        "name": "Dung dịch tiêm Dexamethasone 4mg/1ml điều trị trạng thái hen, bệnh dị ứng nặng, phản ứng sau truyền máu (50 ống)",
-        "sku": "102731",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_03671_9ff551e12f.jpg"
-      }
-    ],
+  "prescriptionId": "PRE322153367",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0142307623",
+  "note": "Cần tư vấn đơn thuốc này",
+  "consultation_type": "prescription",
+  "images": [
+    "https://example.com/img72.jpg"
+  ],
+  "medicines_requested": [
+    "Nước tẩy trang JMSolution Derma Care Centella cho da dầu mụn, nhạy cảm (500ml)"
+  ],
+  "status": "advised",
+  "current_status": {
     "status": "advised",
-    "current_status": {
-      "status": "advised",
-      "changedAt": "2026-01-16T09:23:57",
+    "changedAt": "2026-01-15T23:41:57",
+    "changedBy": "Phạm Thái Huỳnh Hương"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-01-15T23:04:57",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-01-15T23:22:57",
       "changedBy": "Phạm Thái Huỳnh Hương"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-16T07:37:57",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-16T07:47:57",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2026-01-16T09:23:57",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2026-01-16T07:37:57",
-    "updatedAt": "2026-01-16T09:23:57",
-    "completedAt": "2026-01-16T09:23:57",
-    "cancel_reason": null,
-    "is_follow_up": false
-  },
-  {
-    "_id": "8bfc0ce5dc49e86f655ddbb1",
-    "prescriptionId": "PRE322153367",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0142307623",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img72.jpg"
-    ],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d889a3"
-        },
-        "name": "Nước tẩy trang JMSolution Derma Care Centella cho da dầu mụn, nhạy cảm (500ml)",
-        "sku": "100671",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_04740_8ade38f685.jpg"
-      }
-    ],
-    "status": "advised",
-    "current_status": {
+    {
       "status": "advised",
       "changedAt": "2026-01-15T23:41:57",
       "changedBy": "Phạm Thái Huỳnh Hương"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-15T23:04:57",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-15T23:22:57",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2026-01-15T23:41:57",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2026-01-15T23:04:57",
-    "updatedAt": "2026-01-15T23:41:57",
-    "completedAt": "2026-01-15T23:41:57",
-    "cancel_reason": null,
-    "is_follow_up": true
+    }
+  ],
+  "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
+  "pharmacistName": "Phạm Thái Huỳnh Hương",
+  "pharmacistPhone": "0965813408",
+  "createdAt": "2026-01-15T23:04:57",
+  "updatedAt": "2026-01-15T23:41:57",
+  "completedAt": "2026-01-15T23:41:57",
+  "cancel_reason": null,
+  "is_follow_up": true,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "eb5f8b4d8a3bcf3dcf15828d"
   },
-  {
-    "_id": "eb5f8b4d8a3bcf3dcf15828d",
-    "prescriptionId": "PRE063886685",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0662551414",
-    "note": "Tôi bị đau đầu",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d889b8"
-        },
-        "name": "Kem bôi Biotrade Acnaut Active Cream hỗ trợ cải thiện mụn viêm (15ml)",
-        "sku": "100692",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00989_7ff75ed358.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d890ce"
-        },
-        "name": "Siro ATessen An Thiên hỗ trợ giảm ho khan, ho không đờm, ho mạn tính (30 ống x 5ml)",
-        "sku": "102506",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00501375_e23ce2bfb1.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d88a23"
-        },
-        "name": "Sữa rửa mặt Reihaku Hatomugi Acne Care and Facial Washing giúp ngừa mụn, dưỡng ẩm và làm sáng da (130g)",
-        "sku": "100799",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00503325_sua_rua_mat_ngua_mun_duong_am_va_lam_sang_da_reihaku_hatomugi_acne_care_and_facial_washing_130g_9270_63ed_large_3f5868bde7.jpg"
-      }
-    ],
-    "status": "unreachable",
-    "current_status": {
+  "prescriptionId": "PRE063886685",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0662551414",
+  "note": "Tôi bị đau đầu",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [
+    "Kem bôi Biotrade Acnaut Active Cream hỗ trợ cải thiện mụn viêm (15ml)",
+    "Siro ATessen An Thiên hỗ trợ giảm ho khan, ho không đờm, ho mạn tính (30 ống x 5ml)",
+    "Sữa rửa mặt Reihaku Hatomugi Acne Care and Facial Washing giúp ngừa mụn, dưỡng ẩm và làm sáng da (130g)"
+  ],
+  "status": "cancelled",
+  "current_status": {
+    "status": "cancelled",
+    "changedAt": "2026-03-22T20:53:48.199Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-01-15T14:27:37",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-01-15T15:02:37",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
       "status": "unreachable",
       "changedAt": "2026-01-15T16:06:37",
       "changedBy": "Phan Thị Ánh Linh"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-15T14:27:37",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-15T15:02:37",
-        "changedBy": "Phan Thị Ánh Linh"
-      },
-      {
-        "status": "unreachable",
-        "changedAt": "2026-01-15T16:06:37",
-        "changedBy": "Phan Thị Ánh Linh"
-      }
-    ],
-    "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
-    "pharmacistName": "Phan Thị Ánh Linh",
-    "pharmacistPhone": "0843293506",
-    "createdAt": "2026-01-15T14:27:37",
-    "updatedAt": "2026-01-15T16:06:37",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    {
+      "status": "unreachable",
+      "changedAt": "2026-03-22T20:12:13.554Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "cancelled",
+      "changedAt": "2026-03-22T20:53:48.199Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "createdAt": "2026-01-15T14:27:37",
+  "updatedAt": {
+    "$date": "2026-03-22T20:53:48.213Z"
   },
-  {
-    "_id": "fc1fdb5e89b1ad8cccdafc63",
-    "prescriptionId": "PRE109081035",
-    "user_id": "CUS000021",
-    "full_name": "Dương Hữu Hải",
-    "phone": "0742271764",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img72.jpg"
-    ],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3b44d747b5d5d8990a"
-        },
-        "name": "Thuốc Bequantene 100mg Mediplantex điều trị chứng rụng tóc lan tỏa (2 vỉ x 10 viên)",
-        "sku": "104613",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_3930_18d0d8c807.jpg"
-      }
-    ],
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true,
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "fc1fdb5e89b1ad8cccdafc63"
+  },
+  "prescriptionId": "PRE109081035",
+  "user_id": "CUS000021",
+  "full_name": "Dương Hữu Hải",
+  "phone": "0742271764",
+  "note": "Cần tư vấn đơn thuốc này",
+  "consultation_type": "prescription",
+  "images": [
+    "https://example.com/img72.jpg"
+  ],
+  "medicines_requested": [
+    "Thuốc Bequantene 100mg Mediplantex điều trị chứng rụng tóc lan tỏa (2 vỉ x 10 viên)"
+  ],
+  "status": "advised",
+  "current_status": {
     "status": "advised",
-    "current_status": {
+    "changedAt": "2026-03-22T20:12:24.992Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-01-15T05:31:27",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-01-15T05:46:27",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
       "status": "advised",
       "changedAt": "2026-01-15T07:37:27",
       "changedBy": "Phan Thị Ánh Linh"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-15T05:31:27",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-15T05:46:27",
-        "changedBy": "Phan Thị Ánh Linh"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2026-01-15T07:37:27",
-        "changedBy": "Phan Thị Ánh Linh"
-      }
-    ],
-    "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
-    "pharmacistName": "Phan Thị Ánh Linh",
-    "pharmacistPhone": "0843293506",
-    "createdAt": "2026-01-15T05:31:27",
-    "updatedAt": "2026-01-15T07:37:27",
-    "completedAt": "2026-01-15T07:37:27",
-    "cancel_reason": null,
-    "is_follow_up": false
+    {
+      "status": "advised",
+      "changedAt": "2026-03-22T20:12:24.992Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "createdAt": "2026-01-15T05:31:27",
+  "updatedAt": {
+    "$date": "2026-03-22T20:12:25.303Z"
   },
-  {
-    "_id": "e8dffcd0e6bec0effdd2cae1",
-    "prescriptionId": "PRE753262810",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0591972364",
-    "note": "Tôi đau dạ dày",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
+  "completedAt": "2026-01-15T07:37:27",
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true,
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "e8dffcd0e6bec0effdd2cae1"
+  },
+  "prescriptionId": "PRE753262810",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0591972364",
+  "note": "Tôi đau dạ dày",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [],
+  "status": "waiting",
+  "current_status": {
     "status": "waiting",
-    "current_status": {
+    "changedAt": "2026-01-11T22:09:56",
+    "changedBy": "Phạm Thuý Huyền"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-01-11T21:13:56",
+      "changedBy": "System"
+    },
+    {
       "status": "waiting",
       "changedAt": "2026-01-11T22:09:56",
       "changedBy": "Phạm Thuý Huyền"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-11T21:13:56",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-11T22:09:56",
-        "changedBy": "Phạm Thuý Huyền"
-      }
-    ],
-    "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
-    "pharmacistName": "Phạm Thuý Huyền",
-    "pharmacistPhone": "0976106992",
-    "createdAt": "2026-01-11T21:13:56",
-    "updatedAt": "2026-01-11T22:09:56",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
+  "pharmacistName": "Phạm Thuý Huyền",
+  "pharmacistPhone": "0976106992",
+  "createdAt": "2026-01-11T21:13:56",
+  "updatedAt": "2026-01-11T22:09:56",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "9baa74af3e8db3709bc9380f"
   },
-  {
-    "_id": "6bf51990cbbe75f10acac6a3",
-    "prescriptionId": "PRE935415881",
-    "user_id": "CUS000013",
-    "full_name": "Vũ Văn Khánh",
-    "phone": "0970729901",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img49.jpg"
-    ],
-    "medicines_requested": [],
-    "status": "pending",
-    "current_status": {
+  "prescriptionId": "PRE564148787",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0563031896",
+  "note": "Tôi bị đau đầu",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-01-07T19:18:09",
+    "changedBy": "Đặng Đang Trường"
+  },
+  "status_history": [
+    {
       "status": "pending",
-      "changedAt": "2026-01-08T08:54:05",
+      "changedAt": "2026-01-07T18:04:09",
       "changedBy": "System"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-08T08:54:05",
-        "changedBy": "System"
-      }
-    ],
-    "pharmacist_id": null,
-    "pharmacistName": null,
-    "pharmacistPhone": null,
-    "createdAt": "2026-01-08T08:54:05",
-    "updatedAt": "2026-01-08T08:54:05",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
-  },
-  {
-    "_id": "9baa74af3e8db3709bc9380f",
-    "prescriptionId": "PRE564148787",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0563031896",
-    "note": "Tôi bị đau đầu",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
-    "status": "advised",
-    "current_status": {
+    {
+      "status": "waiting",
+      "changedAt": "2026-01-07T19:02:09",
+      "changedBy": "Đặng Đang Trường"
+    },
+    {
       "status": "advised",
       "changedAt": "2026-01-07T19:18:09",
       "changedBy": "Đặng Đang Trường"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-07T18:04:09",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-07T19:02:09",
-        "changedBy": "Đặng Đang Trường"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2026-01-07T19:18:09",
-        "changedBy": "Đặng Đang Trường"
-      }
-    ],
-    "pharmacist_id": "bbab0704cbf5b25dd3354efb",
-    "pharmacistName": "Đặng Đang Trường",
-    "pharmacistPhone": "0362693243",
-    "createdAt": "2026-01-07T18:04:09",
-    "updatedAt": "2026-01-07T19:18:09",
-    "completedAt": "2026-01-07T19:18:09",
-    "cancel_reason": null,
-    "is_follow_up": true
+    }
+  ],
+  "pharmacist_id": "bbab0704cbf5b25dd3354efb",
+  "pharmacistName": "Đặng Đang Trường",
+  "pharmacistPhone": "0362693243",
+  "createdAt": "2026-01-07T18:04:09",
+  "updatedAt": "2026-01-07T19:18:09",
+  "completedAt": "2026-01-07T19:18:09",
+  "cancel_reason": null,
+  "is_follow_up": true,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "a0fb9e7ce15bdfac4260dfff"
   },
-  {
-    "_id": "a0fb9e7ce15bdfac4260dfff",
-    "prescriptionId": "PRE886202673",
-    "user_id": "CUS000008",
-    "full_name": "Đỗ Quốc Hiếu",
-    "phone": "0593697054",
-    "note": "Tôi đau dạ dày",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
+  "prescriptionId": "PRE886202673",
+  "user_id": "CUS000008",
+  "full_name": "Đỗ Quốc Hiếu",
+  "phone": "0593697054",
+  "note": "Tôi đau dạ dày",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [],
+  "status": "cancelled",
+  "current_status": {
     "status": "cancelled",
-    "current_status": {
+    "changedAt": "2026-01-06T01:22:32",
+    "changedBy": "Phạm Thuý Huyền"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-01-06T00:11:32",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-01-06T00:40:32",
+      "changedBy": "Phạm Thuý Huyền"
+    },
+    {
       "status": "cancelled",
       "changedAt": "2026-01-06T01:22:32",
       "changedBy": "Phạm Thuý Huyền"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-06T00:11:32",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-06T00:40:32",
-        "changedBy": "Phạm Thuý Huyền"
-      },
-      {
-        "status": "cancelled",
-        "changedAt": "2026-01-06T01:22:32",
-        "changedBy": "Phạm Thuý Huyền"
-      }
-    ],
-    "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
-    "pharmacistName": "Phạm Thuý Huyền",
-    "pharmacistPhone": "0976106992",
-    "createdAt": "2026-01-06T00:11:32",
-    "updatedAt": "2026-01-06T01:22:32",
-    "completedAt": null,
-    "cancel_reason": "Sai thông tin",
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
+  "pharmacistName": "Phạm Thuý Huyền",
+  "pharmacistPhone": "0976106992",
+  "createdAt": "2026-01-06T00:11:32",
+  "updatedAt": "2026-01-06T01:22:32",
+  "completedAt": null,
+  "cancel_reason": "Sai thông tin",
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "be18db5c3edffd731fe557b3"
   },
-  {
-    "_id": "981fe363ffc51e4db1ee6966",
-    "prescriptionId": "PRE188171751",
-    "user_id": "CUS000023",
-    "full_name": "Bùi Mỹ Huy",
-    "phone": "0706960921",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img45.jpg"
-    ],
-    "medicines_requested": [],
-    "status": "waiting",
-    "current_status": {
+  "prescriptionId": "PRE837044513",
+  "user_id": "CUS000022",
+  "full_name": "Ngô Thanh Quân",
+  "phone": "0729675816",
+  "note": "Thuốc bổ cho người già",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-01-02T13:42:38",
+    "changedBy": "Phạm Thái Huỳnh Hương"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-01-02T11:13:38",
+      "changedBy": "System"
+    },
+    {
       "status": "waiting",
-      "changedAt": "2026-01-03T16:54:39",
+      "changedAt": "2026-01-02T11:44:38",
       "changedBy": "Phạm Thái Huỳnh Hương"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-03T16:46:39",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-03T16:54:39",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2026-01-03T16:46:39",
-    "updatedAt": "2026-01-03T16:54:39",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
-  },
-  {
-    "_id": "be18db5c3edffd731fe557b3",
-    "prescriptionId": "PRE837044513",
-    "user_id": "CUS000022",
-    "full_name": "Ngô Thanh Quân",
-    "phone": "0729675816",
-    "note": "Thuốc bổ cho người già",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
-    "status": "advised",
-    "current_status": {
+    {
       "status": "advised",
       "changedAt": "2026-01-02T13:42:38",
       "changedBy": "Phạm Thái Huỳnh Hương"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-02T11:13:38",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-02T11:44:38",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2026-01-02T13:42:38",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2026-01-02T11:13:38",
-    "updatedAt": "2026-01-02T13:42:38",
-    "completedAt": "2026-01-02T13:42:38",
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
+  "pharmacistName": "Phạm Thái Huỳnh Hương",
+  "pharmacistPhone": "0965813408",
+  "createdAt": "2026-01-02T11:13:38",
+  "updatedAt": "2026-01-02T13:42:38",
+  "completedAt": "2026-01-02T13:42:38",
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "b8ae7bbfffeb6ec1d5a5c11d"
   },
-  {
-    "_id": "b8ae7bbfffeb6ec1d5a5c11d",
-    "prescriptionId": "PRE574087615",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0592038601",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img55.jpg"
-    ],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3b44d747b5d5d892bc"
-        },
-        "name": "Thuốc Tiram 100mg Shinpoong Deawoo điều trị co thắt dạ dày ruột (10 vỉ x 10 viên)",
-        "sku": "102999",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_04055_3fdbc3fe39.png"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d889f8"
-        },
-        "name": "Dầu xả hoa bưởi La Beauty mượt tóc và giảm gãy rụng (300ml)",
-        "sku": "100756",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09226_25086dae48.png"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d88f5f"
-        },
-        "name": "Dung dịch tiêm Heparin-Belmed 5ml chống đông máu (5 lọ)",
-        "sku": "102139",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00503779_837d0d567f.jpg"
-      }
-    ],
+  "prescriptionId": "PRE574087615",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0592038601",
+  "note": "Cần tư vấn đơn thuốc này",
+  "consultation_type": "prescription",
+  "images": [
+    "https://example.com/img55.jpg"
+  ],
+  "medicines_requested": [
+    "Thuốc Tiram 100mg Shinpoong Deawoo điều trị co thắt dạ dày ruột (10 vỉ x 10 viên)",
+    "Dầu xả hoa bưởi La Beauty mượt tóc và giảm gãy rụng (300ml)",
+    "Dung dịch tiêm Heparin-Belmed 5ml chống đông máu (5 lọ)"
+  ],
+  "status": "advised",
+  "current_status": {
     "status": "advised",
-    "current_status": {
+    "changedAt": "2025-12-30T20:46:36",
+    "changedBy": "Nguyễn Khánh Xuân"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-30T20:00:36",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2025-12-30T20:10:36",
+      "changedBy": "Nguyễn Khánh Xuân"
+    },
+    {
       "status": "advised",
       "changedAt": "2025-12-30T20:46:36",
       "changedBy": "Nguyễn Khánh Xuân"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-30T20:00:36",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-30T20:10:36",
-        "changedBy": "Nguyễn Khánh Xuân"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2025-12-30T20:46:36",
-        "changedBy": "Nguyễn Khánh Xuân"
-      }
-    ],
-    "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
-    "pharmacistName": "Nguyễn Khánh Xuân",
-    "pharmacistPhone": "0387253686",
-    "createdAt": "2025-12-30T20:00:36",
-    "updatedAt": "2025-12-30T20:46:36",
-    "completedAt": "2025-12-30T20:46:36",
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
+  "pharmacistName": "Nguyễn Khánh Xuân",
+  "pharmacistPhone": "0387253686",
+  "createdAt": "2025-12-30T20:00:36",
+  "updatedAt": "2025-12-30T20:46:36",
+  "completedAt": "2025-12-30T20:46:36",
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "2becc34fcc8e46eadd54cada"
   },
-  {
-    "_id": "4bcdc2e8bf42b217ba73fae5",
-    "prescriptionId": "PRE791286661",
-    "user_id": "CUS000023",
-    "full_name": "Bùi Mỹ Huy",
-    "phone": "0706960921",
-    "note": "Bé nhà tôi bị sốt",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d8a1ba"
-        },
-        "name": "Thuốc Propranolol 40mg TV.Pharm điều trị tăng huyết áp, đau thắt ngực (10 vỉ x 10 viên)",
-        "sku": "106837",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00030240_propranolol_40mg_tvpharm_10x10_4574_61c9_large_3c17e2406a.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3b44d747b5d5d893b0"
-        },
-        "name": "Thuốc Zestril 5mg AstraZeneca điều trị tăng huyết áp, suy tim (2 vỉ x 14 viên)",
-        "sku": "103243",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_1427_30c21fdaa6.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d8a0bd"
-        },
-        "name": "Hỗn dịch uống Fexihist điều trị viêm mũi dị ứng (60ml)",
-        "sku": "106584",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00029237_fexihist_60ml_9032_616c_large_0c6cbec1b1.jpg"
-      }
-    ],
-    "status": "pending",
-    "current_status": {
+  "prescriptionId": "PRE029578192",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0450792160",
+  "note": "Tôi bị đau đầu",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [
+    "Mặt nạ xông hơi mắt MegRhythm KAO hương hoa cúc dễ chịu, thư giãn đôi mắt (5 miếng)",
+    "Viên uống Liverwell Nutrimed hỗ trợ giải độc gan giúp hỗ trợ giải độc gan, bảo vệ tế bào gan (60 viên)",
+    "Viên sủi Napharangan 500mg Nam Hà hạ nhiệt, giảm đau, điều trị sốt từ nhẹ đến vừa (4 vỉ x 4 viên) "
+  ],
+  "status": "unreachable",
+  "current_status": {
+    "status": "unreachable",
+    "changedAt": "2025-12-27T06:16:45",
+    "changedBy": "Đặng Đang Trường"
+  },
+  "status_history": [
+    {
       "status": "pending",
-      "changedAt": "2025-12-28T05:20:05",
+      "changedAt": "2025-12-27T05:33:45",
       "changedBy": "System"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-28T05:20:05",
-        "changedBy": "System"
-      }
-    ],
-    "pharmacist_id": null,
-    "pharmacistName": null,
-    "pharmacistPhone": null,
-    "createdAt": "2025-12-28T05:20:05",
-    "updatedAt": "2025-12-28T05:20:05",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
-  },
-  {
-    "_id": "2becc34fcc8e46eadd54cada",
-    "prescriptionId": "PRE029578192",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0450792160",
-    "note": "Tôi bị đau đầu",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d88a8e"
-        },
-        "name": "Mặt nạ xông hơi mắt MegRhythm KAO hương hoa cúc dễ chịu, thư giãn đôi mắt (5 miếng)",
-        "sku": "100906",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00033674_mat_na_xong_hoi_mat_megrhythm_huong_hoa_cuc_5363_6417_large_8785dfe680.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d888f9"
-        },
-        "name": "Viên uống Liverwell Nutrimed hỗ trợ giải độc gan giúp hỗ trợ giải độc gan, bảo vệ tế bào gan (60 viên)",
-        "sku": "100501",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09561_716c521238.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d89ec9"
-        },
-        "name": "Viên sủi Napharangan 500mg Nam Hà hạ nhiệt, giảm đau, điều trị sốt từ nhẹ đến vừa (4 vỉ x 4 viên) ",
-        "sku": "106084",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_5973_5d2bd11223.jpg"
-      }
-    ],
-    "status": "unreachable",
-    "current_status": {
+    {
+      "status": "waiting",
+      "changedAt": "2025-12-27T05:44:45",
+      "changedBy": "Đặng Đang Trường"
+    },
+    {
       "status": "unreachable",
       "changedAt": "2025-12-27T06:16:45",
       "changedBy": "Đặng Đang Trường"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-27T05:33:45",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-27T05:44:45",
-        "changedBy": "Đặng Đang Trường"
-      },
-      {
-        "status": "unreachable",
-        "changedAt": "2025-12-27T06:16:45",
-        "changedBy": "Đặng Đang Trường"
-      }
-    ],
-    "pharmacist_id": "bbab0704cbf5b25dd3354efb",
-    "pharmacistName": "Đặng Đang Trường",
-    "pharmacistPhone": "0362693243",
-    "createdAt": "2025-12-27T05:33:45",
-    "updatedAt": "2025-12-27T06:16:45",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "bbab0704cbf5b25dd3354efb",
+  "pharmacistName": "Đặng Đang Trường",
+  "pharmacistPhone": "0362693243",
+  "createdAt": "2025-12-27T05:33:45",
+  "updatedAt": "2025-12-27T06:16:45",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "4fa407b4ce038c92ba5a3e7c"
   },
-  {
-    "_id": "4fa407b4ce038c92ba5a3e7c",
-    "prescriptionId": "PRE379872966",
-    "user_id": "CUS000022",
-    "full_name": "Ngô Thanh Quân",
-    "phone": "0729675816",
-    "note": "Bé nhà tôi bị sốt",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
+  "prescriptionId": "PRE379872966",
+  "user_id": "CUS000022",
+  "full_name": "Ngô Thanh Quân",
+  "phone": "0729675816",
+  "note": "Bé nhà tôi bị sốt",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [],
+  "status": "advised",
+  "current_status": {
     "status": "advised",
-    "current_status": {
+    "changedAt": "2025-12-25T22:16:15",
+    "changedBy": "Nguyễn Khánh Xuân"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-25T20:54:15",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2025-12-25T21:38:15",
+      "changedBy": "Nguyễn Khánh Xuân"
+    },
+    {
       "status": "advised",
       "changedAt": "2025-12-25T22:16:15",
       "changedBy": "Nguyễn Khánh Xuân"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-25T20:54:15",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-25T21:38:15",
-        "changedBy": "Nguyễn Khánh Xuân"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2025-12-25T22:16:15",
-        "changedBy": "Nguyễn Khánh Xuân"
-      }
-    ],
-    "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
-    "pharmacistName": "Nguyễn Khánh Xuân",
-    "pharmacistPhone": "0387253686",
-    "createdAt": "2025-12-25T20:54:15",
-    "updatedAt": "2025-12-25T22:16:15",
-    "completedAt": "2025-12-25T22:16:15",
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
+  "pharmacistName": "Nguyễn Khánh Xuân",
+  "pharmacistPhone": "0387253686",
+  "createdAt": "2025-12-25T20:54:15",
+  "updatedAt": "2025-12-25T22:16:15",
+  "completedAt": "2025-12-25T22:16:15",
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "0b958ccb0db4bbc39185e488"
   },
-  {
-    "_id": "0b958ccb0db4bbc39185e488",
-    "prescriptionId": "PRE018943882",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0912967165",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img97.jpg"
-    ],
-    "medicines_requested": [],
+  "prescriptionId": "PRE018943882",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0912967165",
+  "note": "Cần tư vấn đơn thuốc này",
+  "consultation_type": "prescription",
+  "images": [
+    "https://example.com/img97.jpg"
+  ],
+  "medicines_requested": [],
+  "status": "waiting",
+  "current_status": {
     "status": "waiting",
-    "current_status": {
+    "changedAt": "2025-12-19T21:13:54",
+    "changedBy": "Phạm Thuý Huyền"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-19T20:41:54",
+      "changedBy": "System"
+    },
+    {
       "status": "waiting",
       "changedAt": "2025-12-19T21:13:54",
       "changedBy": "Phạm Thuý Huyền"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-19T20:41:54",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-19T21:13:54",
-        "changedBy": "Phạm Thuý Huyền"
-      }
-    ],
-    "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
-    "pharmacistName": "Phạm Thuý Huyền",
-    "pharmacistPhone": "0976106992",
-    "createdAt": "2025-12-19T20:41:54",
-    "updatedAt": "2025-12-19T21:13:54",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
+  "pharmacistName": "Phạm Thuý Huyền",
+  "pharmacistPhone": "0976106992",
+  "createdAt": "2025-12-19T20:41:54",
+  "updatedAt": "2025-12-19T21:13:54",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "fb5f6e1a0b05c80bb7ec3db9"
   },
-  {
-    "_id": "fb5f6e1a0b05c80bb7ec3db9",
-    "prescriptionId": "PRE642819240",
-    "user_id": "CUS000021",
-    "full_name": "Dương Hữu Hải",
-    "phone": "0742271764",
-    "note": "Dị ứng mẩn ngứa",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d8a647"
-        },
-        "name": "Găng tay cao su y tế có bột Latex ASAP Malaysia Size S (100 cái)",
-        "sku": "108002",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00029584_gang_tay_cao_su_y_te_co_bot_latex_asap_malaysia_size_s_hop_100_cai_1305_600a_large_531aa0d1a1.JPG"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d89f67"
-        },
-        "name": "Thuốc Elovess 500mg USP dùng trong sạm da do mỹ phẩm, viêm da do thuốc, dị ứng (12 vỉ x 5 viên)",
-        "sku": "106242",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00022733_elovess_500mg_uspharma_12x5_9198_6093_large_c4ba274762.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d89076"
-        },
-        "name": "Thuốc Cttzil 500 Eloge điều trị nhiễm trùng nhẹ tới trung bình (1 vỉ x 10 viên) ",
-        "sku": "102418",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00502060_c9c84c6981.jpg"
-      }
-    ],
+  "prescriptionId": "PRE642819240",
+  "user_id": "CUS000021",
+  "full_name": "Dương Hữu Hải",
+  "phone": "0742271764",
+  "note": "Dị ứng mẩn ngứa",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [
+    "Găng tay cao su y tế có bột Latex ASAP Malaysia Size S (100 cái)",
+    "Thuốc Elovess 500mg USP dùng trong sạm da do mỹ phẩm, viêm da do thuốc, dị ứng (12 vỉ x 5 viên)",
+    "Thuốc Cttzil 500 Eloge điều trị nhiễm trùng nhẹ tới trung bình (1 vỉ x 10 viên) "
+  ],
+  "status": "waiting",
+  "current_status": {
     "status": "waiting",
-    "current_status": {
+    "changedAt": "2025-12-14T07:03:36",
+    "changedBy": "Nguyễn Khánh Xuân"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-14T06:38:36",
+      "changedBy": "System"
+    },
+    {
       "status": "waiting",
       "changedAt": "2025-12-14T07:03:36",
       "changedBy": "Nguyễn Khánh Xuân"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-14T06:38:36",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-14T07:03:36",
-        "changedBy": "Nguyễn Khánh Xuân"
-      }
-    ],
-    "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
-    "pharmacistName": "Nguyễn Khánh Xuân",
-    "pharmacistPhone": "0387253686",
-    "createdAt": "2025-12-14T06:38:36",
-    "updatedAt": "2025-12-14T07:03:36",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
+  "pharmacistName": "Nguyễn Khánh Xuân",
+  "pharmacistPhone": "0387253686",
+  "createdAt": "2025-12-14T06:38:36",
+  "updatedAt": "2025-12-14T07:03:36",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "ddcecd1ad18eadacbbeceb98"
   },
-  {
-    "_id": "ddcecd1ad18eadacbbeceb98",
-    "prescriptionId": "PRE713722238",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0813061321",
-    "note": "Cần tư vấn thuốc ho",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
+  "prescriptionId": "PRE713722238",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0813061321",
+  "note": "Cần tư vấn thuốc ho",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [],
+  "status": "waiting",
+  "current_status": {
     "status": "waiting",
-    "current_status": {
+    "changedAt": "2025-12-08T02:20:47",
+    "changedBy": "Nguyễn Khánh Xuân"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-08T02:09:47",
+      "changedBy": "System"
+    },
+    {
       "status": "waiting",
       "changedAt": "2025-12-08T02:20:47",
       "changedBy": "Nguyễn Khánh Xuân"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-08T02:09:47",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-08T02:20:47",
-        "changedBy": "Nguyễn Khánh Xuân"
-      }
-    ],
-    "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
-    "pharmacistName": "Nguyễn Khánh Xuân",
-    "pharmacistPhone": "0387253686",
-    "createdAt": "2025-12-08T02:09:47",
-    "updatedAt": "2025-12-08T02:20:47",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
+  "pharmacistName": "Nguyễn Khánh Xuân",
+  "pharmacistPhone": "0387253686",
+  "createdAt": "2025-12-08T02:09:47",
+  "updatedAt": "2025-12-08T02:20:47",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "c702960dacc1de02756afd0e"
   },
-  {
-    "_id": "c702960dacc1de02756afd0e",
-    "prescriptionId": "PRE719258431",
-    "user_id": null,
-    "full_name": "Khách vãng lai",
-    "phone": "0357265878",
-    "note": "Tôi đau dạ dày",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d89286"
-        },
-        "name": "Thuốc Hà Thủ Ô Domesco bổ thận, bổ huyết, chữa thận suy (3 vỉ x 10 viên)",
-        "sku": "102946",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00003586_ha_thu_o_domesco_8712_60f0_large_9174c88f97.jpg"
-      }
-    ],
+  "prescriptionId": "PRE719258431",
+  "user_id": null,
+  "full_name": "Khách vãng lai",
+  "phone": "0357265878",
+  "note": "Tôi đau dạ dày",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [
+    "Thuốc Hà Thủ Ô Domesco bổ thận, bổ huyết, chữa thận suy (3 vỉ x 10 viên)"
+  ],
+  "status": "advised",
+  "current_status": {
     "status": "advised",
-    "current_status": {
+    "changedAt": "2025-12-07T15:35:49",
+    "changedBy": "Phạm Thái Huỳnh Hương"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-07T15:08:49",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2025-12-07T15:13:49",
+      "changedBy": "Phạm Thái Huỳnh Hương"
+    },
+    {
       "status": "advised",
       "changedAt": "2025-12-07T15:35:49",
       "changedBy": "Phạm Thái Huỳnh Hương"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-07T15:08:49",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-07T15:13:49",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2025-12-07T15:35:49",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2025-12-07T15:08:49",
-    "updatedAt": "2025-12-07T15:35:49",
-    "completedAt": "2025-12-07T15:35:49",
-    "cancel_reason": null,
-    "is_follow_up": true
+    }
+  ],
+  "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
+  "pharmacistName": "Phạm Thái Huỳnh Hương",
+  "pharmacistPhone": "0965813408",
+  "createdAt": "2025-12-07T15:08:49",
+  "updatedAt": "2025-12-07T15:35:49",
+  "completedAt": "2025-12-07T15:35:49",
+  "cancel_reason": null,
+  "is_follow_up": true,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "fae45ae7f3bff5decb02fc5f"
   },
-  {
-    "_id": "fae45ae7f3bff5decb02fc5f",
-    "prescriptionId": "PRE100273117",
-    "user_id": "CUS000017",
-    "full_name": "Đỗ Thanh Hiếu",
-    "phone": "0751319559",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img70.jpg"
-    ],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d8a296"
-        },
-        "name": "Thuốc tiêm Vitamin B6 100Mg/Ml Vinphaco điều trị thiếu vitamin B6, nhiễm độc thai nghén, bệnh Parkinson (100 ống x 1ml)",
-        "sku": "107057",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00031241_vitamin_b6_100mgml_vinphaco_hop_100_ong_x_1ml_2401_6315_large_ab27f8bf32.jpg"
-      }
-    ],
+  "prescriptionId": "PRE100273117",
+  "user_id": "CUS000017",
+  "full_name": "Đỗ Thanh Hiếu",
+  "phone": "0751319559",
+  "note": "Cần tư vấn đơn thuốc này",
+  "consultation_type": "prescription",
+  "images": [
+    "https://example.com/img70.jpg"
+  ],
+  "medicines_requested": [
+    "Thuốc tiêm Vitamin B6 100Mg/Ml Vinphaco điều trị thiếu vitamin B6, nhiễm độc thai nghén, bệnh Parkinson (100 ống x 1ml)"
+  ],
+  "status": "unreachable",
+  "current_status": {
     "status": "unreachable",
-    "current_status": {
+    "changedAt": "2025-12-07T11:11:49",
+    "changedBy": "Đặng Đang Trường"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-07T09:57:49",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2025-12-07T10:06:49",
+      "changedBy": "Đặng Đang Trường"
+    },
+    {
       "status": "unreachable",
       "changedAt": "2025-12-07T11:11:49",
       "changedBy": "Đặng Đang Trường"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-07T09:57:49",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-07T10:06:49",
-        "changedBy": "Đặng Đang Trường"
-      },
-      {
-        "status": "unreachable",
-        "changedAt": "2025-12-07T11:11:49",
-        "changedBy": "Đặng Đang Trường"
-      }
-    ],
-    "pharmacist_id": "bbab0704cbf5b25dd3354efb",
-    "pharmacistName": "Đặng Đang Trường",
-    "pharmacistPhone": "0362693243",
-    "createdAt": "2025-12-07T09:57:49",
-    "updatedAt": "2025-12-07T11:11:49",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "bbab0704cbf5b25dd3354efb",
+  "pharmacistName": "Đặng Đang Trường",
+  "pharmacistPhone": "0362693243",
+  "createdAt": "2025-12-07T09:57:49",
+  "updatedAt": "2025-12-07T11:11:49",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "33813bf130e52bedaab79a98"
   },
-  {
-    "_id": "33813bf130e52bedaab79a98",
-    "prescriptionId": "PRE540444329",
-    "user_id": "CUS000005",
-    "full_name": "Hoàng Văn Nghĩa",
-    "phone": "0702469811",
-    "note": "Bé nhà tôi bị sốt",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d8a208"
-        },
-        "name": "Bột pha tiêm Vancomycin 500mg Bidiphar điều trị các nhiễm khuẩn nặng, bệnh thận và tim (10 lọ)",
-        "sku": "106915",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00030580_vancomycin_500mg_bidiphar_10_lo_bot_dong_kho_pha_tiem_5388_6126_large_f76b56c32c.jpg"
-      },
-      {
-        "id": {
-          "$oid": "68f1de3a44d747b5d5d89043"
-        },
-        "name": "Hỗn dịch xịt mũi Wizosone DK Pharma điều trị viêm mũi dị ứng, polyp mũi (120 liều xịt)",
-        "sku": "102367",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/wizosone_96b0b90b90.jpg"
-      }
-    ],
+  "prescriptionId": "PRE540444329",
+  "user_id": "CUS000005",
+  "full_name": "Hoàng Văn Nghĩa",
+  "phone": "0702469811",
+  "note": "Bé nhà tôi bị sốt",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [
+    "Bột pha tiêm Vancomycin 500mg Bidiphar điều trị các nhiễm khuẩn nặng, bệnh thận và tim (10 lọ)",
+    "Hỗn dịch xịt mũi Wizosone DK Pharma điều trị viêm mũi dị ứng, polyp mũi (120 liều xịt)"
+  ],
+  "status": "advised",
+  "current_status": {
     "status": "advised",
-    "current_status": {
+    "changedAt": "2025-12-01T13:19:37",
+    "changedBy": "Nguyễn Khánh Xuân"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-01T11:54:37",
+      "changedBy": "System"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2025-12-01T12:18:37",
+      "changedBy": "Nguyễn Khánh Xuân"
+    },
+    {
       "status": "advised",
       "changedAt": "2025-12-01T13:19:37",
       "changedBy": "Nguyễn Khánh Xuân"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-01T11:54:37",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-01T12:18:37",
-        "changedBy": "Nguyễn Khánh Xuân"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2025-12-01T13:19:37",
-        "changedBy": "Nguyễn Khánh Xuân"
-      }
-    ],
-    "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
-    "pharmacistName": "Nguyễn Khánh Xuân",
-    "pharmacistPhone": "0387253686",
-    "createdAt": "2025-12-01T11:54:37",
-    "updatedAt": "2025-12-01T13:19:37",
-    "completedAt": "2025-12-01T13:19:37",
-    "cancel_reason": null,
-    "is_follow_up": true
+    }
+  ],
+  "pharmacist_id": "d2ddbbbd4a24adbde880bc92",
+  "pharmacistName": "Nguyễn Khánh Xuân",
+  "pharmacistPhone": "0387253686",
+  "createdAt": "2025-12-01T11:54:37",
+  "updatedAt": "2025-12-01T13:19:37",
+  "completedAt": "2025-12-01T13:19:37",
+  "cancel_reason": null,
+  "is_follow_up": true,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "3b69ecda0efc3aa72f1e7cbf"
   },
-  {
-    "_id": "3b69ecda0efc3aa72f1e7cbf",
-    "prescriptionId": "PRE158345040",
-    "user_id": "CUS000001",
-    "full_name": "Phạm Bảo Nghĩa",
-    "phone": "0591936993",
-    "note": "Thuốc bổ cho người già",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
+  "prescriptionId": "PRE158345040",
+  "user_id": "CUS000001",
+  "full_name": "Phạm Bảo Nghĩa",
+  "phone": "0591936993",
+  "note": "Thuốc bổ cho người già",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [],
+  "status": "waiting",
+  "current_status": {
     "status": "waiting",
-    "current_status": {
+    "changedAt": "2025-12-01T10:54:08",
+    "changedBy": "Phạm Thuý Huyền"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2025-12-01T10:39:08",
+      "changedBy": "System"
+    },
+    {
       "status": "waiting",
       "changedAt": "2025-12-01T10:54:08",
       "changedBy": "Phạm Thuý Huyền"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-01T10:39:08",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-01T10:54:08",
-        "changedBy": "Phạm Thuý Huyền"
-      }
-    ],
-    "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
-    "pharmacistName": "Phạm Thuý Huyền",
-    "pharmacistPhone": "0976106992",
-    "createdAt": "2025-12-01T10:39:08",
-    "updatedAt": "2025-12-01T10:54:08",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
+  "pharmacistName": "Phạm Thuý Huyền",
+  "pharmacistPhone": "0976106992",
+  "createdAt": "2025-12-01T10:39:08",
+  "updatedAt": "2025-12-01T10:54:08",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "b1c2d3e4f5a6b1c2d3e4f5a6"
   },
-  {
-    "_id": "cf5a9132d1df86ada882a98e",
-    "prescriptionId": "PRE962338647",
-    "user_id": "CUS000003",
-    "full_name": "Ngô Thu Châu",
-    "phone": "0822036101",
-    "note": "Cần tư vấn đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/img32.jpg"
-    ],
-    "medicines_requested": [
-      {
-        "id": {
-          "$oid": "68f1de3c44d747b5d5d8a23e"
-        },
-        "name": "Thuốc Calcium Geral 10ml Usa-Nic Pharma hỗ trợ cho trẻ em còi xương, chậm lớn, thiếu calci (20 ống)",
-        "sku": "106969",
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00030805_CALCIUM_GERAL_USA_NIC_PHARMA_20_ONG_X_10_ML_bb2a0e0b91.png"
-      }
-    ],
-    "status": "unreachable",
-    "current_status": {
-      "status": "unreachable",
-      "changedAt": "2025-12-01T13:06:49",
-      "changedBy": "Phạm Thái Huỳnh Hương"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2025-12-01T10:27:49",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2025-12-01T11:19:49",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      },
-      {
-        "status": "unreachable",
-        "changedAt": "2025-12-01T13:06:49",
-        "changedBy": "Phạm Thái Huỳnh Hương"
-      }
-    ],
-    "pharmacist_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistPhone": "0965813408",
-    "createdAt": "2025-12-01T10:27:49",
-    "updatedAt": "2025-12-01T13:06:49",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+  "prescriptionId": "PRE100000002",
+  "user_id": "CUS000026",
+  "full_name": "Phạm Thái Huỳnh Hương",
+  "phone": "0965813408",
+  "note": "Bé nhà em bị ho khan",
+  "consultation_type": "symptom",
+  "images": [],
+  "medicines_requested": [
+    "Siro ho Prospan (100ml)",
+    "Viên ngậm Bảo Thanh (20 viên)"
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-01-28T22:45:00",
+    "changedBy": "Phạm Thuý Huyền"
   },
-  {
-    "_id": "a1b2c3d4e5f6a1b2c3d4e5f6",
-    "prescriptionId": "PRE100000001",
-    "user_id": "CUS000026",
-    "full_name": "Phạm Thái Huỳnh Hương",
-    "phone": "0965813408",
-    "note": "Nhờ dược sĩ tư vấn giúp em đơn thuốc này",
-    "consultation_type": "prescription",
-    "images": [
-      "https://example.com/mock_prescription_img_1.jpg"
-    ],
-    "medicines_requested": [],
-    "status": "pending",
-    "current_status": {
+  "status_history": [
+    {
       "status": "pending",
-      "changedAt": "2026-01-28T22:30:00",
+      "changedAt": "2026-01-28T22:35:00",
       "changedBy": "System"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-28T22:30:00",
-        "changedBy": "System"
-      }
-    ],
-    "pharmacist_id": null,
-    "pharmacistName": null,
-    "pharmacistPhone": null,
-    "createdAt": "2026-01-28T22:30:00",
-    "updatedAt": "2026-01-28T22:30:00",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
-  },
-  {
-    "_id": "b1c2d3e4f5a6b1c2d3e4f5a6",
-    "prescriptionId": "PRE100000002",
-    "user_id": "CUS000026",
-    "full_name": "Phạm Thái Huỳnh Hương",
-    "phone": "0965813408",
-    "note": "Bé nhà em bị ho khan",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
-    "status": "advised",
-    "current_status": {
+    {
+      "status": "waiting",
+      "changedAt": "2026-01-28T22:40:00",
+      "changedBy": "Phạm Thuý Huyền"
+    },
+    {
       "status": "advised",
       "changedAt": "2026-01-28T22:45:00",
       "changedBy": "Phạm Thuý Huyền"
-    },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-28T22:35:00",
-        "changedBy": "System"
-      },
-      {
-        "status": "waiting",
-        "changedAt": "2026-01-28T22:40:00",
-        "changedBy": "Phạm Thuý Huyền"
-      },
-      {
-        "status": "advised",
-        "changedAt": "2026-01-28T22:45:00",
-        "changedBy": "Phạm Thuý Huyền"
-      }
-    ],
-    "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
-    "pharmacistName": "Phạm Thuý Huyền",
-    "pharmacistPhone": "0976106992",
-    "createdAt": "2026-01-28T22:35:00",
-    "updatedAt": "2026-01-28T22:45:00",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    }
+  ],
+  "pharmacist_id": "bebda3b6dde1f6d10aa0dfbc",
+  "pharmacistName": "Phạm Thuý Huyền",
+  "pharmacistPhone": "0976106992",
+  "createdAt": "2026-01-28T22:35:00",
+  "updatedAt": "2026-01-28T22:45:00",
+  "completedAt": null,
+  "cancel_reason": null,
+  "is_follow_up": false,
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "69c0466c4eca362d5b96f4c9"
   },
-  {
-    "_id": "c1d2e3f4a5b6c1d2e3f4a5b6",
-    "prescriptionId": "PRE100000003",
-    "user_id": "CUS000026",
-    "full_name": "Phạm Thái Huỳnh Hương",
-    "phone": "0965813408",
-    "note": "Tư vấn vitamin tổng hợp",
-    "consultation_type": "symptom",
-    "images": [],
-    "medicines_requested": [],
-    "status": "unreachable",
-    "current_status": {
-      "status": "unreachable",
-      "changedAt": "2026-01-28T23:00:00",
-      "changedBy": "System"
+  "prescriptionId": "PRE100000008",
+  "user_id": "CUS000029",
+  "full_name": "Ánh Linh",
+  "phone": "0843293506",
+  "note": "Tôi cần tư vấn về sản phẩm Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "69c0466c4eca362d5b96f4c8",
+      "name": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00061_290aff41d7.jpg"
+    }
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-03-22T20:22:36.362Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-22T19:43:40.542Z",
+      "changedBy": "CUS000029"
     },
-    "status_history": [
-      {
-        "status": "pending",
-        "changedAt": "2026-01-28T22:50:00",
-        "changedBy": "System"
-      },
-      {
-        "status": "unreachable",
-        "changedAt": "2026-01-28T23:00:00",
-        "changedBy": "System"
-      }
-    ],
-    "pharmacist_id": null,
-    "pharmacistName": null,
-    "pharmacistPhone": null,
-    "createdAt": "2026-01-28T22:50:00",
-    "updatedAt": "2026-01-28T23:00:00",
-    "completedAt": null,
-    "cancel_reason": null,
-    "is_follow_up": false
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-22T20:08:59.318Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "advised",
+      "changedAt": "2026-03-22T20:22:36.362Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-22T19:43:40.542Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-22T21:00:47.856Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
+  "user_prescription_rating": 5,
+  "user_prescription_review": "Tư vấn nhiệt tình",
+  "user_prescription_reviewed_at": "2026-03-22T21:00:47.856Z"
+},
+{
+  "_id": {
+    "$oid": "69c05d605db28bc21149d52d"
+  },
+  "prescriptionId": "PRE100000009",
+  "user_id": "CUS000029",
+  "full_name": "Ánh Linh",
+  "phone": "0843293506",
+  "note": "Tôi cần tư vấn về sản phẩm Tăm chỉ kẽ răng Jomi Disposable Flosser làm sạch mảng bám, vụn thức ăn trong kẽ răng (80 cây)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d88cff",
+      "name": "Tăm chỉ kẽ răng Jomi Disposable Flosser làm sạch mảng bám, vụn thức ăn trong kẽ răng (80 cây)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_5212_7b7dd38ff7.jpg"
+    }
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-03-22T21:25:51.531Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-22T21:21:36.073Z",
+      "changedBy": "CUS000029"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-22T21:25:35.424Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "advised",
+      "changedAt": "2026-03-22T21:25:51.531Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-22T21:21:36.073Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T05:19:10.765Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
+  "user_prescription_rating": 5,
+  "user_prescription_review": "Tuyệt vời",
+  "user_prescription_reviewed_at": "2026-03-23T05:19:10.765Z"
+},
+{
+  "_id": {
+    "$oid": "69c0bfd8a2de4fc23e876130"
+  },
+  "prescriptionId": "PRE100000010",
+  "user_id": "CUS000028",
+  "full_name": "Ánh Linh",
+  "phone": "0909090909",
+  "note": "Tôi cần tư vấn về sản phẩm Nước Yến Cao Cấp Nunest Gold (6 hũ x 70ml)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d88cfa",
+      "name": "Nước Yến Cao Cấp Nunest Gold (6 hũ x 70ml)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032206_nuoc_yen_cao_cap_nunest_gold_6_hu_x_70ml_7976_62af_large_f281e1750d.JPG"
+    }
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-03-23T05:43:34.685Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-23T04:21:44.982Z",
+      "changedBy": "CUS000028"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-23T05:43:05.694Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "unreachable",
+      "changedAt": "2026-03-23T05:43:16.874Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "advised",
+      "changedAt": "2026-03-23T05:43:34.685Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-23T04:21:44.982Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T05:43:35.001Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "69c0d3896da1dd2d82a17475"
+  },
+  "prescriptionId": "PRE100000011",
+  "user_id": "CUS000028",
+  "full_name": "Ánh Linh",
+  "phone": "0909090909",
+  "note": "Tôi cần tư vấn về sản phẩm Chỉ nha khoa Jomi Dental Floss loại trừ các mảng bám, thức ăn dư thừa trong kẽ răng (50m)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d88cfe",
+      "name": "Chỉ nha khoa Jomi Dental Floss loại trừ các mảng bám, thức ăn dư thừa trong kẽ răng (50m)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032636_chi_nha_khoa_jomi_dental_floss_50mhop_1651_6182_large_721e8f3fcf.jpg"
+    }
+  ],
+  "status": "unreachable",
+  "current_status": {
+    "status": "unreachable",
+    "changedAt": "2026-03-24T09:34:37.027Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-23T05:45:45.866Z",
+      "changedBy": "CUS000028"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-23T05:46:15.572Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "unreachable",
+      "changedAt": "2026-03-23T05:46:22.890Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "consultation_failed",
+      "changedAt": "2026-03-23T05:46:44.098Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-24T05:42:59.125Z",
+      "changedBy": "user_recontact"
+    },
+    {
+      "status": "unreachable",
+      "changedAt": "2026-03-24T09:34:37.027Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-23T05:45:45.866Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T09:34:37.335Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "69c14c53a3ba29226154cbb8"
+  },
+  "prescriptionId": "PRE100000012",
+  "user_id": "CUS000028",
+  "full_name": "Ánh Linh",
+  "phone": "0909090909",
+  "note": "Tôi cần tư vấn về sản phẩm Viên uống Heptral 400 Abbott hỗ trợ tăng cường chức năng gan (3 vỉ x 10 viên)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d8891a",
+      "name": "Viên uống Heptral 400 Abbott hỗ trợ tăng cường chức năng gan (3 vỉ x 10 viên)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00029970_heptral_400mg_abbott_3x10_1995_6096_large_d67e9c74f3.jpg"
+    }
+  ],
+  "status": "unreachable",
+  "current_status": {
+    "status": "unreachable",
+    "changedAt": "2026-03-24T05:44:41.327Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-23T14:21:07.591Z",
+      "changedBy": "CUS000028"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-23T14:21:58.617Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "unreachable",
+      "changedAt": "2026-03-24T05:44:41.327Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-23T14:21:07.591Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:44:41.332Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "69c20fbca37da62f4c56af69"
+  },
+  "prescriptionId": "PRE100000013",
+  "user_id": null,
+  "full_name": "Khách vãng lai 001",
+  "phone": "010101010101",
+  "note": "Tôi cần tư vấn về sản phẩm Viên uống Sinus Nose Vitamins For Life hỗ trợ tăng cường sức khỏe đường hô hấp (60 viên)\nfdghjhgfsfdghjgfds",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d8894d",
+      "name": "Viên uống Sinus Nose Vitamins For Life hỗ trợ tăng cường sức khỏe đường hô hấp (60 viên)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032701_sinus_nose_ho_tro_duong_ho_hap_vitamins_for_life_60v_3651_618b_large_e1b8d84c83.jpg"
+    }
+  ],
+  "status": "unreachable",
+  "current_status": {
+    "status": "unreachable",
+    "changedAt": "2026-03-24T09:34:05.005Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-24T04:14:52.709Z",
+      "changedBy": "guest"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-24T05:24:29.486Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "unreachable",
+      "changedAt": "2026-03-24T09:34:05.005Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T04:14:52.709Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T09:34:05.013Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "69c215f4a37da62f4c56af82"
+  },
+  "prescriptionId": "PRE100000014",
+  "user_id": "CUS000032",
+  "full_name": "Linh Tester Web",
+  "phone": "02020202020",
+  "note": "Tôi cần tư vấn về sản phẩm Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d88951",
+      "name": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png"
+    }
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-03-24T05:45:28.291Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-24T04:41:24.593Z",
+      "changedBy": "CUS000032"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-24T05:45:19.309Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "advised",
+      "changedAt": "2026-03-24T05:45:28.291Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T04:41:24.593Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:45:28.296Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee"
+},
+{
+  "_id": {
+    "$oid": "69c223da3a1116f77f28f82a"
+  },
+  "prescriptionId": "PRE100000015",
+  "user_id": "CUS000028",
+  "full_name": "Ánh Linh",
+  "phone": "0909090909",
+  "note": "Tôi cần tư vấn về sản phẩm Siro Fitobimbi Immuno Concentrato Fluido bổ sung vitamin, khoáng chất cho cơ thể (200ml)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d88944",
+      "name": "Siro Fitobimbi Immuno Concentrato Fluido bổ sung vitamin, khoáng chất cho cơ thể (200ml)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032368_fitobimbi_immuno_200ml_2987_62ec_large_a7e1fac9d8.jpg"
+    }
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-03-24T05:42:27.990Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-24T05:40:42.600Z",
+      "changedBy": "CUS000028"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-24T05:41:48.048Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "advised",
+      "changedAt": "2026-03-24T05:42:27.990Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T05:40:42.600Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:43:15.178Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
+  "user_prescription_rating": 5,
+  "user_prescription_review": "dược sĩ nhiệt tình",
+  "user_prescription_reviewed_at": "2026-03-24T05:43:15.178Z"
+},
+{
+  "_id": {
+    "$oid": "69c224dc3a1116f77f28f878"
+  },
+  "prescriptionId": "PRE100000016",
+  "user_id": "CUS000028",
+  "full_name": "Ánh Linh",
+  "phone": "0909090909",
+  "note": "Tôi cần tư vấn về sản phẩm Viên uống Heptral 400 Abbott hỗ trợ tăng cường chức năng gan (3 vỉ x 10 viên)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "69c224dc3a1116f77f28f877",
+      "name": "Viên uống Heptral 400 Abbott hỗ trợ tăng cường chức năng gan (3 vỉ x 10 viên)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00029970_heptral_400mg_abbott_3x10_1995_6096_large_d67e9c74f3.jpg"
+    }
+  ],
+  "status": "advised",
+  "current_status": {
+    "status": "advised",
+    "changedAt": "2026-03-24T09:33:35.318Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-24T05:45:00.004Z",
+      "changedBy": "CUS000028"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-24T09:30:53.139Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "advised",
+      "changedAt": "2026-03-24T09:33:35.318Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T05:45:00.004Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-25T05:38:09.559Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee",
+  "user_prescription_rating": 5,
+  "user_prescription_review": "Dược sĩ nhiệt tình",
+  "user_prescription_reviewed_at": "2026-03-25T05:38:09.559Z"
+},
+{
+  "_id": {
+    "$oid": "69c2612efe6171a8c5145f5b"
+  },
+  "prescriptionId": "PRE100000017",
+  "user_id": "CUS000028",
+  "full_name": "Ánh Linh",
+  "phone": "0909090909",
+  "note": "Tôi cần tư vấn về sản phẩm Siro Fitobimbi Immuno Concentrato Fluido bổ sung vitamin, khoáng chất cho cơ thể (200ml)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "68f1de3a44d747b5d5d88944",
+      "name": "Siro Fitobimbi Immuno Concentrato Fluido bổ sung vitamin, khoáng chất cho cơ thể (200ml)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032368_fitobimbi_immuno_200ml_2987_62ec_large_a7e1fac9d8.jpg"
+    }
+  ],
+  "status": "pending",
+  "current_status": {
+    "status": "pending",
+    "changedAt": "2026-03-24T10:02:22.189Z",
+    "changedBy": "CUS000028"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-24T10:02:22.189Z",
+      "changedBy": "CUS000028"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T10:02:22.189Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T10:02:22.189Z"
   }
-]
+},
+{
+  "_id": {
+    "$oid": "69c36f08a7fbea3439c640a6"
+  },
+  "prescriptionId": "PRE100000018",
+  "user_id": "CUS000028",
+  "full_name": "Ánh Linh",
+  "phone": "0909090909",
+  "note": "Tôi cần tư vấn về sản phẩm Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+  "consultation_type": "online",
+  "images": [],
+  "medicines_requested": [
+    {
+      "id": "690e5f593daf52c6c22efed5",
+      "name": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+      "sku": "",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01146_15f7708e48.jpg"
+    }
+  ],
+  "status": "unreachable",
+  "current_status": {
+    "status": "unreachable",
+    "changedAt": "2026-03-25T05:24:21.603Z",
+    "changedBy": "Phan Thị Ánh Linh"
+  },
+  "status_history": [
+    {
+      "status": "pending",
+      "changedAt": "2026-03-25T05:13:44.587Z",
+      "changedBy": "CUS000028"
+    },
+    {
+      "status": "waiting",
+      "changedAt": "2026-03-25T05:14:11.314Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    },
+    {
+      "status": "unreachable",
+      "changedAt": "2026-03-25T05:24:21.603Z",
+      "changedBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-25T05:13:44.587Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-25T05:24:21.667Z"
+  },
+  "pharmacistId": "82ecab9dcee6e2faeb8c93ee",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistPhone": "0843293506",
+  "pharmacist_id": "82ecab9dcee6e2faeb8c93ee"
+}]

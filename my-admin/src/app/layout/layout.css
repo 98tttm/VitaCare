@@ -703,7 +703,8 @@ input:checked+.slider:before {
     display: flex;
     flex-direction: column;
     position: relative;
-    z-index: 1;
+    /* Do not create a lower stacking layer that traps page modals under top-bar */
+    z-index: auto;
     min-height: 0;
 }
 

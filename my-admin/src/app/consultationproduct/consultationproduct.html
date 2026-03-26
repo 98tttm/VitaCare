@@ -300,12 +300,27 @@
                     dung trả
                     lời:</label>
                 <textarea class="form-control" rows="4" [(ngModel)]="replyContent"
-                    [disabled]="isAdmin || !canEditSelectedReply()"
-                    [placeholder]="isAdmin ? 'Nhập câu trả lời (để trống nếu muốn phân công cho dược sĩ)...' : 'Nhập câu trả lời của bạn...'"
+                    [disabled]="!canEditSelectedReply()"
+                    [placeholder]="isAdmin ? 'Nhập ghi chú/câu trả lời tại đây...' : 'Nhập câu trả lời của bạn...'"
                     style="width: 100%; border-radius: 6px; border: 1px solid var(--color-neutral-40); padding: 10px; resize: none; color: var(--color-text-primary);"></textarea>
             </div>
 
             <div *ngIf="canAdminAssignSelectedQuestion()" class="form-group mt-3" style="margin-top: 15px;">
+                <label
+                    style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">
+                    Vai trò xử lý:
+                </label>
+                <select class="form-control" [(ngModel)]="adminActionMode"
+                    style="width: 100%; border-radius: 6px; border: 1px solid var(--color-neutral-40); padding: 10px; color: var(--color-text-primary);">
+                    <option value="assign">Phân công dược sĩ xử lý</option>
+                    <option value="admin_reply">Admin trả lời trực tiếp</option>
+                </select>
+                <small style="display: block; margin-top: 6px; color: var(--color-text-secondary);">
+                    Chọn "Admin trả lời trực tiếp" để gửi phản hồi ngay cho người dùng, không cần chuyển dược sĩ.
+                </small>
+            </div>
+
+            <div *ngIf="shouldShowPharmacistSelect()" class="form-group mt-3" style="margin-top: 15px;">
                 <label
                     style="color: var(--color-text-primary); font-weight: 600; display: block; margin-bottom: 8px;">Phân công
                     đến dược sĩ:</label>
@@ -325,8 +340,7 @@
         <div class="modal-footer" *ngIf="canEditSelectedReply()"
             style="display: flex; justify-content: flex-end; gap: 10px; padding: 15px 20px; background-color: var(--color-bg-secondary); border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
             <button type="button" class="btn btn-primary" (click)="saveQuestion()"
-                style="padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">{{ isAdmin ? 'Phân công' :
-                'Lưu trả lời' }}</button>
+                style="padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">{{ saveButtonText }}</button>
         </div>
     </div>
 

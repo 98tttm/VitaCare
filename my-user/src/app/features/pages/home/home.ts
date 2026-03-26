@@ -57,6 +57,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('diseaseSection', { static: false }) diseaseSection!: ElementRef<HTMLElement> | null;
   @ViewChild('quizSlider', { static: false }) quizSlider!: ElementRef<HTMLDivElement> | null;
   @ViewChild('flashProductsSlider', { static: false }) flashProductsSlider!: ElementRef<HTMLDivElement> | null;
+  @ViewChild('flashSaleSection', { static: false }) flashSaleSection!: ElementRef<HTMLElement> | null;
 
   // holds the computed scroll step (width of 4 items)
   private brandScrollStep = 360;
@@ -102,6 +103,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     dateText?: string;
     descriptionText?: string;
   } | null = null;
+  private promoPopupTarget: 'products' | 'nutrition' | 'flashsale' | 'dermocosmetics' = 'products';
 
   currentBannerIndex = 0;
   activeFlashSlot: 0 | 1 | 2 = 0;
@@ -330,13 +332,28 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   }
 
   goToPromoProducts(): void {
+    const target = this.promoPopupTarget;
     this.closePromoPopup();
-    this.router.navigate(['/products']);
+    switch (target) {
+      case 'nutrition':
+        this.navigateByCategoryName('Dinh dưỡng');
+        break;
+      case 'flashsale':
+        this.scrollToFlashSale();
+        break;
+      case 'dermocosmetics':
+        this.navigateByCategoryName('Dược mỹ phẩm');
+        break;
+      default:
+        this.router.navigate(['/products']);
+        break;
+    }
   }
 
   closePromoPopup(): void {
     this.showPromoPopup = false;
     this.promoPopup = null;
+    this.promoPopupTarget = 'products';
     this.cdr.markForCheck();
   }
 
@@ -435,38 +452,86 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   onBigBannerClick(): void {
     const promo = this.mainBannerPromotions?.[this.currentBannerIndex];
     if (promo?.images?.length) {
+      this.promoPopupTarget = 'products';
       this.openPromoPopup(promo, 'main');
       return;
     }
-    // fallback: nếu không map được khuyến mãi thì giữ hành vi cũ
-    this.router.navigate(['/products']);
+    // fallback: vẫn mở popup từ ảnh banner hiện tại, CTA dẫn tới "Tất cả sản phẩm"
+    const currentImage = this.banners?.[this.currentBannerIndex] || this.bgA || 'assets/images/banner/About_us_Hero.png';
+    this.promoPopupLayout = 'main';
+    this.promoPopup = {
+      image: currentImage,
+      label: 'Có thể bạn chưa biết?',
+      title: 'Ưu đãi nổi bật'
+    };
+    this.promoPopupTarget = 'products';
+    this.showPromoPopup = true;
+    this.cdr.markForCheck();
   }
 
   onSubBanner1Click(): void {
     const promo = this.subBannerPromotions.sub_1;
     if (promo?.images?.length) {
+      this.promoPopupTarget = 'nutrition';
       this.openPromoPopup(promo, 'sub');
       return;
     }
-    this.navigateByCategoryName('Dinh dưỡng');
+    this.promoPopupLayout = 'sub';
+    this.promoPopup = {
+      image: this.subBanner1 || 'assets/images/banner/About_us_Hero.png',
+      label: 'Có thể bạn chưa biết?',
+      title: 'Ưu đãi nổi bật'
+    };
+    this.promoPopupTarget = 'nutrition';
+    this.showPromoPopup = true;
+    this.cdr.markForCheck();
   }
 
   onSubBanner3Click(): void {
     const promo = this.subBannerPromotions.sub_3;
     if (promo?.images?.length) {
+      this.promoPopupTarget = 'flashsale';
       this.openPromoPopup(promo, 'sub');
       return;
     }
-    this.navigateByCategoryName('Chăm sóc cá nhân');
+    this.promoPopupLayout = 'sub';
+    this.promoPopup = {
+      image: this.subBanner3 || 'assets/images/banner/About_us_Hero.png',
+      label: 'Có thể bạn chưa biết?',
+      title: 'Ưu đãi nổi bật'
+    };
+    this.promoPopupTarget = 'flashsale';
+    this.showPromoPopup = true;
+    this.cdr.markForCheck();
   }
 
   onSubBanner2Click(): void {
     const promo = this.subBannerPromotions.sub_2;
     if (promo?.images?.length) {
+      this.promoPopupTarget = 'dermocosmetics';
       this.openPromoPopup(promo, 'sub');
       return;
     }
-    this.navigateByCategoryName('Dược mỹ phẩm');
+    this.promoPopupLayout = 'sub';
+    this.promoPopup = {
+      image: this.subBanner2 || 'assets/images/banner/About_us_Hero.png',
+      label: 'Có thể bạn chưa biết?',
+      title: 'Ưu đãi nổi bật'
+    };
+    this.promoPopupTarget = 'dermocosmetics';
+    this.showPromoPopup = true;
+    this.cdr.markForCheck();
+  }
+
+  private scrollToFlashSale(): void {
+    const target = this.flashSaleSection?.nativeElement;
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   private navigateByCategoryName(name: string): void {

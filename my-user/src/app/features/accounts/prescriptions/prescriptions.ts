@@ -257,15 +257,19 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
     return classMap[status] || 'status-pending';
   }
 
-  isConsultationFailed(prescription: Prescription): boolean {
-    return String(prescription?.status || '').trim().toLowerCase() === 'consultation_failed';
+  /**
+   * Dược sĩ đánh dấu không liên hệ được (`unreachable`) hoặc tư vấn thất bại sau nhiều lần (`consultation_failed`).
+   * Cả hai đều cần thông báo rõ cho khách kiểm tra SĐT / bấm tư vấn lại.
+   */
+  shouldShowPharmacistUnreachableMessage(prescription: Prescription): boolean {
+    const s = String(prescription?.status || '').trim().toLowerCase();
+    return s === 'consultation_failed' || s === 'unreachable';
   }
 
   getConsultationFailedNote(prescription: Prescription): string {
     const pharmacistName = String((prescription as any)?.pharmacistName || '').trim();
-    const displayName = pharmacistName || 'dược sĩ';
-    return `Dược sĩ ${displayName} đã cố gắng liên lạc tư vấn nhưng không thể liên lạc.
-Nếu bạn muốn tư vấn lại hãy nhấn Tư vấn lại, dược sĩ sẽ liên lạc lại với bạn sớm nhất.`;
+    const displayName = pharmacistName || 'phụ trách';
+    return `Dược sĩ ${displayName} đã cố gắng liên lạc nhưng không được. Vui lòng chú ý số điện thoại hoặc nhấn Tư vấn lại.`;
   }
 
   /** Đơn đã tư vấn và khách đã gửi đánh giá (theo DB). */
@@ -451,7 +455,7 @@ Nếu bạn muốn tư vấn lại hãy nhấn Tư vấn lại, dược sĩ sẽ
 
   /** Bắt đầu tư vấn lại từ một đơn thuốc */
   reconsult(prescription: Prescription): void {
-    if (this.isConsultationFailed(prescription)) {
+    if (this.shouldShowPharmacistUnreachableMessage(prescription)) {
       const key = String(prescription.prescriptionId || (prescription as any)._id || '').trim();
       if (!key) {
         this.toast.showError('Không xác định được mã đơn thuốc.');

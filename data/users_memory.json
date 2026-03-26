@@ -1,0 +1,819 @@
+[{
+  "_id": {
+    "$oid": "69b9ac6171fea830cf49ea02"
+  },
+  "user_id": "CUS000028",
+  "updatedAt": {
+    "$date": "2026-03-24T19:32:15.689Z"
+  },
+  "recentlyViewed": [
+    {
+      "id": "68f1de3a44d747b5d5d88951",
+      "name": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png",
+      "price": 515000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88951",
+      "viewedAt": {
+        "$date": "2026-03-24T19:32:15.684Z"
+      }
+    },
+    {
+      "id": "690e5f5a3daf52c6c22efee7",
+      "name": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00061_290aff41d7.jpg",
+      "price": "756000",
+      "discount": "0",
+      "slug": "690e5f5a3daf52c6c22efee7",
+      "viewedAt": {
+        "$date": "2026-03-24T19:32:09.716Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88952",
+      "name": "Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345430_vien_uong_bo_sung_canxi_magie_kem_5337_62ae_large_918f8701ba.jpg",
+      "price": 216000,
+      "discount": 54000,
+      "slug": "68f1de3a44d747b5d5d88952",
+      "viewedAt": {
+        "$date": "2026-03-24T19:32:03.096Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d888fd",
+      "name": "Viên nhai Kids Smart Vita Gummies bổ sung Vitamin C và kẽm giúp tăng cường sức đề kháng (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00028646_KIDS_SMART_NATURE_S_WAY_VITA_GUMMIES_VITAMIN_C_ZINC_60_V_c981212923.jpg",
+      "price": 279000,
+      "discount": 31000,
+      "slug": "68f1de3a44d747b5d5d888fd",
+      "viewedAt": {
+        "$date": "2026-03-24T14:06:22.646Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88950",
+      "name": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032745_dr_life_natural_herb_cordyceps_1500mg_60v_4293_618b_large_14de2368d2.jpg",
+      "price": 585000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88950",
+      "viewedAt": {
+        "$date": "2026-03-24T10:19:33.840Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88925",
+      "name": "Siro Fitobimbi Ferro C Concentrato Fluido bổ sung sắt, kẽm, vitamin C cho cơ thể (200ml)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00030546_fitobimbi_ferro_c_200ml_7027_6228_large_7317d59689.jpg",
+      "price": 335000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88925",
+      "viewedAt": {
+        "$date": "2026-03-24T05:36:04.265Z"
+      }
+    },
+    {
+      "id": "690e5f593daf52c6c22efed6",
+      "name": "Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01135_f566e1d322.png",
+      "price": "484000",
+      "discount": "121000",
+      "slug": "690e5f593daf52c6c22efed6",
+      "viewedAt": {
+        "$date": "2026-03-24T04:49:26.149Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88cfa",
+      "name": "Nước Yến Cao Cấp Nunest Gold (6 hũ x 70ml)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032206_nuoc_yen_cao_cap_nunest_gold_6_hu_x_70ml_7976_62af_large_f281e1750d.JPG",
+      "price": 172500,
+      "discount": 57500,
+      "slug": "68f1de3a44d747b5d5d88cfa",
+      "viewedAt": {
+        "$date": "2026-03-24T04:48:42.061Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d8894e",
+      "name": "Viên uống Sinus Nose Vitamins For Life hỗ trợ tăng cường sức khỏe đường hô hấp (30 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032699_sinus_nose_ho_tro_duong_ho_hap_vitamins_for_life_30v_5821_63a9_large_2e96a561c6.jpg",
+      "price": 290000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d8894e",
+      "viewedAt": {
+        "$date": "2026-03-23T20:11:38.109Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88bb9",
+      "name": "Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/1_30e8244be3.jpg",
+      "price": 545000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88bb9",
+      "viewedAt": {
+        "$date": "2026-03-23T20:11:33.626Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88954",
+      "name": "Viên uống Calci K2 Dao Nordic Health bổ sung canxi, chống loãng xương (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345335_calci_k2_vien_bo_sung_canxi_ngua_loang_xuong_3579_62ae_large_0abcaf7b56.jpg",
+      "price": 365000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88954",
+      "viewedAt": {
+        "$date": "2026-03-23T20:11:30.061Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d887f8",
+      "name": "Viên uống Dr. Liver Jpanwell bổ gan, tăng cường giải độc gan (60 viên) ",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032920_vien_uong_thai_doc_gan_dr_liver_jpanwell_60v_5501_61a5_large_2fccd9ea7b.JPG",
+      "price": 990000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d887f8",
+      "viewedAt": {
+        "$date": "2026-03-23T20:06:23.983Z"
+      }
+    },
+    {
+      "id": "690e5f5a3daf52c6c22efedc",
+      "name": "Viên uống Medsulin Plus hỗ trợ cải thiện chỉ số đường huyết (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09206_c0047d3e7d.jpg",
+      "price": "960000",
+      "discount": "0",
+      "slug": "690e5f5a3daf52c6c22efedc",
+      "viewedAt": {
+        "$date": "2026-03-22T09:37:19.806Z"
+      }
+    },
+    {
+      "id": "690e5f5b3daf52c6c22eff1e",
+      "name": "Thực phẩm bảo vệ sức khỏe Antibio Pro hỗ trợ bổ sung lợi khuẩn lactobacillus (20 gói x 1g)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09960_cfd66fae58.png",
+      "price": 115000,
+      "discount": 0,
+      "slug": "690e5f5b3daf52c6c22eff1e",
+      "viewedAt": {
+        "$date": "2026-03-22T09:24:23.300Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88bbc",
+      "name": "Son dưỡng môi Vaseline Lip hồng xinh dưỡng ẩm, màu hồng tự nhiên (7g)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032316_vaseline_lip_duong_moi_hong_xinh_7g_1478_63b6_large_fd6417da16.jpg",
+      "price": 87000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88bbc",
+      "viewedAt": {
+        "$date": "2026-03-21T14:23:45.278Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d8894c",
+      "name": "Viên uống Pharmaton Energy hỗn hợp vitamin và khoáng chất giúp tỉnh táo, hỗ trợ giảm mệt mỏi (30 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_6437_6c617a14fe.jpg",
+      "price": 224000,
+      "discount": 5000,
+      "slug": "68f1de3a44d747b5d5d8894c",
+      "viewedAt": {
+        "$date": "2026-03-21T14:23:02.900Z"
+      }
+    }
+  ],
+  "favorites": [
+    {
+      "id": "698f9496ef90273cb37a5247",
+      "title": "Livestream: Tăng cường sức đề kháng trong tâm bão dịch do virus Corona mới (2019-nCoV)",
+      "thumbnail": "https://img.youtube.com/vi/VkCNRRXvSB8/hqdefault.jpg",
+      "category": "Dinh dưỡng",
+      "categoryName": "Dinh dưỡng",
+      "categorySlug": "thuc-pham-chuc-nang/dinh-duong",
+      "duration": "",
+      "date": "2026-03-24T14:06:55.789Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5246",
+      "title": "Công thức chế biến tỏi sống tăng đề kháng giữa tâm dịch 2019-nCoV",
+      "thumbnail": "https://img.youtube.com/vi/rqRiTQ_4Ji0/hqdefault.jpg",
+      "category": "Dinh dưỡng",
+      "categoryName": "Dinh dưỡng",
+      "categorySlug": "thuc-pham-chuc-nang/dinh-duong",
+      "duration": "",
+      "date": "2026-03-24T14:06:54.862Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5304",
+      "title": "Uống nước dừa có giảm cân không?",
+      "thumbnail": "https://img.youtube.com/vi/OX0423aJbjE/hqdefault.jpg",
+      "category": "Dinh dưỡng",
+      "categoryName": "Dinh dưỡng",
+      "categorySlug": "thuc-pham-chuc-nang/dinh-duong",
+      "duration": "",
+      "date": "2026-03-23T20:01:24.210Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a52f6",
+      "title": "Dinh dưỡng là gì? Thế nào là dinh dưỡng cân bằng?",
+      "thumbnail": "https://img.youtube.com/vi/J2Fi2CemwvE/hqdefault.jpg",
+      "category": "Dinh dưỡng",
+      "categoryName": "Dinh dưỡng",
+      "categorySlug": "thuc-pham-chuc-nang/dinh-duong",
+      "duration": "",
+      "date": "2026-03-23T20:01:18.456Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a52f1",
+      "title": "Giá trị dinh dưỡng của các loại đậu",
+      "thumbnail": "https://img.youtube.com/vi/z5TJf6hn3KA/hqdefault.jpg",
+      "category": "Dinh dưỡng",
+      "categoryName": "Dinh dưỡng",
+      "categorySlug": "thuc-pham-chuc-nang/dinh-duong",
+      "duration": "",
+      "date": "2026-03-23T20:01:17.631Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5221",
+      "title": "Hướng dẫn dinh dưỡng cho bệnh nhân sau mổ ung thư vú",
+      "thumbnail": "https://img.youtube.com/vi/bci1cV-s6C4/hqdefault.jpg",
+      "category": "Dinh dưỡng",
+      "categoryName": "Dinh dưỡng",
+      "categorySlug": "thuc-pham-chuc-nang/dinh-duong",
+      "duration": "",
+      "date": "2026-03-23T20:01:16.552Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a52f4",
+      "title": "TOP 7  thực phẩm giàu chất xơ giúp trị táo bón hiệu quả",
+      "thumbnail": "https://img.youtube.com/vi/8_WjUDpmo_w/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-18T05:51:41.631Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a52f9",
+      "title": "TOP thực phẩm khiến bạn tăng cân nhanh hơn cả tinh bột",
+      "thumbnail": "https://img.youtube.com/vi/X1h0UBqb5hE/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-18T05:51:39.895Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5346",
+      "title": "Vitamin D ngăn COVID-19 trở nặng?",
+      "thumbnail": "https://img.youtube.com/vi/EtUsySXiCS4/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-18T05:51:34.554Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5397",
+      "title": "Vai trò của vitamin A đối với sức khỏe của trẻ em",
+      "thumbnail": "https://img.youtube.com/vi/fjw1zeReB0k/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-18T05:51:33.689Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5283",
+      "title": "Thiếu canxi nên ăn gì?",
+      "thumbnail": "https://img.youtube.com/vi/HjUPJaSVUvs/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-18T05:19:38.521Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5204",
+      "title": "Vitamin C có tác dụng gì? Cách uống vitamin C đúng",
+      "thumbnail": "https://img.youtube.com/vi/x_7eF_MBtpI/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-18T05:19:36.289Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5277",
+      "title": "Phòng dịch COVID-19: Lạm dụng vitamin C có gây hại?",
+      "thumbnail": "https://img.youtube.com/vi/NStXgCtCfko/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-18T05:19:35.260Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a52ed",
+      "title": "Uống nước dừa có tác dụng gì?",
+      "thumbnail": "https://img.youtube.com/vi/F0ZrsY93V5c/hqdefault.jpg",
+      "category": "Thực phẩm - Đồ uống",
+      "categoryName": "Thực phẩm - Đồ uống",
+      "categorySlug": "cham-soc-ca-nhan/thuc-pham-do-uong",
+      "duration": "",
+      "date": "2026-03-18T04:45:28.384Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a53fd",
+      "title": "Hướng dẫn cách chăm sóc da dầu| BS Nguyễn Thị Thu Trang, BV Vinmec Central Park",
+      "thumbnail": "https://img.youtube.com/vi/UF_xkmx8CEo/hqdefault.jpg",
+      "category": "Chăm sóc da mặt",
+      "categoryName": "Chăm sóc da mặt",
+      "categorySlug": "duoc-my-pham/cham-soc-da-mat",
+      "duration": "",
+      "date": "2026-03-18T04:42:48.571Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a53fe",
+      "title": "Cách đơn giản phân biệt da khô hay dầu| BS Nguyễn Thị Thu Trang, BV Vinmec Central Park",
+      "thumbnail": "https://img.youtube.com/vi/u3k-0hMlQc8/hqdefault.jpg",
+      "category": "Chăm sóc da mặt",
+      "categoryName": "Chăm sóc da mặt",
+      "categorySlug": "duoc-my-pham/cham-soc-da-mat",
+      "duration": "",
+      "date": "2026-03-18T04:33:48.774Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a540c",
+      "title": "Trị mụn trứng cá bằng kem đánh răng - hiệu quả không?",
+      "thumbnail": "https://img.youtube.com/vi/5Oqw-VNL7Xw/hqdefault.jpg",
+      "category": "Giải pháp làn da",
+      "categoryName": "Giải pháp làn da",
+      "categorySlug": "duoc-my-pham/giai-phap-lan-da",
+      "duration": "",
+      "date": "2026-03-18T04:33:36.473Z"
+    }
+  ],
+  "coins": {
+    "balance": 62398,
+    "lastCompletedDate": "2026-03-24",
+    "currentStreak": 2,
+    "history": [
+      {
+        "amount": 5150,
+        "reason": "Nhận hàng đơn ORD000027",
+        "date": "2026-03-24T07:38:09.279Z",
+        "dateKey": "order-received-ORD000027",
+        "transactionId": "69c23f611cc1f42f293569eb"
+      },
+      {
+        "amount": 200,
+        "reason": "Đánh giá đơn hàng ORD000035",
+        "date": "2026-03-24T05:35:59.742Z",
+        "dateKey": "review-reward-ORD000035",
+        "transactionId": "69c222bf3a1116f77f28f764"
+      },
+      {
+        "amount": 3350,
+        "reason": "Nhận hàng đơn ORD000035",
+        "date": "2026-03-24T05:35:46.745Z",
+        "dateKey": "order-received-ORD000035",
+        "transactionId": "69c222b23a1116f77f28f75f"
+      },
+      {
+        "amount": 200,
+        "reason": "Đánh giá đơn hàng ORD000031",
+        "date": "2026-03-24T05:12:54.066Z",
+        "dateKey": "review-reward-ORD000031",
+        "transactionId": "69c21d56a37da62f4c56b04a"
+      },
+      {
+        "amount": 11490,
+        "reason": "Nhận hàng đơn ORD000031",
+        "date": "2026-03-24T05:12:41.178Z",
+        "dateKey": "order-received-ORD000031",
+        "transactionId": "69c21d49a37da62f4c56b046"
+      },
+      {
+        "amount": 200,
+        "reason": "Đánh giá đơn hàng ORD000026",
+        "date": "2026-03-24T04:47:54.928Z",
+        "dateKey": "review-reward-ORD000026",
+        "transactionId": "69c2177aa37da62f4c56af8f"
+      },
+      {
+        "amount": 5299,
+        "reason": "Nhận hàng đơn ORD000021",
+        "date": "2026-03-24T04:46:48.468Z",
+        "dateKey": "order-received-ORD000021",
+        "transactionId": "69c21738a37da62f4c56af89"
+      },
+      {
+        "amount": 100,
+        "reason": "Hoàn thành lịch nhắc lần 1 ngày 2026-03-24",
+        "date": "2026-03-24T04:45:39.594Z",
+        "dateKey": "2026-03-24",
+        "transactionId": "69c216f3a37da62f4c56af87"
+      },
+      {
+        "amount": 26400,
+        "reason": "Nhận hàng đơn ORD000028",
+        "date": "2026-03-23T12:31:37.005Z",
+        "dateKey": "order-received-ORD000028",
+        "transactionId": "69c132a9eceafeeaca2c21ee"
+      },
+      {
+        "amount": 949,
+        "reason": "Nhận hàng đơn ORD000020",
+        "date": "2026-03-23T12:24:25.562Z",
+        "dateKey": "order-received-ORD000020",
+        "transactionId": "69c130f9073945861059caea"
+      },
+      {
+        "amount": 1450,
+        "reason": "Nhận hàng đơn ORD000026",
+        "date": "2026-03-23T12:24:01.572Z",
+        "dateKey": "order-received-ORD000026",
+        "transactionId": "69c130e1073945861059cad0"
+      },
+      {
+        "amount": 7560,
+        "reason": "Nhận hàng đơn ORD000023",
+        "date": "2026-03-23T12:23:23.102Z",
+        "dateKey": "order-received-ORD000023",
+        "transactionId": "69c130bb073945861059cab2"
+      },
+      {
+        "amount": 50,
+        "reason": "Điểm danh nhật ký ngày 2026-03-23",
+        "date": "2026-03-23T09:15:07.342Z",
+        "dateKey": "2026-03-23",
+        "transactionId": "69c1049b3c92cbba9a3fe8ae"
+      }
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "69ba87b72fc4a224988fe6df"
+  },
+  "user_id": "CUS000026",
+  "recentlyViewed": [
+    {
+      "id": "68f1de3a44d747b5d5d88951",
+      "name": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png",
+      "price": 515000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88951",
+      "viewedAt": {
+        "$date": "2026-03-18T11:08:40.612Z"
+      }
+    }
+  ],
+  "updatedAt": {
+    "$date": "2026-03-18T11:08:40.614Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bee1e648f8b8c36514c005"
+  },
+  "user_id": "CUS000029",
+  "coins": {
+    "balance": 150,
+    "lastCompletedDate": "2026-03-23",
+    "currentStreak": 1,
+    "history": [
+      {
+        "amount": 50,
+        "reason": "Hoàn thành lịch nhắc lần 1 ngày 2026-03-23",
+        "date": "2026-03-23T09:15:39.286Z",
+        "dateKey": "2026-03-23",
+        "transactionId": "69c104bb3c92cbba9a3fe8af"
+      },
+      {
+        "amount": 50,
+        "reason": "Hoàn thành bài kiểm tra sức khỏe",
+        "date": "2026-03-21T18:26:05.802Z",
+        "dateKey": "quiz-health-b75ce39b-9240-421d-85ef-2aedb3d76b17",
+        "transactionId": "69bee2bdd5162c80743e5637",
+        "quiz_id": "02_COPD_Man_Tinh"
+      },
+      {
+        "amount": 50,
+        "reason": "Hoàn thành bài kiểm tra sức khỏe",
+        "date": "2026-03-21T18:25:50.636Z",
+        "dateKey": "quiz-health-507ee711-fe12-4c1f-938c-52a1c7ff78c9",
+        "transactionId": "69bee2aed5162c80743e5635",
+        "quiz_id": "01_Benh_Hen"
+      }
+    ]
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:57:33.467Z"
+  },
+  "recentlyViewed": [
+    {
+      "id": "68f1de3a44d747b5d5d88951",
+      "name": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png",
+      "price": 515000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88951",
+      "viewedAt": {
+        "$date": "2026-03-24T05:57:33.463Z"
+      }
+    },
+    {
+      "id": "690e5f5a3daf52c6c22efee7",
+      "name": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00061_290aff41d7.jpg",
+      "price": "756000",
+      "discount": "0",
+      "slug": "690e5f5a3daf52c6c22efee7",
+      "viewedAt": {
+        "$date": "2026-03-23T11:23:36.320Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88bc2",
+      "name": "Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032669_eucerin_even_skin_spotless_brightening_night_50ml_83506_kem_duong_sang_da_ban_dem_6833_6181_large_18338bca61.jpg",
+      "price": 929000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88bc2",
+      "viewedAt": {
+        "$date": "2026-03-23T11:08:01.997Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88952",
+      "name": "Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345430_vien_uong_bo_sung_canxi_magie_kem_5337_62ae_large_918f8701ba.jpg",
+      "price": 216000,
+      "discount": 54000,
+      "slug": "68f1de3a44d747b5d5d88952",
+      "viewedAt": {
+        "$date": "2026-03-22T21:00:17.519Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88947",
+      "name": "Sữa bột Similac Isomil Plus 400g Abbott cải thiện hệ tiêu hóa",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/isomil_1dc20b62dc.jpg",
+      "price": 290000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88947",
+      "viewedAt": {
+        "$date": "2026-03-22T08:51:24.935Z"
+      }
+    },
+    {
+      "id": "690e5f5a3daf52c6c22eff0b",
+      "name": "Sữa tăng cân Appeton Weight Gain hương Vani giúp tăng cân hiệu quả và khỏe mạnh (900g)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_04209_5816b3a584.jpg",
+      "price": "973750",
+      "discount": "51250",
+      "slug": "690e5f5a3daf52c6c22eff0b",
+      "viewedAt": {
+        "$date": "2026-03-22T08:43:37.066Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d8873d",
+      "name": "Sữa tăng cân Appeton Weight Gain hương Vani giúp tăng cân hiệu quả và khỏe mạnh (900g)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_04209_5816b3a584.jpg",
+      "price": 973750,
+      "discount": 51250,
+      "slug": "68f1de3a44d747b5d5d8873d",
+      "viewedAt": {
+        "$date": "2026-03-22T08:43:30.196Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d8894a",
+      "name": "Siro Ích Nhi Plus Nam Dược bổ sung kẽm, seien và lysin giúp trẻ ăn ngon (100ml)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032490_siro_an_ngon_ich_nhi_plus_nam_duoc_100ml_3886_62af_large_0442229e43.jpg",
+      "price": 65000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d8894a",
+      "viewedAt": {
+        "$date": "2026-03-22T08:05:57.879Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88953",
+      "name": "Viên nam lực Bang Cevrai cải thiện chức năng sinh lý nam giới (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_03083_8c550201f0.jpg",
+      "price": 530000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88953",
+      "viewedAt": {
+        "$date": "2026-03-22T08:04:45.248Z"
+      }
+    },
+    {
+      "id": "690e5f5b3daf52c6c22eff1e",
+      "name": "Thực phẩm bảo vệ sức khỏe Antibio Pro hỗ trợ bổ sung lợi khuẩn lactobacillus (20 gói x 1g)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09960_cfd66fae58.png",
+      "price": 115000,
+      "discount": 0,
+      "slug": "690e5f5b3daf52c6c22eff1e",
+      "viewedAt": {
+        "$date": "2026-03-22T07:14:22.630Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88bb9",
+      "name": "Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/1_30e8244be3.jpg",
+      "price": 545000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88bb9",
+      "viewedAt": {
+        "$date": "2026-03-21T19:51:13.951Z"
+      }
+    },
+    {
+      "id": "68f1de3c44d747b5d5d8a63c",
+      "name": "Bình xịt Voltogel Spray 100ml Aero Chemie đau cơ, đau vai, bầm tím, bong gân",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00029202_voltogel_spray_xit_giam_dau_100ml_2509_62b5_large_781cc66afa.jpg",
+      "price": 89000,
+      "discount": 0,
+      "slug": "68f1de3c44d747b5d5d8a63c",
+      "viewedAt": {
+        "$date": "2026-03-21T19:07:33.288Z"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c176b74b5aabfd1f4896c4"
+  },
+  "user_id": "CUS000030",
+  "coins": {
+    "balance": 0,
+    "lastCompletedDate": null,
+    "currentStreak": 0,
+    "history": []
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T17:21:59.028Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c17d824b5aabfd1f48992f"
+  },
+  "user_id": "CUS000031",
+  "coins": {
+    "balance": 100,
+    "lastCompletedDate": null,
+    "currentStreak": 0,
+    "history": [
+      {
+        "amount": 50,
+        "reason": "Hoàn thành bài kiểm tra sức khỏe",
+        "date": "2026-03-23T17:57:02.991Z",
+        "dateKey": "quiz-health-31ca5987-85ee-41e7-9960-e43703249766",
+        "transactionId": "69c17eee4b5aabfd1f489986",
+        "quiz_id": "02_COPD_Man_Tinh"
+      },
+      {
+        "amount": 50,
+        "reason": "Hoàn thành bài kiểm tra sức khỏe",
+        "date": "2026-03-23T17:56:41.720Z",
+        "dateKey": "quiz-health-cdab717f-ca2a-4b6f-9f7a-c67b40ad7caa",
+        "transactionId": "69c17ed94b5aabfd1f489984",
+        "quiz_id": "01_Benh_Hen"
+      }
+    ]
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T18:15:58.703Z"
+  },
+  "recentlyViewed": [
+    {
+      "id": "68f1de3a44d747b5d5d88bc2",
+      "name": "Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032669_eucerin_even_skin_spotless_brightening_night_50ml_83506_kem_duong_sang_da_ban_dem_6833_6181_large_18338bca61.jpg",
+      "price": 929000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88bc2",
+      "viewedAt": {
+        "$date": "2026-03-23T18:15:58.699Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88b9c",
+      "name": "Dầu dưỡng da ban đêm NNO Nourishing Night Oil giúp dưỡng ẩm, phục hồi da",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00029257_nno_nourishing_night_oil_3x10_dau_duong_da_ban_dem_2469_63aa_large_a9ce858ed1.jpg",
+      "price": 150000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88b9c",
+      "viewedAt": {
+        "$date": "2026-03-23T18:15:08.808Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d88950",
+      "name": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032745_dr_life_natural_herb_cordyceps_1500mg_60v_4293_618b_large_14de2368d2.jpg",
+      "price": 585000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d88950",
+      "viewedAt": {
+        "$date": "2026-03-23T17:58:09.407Z"
+      }
+    },
+    {
+      "id": "68f1de3a44d747b5d5d8894f",
+      "name": "Viên uống Bone Builder Drlife bổ sung canxi và vitamin cho xương (60 viên)",
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_08392_0461703d2a.jpg",
+      "price": 327000,
+      "discount": 0,
+      "slug": "68f1de3a44d747b5d5d8894f",
+      "viewedAt": {
+        "$date": "2026-03-23T17:57:36.967Z"
+      }
+    }
+  ],
+  "favorites": [
+    {
+      "id": "698f9496ef90273cb37a5246",
+      "title": "Công thức chế biến tỏi sống tăng đề kháng giữa tâm dịch 2019-nCoV",
+      "thumbnail": "https://img.youtube.com/vi/rqRiTQ_4Ji0/hqdefault.jpg",
+      "category": "Tăng cường chức năng",
+      "categoryName": "Tăng cường chức năng",
+      "categorySlug": "thuc-pham-chuc-nang/cai-thien-tang-cuong-chuc-nang",
+      "duration": "",
+      "date": "2026-03-23T17:58:16.317Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5247",
+      "title": "Livestream: Tăng cường sức đề kháng trong tâm bão dịch do virus Corona mới (2019-nCoV)",
+      "thumbnail": "https://img.youtube.com/vi/VkCNRRXvSB8/hqdefault.jpg",
+      "category": "Tăng cường chức năng",
+      "categoryName": "Tăng cường chức năng",
+      "categorySlug": "thuc-pham-chuc-nang/cai-thien-tang-cuong-chuc-nang",
+      "duration": "",
+      "date": "2026-03-23T17:58:14.388Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5277",
+      "title": "Phòng dịch COVID-19: Lạm dụng vitamin C có gây hại?",
+      "thumbnail": "https://img.youtube.com/vi/NStXgCtCfko/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-23T17:58:01.940Z"
+    },
+    {
+      "id": "698f9496ef90273cb37a5204",
+      "title": "Vitamin C có tác dụng gì? Cách uống vitamin C đúng",
+      "thumbnail": "https://img.youtube.com/vi/x_7eF_MBtpI/hqdefault.jpg",
+      "category": "Vitamin & Khoáng chất",
+      "categoryName": "Vitamin & Khoáng chất",
+      "categorySlug": "thuc-pham-chuc-nang/vitamin-khoang-chat",
+      "duration": "",
+      "date": "2026-03-23T17:57:54.188Z"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69c213aea37da62f4c56af71"
+  },
+  "user_id": "CUS000032",
+  "coins": {
+    "balance": 100,
+    "lastCompletedDate": null,
+    "currentStreak": 0,
+    "history": [
+      {
+        "amount": 50,
+        "reason": "Hoàn thành bài kiểm tra sức khỏe",
+        "date": "2026-03-24T04:40:39.796Z",
+        "dateKey": "quiz-health-cf26d28f-e358-4d6d-9a2e-b78eb08ae0e1",
+        "transactionId": "69c215c7a37da62f4c56af81",
+        "quiz_id": "02_COPD_Man_Tinh"
+      },
+      {
+        "amount": 50,
+        "reason": "Hoàn thành bài kiểm tra sức khỏe",
+        "date": "2026-03-24T04:40:10.114Z",
+        "dateKey": "quiz-health-fdcde0b1-3f61-4dac-b2cd-f7a26f58a3e3",
+        "transactionId": "69c215aaa37da62f4c56af7f",
+        "quiz_id": "01_Benh_Hen"
+      }
+    ]
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T04:40:39.796Z"
+  }
+}]

@@ -1,37 +1,68 @@
-[
-  {
-    "_id": "34a6cf3274c4713ca9f21cf1",
-    "pharmacist_id": "ADM001",
-    "pharmacistName": "Phạm Thái Huỳnh Hương",
-    "pharmacistEmail": "huongpth23411@st.uel.edu.vn",
-    "pharmacistPhone": "0965813408"
+[{
+  "_id": {
+    "$oid": "34a6cf3274c4713ca9f21cf1"
   },
-  {
-    "_id": "bebda3b6dde1f6d10aa0dfbc",
-    "pharmacist_id": "ADM002",
-    "pharmacistName": "Phạm Thuý Huyền",
-    "pharmacistEmail": "huyenpt23411@st.uel.edu.vn",
-    "pharmacistPhone": "0976106992"
+  "pharmacist_id": "ADM001",
+  "pharmacistName": "Phạm Thái Huỳnh Hương",
+  "pharmacistEmail": "huongpth23411@st.uel.edu.vn",
+  "pharmacistPhone": "0965813408",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "bebda3b6dde1f6d10aa0dfbc"
   },
-  {
-    "_id": "82ecab9dcee6e2faeb8c93ee",
-    "pharmacist_id": "ADM003",
-    "pharmacistName": "Phan Thị Ánh Linh",
-    "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
-    "pharmacistPhone": "0843293506"
+  "pharmacist_id": "ADM002",
+  "pharmacistName": "Phạm Thuý Huyền",
+  "pharmacistEmail": "huyenpt23411@st.uel.edu.vn",
+  "pharmacistPhone": "0976106992",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "82ecab9dcee6e2faeb8c93ee"
   },
-  {
-    "_id": "d2ddbbbd4a24adbde880bc92",
-    "pharmacist_id": "ADM004",
-    "pharmacistName": "Nguyễn Khánh Xuân",
-    "pharmacistEmail": "xuannk23411@st.uel.edu.vn",
-    "pharmacistPhone": "0387253686"
-  },
-  {
-    "_id": "bbab0704cbf5b25dd3354efb",
-    "pharmacist_id": "ADM005",
-    "pharmacistName": "Đặng Đang Trường",
-    "pharmacistEmail": "truongdd23411@st.uel.edu.vn",
-    "pharmacistPhone": "0362693243"
+  "pharmacist_id": "ADM003",
+  "pharmacistName": "Phan Thị Ánh Linh",
+  "pharmacistEmail": "linhpta23411@st.uel.edu.vn",
+  "pharmacistPhone": "0843293506",
+  "isActive": true,
+  "password": "4ef95ec6d45f17fa5815bd6ab05064c313a8890b862db3a8728fd1b99ae87753",
+  "updatedAt": {
+    "$date": "2026-03-22T14:41:47.905Z"
   }
-]
+},
+{
+  "_id": {
+    "$oid": "d2ddbbbd4a24adbde880bc92"
+  },
+  "pharmacist_id": "ADM004",
+  "pharmacistName": "Nguyễn Khánh Xuân",
+  "pharmacistEmail": "xuannk23411@st.uel.edu.vn",
+  "pharmacistPhone": "0387253686",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "bbab0704cbf5b25dd3354efb"
+  },
+  "pharmacist_id": "ADM005",
+  "pharmacistName": "Đặng Đang Trường",
+  "pharmacistEmail": "truongdd23411@st.uel.edu.vn",
+  "pharmacistPhone": "0362693243",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "69c02938ff0045eacf9df2f1"
+  },
+  "pharmacist_id": "ADM006",
+  "pharmacistName": "Test",
+  "pharmacistEmail": "linhthiphan04@gmail.com",
+  "pharmacistPhone": "0562268238",
+  "isActive": true,
+  "password": "4ef95ec6d45f17fa5815bd6ab05064c313a8890b862db3a8728fd1b99ae87753",
+  "updatedAt": {
+    "$date": "2026-03-22T17:39:41.781Z"
+  }
+}]

@@ -79,8 +79,8 @@
                                         </div>
                                         <div class="product-details">
                                             <h3 class="product-name">{{ getMedicineName(medicine) || 'Thuốc' }}</h3>
-                                        <p class="product-price" [class.failed-contact-note]="isConsultationFailed(prescription)">
-                                            {{ isConsultationFailed(prescription) ? getConsultationFailedNote(prescription) : 'Đang cập nhật' }}
+                                        <p class="product-price" [class.failed-contact-note]="shouldShowPharmacistUnreachableMessage(prescription)">
+                                            {{ shouldShowPharmacistUnreachableMessage(prescription) ? getConsultationFailedNote(prescription) : 'Đang cập nhật' }}
                                         </p>
                                         </div>
                                     </div>
@@ -112,8 +112,8 @@
                                         </div>
                                         <div class="product-details">
                                             <h3 class="product-name">Đơn thuốc (hình ảnh)</h3>
-                                            <p class="product-price" [class.failed-contact-note]="isConsultationFailed(prescription)">
-                                                {{ isConsultationFailed(prescription) ? getConsultationFailedNote(prescription) : (prescription.note || 'Đang chờ xử lý') }}
+                                            <p class="product-price" [class.failed-contact-note]="shouldShowPharmacistUnreachableMessage(prescription)">
+                                                {{ shouldShowPharmacistUnreachableMessage(prescription) ? getConsultationFailedNote(prescription) : (prescription.note || 'Đang chờ xử lý') }}
                                             </p>
                                         </div>
                                     </div>
@@ -169,7 +169,7 @@
                                 </button>
                             </ng-container>
 
-                            <ng-container *ngIf="isConsultationFailed(prescription)">
+                            <ng-container *ngIf="shouldShowPharmacistUnreachableMessage(prescription)">
                                 <button type="button" class="action-btn unreachable-badge-btn" disabled>
                                     Không thể liên lạc
                                 </button>
@@ -179,8 +179,8 @@
                                 </button>
                             </ng-container>
 
-                            <!-- Đã hủy / Chưa thể liên hệ: Tư vấn lại -->
-                            <button *ngIf="prescription.status === 'cancelled' || prescription.status === 'unreachable'"
+                            <!-- Đã hủy: Tư vấn lại (đơn mới; unreachable đã xử lý ở khối trên) -->
+                            <button *ngIf="prescription.status === 'cancelled'"
                                 type="button" class="action-btn repurchase-btn"
                                 (click)="reconsult(prescription); $event.stopPropagation()">
                                 Tư vấn lại
@@ -295,8 +295,8 @@
                             </div>
                             <div class="prescription-item-body">
                                 <span class="prescription-date">{{ formatDate(p.createdAt) }}</span>
-                                <span class="prescription-note-preview" [class.failed-contact-note]="isConsultationFailed(p)">
-                                    {{ isConsultationFailed(p) ? getConsultationFailedNote(p) : (p.note || 'Không có ghi chú') }}
+                                <span class="prescription-note-preview" [class.failed-contact-note]="shouldShowPharmacistUnreachableMessage(p)">
+                                    {{ shouldShowPharmacistUnreachableMessage(p) ? getConsultationFailedNote(p) : (p.note || 'Không có ghi chú') }}
                                 </span>
                             </div>
                         </div>
@@ -370,8 +370,8 @@
 
                         <div class="detail-section">
                             <h3 class="section-title">Ghi chú</h3>
-                            <div class="detail-note" [class.failed-contact-note]="isConsultationFailed(detail)">
-                                {{ isConsultationFailed(detail) ? getConsultationFailedNote(detail) : (detail.note || 'Không có ghi chú') }}
+                            <div class="detail-note" [class.failed-contact-note]="shouldShowPharmacistUnreachableMessage(detail)">
+                                {{ shouldShowPharmacistUnreachableMessage(detail) ? getConsultationFailedNote(detail) : (detail.note || 'Không có ghi chú') }}
                             </div>
                         </div>
 
@@ -481,7 +481,7 @@
                         </button>
                     </ng-container>
 
-                    <ng-container *ngIf="isConsultationFailed(detail)">
+                    <ng-container *ngIf="shouldShowPharmacistUnreachableMessage(detail)">
                         <button type="button" class="action-btn unreachable-badge-btn" disabled>
                             Không thể liên lạc
                         </button>
@@ -490,7 +490,7 @@
                         </button>
                     </ng-container>
 
-                    <button *ngIf="detail.status === 'cancelled' || detail.status === 'unreachable'" type="button"
+                    <button *ngIf="detail.status === 'cancelled'" type="button"
                         class="action-btn repurchase-btn" (click)="reconsult(detail)">
                         Tư vấn lại
                     </button>

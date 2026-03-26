@@ -573,10 +573,64 @@ export class Notice implements OnInit, AfterViewInit, OnDestroy {
     return seg || null;
   }
 
+  /**
+   * Slug bệnh lưu trong notice.meta khi backend chỉ gửi segment (vd. benh-nao-gan-xxx),
+   * không có prefix benh/ — khác với SKU sản phẩm: thông báo sản phẩm luôn có chữ "về sản phẩm" trong message.
+   */
+  private maybePlainDiseaseSlug(meta: string): string | null {
+    const raw = String(meta || '').trim();
+    if (!raw || raw.length < 2) return null;
+    if (/[\s/]/.test(raw)) return null;
+    if (!/^[a-zA-Z0-9._\-]+$/.test(raw)) return null;
+    return raw;
+  }
+
+  /** meta từ API có thể là string hoặc object (dữ liệu cũ). */
+  private resolveDiseaseMetaSlug(item: NoticeItem): string | null {
+    const m = item.meta as unknown;
+    if (m != null && typeof m === 'object') {
+      const o = m as Record<string, unknown>;
+      const nested = [o['sku'], o['slug'], o['routeId'], o['id']]
+        .map((x) => (x != null ? String(x).trim() : ''))
+        .find(Boolean);
+      if (nested) {
+        return (
+          this.extractDiseaseSlugFromConsultationMeta(nested) || this.maybePlainDiseaseSlug(nested)
+        );
+      }
+    }
+    const raw = String(item.meta ?? '').trim();
+    if (!raw || raw === '[object Object]') return null;
+    return this.extractDiseaseSlugFromConsultationMeta(raw) || this.maybePlainDiseaseSlug(raw);
+  }
+
+  private noticeLinkPathOnly(link: string | undefined): string {
+    const raw = String(link || '').trim().split(/[?#]/)[0];
+    if (/^https?:\/\//i.test(raw)) {
+      try {
+        return new URL(raw).pathname || '';
+      } catch {
+        return raw;
+      }
+    }
+    return raw;
+  }
+
+  private isDiseaseQaNotice(item: NoticeItem): boolean {
+    const msg = String(item.message || '');
+    if (msg.includes('về sản phẩm')) return false;
+    if (msg.includes('về bệnh') || msg.includes(' về bệnh')) return true;
+    if (String(item.title || '').toLowerCase().includes('bệnh')) return true;
+    if (item.type === 'qa_submitted' && !msg.includes('về sản phẩm')) {
+      return true;
+    }
+    return false;
+  }
+
   private navigateDiseaseConsultationNotice(item: NoticeItem): boolean {
     if (!this.isQaNotice(item)) return false;
 
-    const pathOnly = String(item.link || '').trim().split(/[?#]/)[0];
+    const pathOnly = this.noticeLinkPathOnly(item.link);
     const pathMatch = pathOnly.match(/^\/(benh|disease)\/(.+)$/);
     if (pathMatch) {
       const base = pathMatch[1];
@@ -585,16 +639,34 @@ export class Notice implements OnInit, AfterViewInit, OnDestroy {
       return true;
     }
 
-    const slug = this.extractDiseaseSlugFromConsultationMeta(String(item.meta || ''));
+    /**
+     * Backend đôi khi ghi link `/disease` (chỉ trang danh sách) khi thiếu slug — không phải bài chi tiết.
+     * Hoặc link nhóm `/category/tra-cuu-benh/:group` — user cần vào đúng bài `/benh/:slug` (meta).
+     */
+    if (
+      pathOnly === '/disease' ||
+      pathOnly === '/disease/' ||
+      pathOnly.startsWith('/category/tra-cuu-benh')
+    ) {
+      const slug = this.resolveDiseaseMetaSlug(item);
+      if (slug && this.isDiseaseQaNotice(item)) {
+        this.router.navigate(['/benh', slug], { queryParams: { scrollTo: 'consultation' } });
+        return true;
+      }
+    }
+
+    let slug = this.resolveDiseaseMetaSlug(item);
     if (!slug) return false;
 
     const legacyAccount =
       pathOnly === '/account' || item.linkLabel === 'Xem thông báo';
     const looksDiseaseCopy =
+      legacyAccount ||
       String(item.message || '').includes(' về bệnh') ||
-      String(item.title || '').toLowerCase().includes('bệnh');
+      String(item.title || '').toLowerCase().includes('bệnh') ||
+      this.isDiseaseQaNotice(item);
 
-    if (legacyAccount || looksDiseaseCopy) {
+    if (looksDiseaseCopy) {
       this.router.navigate(['/benh', slug], { queryParams: { scrollTo: 'consultation' } });
       return true;
     }
@@ -625,11 +697,21 @@ export class Notice implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // 2) Hỏi đáp (QA): điều hướng sang trang chi tiết sản phẩm + scroll tới phần questions
+    // 2) Hỏi đáp bệnh: tránh nhầm sang /product — dùng slug bài bệnh
+    if (this.isQaNotice(item) && this.isDiseaseQaNotice(item)) {
+      const diseaseSlug = this.resolveDiseaseMetaSlug(item);
+      if (diseaseSlug) {
+        this.router.navigate(['/benh', diseaseSlug], { queryParams: { scrollTo: 'consultation' } });
+        return;
+      }
+    }
+
+    // 3) Hỏi đáp (QA) sản phẩm: điều hướng sang trang chi tiết sản phẩm + scroll tới phần questions
     if (this.isQaNotice(item)) {
-      // Ưu tiên meta (sku)
-      const skuOrSlug = item.meta;
-      // Nếu meta không có, cố gắng parse từ link `/product/:slug`
+      const skuOrSlug =
+        typeof item.meta === 'string' || typeof item.meta === 'number'
+          ? String(item.meta).trim()
+          : '';
       const linkSku =
         item.link && item.link.startsWith('/product/')
           ? item.link.replace('/product/', '').split(/[?#]/)[0]
@@ -658,6 +740,18 @@ export class Notice implements OnInit, AfterViewInit, OnDestroy {
     }
     // QA còn lại: nếu chưa match được case ở trên thì fallback theo link hiện có
     if (this.isQaNotice(item) && item.link) {
+      const pOnly = this.noticeLinkPathOnly(item.link);
+      if (
+        pOnly === '/disease' ||
+        pOnly === '/disease/' ||
+        pOnly.startsWith('/category/tra-cuu-benh')
+      ) {
+        const ds = this.resolveDiseaseMetaSlug(item);
+        if (ds && this.isDiseaseQaNotice(item)) {
+          this.router.navigate(['/benh', ds], { queryParams: { scrollTo: 'consultation' } });
+          return;
+        }
+      }
       if (item.link.startsWith('/product/')) {
         const targetSku = item.link.replace('/product/', '').split(/[?#]/)[0];
         this.router.navigate(['/product', targetSku], { queryParams: { scrollTo: 'questions' } });

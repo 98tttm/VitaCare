@@ -1,743 +1,2008 @@
-[
-  {
-    "_id": "new_order_0_8568",
-    "order_id": "ORD0001",
-    "user_id": "CUS000013",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 523000,
-    "promotion": [
-      "FREESHIP"
-    ],
-    "promotion_id": "690b1361ca42a26c89d2e85c",
-    "code": "FREESHIP",
-    "name": "Freeship đơn từ 200k",
-    "shippingFee": 30000,
-    "shippingDiscount": 30000,
-    "totalAmount": 523000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated promo order",
-    "item": [
-      {
-        "sku": "101112",
-        "productName": "Gel bôi Hiruscar Silicone Pro mờ sẹo mổ, to lồi phì đại (10g)",
-        "quantity": 1,
-        "price": 265000,
-        "unit": "Tuýp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00018003_gel_boi_mo_seo_mo_to_loi_phi_dai_hiruscar_silicone_pro_10g_4972_6303_large_b5566af946.jpg"
-      },
-      {
-        "sku": "102278",
-        "productName": "Dung dịch uống Atiferole An Thiên điều trị thiếu sắt và thiếu máu do thiếu sắt (60ml)",
-        "quantity": 2,
-        "price": 83000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/sp6_1_4f41c4d0d7.jpg"
-      },
-      {
-        "sku": "103190",
-        "productName": " Gel Salonpas giảm đau, kháng viêm các cơn đau cơ, khớp (30g)",
-        "quantity": 2,
-        "price": 46000,
-        "unit": "Tuýp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00009602_salonpas_gel_15g_5477_6064_large_fde03abb40.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Vũ Văn Khánh",
-      "phone": "0970729901",
-      "address": {
-        "city": "Tỉnh Hà Nam",
-        "district": "Huyện Lý Nhân",
-        "ward": "Xã Xuân Khê",
-        "detail": "Generated Address"
-      },
-      "warehouseAddress": ""
+[{
+  "_id": "new_order_0_8568",
+  "order_id": "ORD0001",
+  "user_id": "CUS000013",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 523000,
+  "promotion": [
+    "FREESHIP"
+  ],
+  "promotion_id": "690b1361ca42a26c89d2e85c",
+  "code": "FREESHIP",
+  "name": "Freeship đơn từ 200k",
+  "shippingFee": 30000,
+  "shippingDiscount": 30000,
+  "totalAmount": 523000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated promo order",
+  "item": [
+    {
+      "sku": "101112",
+      "productName": "Gel bôi Hiruscar Silicone Pro mờ sẹo mổ, to lồi phì đại (10g)",
+      "quantity": 1,
+      "price": 265000,
+      "unit": "Tuýp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/00018003_gel_boi_mo_seo_mo_to_loi_phi_dai_hiruscar_silicone_pro_10g_4972_6303_large_b5566af946.jpg"
     },
-    "route": {
-      "pending": "2026-01-17T17:26:15.008053Z",
-      "confirmed": "2026-01-18T17:26:15.008053Z",
-      "shipping": "2026-01-19T17:26:15.008053Z",
-      "delivered": "2026-01-20T17:26:15.008053Z"
+    {
+      "sku": "102278",
+      "productName": "Dung dịch uống Atiferole An Thiên điều trị thiếu sắt và thiếu máu do thiếu sắt (60ml)",
+      "quantity": 2,
+      "price": 83000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/sp6_1_4f41c4d0d7.jpg"
+    },
+    {
+      "sku": "103190",
+      "productName": " Gel Salonpas giảm đau, kháng viêm các cơn đau cơ, khớp (30g)",
+      "quantity": 2,
+      "price": 46000,
+      "unit": "Tuýp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/00009602_salonpas_gel_15g_5477_6064_large_fde03abb40.jpg"
     }
+  ],
+  "shippingInfo": {
+    "fullName": "Vũ Văn Khánh",
+    "phone": "0970729901",
+    "address": {
+      "city": "Tỉnh Hà Nam",
+      "district": "Huyện Lý Nhân",
+      "ward": "Xã Xuân Khê",
+      "detail": "Generated Address"
+    },
+    "warehouseAddress": ""
   },
-  {
-    "_id": "new_order_1_4305",
-    "order_id": "ORD0002",
-    "user_id": "CUS000021",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 1414000,
-    "promotion": [
-      "FLASH15"
-    ],
-    "promotion_id": "690b1361ca42a26c89d2e85e",
-    "code": "FLASH15",
-    "name": "Flash Sale - Giảm 15%",
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 1344000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated promo order",
-    "item": [
-      {
-        "sku": "101384",
-        "productName": "Kem xua muỗi Soffel hương cam giúp chống muỗi suốt 10 giờ (60ml)",
-        "quantity": 1,
-        "price": 24000,
-        "unit": "Chai",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_05483_cac2779d89.png"
-      },
-      {
-        "sku": "103696",
-        "productName": "Viên nang mềm Philoyvitan Phil Inter Pharma điều trị hỗ trợ các bệnh gan mạn tính (12 vỉ x 5 viên)",
-        "quantity": 2,
-        "price": 180000,
-        "unit": "Viên",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00005908_philoyvitan_200mg_5646_5b30_large_1a68aed3d4.JPG"
-      },
-      {
-        "sku": "101014",
-        "productName": "Kem bôi Blemish Control Jean d'Arcel làm giảm mụn (30ml)",
-        "quantity": 2,
-        "price": 515000,
-        "unit": "Tuýp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_04732_087c1d8135.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Dương Hữu Hải",
-      "phone": "0742271764",
-      "address": {
-        "city": "Tỉnh Tây Ninh",
-        "district": "Huyện Trảng Bàng",
-        "ward": "Xã Gia Lộc",
-        "detail": "Generated Address"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-01-17T17:26:15.008185Z",
-      "confirmed": "2026-01-18T17:26:15.008185Z",
-      "shipping": "2026-01-19T17:26:15.008185Z",
-      "delivered": "2026-01-20T17:26:15.008185Z"
-    }
+  "route": {
+    "pending": "2026-01-17T17:26:15.008053Z",
+    "confirmed": "2026-01-18T17:26:15.008053Z",
+    "shipping": "2026-01-19T17:26:15.008053Z",
+    "delivered": "2026-01-20T17:26:15.008053Z"
   },
-  {
-    "_id": "new_order_2_1947",
-    "order_id": "ORD0003",
-    "user_id": "CUS000015",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 44000,
-    "promotion": [
-      "FLASH15"
-    ],
-    "promotion_id": "690b1361ca42a26c89d2e85e",
-    "code": "FLASH15",
-    "name": "Flash Sale - Giảm 15%",
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 67400.0,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated promo order",
-    "item": [
-      {
-        "sku": "102912",
-        "productName": "Thuốc VG-5 Danapha điều trị hạ men gan, viêm gan (4 vỉ x 10 viên)",
-        "quantity": 1,
-        "price": 44000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/vg5_2692debf0d.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Ngô Minh An",
-      "phone": "0549667473",
-      "address": {
-        "city": "Tỉnh Bắc Giang",
-        "district": "Huyện Yên Thế",
-        "ward": "Xã Đông Sơn",
-        "detail": "Generated Address"
-      },
-      "warehouseAddress": ""
+  "isActive": true
+},
+{
+  "_id": "new_order_1_4305",
+  "order_id": "ORD0002",
+  "user_id": "CUS000021",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 1414000,
+  "promotion": [
+    "FLASH15"
+  ],
+  "promotion_id": "690b1361ca42a26c89d2e85e",
+  "code": "FLASH15",
+  "name": "Flash Sale - Giảm 15%",
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 1344000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated promo order",
+  "item": [
+    {
+      "sku": "101384",
+      "productName": "Kem xua muỗi Soffel hương cam giúp chống muỗi suốt 10 giờ (60ml)",
+      "quantity": 1,
+      "price": 24000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/DSC_05483_cac2779d89.png"
     },
-    "route": {
-      "pending": "2026-01-17T17:26:15.008210Z",
-      "confirmed": "2026-01-18T17:26:15.008210Z",
-      "shipping": "2026-01-19T17:26:15.008210Z",
-      "delivered": "2026-01-20T17:26:15.008210Z"
+    {
+      "sku": "103696",
+      "productName": "Viên nang mềm Philoyvitan Phil Inter Pharma điều trị hỗ trợ các bệnh gan mạn tính (12 vỉ x 5 viên)",
+      "quantity": 2,
+      "price": 180000,
+      "unit": "Viên",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/00005908_philoyvitan_200mg_5646_5b30_large_1a68aed3d4.JPG"
+    },
+    {
+      "sku": "101014",
+      "productName": "Kem bôi Blemish Control Jean d'Arcel làm giảm mụn (30ml)",
+      "quantity": 2,
+      "price": 515000,
+      "unit": "Tuýp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/DSC_04732_087c1d8135.jpg"
     }
+  ],
+  "shippingInfo": {
+    "fullName": "Dương Hữu Hải",
+    "phone": "0742271764",
+    "address": {
+      "city": "Tỉnh Tây Ninh",
+      "district": "Huyện Trảng Bàng",
+      "ward": "Xã Gia Lộc",
+      "detail": "Generated Address"
+    },
+    "warehouseAddress": ""
   },
-  {
-    "_id": "new_order_3_7451",
-    "order_id": "ORD0004",
-    "user_id": "CUS000001",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 2200000,
-    "promotion": [
-      "NY2026"
-    ],
-    "promotion_id": "690b1361ca42a26c89d2e85a",
-    "code": "NY2026",
-    "name": "Chào năm mới - Giảm 10% đơn từ 100k",
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 2180000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated promo order",
-    "item": [
-      {
-        "sku": "100443",
-        "productName": "Viên uống BP Golden Pine Bio Avenue tăng tuần hoàn máu, thông huyết mạch (100 viên)",
-        "quantity": 2,
-        "price": 1100000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00018887_bp_golden_pine_bioavenue_100v_1029_61aa_large_f63b27e275.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Bảo Nghĩa",
-      "phone": "0591936993",
-      "address": {
-        "city": "Tỉnh Hải Dương",
-        "district": "Huyện Tứ Kỳ",
-        "ward": "Xã Hà Kỳ",
-        "detail": "Generated Address"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-01-17T17:26:15.008231Z",
-      "confirmed": "2026-01-18T17:26:15.008231Z",
-      "shipping": "2026-01-19T17:26:15.008231Z",
-      "delivered": "2026-01-20T17:26:15.008231Z"
-    }
+  "route": {
+    "pending": "2026-01-17T17:26:15.008185Z",
+    "confirmed": "2026-01-18T17:26:15.008185Z",
+    "shipping": "2026-01-19T17:26:15.008185Z",
+    "delivered": "2026-01-20T17:26:15.008185Z"
   },
-  {
-    "_id": "new_order_4_9978",
-    "order_id": "ORD0005",
-    "user_id": "CUS000024",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 114000,
-    "promotion": [
-      "NY2026"
-    ],
-    "promotion_id": "690b1361ca42a26c89d2e85a",
-    "code": "NY2026",
-    "name": "Chào năm mới - Giảm 10% đơn từ 100k",
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 132600.0,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated promo order",
-    "item": [
-      {
-        "sku": "102942",
-        "productName": "Thuốc Thanh Nhiệt Tiêu Độc-F điều trị mẩn ngứa, mày đay (40 viên)",
-        "quantity": 2,
-        "price": 55000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/7283_thanh_nhiet_tieu_doc_f_2968_599f_large_b70c417665.jpg"
-      },
-      {
-        "sku": "108123",
-        "productName": "test",
-        "quantity": 1,
-        "price": 4000,
-        "unit": "Chai",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/z5508927726486_e549da0c0c6130b1c2505915e3f15c41_8d9c671ac5.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phan Thanh Hùng",
-      "phone": "0960549072",
-      "address": {
-        "city": "Tỉnh Thái Bình",
-        "district": "Huyện Quỳnh Phụ",
-        "ward": "Xã Quỳnh Nguyên",
-        "detail": "Generated Address"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-01-17T17:26:15.008249Z",
-      "confirmed": "2026-01-18T17:26:15.008249Z",
-      "shipping": "2026-01-19T17:26:15.008249Z",
-      "delivered": "2026-01-20T17:26:15.008249Z"
+  "isActive": true
+},
+{
+  "_id": "new_order_2_1947",
+  "order_id": "ORD0003",
+  "user_id": "CUS000015",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 44000,
+  "promotion": [
+    "FLASH15"
+  ],
+  "promotion_id": "690b1361ca42a26c89d2e85e",
+  "code": "FLASH15",
+  "name": "Flash Sale - Giảm 15%",
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 67400,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated promo order",
+  "item": [
+    {
+      "sku": "102912",
+      "productName": "Thuốc VG-5 Danapha điều trị hạ men gan, viêm gan (4 vỉ x 10 viên)",
+      "quantity": 1,
+      "price": 44000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/vg5_2692debf0d.jpg"
     }
+  ],
+  "shippingInfo": {
+    "fullName": "Ngô Minh An",
+    "phone": "0549667473",
+    "address": {
+      "city": "Tỉnh Bắc Giang",
+      "district": "Huyện Yên Thế",
+      "ward": "Xã Đông Sơn",
+      "detail": "Generated Address"
+    },
+    "warehouseAddress": ""
   },
-  {
-    "_id": "new_order_5_0001",
-    "order_id": "ORD0006",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "pending",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 218000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 248000,
-    "status": "pending",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100000",
-        "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-        "quantity": 1,
-        "price": 218000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-01-28T22:00:00Z"
-    }
+  "route": {
+    "pending": "2026-01-17T17:26:15.008210Z",
+    "confirmed": "2026-01-18T17:26:15.008210Z",
+    "shipping": "2026-01-19T17:26:15.008210Z",
+    "delivered": "2026-01-20T17:26:15.008210Z"
   },
-  {
-    "_id": "new_order_6_0002",
-    "order_id": "ORD0007",
-    "user_id": "CUS000026",
-    "paymentMethod": "banking",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 99000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 129000,
-    "status": "shipping",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100001",
-        "productName": "Thực phẩm bảo vệ sức khỏe Pharmaton Energy Fizzi Sanofi giúp tăng cường sức khỏe, sức đề kháng và giảm mệt mỏi (10 viên)",
-        "quantity": 1,
-        "price": 99000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01942_50076ec075.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-01-27T10:00:00Z",
-      "confirmed": "2026-01-27T11:00:00Z",
-      "shipping": "2026-01-27T14:00:00Z"
+  "isActive": true
+},
+{
+  "_id": "new_order_3_7451",
+  "order_id": "ORD0004",
+  "user_id": "CUS000001",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 2200000,
+  "promotion": [
+    "NY2026"
+  ],
+  "promotion_id": "690b1361ca42a26c89d2e85a",
+  "code": "NY2026",
+  "name": "Chào năm mới - Giảm 10% đơn từ 100k",
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 2180000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated promo order",
+  "item": [
+    {
+      "sku": "100443",
+      "productName": "Viên uống BP Golden Pine Bio Avenue tăng tuần hoàn máu, thông huyết mạch (100 viên)",
+      "quantity": 2,
+      "price": 1100000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/00018887_bp_golden_pine_bioavenue_100v_1029_61aa_large_f63b27e275.jpg"
     }
+  ],
+  "shippingInfo": {
+    "fullName": "Phạm Bảo Nghĩa",
+    "phone": "0591936993",
+    "address": {
+      "city": "Tỉnh Hải Dương",
+      "district": "Huyện Tứ Kỳ",
+      "ward": "Xã Hà Kỳ",
+      "detail": "Generated Address"
+    },
+    "warehouseAddress": ""
   },
-  {
-    "_id": "new_order_7_0003",
-    "order_id": "ORD0008",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 436000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 466000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100000",
-        "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-        "quantity": 2,
-        "price": 218000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-01-25T08:00:00Z",
-      "confirmed": "2026-01-25T09:00:00Z",
-      "shipping": "2026-01-25T13:00:00Z",
-      "delivered": "2026-01-26T15:00:00Z"
-    }
+  "route": {
+    "pending": "2026-01-17T17:26:15.008231Z",
+    "confirmed": "2026-01-18T17:26:15.008231Z",
+    "shipping": "2026-01-19T17:26:15.008231Z",
+    "delivered": "2026-01-20T17:26:15.008231Z"
   },
-  {
-    "_id": "new_order_8_0004",
-    "order_id": "ORD0009",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "pending",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 378000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 408000,
-    "status": "cancelled",
-    "returnReason": "",
-    "cancelReason": "Changed mind",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100002",
-        "productName": "Nature'S Way Odourless Fish Oil 1000mg giúp bổ sung EPA, DHA hỗ trợ tốt cho mắt và não (80 viên)",
-        "quantity": 1,
-        "price": 378000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01152_f78d9ebdb6.png"
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
+  "isActive": true
+},
+{
+  "_id": "new_order_4_9978",
+  "order_id": "ORD0005",
+  "user_id": "CUS000024",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 114000,
+  "promotion": [
+    "NY2026"
+  ],
+  "promotion_id": "690b1361ca42a26c89d2e85a",
+  "code": "NY2026",
+  "name": "Chào năm mới - Giảm 10% đơn từ 100k",
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 132600,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated promo order",
+  "item": [
+    {
+      "sku": "102942",
+      "productName": "Thuốc Thanh Nhiệt Tiêu Độc-F điều trị mẩn ngứa, mày đay (40 viên)",
+      "quantity": 2,
+      "price": 55000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/7283_thanh_nhiet_tieu_doc_f_2968_599f_large_b70c417665.jpg"
     },
-    "route": {
-      "pending": "2026-01-28T18:00:00Z",
-      "cancelled": "2026-01-28T18:30:00Z"
+    {
+      "sku": "108123",
+      "productName": "test",
+      "quantity": 1,
+      "price": 4000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/z5508927726486_e549da0c0c6130b1c2505915e3f15c41_8d9c671ac5.jpg"
     }
+  ],
+  "shippingInfo": {
+    "fullName": "Phan Thanh Hùng",
+    "phone": "0960549072",
+    "address": {
+      "city": "Tỉnh Thái Bình",
+      "district": "Huyện Quỳnh Phụ",
+      "ward": "Xã Quỳnh Nguyên",
+      "detail": "Generated Address"
+    },
+    "warehouseAddress": ""
   },
-  {
-    "_id": "new_order_10_0000",
-    "order_id": "ORD0010",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 436000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 466000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100000",
-        "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-        "quantity": 2,
-        "price": 218000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg",
-        "isReviewed": false
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-02-21T16:00:22.000Z",
-      "confirmed": "2026-02-22T16:00:22.000Z",
-      "shipping": "2026-02-23T04:00:22.000Z",
-      "delivered": "2026-02-23T16:00:22.000Z"
-    }
+  "route": {
+    "pending": "2026-01-17T17:26:15.008249Z",
+    "confirmed": "2026-01-18T17:26:15.008249Z",
+    "shipping": "2026-01-19T17:26:15.008249Z",
+    "delivered": "2026-01-20T17:26:15.008249Z"
   },
-  {
-    "_id": "new_order_11_0001",
-    "order_id": "ORD0011",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 436000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 466000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100000",
-        "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-        "quantity": 2,
-        "price": 218000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg",
-        "isReviewed": false
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-02-20T16:00:22.000Z",
-      "confirmed": "2026-02-21T16:00:22.000Z",
-      "shipping": "2026-02-22T04:00:22.000Z",
-      "delivered": "2026-02-22T16:00:22.000Z"
+  "isActive": true
+},
+{
+  "_id": "new_order_5_0001",
+  "order_id": "ORD0006",
+  "user_id": "CUS000026",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 218000,
+  "promotion": [],
+  "promotion_id": null,
+  "code": null,
+  "name": null,
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 248000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated order",
+  "item": [
+    {
+      "sku": "100000",
+      "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
+      "quantity": 1,
+      "price": 218000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/DSC_01895_76680fa06d.jpg"
     }
+  ],
+  "shippingInfo": {
+    "fullName": "Phạm Thái Huỳnh Hương",
+    "phone": "0965813408",
+    "address": {
+      "city": "Thành phố Hồ Chí Minh",
+      "district": "Quận 1",
+      "ward": "Phường Bến Nghé",
+      "detail": "123 Đường ABC"
+    },
+    "warehouseAddress": ""
   },
-  {
-    "_id": "new_order_12_0002",
-    "order_id": "ORD0012",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 436000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 466000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100000",
-        "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-        "quantity": 2,
-        "price": 218000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg",
-        "isReviewed": false
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-02-19T16:00:22.000Z",
-      "confirmed": "2026-02-20T16:00:22.000Z",
-      "shipping": "2026-02-21T04:00:22.000Z",
-      "delivered": "2026-02-21T16:00:22.000Z"
-    }
+  "route": {
+    "pending": "2026-01-28T22:00:00Z"
   },
-  {
-    "_id": "new_order_13_0003",
-    "order_id": "ORD0013",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 436000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 466000,
-    "status": "delivered",
-    "returnReason": "",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100000",
-        "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-        "quantity": 2,
-        "price": 218000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg",
-        "isReviewed": false
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-02-18T16:00:22.000Z",
-      "confirmed": "2026-02-19T16:00:22.000Z",
-      "shipping": "2026-02-20T04:00:22.000Z",
-      "delivered": "2026-02-20T16:00:22.000Z"
-    }
-  },
-  {
-    "_id": "new_order_return_14",
-    "order_id": "ORD0014",
-    "user_id": "CUS000026",
-    "paymentMethod": "cod",
-    "statusPayment": "paid",
-    "atPharmacy": false,
-    "pharmacyAddress": "",
-    "subtotal": 436000,
-    "promotion": [],
-    "promotion_id": null,
-    "code": null,
-    "name": null,
-    "shippingFee": 30000,
-    "shippingDiscount": 0,
-    "totalAmount": 466000,
-    "status": "return_processing",
-    "returnReason": "Hàng bị lỗi",
-    "cancelReason": "",
-    "note": "Generated order",
-    "item": [
-      {
-        "sku": "100000",
-        "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-        "quantity": 2,
-        "price": 218000,
-        "unit": "Hộp",
-        "hasPromotion": false,
-        "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg",
-        "isReviewed": false
-      }
-    ],
-    "shippingInfo": {
-      "fullName": "Phạm Thái Huỳnh Hương",
-      "phone": "0965813408",
-      "address": {
-        "city": "Thành phố Hồ Chí Minh",
-        "district": "Quận 1",
-        "ward": "Phường Bến Nghé",
-        "detail": "123 Đường ABC"
-      },
-      "warehouseAddress": ""
-    },
-    "route": {
-      "pending": "2026-02-20T16:10:27.000Z",
-      "confirmed": "2026-02-21T16:10:27.000Z",
-      "shipping": "2026-02-22T16:10:27.000Z",
-      "delivered": "2026-02-23T16:10:27.000Z",
-      "return_processing": "2026-02-24T16:10:27.000Z"
-    }
+  "isActive": true,
+  "updatedAt": {
+    "$date": "2026-03-23T12:25:13.340Z"
   }
-]
+},
+{
+  "_id": "new_order_6_0002",
+  "order_id": "ORD0007",
+  "user_id": "CUS000026",
+  "paymentMethod": "banking",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 99000,
+  "promotion": [],
+  "promotion_id": null,
+  "code": null,
+  "name": null,
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 129000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated order",
+  "item": [
+    {
+      "sku": "100001",
+      "productName": "Thực phẩm bảo vệ sức khỏe Pharmaton Energy Fizzi Sanofi giúp tăng cường sức khỏe, sức đề kháng và giảm mệt mỏi (10 viên)",
+      "quantity": 1,
+      "price": 99000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/DSC_01942_50076ec075.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Phạm Thái Huỳnh Hương",
+    "phone": "0965813408",
+    "address": {
+      "city": "Thành phố Hồ Chí Minh",
+      "district": "Quận 1",
+      "ward": "Phường Bến Nghé",
+      "detail": "123 Đường ABC"
+    },
+    "warehouseAddress": ""
+  },
+  "route": {
+    "pending": "2026-01-27T10:00:00Z",
+    "confirmed": "2026-01-27T11:00:00Z",
+    "shipping": "2026-01-27T14:00:00Z"
+  },
+  "isActive": true,
+  "updatedAt": {
+    "$date": "2026-03-23T12:27:07.139Z"
+  }
+},
+{
+  "_id": "new_order_7_0003",
+  "order_id": "ORD0008",
+  "user_id": "CUS000026",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 436000,
+  "promotion": [],
+  "promotion_id": null,
+  "code": null,
+  "name": null,
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 466000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "Generated order",
+  "item": [
+    {
+      "sku": "100000",
+      "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
+      "quantity": 2,
+      "price": 218000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/DSC_01895_76680fa06d.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Phạm Thái Huỳnh Hương",
+    "phone": "0965813408",
+    "address": {
+      "city": "Thành phố Hồ Chí Minh",
+      "district": "Quận 1",
+      "ward": "Phường Bến Nghé",
+      "detail": "123 Đường ABC"
+    },
+    "warehouseAddress": ""
+  },
+  "route": {
+    "pending": "2026-01-25T08:00:00Z",
+    "confirmed": "2026-01-25T09:00:00Z",
+    "shipping": "2026-01-25T13:00:00Z",
+    "delivered": "2026-01-26T15:00:00Z"
+  },
+  "isActive": true
+},
+{
+  "_id": "new_order_8_0004",
+  "order_id": "ORD0009",
+  "user_id": "CUS000026",
+  "paymentMethod": "cod",
+  "statusPayment": "pending",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 378000,
+  "promotion": [],
+  "promotion_id": null,
+  "code": null,
+  "name": null,
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 408000,
+  "status": "cancelled",
+  "returnReason": "",
+  "cancelReason": "Changed mind",
+  "note": "Generated order",
+  "item": [
+    {
+      "sku": "100002",
+      "productName": "Nature'S Way Odourless Fish Oil 1000mg giúp bổ sung EPA, DHA hỗ trợ tốt cho mắt và não (80 viên)",
+      "quantity": 1,
+      "price": 378000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/https://cms-prod.s3-sgn09.fptcloud.com/DSC_01152_f78d9ebdb6.png"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Phạm Thái Huỳnh Hương",
+    "phone": "0965813408",
+    "address": {
+      "city": "Thành phố Hồ Chí Minh",
+      "district": "Quận 1",
+      "ward": "Phường Bến Nghé",
+      "detail": "123 Đường ABC"
+    },
+    "warehouseAddress": ""
+  },
+  "route": {
+    "pending": "2026-01-28T18:00:00Z",
+    "cancelled": "2026-01-28T18:30:00Z"
+  },
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "69bce005f0ba8e66f1ada95c"
+  },
+  "order_id": "ORD000011",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 365000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 365000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88954",
+      "slug": "",
+      "sku": "100592",
+      "productName": "Viên uống Calci K2 Dao Nordic Health bổ sung canxi, chống loãng xương (60 viên)",
+      "quantity": 1,
+      "price": 365000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345335_calci_k2_vien_bo_sung_canxi_ngua_loang_xuong_3579_62ae_large_0abcaf7b56.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T05:49:57.467Z",
+    "received": "2026-03-20T11:59:47.909Z"
+  },
+  "createdAt": "2026-03-20T05:49:57.467Z",
+  "updatedAt": "2026-03-20T16:05:21.558Z"
+},
+{
+  "_id": {
+    "$oid": "69bcfce3f0ba8e66f1ada994"
+  },
+  "order_id": "ORD000013",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 530000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 530000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88953",
+      "slug": "",
+      "sku": "100591",
+      "productName": "Viên nam lực Bang Cevrai cải thiện chức năng sinh lý nam giới (60 viên)",
+      "quantity": 1,
+      "price": 530000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_03083_8c550201f0.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T07:53:07.753Z",
+    "received": "2026-03-20T11:22:34.527Z"
+  },
+  "createdAt": "2026-03-20T07:53:07.753Z",
+  "updatedAt": "2026-03-20T15:32:47.362Z"
+},
+{
+  "_id": {
+    "$oid": "69bd324511eb64596abf9457"
+  },
+  "order_id": "ORD000014",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 224000,
+  "directDiscount": 5000,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 249000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d8894c",
+      "slug": "",
+      "sku": "",
+      "productName": "Viên uống Pharmaton Energy hỗn hợp vitamin và khoáng chất giúp tỉnh táo, hỗ trợ giảm mệt mỏi (30 viên)",
+      "quantity": 1,
+      "price": 219000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_6437_6c617a14fe.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T11:40:53.543Z",
+    "received": "2026-03-20T11:52:12.909Z"
+  },
+  "createdAt": "2026-03-20T11:40:53.543Z",
+  "updatedAt": "2026-03-20T15:26:24.737Z"
+},
+{
+  "_id": {
+    "$oid": "69bd36ef99c3909d88f86397"
+  },
+  "order_id": "ORD000015",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 801000,
+  "directDiscount": 54000,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 747000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88949",
+      "slug": "",
+      "sku": "100581",
+      "productName": "Dung dịch uống Antot Thymo Traphaco tăng cường sức đề kháng (2 vỉ x 10 ống x 10ml)",
+      "quantity": 1,
+      "price": 70000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/1_43ce21b31c.jpg"
+    },
+    {
+      "productId": "68f1de3a44d747b5d5d88951",
+      "slug": "",
+      "sku": "100589",
+      "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "quantity": 1,
+      "price": 515000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png"
+    },
+    {
+      "productId": "68f1de3a44d747b5d5d88952",
+      "slug": "",
+      "sku": "100590",
+      "productName": "Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)",
+      "quantity": 1,
+      "price": 162000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345430_vien_uong_bo_sung_canxi_magie_kem_5337_62ae_large_918f8701ba.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T12:00:47.467Z",
+    "received": "2026-03-20T12:03:55.704Z"
+  },
+  "createdAt": "2026-03-20T12:00:47.467Z",
+  "updatedAt": "2026-03-20T16:14:39.369Z"
+},
+{
+  "_id": {
+    "$oid": "69bd4cf33f5266798d3d85a5"
+  },
+  "order_id": "ORD000016",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 545000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 545000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88bb9",
+      "slug": "68f1de3a44d747b5d5d88bb9",
+      "sku": "101205",
+      "productName": "Nước tẩy trang Bioderma Sebium H2O dành cho da dầu và hỗn hợp (500ml)",
+      "quantity": 1,
+      "price": 545000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/1_30e8244be3.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T13:34:43.248Z",
+    "received": "2026-03-20T16:10:59.684Z"
+  },
+  "createdAt": "2026-03-20T13:34:43.248Z",
+  "updatedAt": "2026-03-20T16:11:24.620Z"
+},
+{
+  "_id": {
+    "$oid": "69bd4d2c3f5266798d3d85a7"
+  },
+  "order_id": "ORD000017",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 87000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 117000,
+  "status": "unreview",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88bbc",
+      "slug": "",
+      "sku": "101208",
+      "productName": "Son dưỡng môi Vaseline Lip hồng xinh dưỡng ẩm, màu hồng tự nhiên (7g)",
+      "quantity": 1,
+      "price": 87000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032316_vaseline_lip_duong_moi_hong_xinh_7g_1478_63b6_large_fd6417da16.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T13:35:40.064Z",
+    "received": "2026-03-20T13:37:16.129Z"
+  },
+  "createdAt": "2026-03-20T13:35:40.064Z",
+  "updatedAt": "2026-03-24T04:47:13.291Z"
+},
+{
+  "_id": {
+    "$oid": "69bd596b3f5266798d3d85dc"
+  },
+  "order_id": "ORD000016",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 176000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 206000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88bbc",
+      "slug": "",
+      "sku": "101208",
+      "productName": "Son dưỡng môi Vaseline Lip hồng xinh dưỡng ẩm, màu hồng tự nhiên (7g)",
+      "quantity": 1,
+      "price": 87000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032316_vaseline_lip_duong_moi_hong_xinh_7g_1478_63b6_large_fd6417da16.jpg"
+    },
+    {
+      "productId": "68f1de3a44d747b5d5d88bbd",
+      "slug": "",
+      "sku": "101209",
+      "productName": "Son dưỡng môi Vaseline Lip dưỡng ẩm, làm mềm môi (7g)",
+      "quantity": 1,
+      "price": 89000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032317_vaseline_lip_duong_moi_ngot_ngao_7g_4148_614a_large_48e199fb1e.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T14:27:55.096Z"
+  },
+  "createdAt": "2026-03-20T14:27:55.096Z",
+  "updatedAt": {
+    "$date": "2026-03-23T12:26:11.088Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bd88b8ec937c7e41905b9d"
+  },
+  "order_id": "ORD000017",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 471200,
+  "directDiscount": 117800,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 329770,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": true,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88bc3",
+      "slug": "",
+      "sku": "101215",
+      "productName": "Kem bôi Fixderma Skarfix TX Cream giúp giảm nám, tàn nhang, vết thâm sau mụn (30g)",
+      "quantity": 1,
+      "price": 353400,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032723_fixderma_skarfix_tx_cream_30g_kem_tri_nam_8784_62ae_large_ef92346591.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T17:49:44.485Z"
+  },
+  "createdAt": "2026-03-20T17:49:44.485Z",
+  "updatedAt": {
+    "$date": "2026-03-23T12:25:07.414Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bd8937ec937c7e41905b9f"
+  },
+  "order_id": "ORD000018",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 135000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 165000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d8894b",
+      "slug": "",
+      "sku": "100583",
+      "productName": "Viên uống Phế Khang Hải Thượng Vương Vesta hỗ trợ giảm đau rát họng, khản tiếng do ho kéo dài (3 vỉ x 10 viên)",
+      "quantity": 1,
+      "price": 135000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032568_phe_khang_hai_thuong_vuong_3x10_7009_616f_large_12889d8d3b.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T17:51:51.107Z"
+  },
+  "createdAt": "2026-03-20T17:51:51.107Z",
+  "updatedAt": {
+    "$date": "2026-03-23T12:25:22.167Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bd8d6fb11ee22eb662f633"
+  },
+  "order_id": "ORD000019",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 489000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 23630,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 465370,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d8894e",
+      "slug": "",
+      "sku": "100586",
+      "productName": "Viên uống Sinus Nose Vitamins For Life hỗ trợ tăng cường sức khỏe đường hô hấp (30 viên)",
+      "quantity": 1,
+      "price": 290000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032699_sinus_nose_ho_tro_duong_ho_hap_vitamins_for_life_30v_5821_63a9_large_2e96a561c6.jpg"
+    },
+    {
+      "productId": "68f1de3a44d747b5d5d88bbe",
+      "slug": "",
+      "sku": "101210",
+      "productName": "Dung dịch vệ sinh phụ nữ Proeva Intimate Cleanser dịu nhẹ, an toàn cho vùng kín (125ml)",
+      "quantity": 1,
+      "price": 199000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00518_1b44393e00.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau"
+  },
+  "route": {
+    "pending": "2026-03-20T18:09:51.462Z"
+  },
+  "createdAt": "2026-03-20T18:09:51.462Z",
+  "updatedAt": {
+    "$date": "2026-03-23T12:25:56.484Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bec4dd82752b54e1e57adc"
+  },
+  "order_id": "ORD000020",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 65000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 50,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 94950,
+  "status": "unreview",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d8894a",
+      "slug": "",
+      "sku": "100582",
+      "productName": "Siro Ích Nhi Plus Nam Dược bổ sung kẽm, seien và lysin giúp trẻ ăn ngon (100ml)",
+      "quantity": 1,
+      "price": 65000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032490_siro_an_ngon_ich_nhi_plus_nam_duoc_100ml_3886_62af_large_0442229e43.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-21T16:18:37.859Z",
+    "received": "2026-03-23T12:24:24.441Z"
+  },
+  "createdAt": "2026-03-21T16:18:37.859Z",
+  "updatedAt": "2026-03-23T12:24:24.441Z"
+},
+{
+  "_id": {
+    "$oid": "69bec6ae12679b4d1d4a1049"
+  },
+  "order_id": "ORD000021",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 530000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 50,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 529950,
+  "status": "unreview",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88953",
+      "slug": "68f1de3a44d747b5d5d88953",
+      "sku": "100591",
+      "productName": "Viên nam lực Bang Cevrai cải thiện chức năng sinh lý nam giới (60 viên)",
+      "quantity": 1,
+      "price": 530000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_03083_8c550201f0.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-21T16:26:22.254Z",
+    "received": "2026-03-24T04:46:47.284Z"
+  },
+  "createdAt": "2026-03-21T16:26:22.254Z",
+  "updatedAt": "2026-03-24T04:46:47.284Z"
+},
+{
+  "_id": {
+    "$oid": "69bed71485e77fa30b7636b2"
+  },
+  "order_id": "ORD000022",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 585000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 250,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 584750,
+  "status": "unreview",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88950",
+      "slug": "",
+      "sku": "100588",
+      "productName": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)",
+      "quantity": 1,
+      "price": 585000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032745_dr_life_natural_herb_cordyceps_1500mg_60v_4293_618b_large_14de2368d2.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-21T17:36:20.395Z",
+    "received": "2026-03-21T17:47:38.457Z"
+  },
+  "createdAt": "2026-03-21T17:36:20.395Z",
+  "updatedAt": "2026-03-21T17:47:38.457Z"
+},
+{
+  "_id": {
+    "$oid": "69c01c71456c64ab62b1e304"
+  },
+  "order_id": "ORD000023",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 756000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 756000,
+  "status": "unreview",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "690e5f5a3daf52c6c22efee7",
+      "slug": "690e5f5a3daf52c6c22efee7",
+      "sku": "108149",
+      "productName": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+      "quantity": 1,
+      "price": 756000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00061_290aff41d7.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-22T16:44:33.581Z",
+    "received": "2026-03-23T12:23:21.780Z"
+  },
+  "createdAt": "2026-03-22T16:44:33.581Z",
+  "updatedAt": "2026-03-23T12:23:25.265Z"
+},
+{
+  "_id": {
+    "$oid": "69c12002bcf3d3b1ba09b360"
+  },
+  "order_id": "ORD000024",
+  "user_id": "CUS000029",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "subtotal": 40500,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 70500,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88cff",
+      "slug": "",
+      "sku": "101531",
+      "productName": "Tăm chỉ kẽ răng Jomi Disposable Flosser làm sạch mảng bám, vụn thức ăn trong kẽ răng (80 cây)",
+      "quantity": 1,
+      "price": 40500,
+      "unit": "Gói",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/IMG_5212_7b7dd38ff7.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0843293506",
+    "address": "Thôn Trung Đàn, Xã Hoà Long, Thành phố Bà Rịa, Tỉnh Bà Rịa - Vũng Tàu"
+  },
+  "route": {
+    "pending": "2026-03-23T11:12:02.891Z"
+  },
+  "createdAt": "2026-03-23T11:12:02.891Z",
+  "updatedAt": {
+    "$date": "2026-03-23T12:26:04.644Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c1222f39916786be8ca40c"
+  },
+  "order_id": "ORD000025",
+  "user_id": "CUS000029",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 756000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 756000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "690e5f5a3daf52c6c22efee7",
+      "slug": "",
+      "sku": "108149",
+      "productName": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+      "quantity": 1,
+      "price": 756000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00061_290aff41d7.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0843293506",
+    "address": "Thôn Trung Đàn, Xã Hoà Long, Thành phố Bà Rịa, Tỉnh Bà Rịa - Vũng Tàu"
+  },
+  "route": {
+    "pending": "2026-03-23T11:21:19.756Z"
+  },
+  "createdAt": "2026-03-23T11:21:19.756Z",
+  "updatedAt": {
+    "$date": "2026-03-23T12:21:28.699Z"
+  },
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c130ad073945861059caa0"
+  },
+  "order_id": "ORD000026",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 172500,
+  "directDiscount": 57500,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 145000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88cfa",
+      "slug": "",
+      "sku": "101526",
+      "productName": "Nước Yến Cao Cấp Nunest Gold (6 hũ x 70ml)",
+      "quantity": 1,
+      "price": 115000,
+      "unit": "Lốc",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032206_nuoc_yen_cao_cap_nunest_gold_6_hu_x_70ml_7976_62af_large_f281e1750d.JPG"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-23T12:23:08.949Z",
+    "received": "2026-03-23T12:24:00.706Z"
+  },
+  "createdAt": "2026-03-23T12:23:08.949Z",
+  "updatedAt": "2026-03-24T04:47:51.305Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c1323feceafeeaca2c21c9"
+  },
+  "order_id": "ORD000027",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 515000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 515000,
+  "status": "unreview",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88951",
+      "slug": "",
+      "sku": "100589",
+      "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "quantity": 1,
+      "price": 515000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-23T12:29:51.279Z",
+    "received": "2026-03-24T07:37:35.225Z"
+  },
+  "createdAt": "2026-03-23T12:29:51.279Z",
+  "updatedAt": "2026-03-24T07:37:35.225Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c13288eceafeeaca2c21cc"
+  },
+  "order_id": "ORD000028",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 3520000,
+  "directDiscount": 880000,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 2640000,
+  "status": "unreview",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3c44d747b5d5d8a6bc",
+      "slug": "",
+      "sku": "108119",
+      "productName": "Máy đo huyết áp bắp tay Microlife B3 AFIB Advanced hỗ trợ đo huyết áp, cảnh báo đột quỵ",
+      "quantity": 2,
+      "price": 1320000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_07452_ce4d48c4c8.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-23T12:31:04.518Z",
+    "received": "2026-03-23T12:31:36.053Z"
+  },
+  "createdAt": "2026-03-23T12:31:04.518Z",
+  "updatedAt": "2026-03-23T12:31:36.053Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c180324b5aabfd1f48998a"
+  },
+  "order_id": "ORD000029",
+  "user_id": null,
+  "paymentMethod": "qr",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 1550000,
+  "directDiscount": 250000,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 1300000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88c4e",
+      "slug": "68f1de3a44d747b5d5d88c4e",
+      "sku": "101354",
+      "productName": "Máy tăm nước cầm tay Halio Professional Cordless Oral Irrigator loại bỏ đến 99,99% vụn thức ăn bám dính",
+      "quantity": 1,
+      "price": 1550000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00500018_may_tam_nuoc_cam_tay_6_che_do_halio_professional_cordless_oral_irrigator_2358_6272_large_8abea1086e.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Linh Phan Thị Ánh",
+    "phone": "1234567890",
+    "address": "Thôn Trung Đàn, Xã Láng Dài, Huyện Đất Đỏ, Tỉnh Bà Rịa - Vũng Tàu",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-23T18:02:26.936Z"
+  },
+  "createdAt": "2026-03-23T18:02:26.936Z",
+  "updatedAt": {
+    "$date": "2026-03-24T05:23:35.968Z"
+  },
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c182b84b5aabfd1f489a7e"
+  },
+  "order_id": "ORD000030",
+  "user_id": "CUS000031",
+  "paymentMethod": "cod",
+  "statusPayment": "unpaid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 216000,
+  "directDiscount": 54000,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 30000,
+  "shippingDiscount": 0,
+  "totalAmount": 192000,
+  "status": "pending",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88952",
+      "slug": "",
+      "sku": "100590",
+      "productName": "Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)",
+      "quantity": 1,
+      "price": 162000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345430_vien_uong_bo_sung_canxi_magie_kem_5337_62ae_large_918f8701ba.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Tôi là tester",
+    "phone": "0101010101",
+    "address": "ÁDFGHJKJHGFDS, Phường Phú Thịnh, Thị xã Bình Long, Tỉnh Bình Phước"
+  },
+  "route": {
+    "pending": "2026-03-23T18:13:12.412Z"
+  },
+  "createdAt": "2026-03-23T18:13:12.412Z",
+  "updatedAt": "2026-03-23T18:13:12.412Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c1a6262b2f13a162d00d9c"
+  },
+  "order_id": "ORD000031",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 1149000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 1149000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d8891a",
+      "slug": "",
+      "sku": "100534",
+      "productName": "Viên uống Heptral 400 Abbott hỗ trợ tăng cường chức năng gan (3 vỉ x 10 viên)",
+      "quantity": 1,
+      "price": 1149000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00029970_heptral_400mg_abbott_3x10_1995_6096_large_d67e9c74f3.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-23T20:44:22.738Z",
+    "received": "2026-03-24T05:12:40.203Z"
+  },
+  "createdAt": "2026-03-23T20:44:22.738Z",
+  "updatedAt": "2026-03-24T05:12:52.889Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c210bda37da62f4c56af6b"
+  },
+  "order_id": "ORD000032",
+  "user_id": null,
+  "paymentMethod": "qr",
+  "statusPayment": "paid",
+  "atPharmacy": true,
+  "pharmacyAddress": "Nhà thuốc VitaCare - Cơ sở 405 - 200 Võ Văn Kiết, P. Phường Thanh Hòa, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu, Phường Thanh Hòa, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 432000,
+  "directDiscount": 108000,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 324000,
+  "status": "pending",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": true,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d8894d",
+      "slug": "68f1de3a44d747b5d5d8894d",
+      "sku": "100585",
+      "productName": "Viên uống Sinus Nose Vitamins For Life hỗ trợ tăng cường sức khỏe đường hô hấp (60 viên)",
+      "quantity": 1,
+      "price": 324000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032701_sinus_nose_ho_tro_duong_ho_hap_vitamins_for_life_60v_3651_618b_large_e1b8d84c83.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Phạm Thái Huỳnh Hương",
+    "phone": "1234567890",
+    "address": "",
+    "email": "linhthiphan04@gmail.com"
+  },
+  "route": {
+    "pending": "2026-03-24T04:19:09.823Z"
+  },
+  "createdAt": "2026-03-24T04:19:09.823Z",
+  "updatedAt": "2026-03-24T04:19:09.823Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c210e6a37da62f4c56af6d"
+  },
+  "order_id": "ORD000033",
+  "user_id": null,
+  "paymentMethod": "cod",
+  "statusPayment": "unpaid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 756000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 756000,
+  "status": "pending",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "690e5f5a3daf52c6c22efee7",
+      "slug": "690e5f5a3daf52c6c22efee7",
+      "sku": "108149",
+      "productName": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+      "quantity": 1,
+      "price": 756000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00061_290aff41d7.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Linh Phan Thị Ánh",
+    "phone": "0123456789",
+    "address": "Thôn Trung Đàn, Xã Bình Giã, Huyện Châu Đức, Tỉnh Bà Rịa - Vũng Tàu",
+    "email": "linhthiphan04@gmail.com"
+  },
+  "route": {
+    "pending": "2026-03-24T04:19:50.682Z"
+  },
+  "createdAt": "2026-03-24T04:19:50.682Z",
+  "updatedAt": "2026-03-24T04:19:50.682Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c21529a37da62f4c56af77"
+  },
+  "order_id": "ORD000034",
+  "user_id": "CUS000032",
+  "paymentMethod": "qr",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 585000,
+  "directDiscount": 0,
+  "voucherDiscount": 100000,
+  "vitaXuDiscount": 0,
+  "promotion": [
+    {
+      "promotion_id": "PRM-30987833",
+      "name": "Năm Mã bứt phá - Sức khỏe Thăng hoa",
+      "discount_value": 100000
+    }
+  ],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 485000,
+  "status": "delivered",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88950",
+      "slug": "",
+      "sku": "100588",
+      "productName": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)",
+      "quantity": 1,
+      "price": 585000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032745_dr_life_natural_herb_cordyceps_1500mg_60v_4293_618b_large_14de2368d2.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Linh Tester Web",
+    "phone": "02020202020",
+    "address": "Thôn Trung Đàn, Phường Láng Tròn, Thị xã Giá Rai, Tỉnh Bạc Liêu",
+    "email": "linhthiphan04@gmail.com"
+  },
+  "route": {
+    "pending": "2026-03-24T04:38:01.631Z"
+  },
+  "createdAt": "2026-03-24T04:38:01.631Z",
+  "updatedAt": {
+    "$date": "2026-03-24T05:38:57.140Z"
+  },
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c222733a1116f77f28f73e"
+  },
+  "order_id": "ORD000035",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "paid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 335000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 335000,
+  "status": "reviewed",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88925",
+      "slug": "",
+      "sku": "100545",
+      "productName": "Siro Fitobimbi Ferro C Concentrato Fluido bổ sung sắt, kẽm, vitamin C cho cơ thể (200ml)",
+      "quantity": 1,
+      "price": 335000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00030546_fitobimbi_ferro_c_200ml_7027_6228_large_7317d59689.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-24T05:34:43.430Z",
+    "received": "2026-03-24T05:35:45.727Z"
+  },
+  "createdAt": "2026-03-24T05:34:43.430Z",
+  "updatedAt": "2026-03-24T05:35:58.144Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c35af2a7fbea3439c63fdb"
+  },
+  "order_id": "ORD000036",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "unpaid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 730000,
+  "directDiscount": 0,
+  "voucherDiscount": 100000,
+  "vitaXuDiscount": 0,
+  "promotion": [
+    {
+      "promotion_id": "PRM-30987833",
+      "code": "YEAR2026",
+      "name": "Năm Mã bứt phá - Sức khỏe Thăng hoa",
+      "discount_value": 100000
+    }
+  ],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 630000,
+  "status": "pending",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88944",
+      "slug": "",
+      "sku": "100576",
+      "productName": "Siro Fitobimbi Immuno Concentrato Fluido bổ sung vitamin, khoáng chất cho cơ thể (200ml)",
+      "quantity": 2,
+      "price": 365000,
+      "unit": "Chai",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032368_fitobimbi_immuno_200ml_2987_62ec_large_a7e1fac9d8.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-25T03:48:02.220Z"
+  },
+  "createdAt": "2026-03-25T03:48:02.220Z",
+  "updatedAt": "2026-03-25T03:48:02.220Z",
+  "inventoryReleased": false
+},
+{
+  "_id": {
+    "$oid": "69c35afea7fbea3439c63fe1"
+  },
+  "order_id": "ORD000037",
+  "user_id": "CUS000028",
+  "paymentMethod": "cod",
+  "statusPayment": "unpaid",
+  "atPharmacy": false,
+  "pharmacyAddress": "",
+  "pharmacistWalkIn": false,
+  "pickupStoreId": "",
+  "createdByAdmin": null,
+  "createdByPharmacist": null,
+  "subtotal": 585000,
+  "directDiscount": 0,
+  "voucherDiscount": 0,
+  "vitaXuDiscount": 0,
+  "promotion": [],
+  "shippingFee": 0,
+  "shippingDiscount": 30000,
+  "totalAmount": 585000,
+  "status": "pending",
+  "returnReason": "",
+  "cancelReason": "",
+  "note": "",
+  "requestInvoice": false,
+  "hideProductInfo": false,
+  "item": [
+    {
+      "productId": "68f1de3a44d747b5d5d88950",
+      "slug": "",
+      "sku": "100588",
+      "productName": "Viên uống Đông Trùng Hạ Thảo Dr Life Natural Herb Cordyceps 1500mg tăng cường sức đề kháng (60 viên)",
+      "quantity": 1,
+      "price": 585000,
+      "unit": "Hộp",
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032745_dr_life_natural_herb_cordyceps_1500mg_60v_4293_618b_large_14de2368d2.jpg"
+    }
+  ],
+  "shippingInfo": {
+    "fullName": "Ánh Linh",
+    "phone": "0909090909",
+    "address": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+    "email": "linhpta23411@st.uel.edu.vn"
+  },
+  "route": {
+    "pending": "2026-03-25T03:48:14.134Z"
+  },
+  "createdAt": "2026-03-25T03:48:14.134Z",
+  "updatedAt": "2026-03-25T03:48:14.134Z",
+  "inventoryReleased": false
+}]

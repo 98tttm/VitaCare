@@ -575,7 +575,8 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 84px 20px 20px;
+    /* Keep modal above fixed admin header and closer to viewport top */
+    padding: 12px 20px 20px;
     transform: none !important;
 }
 
@@ -589,7 +590,7 @@
 .modal-content {
     background-color: var(--color-bg-secondary);
     width: 600px;
-    max-height: calc(100vh - 108px);
+    max-height: calc(100vh - 32px);
     border-radius: 12px;
     position: relative !important;
     z-index: 2147483647 !important;
@@ -615,7 +616,7 @@
 }
 
 .modal-body.scrollable {
-    max-height: 60vh;
+    max-height: 68vh;
     overflow-y: auto;
 }
 

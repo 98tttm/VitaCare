@@ -287,9 +287,9 @@
                                     'rx-remind-btn--due': canSendPrescriptionReminder(item),
                                     'rx-remind-btn--soon': !canSendPrescriptionReminder(item)
                                 }"
-                                [disabled]="!canSendPrescriptionReminder(item) || isRemindInProgress(item)"
+                                [disabled]="isRemindInProgress(item)"
                                 [attr.title]="prescriptionRemindButtonTitle(item)"
-                                aria-label="Nhắc nhở dược sĩ"
+                                aria-label="Phân công lại dược sĩ"
                                 (click)="onRemindPharmacistClick(item, $event)"
                             >
                                 <i class="bi bi-bell-fill" [class.spin]="isRemindInProgress(item)"></i>
@@ -439,17 +439,47 @@
                 </div>
                 <small *ngIf="isPharmacist"
                     style="display: block; margin-top: 8px; color: var(--color-text-secondary);">
-                    Dược sĩ không thay đổi người phân công, chỉ cập nhật trạng thái xử lý đơn.
                 </small>
             </div>
         </div>
-        <div class="modal-footer prescription-modal-footer" *ngIf="!isAdminPharmacistAssignmentLocked">
+        <div class="modal-footer prescription-modal-footer">
             <button *ngIf="isPharmacistUnreachableDetail" type="button" class="btn btn-primary" (click)="onUnreachableContactAgainClick()"
                 [disabled]="isSaving">
                 Liên lạc lại
             </button>
-            <button *ngIf="!isPharmacistUnreachableDetail" type="button" id="btn-submit-prescription" class="btn btn-primary" (click)="onPrimaryButtonClick()"
-                [disabled]="isSaving || (isAdmin && !editedPharmacistId)">
+            <!-- Admin: khi đang khóa (đã phân công) => hiện nút mở chế độ phân công lại -->
+            <button
+                *ngIf="isAdmin && isAdminPharmacistAssignmentLocked && canReassignPrescription(selectedPrescription)"
+                type="button"
+                class="btn btn-outline-primary"
+                (click)="enableReassignInModal()"
+                [disabled]="isSaving"
+            >
+                Chọn dược sĩ mới
+            </button>
+
+            <!-- Admin: đang phân công mới / phân công lại => dùng nút submit -->
+            <button
+                *ngIf="isAdmin && !isAdminPharmacistAssignmentLocked"
+                type="button"
+                id="btn-submit-prescription"
+                class="btn btn-primary"
+                (click)="onPrimaryButtonClick()"
+                [disabled]="isSaving || !editedPharmacistId"
+            >
+                <span *ngIf="!isSaving">{{ isReassignModeActive ? 'Phân công lại' : primaryButtonLabel }}</span>
+                <span *ngIf="isSaving"><i class="bi bi-arrow-repeat spin"></i> Đang gửi...</span>
+            </button>
+
+            <!-- Pharmacist: giữ nguyên nút cũ -->
+            <button
+                *ngIf="!isAdmin && !isPharmacistUnreachableDetail"
+                type="button"
+                id="btn-submit-prescription"
+                class="btn btn-primary"
+                (click)="onPrimaryButtonClick()"
+                [disabled]="isSaving"
+            >
                 <span *ngIf="!isSaving">{{ primaryButtonLabel }}</span>
                 <span *ngIf="isSaving"><i class="bi bi-arrow-repeat spin"></i> Đang gửi...</span>
             </button>

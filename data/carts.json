@@ -1,40 +1,440 @@
-[
+[{
+  "_id": {
+    "$oid": "68f1de3a44d747b5d5d88799"
+  },
+  "user_id": "CUS000026",
+  "items": [
     {
-        "_id": "68f1de3a44d747b5d5d88799",
-        "user_id": "CUS000026",
-        "items": [
-            {
-                "_id": "6963b1a24d747b5d5d881234",
-                "sku": "100000",
-                "productName": "Thực phẩm bảo vệ sức khỏe Corbiere Calcium Plus Sanofi giúp bổ sung calci, vitamin D3 (3 vỉ x 10 ống)",
-                "quantity": 1,
-                "discount": 17000,
-                "price": 218000,
-                "hasPromotion": true,
-                "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01895_76680fa06d.jpg",
-                "unit": "Hộp",
-                "category": "Cơ xương khớp",
-                "addedAt": "2026-01-28T14:40:01Z",
-                "updatedAt": "2026-01-28T14:40:01Z"
-            },
-            {
-                "_id": "6963b1a24d747b5d5d881235",
-                "sku": "100001",
-                "productName": "Thực phẩm bảo vệ sức khỏe Pharmaton Energy Fizzi Sanofi giúp tăng cường sức khỏe, sức đề kháng và giảm mệt mỏi (10 viên)",
-                "quantity": 1,
-                "discount": 20,
-                "price": 99000,
-                "hasPromotion": false,
-                "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01942_50076ec075.jpg",
-                "unit": "Hộp",
-                "category": "Tăng sức đề kháng, miễn dịch",
-                "addedAt": "2026-01-28T14:42:01Z",
-                "updatedAt": "2026-01-28T14:42:01Z"
-            }
-        ],
-        "itemCount": 2,
-        "totalQuantity": 2,
-        "createdAt": "2026-01-28T14:40:01Z",
-        "updatedAt": "2026-01-28T14:42:01Z"
+      "_id": "68f1de3a44d747b5d5d88951",
+      "sku": "100589",
+      "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 515000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-15T08:06:24.087Z",
+      "updatedAt": "2026-03-15T08:06:24.087Z",
+      "stock": 1
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88952",
+      "sku": "100590",
+      "productName": "Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)",
+      "quantity": 1,
+      "discount": 54000,
+      "price": 162000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345430_vien_uong_bo_sung_canxi_magie_kem_5337_62ae_large_918f8701ba.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-15T08:06:23.394Z",
+      "updatedAt": "2026-03-15T08:06:23.394Z",
+      "stock": 1
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88953",
+      "sku": "100591",
+      "productName": "Viên nam lực Bang Cevrai cải thiện chức năng sinh lý nam giới (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 530000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_03083_8c550201f0.jpg",
+      "unit": "Chai",
+      "category": "",
+      "addedAt": "2026-03-15T08:06:23.074Z",
+      "updatedAt": "2026-03-15T08:06:23.074Z",
+      "stock": 1
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88708",
+      "sku": "100004",
+      "productName": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+      "quantity": 1,
+      "discount": 25000,
+      "price": 535000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01146_15f7708e48.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-15T07:42:48.015Z",
+      "updatedAt": "2026-03-15T07:42:48.015Z",
+      "stock": 50
+    },
+    {
+      "_id": "690e5f593daf52c6c22efed5",
+      "sku": "108131",
+      "productName": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+      "quantity": 1,
+      "discount": 25000,
+      "price": 535000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01146_15f7708e48.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-15T07:42:17.838Z",
+      "updatedAt": "2026-03-15T07:42:24.263Z",
+      "stock": "50"
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88954",
+      "sku": "100592",
+      "productName": "Viên uống Calci K2 Dao Nordic Health bổ sung canxi, chống loãng xương (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 365000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345335_calci_k2_vien_bo_sung_canxi_ngua_loang_xuong_3579_62ae_large_0abcaf7b56.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-15T07:42:00.041Z",
+      "updatedAt": "2026-03-15T07:42:00.041Z",
+      "stock": 1
     }
-]
+  ],
+  "itemCount": 6,
+  "totalQuantity": 6,
+  "createdAt": "2026-01-28T14:40:01Z",
+  "updatedAt": "2026-03-15T15:26:44.060Z",
+  "isActive": true,
+  "totalPrice": 2642000
+},
+{
+  "_id": {
+    "$oid": "69b7817b839ff1df0d1bf2cf"
+  },
+  "user_id": "CUS000027",
+  "items": [
+    {
+      "_id": "68f1de3a44d747b5d5d88954",
+      "sku": "100592",
+      "productName": "Viên uống Calci K2 Dao Nordic Health bổ sung canxi, chống loãng xương (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 365000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345335_calci_k2_vien_bo_sung_canxi_ngua_loang_xuong_3579_62ae_large_0abcaf7b56.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-16T05:34:51.268Z",
+      "updatedAt": "2026-03-16T05:34:51.268Z",
+      "stock": 1
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88953",
+      "sku": "100591",
+      "productName": "Viên nam lực Bang Cevrai cải thiện chức năng sinh lý nam giới (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 530000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_03083_8c550201f0.jpg",
+      "unit": "Chai",
+      "category": "",
+      "addedAt": "2026-03-16T05:34:49.967Z",
+      "updatedAt": "2026-03-16T05:34:49.967Z",
+      "stock": 1
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88952",
+      "sku": "100590",
+      "productName": "Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)",
+      "quantity": 1,
+      "discount": 54000,
+      "price": 162000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345430_vien_uong_bo_sung_canxi_magie_kem_5337_62ae_large_918f8701ba.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-16T05:34:49.071Z",
+      "updatedAt": "2026-03-16T05:34:49.071Z",
+      "stock": 1
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88951",
+      "sku": "100589",
+      "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 515000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-16T05:34:48.175Z",
+      "updatedAt": "2026-03-16T05:34:48.175Z",
+      "stock": 1
+    }
+  ],
+  "itemCount": 4,
+  "totalPrice": 1572000,
+  "totalQuantity": 4,
+  "updatedAt": "2026-03-16T05:34:51.268Z"
+},
+{
+  "_id": {
+    "$oid": "69b7a65cfff36544c749d27d"
+  },
+  "user_id": "CUS000028",
+  "items": [
+    {
+      "_id": "690e5f593daf52c6c22efed5",
+      "sku": "108131",
+      "productName": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+      "quantity": 2,
+      "discount": 25000,
+      "price": 535000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01146_15f7708e48.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-23T12:28:38.643Z",
+      "updatedAt": "2026-03-23T12:28:39.637Z",
+      "stock": 632
+    },
+    {
+      "_id": "690e5f593daf52c6c22efed6",
+      "sku": "108132",
+      "productName": "Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)",
+      "quantity": 1,
+      "discount": 121000,
+      "price": 363000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01135_f566e1d322.png",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-23T12:28:37.873Z",
+      "updatedAt": "2026-03-23T12:28:37.873Z",
+      "stock": 657
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88cfe",
+      "sku": "101530",
+      "productName": "Chỉ nha khoa Jomi Dental Floss loại trừ các mảng bám, thức ăn dư thừa trong kẽ răng (50m)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 43000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032636_chi_nha_khoa_jomi_dental_floss_50mhop_1651_6182_large_721e8f3fcf.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-23T04:21:17.486Z",
+      "updatedAt": "2026-03-23T04:21:17.486Z",
+      "stock": 867
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d8894f",
+      "sku": "100587",
+      "productName": "Viên uống Bone Builder Drlife bổ sung canxi và vitamin cho xương (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 327000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_08392_0461703d2a.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-20T18:18:01.879Z",
+      "updatedAt": "2026-03-20T18:21:14.747Z",
+      "stock": 700
+    },
+    {
+      "_id": "690e5f5c3daf52c6c22eff8f",
+      "sku": "",
+      "productName": "Viên uống OTiV Ecogreen giúp tăng cường dưỡng chất cho não (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 590000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00501343_otiv_ecogreen_60v_6390_62e3_large_1934b01c7c.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-20T18:17:48.769Z",
+      "updatedAt": "2026-03-20T18:17:48.769Z",
+      "stock": 987
+    },
+    {
+      "_id": "690e5f5c3daf52c6c22eff91",
+      "sku": "",
+      "productName": "Thực phẩm bảo vệ sức khỏe Simbiosistem Bouna bổ sung chất xơ (20 gói x 2g)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 325000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_07265_869e7f86b7.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-20T18:17:24.442Z",
+      "updatedAt": "2026-03-20T18:17:44.590Z",
+      "stock": 943
+    }
+  ],
+  "itemCount": 6,
+  "totalPrice": 2718000,
+  "totalQuantity": 7,
+  "updatedAt": "2026-03-25T03:48:14.167Z"
+},
+{
+  "_id": {
+    "$oid": "69b856a09d8517b0f396e67c"
+  },
+  "user_id": "CUS000029",
+  "items": [],
+  "itemCount": 0,
+  "totalPrice": 0,
+  "totalQuantity": 0,
+  "updatedAt": "2026-03-23T11:21:19.815Z"
+},
+{
+  "_id": {
+    "$oid": "69c16f741e4704e8b40025a0"
+  },
+  "user_id": "CUS000030",
+  "items": []
+},
+{
+  "_id": {
+    "$oid": "69c17d814b5aabfd1f48992e"
+  },
+  "user_id": "CUS000031",
+  "items": [
+    {
+      "_id": "68f1de3a44d747b5d5d88bc2",
+      "sku": "101214",
+      "productName": "Kem dưỡng sáng da ban đêm Eucerin Even Skin Spotless Brightening Night giảm vết thâm nám, đốm nâu (50ml)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 929000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00032669_eucerin_even_skin_spotless_brightening_night_50ml_83506_kem_duong_sang_da_ban_dem_6833_6181_large_18338bca61.jpg",
+      "unit": "Chai",
+      "category": "",
+      "addedAt": "2026-03-23T18:14:57.993Z",
+      "updatedAt": "2026-03-23T18:14:57.993Z",
+      "stock": 8
+    },
+    {
+      "_id": "690e5f593daf52c6c22efed6",
+      "sku": "108132",
+      "productName": "Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)",
+      "quantity": 1,
+      "discount": 121000,
+      "price": 363000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01135_f566e1d322.png",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-23T17:57:25.357Z",
+      "updatedAt": "2026-03-23T17:57:25.357Z",
+      "stock": 657
+    },
+    {
+      "_id": "690e5f5a3daf52c6c22efee7",
+      "sku": "108149",
+      "productName": "Sữa Nutifood Varna Colostrum 237ml hỗ trợ tăng cường sức đề kháng (24 chai)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 756000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_00061_290aff41d7.jpg",
+      "unit": "Chai",
+      "category": "",
+      "addedAt": "2026-03-23T17:57:23.922Z",
+      "updatedAt": "2026-03-23T17:57:23.922Z",
+      "stock": 8
+    }
+  ],
+  "itemCount": 3,
+  "totalPrice": 2048000,
+  "totalQuantity": 3,
+  "updatedAt": "2026-03-23T18:14:57.993Z"
+},
+{
+  "_id": {
+    "$oid": "69c213aea37da62f4c56af70"
+  },
+  "user_id": "CUS000032",
+  "items": [
+    {
+      "_id": "68f1de3a44d747b5d5d88951",
+      "sku": "100589",
+      "productName": "Viên uống KenKan Nattokinase 2400FU giảm nguy cơ hình thành huyết khối, tăng cường lưu thông máu (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 515000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_09674_24a98c9335.png",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-24T04:36:09.660Z",
+      "updatedAt": "2026-03-24T04:36:09.660Z",
+      "stock": 603
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88952",
+      "sku": "100590",
+      "productName": "Viên uống Calcium Magnesium Zinc Nature's Bounty hỗ trợ duy trì sức khoẻ hệ xương (100 viên)",
+      "quantity": 1,
+      "discount": 54000,
+      "price": 162000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345430_vien_uong_bo_sung_canxi_magie_kem_5337_62ae_large_918f8701ba.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-24T04:36:08.726Z",
+      "updatedAt": "2026-03-24T04:36:08.726Z",
+      "stock": 890
+    },
+    {
+      "_id": "68f1de3a44d747b5d5d88954",
+      "sku": "100592",
+      "productName": "Viên uống Calci K2 Dao Nordic Health bổ sung canxi, chống loãng xương (60 viên)",
+      "quantity": 1,
+      "discount": 0,
+      "price": 365000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/00345335_calci_k2_vien_bo_sung_canxi_ngua_loang_xuong_3579_62ae_large_0abcaf7b56.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-24T04:36:07.196Z",
+      "updatedAt": "2026-03-24T04:36:07.196Z",
+      "stock": 966
+    },
+    {
+      "_id": "690e5f593daf52c6c22efed6",
+      "sku": "108132",
+      "productName": "Sữa Nutifood Varna Diabetes chứa công thức dinh dưỡng cho người đái tháo đường (850g)",
+      "quantity": 1,
+      "discount": 121000,
+      "price": 363000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01135_f566e1d322.png",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-24T04:36:06.458Z",
+      "updatedAt": "2026-03-24T04:36:06.458Z",
+      "stock": 657
+    },
+    {
+      "_id": "690e5f593daf52c6c22efed5",
+      "sku": "108131",
+      "productName": "Sữa Anlene Heart Plus chứa hệ dưỡng chất dành cho người quan tâm đến sức khỏe tim mạch (750g)",
+      "quantity": 1,
+      "discount": 25000,
+      "price": 535000,
+      "hasPromotion": false,
+      "image": "https://cdn.nhathuoclongchau.com.vn/unsafe/256x0/filters:quality(90)/DSC_01146_15f7708e48.jpg",
+      "unit": "Hộp",
+      "category": "",
+      "addedAt": "2026-03-24T04:36:05.876Z",
+      "updatedAt": "2026-03-24T04:36:05.876Z",
+      "stock": 632
+    }
+  ],
+  "itemCount": 5,
+  "totalPrice": 1940000,
+  "totalQuantity": 5,
+  "updatedAt": "2026-03-24T04:38:01.711Z"
+}]

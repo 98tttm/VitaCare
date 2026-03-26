@@ -42,6 +42,7 @@ export class Consultationproduct implements OnInit, OnDestroy {
   isModalOpen = false;
   selectedQuestion: any | null = null;
   editedPharmacistId: string = '';
+  adminActionMode: 'assign' | 'admin_reply' = 'assign';
   replyContent: string = '';
   pharmacistEditMode = false;
   selectAll = false;
@@ -486,6 +487,17 @@ export class Consultationproduct implements OnInit, OnDestroy {
     return this.getQuestionState(this.selectedQuestion) !== 'answered';
   }
 
+  shouldShowPharmacistSelect(): boolean {
+    return this.canAdminAssignSelectedQuestion() && this.adminActionMode === 'assign';
+  }
+
+  get saveButtonText(): string {
+    if (this.isAdmin) {
+      return this.adminActionMode === 'admin_reply' ? 'Gửi trả lời' : 'Phân công';
+    }
+    return 'Lưu trả lời';
+  }
+
   getAssignedPharmacistLabel(item: any): string {
     const byName = String(item?.assignedPharmacistName || '').trim();
     if (byName) return byName;
@@ -536,6 +548,7 @@ export class Consultationproduct implements OnInit, OnDestroy {
     const answerTrim = String(item?.answer ?? '').trim();
     this.replyContent = this.isProductQuestionReplyMode(item) ? '' : answerTrim;
     if (this.isAdmin) {
+      this.adminActionMode = 'assign';
       const foundPharmacist = this.pharmacists.find(
         p => String(p._id) === String(item.assignedPharmacistId || item.pharmacist_id || item.pharmacistId || '')
       );
@@ -552,6 +565,7 @@ export class Consultationproduct implements OnInit, OnDestroy {
     this.isModalOpen = false;
     this.selectedQuestion = null;
     this.pharmacistEditMode = false;
+    this.adminActionMode = 'assign';
     this.replyContent = '';
   }
 
@@ -570,9 +584,13 @@ export class Consultationproduct implements OnInit, OnDestroy {
     };
 
     if (this.isAdmin) {
-      if (trimmedReply) {
+      if (this.adminActionMode === 'admin_reply') {
+        if (!trimmedReply) {
+          this.showNotification('Vui lòng nhập nội dung trả lời cho khách hàng.', 'warning');
+          return;
+        }
         payload.answer = trimmedReply;
-        payload.answeredBy = 'Admin';
+        payload.answeredBy = this.currentDisplayName || 'Admin';
       } else {
         if (!this.editedPharmacistId) {
           this.showNotification('Vui lòng chọn dược sĩ để phân công.', 'warning');

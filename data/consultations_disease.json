@@ -1,0 +1,331 @@
+[{
+  "_id": {
+    "$oid": "69bef2c117272325e839689e"
+  },
+  "sku": "benh/bai-nao-tre-em-6.html",
+  "productName": "Bại não trẻ em",
+  "questions": [
+    {
+      "_id": "69c03d58afafcbb7fcf190ef",
+      "id": "69c03d58afafcbb7fcf190ef",
+      "question": "Test tí",
+      "user_id": "CUS000029",
+      "full_name": "Ánh Linh",
+      "status": "answered",
+      "createdAt": "2026-03-22T19:04:56.334Z",
+      "answer": "Oke bạn",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-23T07:27:08.909Z"
+      },
+      "answeredBy": "Phan Thị Ánh Linh"
+    }
+  ],
+  "updatedAt": {
+    "$date": "2026-03-23T07:27:08.909Z"
+  },
+  "createdAt": {
+    "$date": "2026-03-21T19:34:25.918Z"
+  },
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "69c11f41bcf3d3b1ba09b2c0"
+  },
+  "sku": "benh/bong-mat.html",
+  "productName": "Bỏng mắt",
+  "questions": [
+    {
+      "_id": "69c11f41bcf3d3b1ba09b2bf",
+      "id": "69c11f41bcf3d3b1ba09b2bf",
+      "question": "Huhu có cách nào trị bỏng mắt để nhanh hết không ạ",
+      "user_id": "CUS000029",
+      "full_name": "Ánh Linh",
+      "status": "answered",
+      "createdAt": "2026-03-23T11:08:49.539Z",
+      "answer": "Bạn thử tham khảo những bài thuốc dân gian của VitaCare nhé",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-23T11:09:15.456Z"
+      },
+      "answeredBy": "Phan Thị Ánh Linh",
+      "answeredByPharmacistId": "82ecab9dcee6e2faeb8c93ee"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-23T11:08:49.540Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T11:09:15.456Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c11f7fbcf3d3b1ba09b2e1"
+  },
+  "sku": "benh/bach-san.html",
+  "productName": "Bạch sản",
+  "questions": [
+    {
+      "_id": "69c11f7fbcf3d3b1ba09b2e0",
+      "id": "69c11f7fbcf3d3b1ba09b2e0",
+      "question": "Bạch sản là gì vậy ạ",
+      "user_id": "CUS000029",
+      "full_name": "Ánh Linh",
+      "status": "answered",
+      "createdAt": "2026-03-23T11:09:51.801Z",
+      "answer": "bạch sản là gì mình cũng không biết nữa ",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-23T11:10:54.194Z"
+      },
+      "answeredBy": "Test",
+      "answeredByPharmacistId": "69c02938ff0045eacf9df2f1"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-23T11:09:51.802Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-23T11:10:54.194Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c182f74b5aabfd1f489ab1"
+  },
+  "sku": "benh/benh-mat-ngu-o-nguoi-gia.html",
+  "productName": "Bệnh mất ngủ ở người già",
+  "questions": [
+    {
+      "_id": "69c182f74b5aabfd1f489aaf",
+      "id": "69c182f74b5aabfd1f489aaf",
+      "question": "Mất ngủ phải làm gì",
+      "user_id": "CUS000031",
+      "full_name": "0101010101",
+      "status": "answered",
+      "createdAt": "2026-03-23T18:14:15.065Z",
+      "answer": "ÁDFGDFJHBDVCSAXSD",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-24T05:18:07.135Z"
+      },
+      "answeredBy": "Test",
+      "answeredByPharmacistId": "69c02938ff0045eacf9df2f1"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-23T18:14:15.119Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:18:07.135Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c20c6ea37da62f4c56af62"
+  },
+  "sku": "benh/benh-mang-day-mong.html",
+  "productName": "Bệnh màng đáy mỏng",
+  "questions": [
+    {
+      "_id": "69c20c6ea37da62f4c56af61",
+      "id": "69c20c6ea37da62f4c56af61",
+      "question": "Bệnh màng đáy mỏng là gì",
+      "user_id": "GUEST_1771159852043_628",
+      "full_name": "Khách vãng lai 9793",
+      "status": "answered",
+      "createdAt": "2026-03-24T04:00:46.606Z",
+      "answer": "ZXDCFVGBHNJMKMJNHGFD",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-24T05:18:46.925Z"
+      },
+      "answeredBy": "Phan Thị Ánh Linh",
+      "answeredByPharmacistId": "82ecab9dcee6e2faeb8c93ee"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T04:00:46.608Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:18:46.925Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c2182ea37da62f4c56af96"
+  },
+  "sku": "benh/benh-nao-gan.html",
+  "productName": "Bệnh não gan",
+  "questions": [
+    {
+      "_id": "69c2182ea37da62f4c56af95",
+      "id": "69c2182ea37da62f4c56af95",
+      "question": "Bệnh này có nguy hiểm không ạ?",
+      "user_id": "CUS000028",
+      "full_name": "Ánh Linh",
+      "status": "answered",
+      "createdAt": "2026-03-24T04:50:54.332Z",
+      "answer": "XCVBNHJMJMNBFVD",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-24T05:19:06.959Z"
+      },
+      "answeredBy": "Test",
+      "answeredByPharmacistId": "69c02938ff0045eacf9df2f1"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T04:50:54.334Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:19:06.959Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c21f37a37da62f4c56b14e"
+  },
+  "sku": "benh/benh-than-kinh.html",
+  "productName": "Bệnh thần kinh",
+  "questions": [
+    {
+      "_id": "69c21f37a37da62f4c56b14d",
+      "id": "69c21f37a37da62f4c56b14d",
+      "question": "stress có dẫn đến bệnh này không",
+      "user_id": "CUS000028",
+      "full_name": "Ánh Linh",
+      "status": "answered",
+      "createdAt": "2026-03-24T05:20:55.177Z",
+      "answer": "ádfghjhgfdsasdfgh",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-24T05:21:28.078Z"
+      },
+      "answeredBy": "Phan Thị Ánh Linh",
+      "answeredByPharmacistId": "82ecab9dcee6e2faeb8c93ee"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T05:20:55.178Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:21:28.078Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c220fd3a1116f77f28f5f3"
+  },
+  "sku": "benh/bai-nao-1191.html",
+  "productName": "Bại não",
+  "questions": [
+    {
+      "_id": "69c220fd3a1116f77f28f5f2",
+      "id": "69c220fd3a1116f77f28f5f2",
+      "question": "bại não có nguy hiểm không",
+      "user_id": "CUS000028",
+      "full_name": "Ánh Linh",
+      "status": "answered",
+      "createdAt": "2026-03-24T05:28:29.327Z",
+      "answer": "ádfghjkl",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-24T05:28:43.897Z"
+      },
+      "answeredBy": "Phan Thị Ánh Linh",
+      "answeredByPharmacistId": "82ecab9dcee6e2faeb8c93ee"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T05:28:29.329Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T05:28:43.897Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c266f6fe6171a8c514605a"
+  },
+  "sku": "benh/benh-bo-dien.html",
+  "productName": "Bệnh bò điên",
+  "questions": [
+    {
+      "_id": "69c266f6fe6171a8c5146059",
+      "id": "69c266f6fe6171a8c5146059",
+      "question": "Bệnh này là gì ạ?",
+      "user_id": "CUS000028",
+      "full_name": "Ánh Linh",
+      "status": "answered",
+      "createdAt": "2026-03-24T10:27:02.076Z",
+      "answer": "Bệnh bò điên ở người (Creutzfeldt-Jakob) là rối loạn não hiếm gặp do prion gây ra, dẫn đến sa sút trí tuệ nhanh chóng và tử vong. Triệu chứng giống Alzheimer nhưng tiến triển nhanh hơn. Bệnh thuộc nhóm rối loạn prion ở người và động vật",
+      "replies": [],
+      "likes": [],
+      "answeredAt": {
+        "$date": "2026-03-24T10:30:13.454Z"
+      },
+      "answeredBy": "Phan Thị Ánh Linh",
+      "answeredByPharmacistId": "82ecab9dcee6e2faeb8c93ee"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T10:27:02.078Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T10:30:13.454Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c299e721a03f7f829278a6"
+  },
+  "sku": "benh/benh-marchiafava-bignami.html",
+  "productName": "Bệnh Marchiafava-Bignami",
+  "questions": [
+    {
+      "_id": "69c299e721a03f7f829278a5",
+      "id": "69c299e721a03f7f829278a5",
+      "question": "ádfghjklknbvcxzZxcvbn",
+      "user_id": "CUS000028",
+      "full_name": "Ánh Linh",
+      "status": "pending",
+      "createdAt": "2026-03-24T14:04:23.614Z",
+      "answer": null,
+      "replies": [
+        {
+          "_id": "69c29a3c21a03f7f829278b6",
+          "content": "ádfghjklkjhgfdsasdfghj",
+          "fullname": "Khách",
+          "user_id": "GUEST_1771159852043_628",
+          "avatar": "",
+          "is_admin": false,
+          "time": {
+            "$date": "2026-03-24T14:05:48.680Z"
+          },
+          "likes": []
+        }
+      ],
+      "likes": [
+        "GUEST_1771159852043_628"
+      ]
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-24T14:04:23.615Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-24T14:05:48.680Z"
+  },
+  "__v": 1
+}]

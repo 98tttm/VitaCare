@@ -1,0 +1,112 @@
+[{
+  "_id": {
+    "$oid": "69bee6a802113d8c7d4536cd"
+  },
+  "user_id": "CUS000029",
+  "quiz_id": "01_Benh_Hen",
+  "score": 0,
+  "result_id": "low_risk",
+  "result_title": "Nguy cơ THẤP mắc hen",
+  "result_badge": "Tốt",
+  "recommendation": "Bạn có khả năng phát triển bệnh hen THẤP hơn so với mức trung bình.",
+  "name": "",
+  "province": "",
+  "phone": "",
+  "createdAt": "2026-03-21T18:42:48.936Z"
+},
+{
+  "_id": {
+    "$oid": "69bee9eb02113d8c7d4536cf"
+  },
+  "user_id": "CUS000029",
+  "quiz_id": "02_COPD_Man_Tinh",
+  "score": 4,
+  "result_id": "high_risk",
+  "result_title": "Nguy cơ CAO mắc Đánh giá nguy cơ mắc bệnh phổi tắc nghẽn mạn tính (COPD)",
+  "result_badge": "Lưu ý",
+  "recommendation": "Bạn có khả năng cao mắc Đánh giá nguy cơ mắc bệnh phổi tắc nghẽn mạn tính (COPD). Hãy đến bác sĩ để được tư vấn thêm. (Dữ liệu mô phỏng)",
+  "name": "",
+  "province": "",
+  "phone": "",
+  "createdAt": "2026-03-21T18:56:43.339Z"
+},
+{
+  "_id": {
+    "$oid": "69c17ed64b5aabfd1f489983"
+  },
+  "user_id": "CUS000031",
+  "quiz_id": "01_Benh_Hen",
+  "score": 3,
+  "result_id": "low_risk",
+  "result_title": "Nguy cơ THẤP mắc hen",
+  "result_badge": "Tốt",
+  "recommendation": "Bạn có khả năng phát triển bệnh hen THẤP hơn so với mức trung bình.",
+  "name": "",
+  "province": "",
+  "phone": "",
+  "createdAt": "2026-03-23T17:56:38.222Z"
+},
+{
+  "_id": {
+    "$oid": "69c17eeb4b5aabfd1f489985"
+  },
+  "user_id": "CUS000031",
+  "quiz_id": "02_COPD_Man_Tinh",
+  "score": 2,
+  "result_id": "low_risk",
+  "result_title": "Nguy cơ THẤP mắc Đánh giá nguy cơ mắc bệnh phổi tắc nghẽn mạn tính (COPD)",
+  "result_badge": "Tốt",
+  "recommendation": "Bạn có khả năng phát triển Đánh giá nguy cơ mắc bệnh phổi tắc nghẽn mạn tính (COPD) THẤP hơn so với mức trung bình. (Dữ liệu mô phỏng)",
+  "name": "",
+  "province": "",
+  "phone": "",
+  "createdAt": "2026-03-23T17:56:59.941Z"
+},
+{
+  "_id": {
+    "$oid": "69c215a4a37da62f4c56af7e"
+  },
+  "user_id": "CUS000032",
+  "quiz_id": "01_Benh_Hen",
+  "score": 4,
+  "result_id": "high_risk",
+  "result_title": "Nguy cơ CAO mắc hen",
+  "result_badge": "Lưu ý",
+  "recommendation": "Bạn có khả năng cao mắc bệnh hen. Hãy đến bác sĩ để được tư vấn thêm.",
+  "name": "",
+  "province": "",
+  "phone": "",
+  "createdAt": "2026-03-24T04:40:04.976Z"
+},
+{
+  "_id": {
+    "$oid": "69c215c3a37da62f4c56af80"
+  },
+  "user_id": "CUS000032",
+  "quiz_id": "02_COPD_Man_Tinh",
+  "score": 2,
+  "result_id": "low_risk",
+  "result_title": "Nguy cơ THẤP mắc Đánh giá nguy cơ mắc bệnh phổi tắc nghẽn mạn tính (COPD)",
+  "result_badge": "Tốt",
+  "recommendation": "Bạn có khả năng phát triển Đánh giá nguy cơ mắc bệnh phổi tắc nghẽn mạn tính (COPD) THẤP hơn so với mức trung bình. (Dữ liệu mô phỏng)",
+  "name": "",
+  "province": "",
+  "phone": "",
+  "createdAt": "2026-03-24T04:40:35.677Z"
+},
+{
+  "_id": {
+    "$oid": "69c24fd6fe6171a8c5145c66"
+  },
+  "user_id": "CUS000028",
+  "quiz_id": "04_GERD",
+  "score": 6,
+  "result_id": "high_risk",
+  "result_title": "Nguy cơ CAO mắc Đánh giá nguy cơ mắc bệnh trào ngược dạ dày thực quản (GERD)",
+  "result_badge": "Lưu ý",
+  "recommendation": "Bạn có khả năng cao mắc Đánh giá nguy cơ mắc bệnh trào ngược dạ dày thực quản (GERD). Hãy đến bác sĩ để được tư vấn thêm. (Dữ liệu mô phỏng)",
+  "name": "",
+  "province": "",
+  "phone": "",
+  "createdAt": "2026-03-24T08:48:22.003Z"
+}]

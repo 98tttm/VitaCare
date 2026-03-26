@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth } from './features/accounts/auth/auth';
 import { HeaderComponent } from './shared/header/header';
@@ -13,6 +13,7 @@ import { AuthApiService } from './core/services/auth-api.service';
 import { ToastService } from './core/services/toast.service';
 import { ConfirmService } from './core/services/confirm.service';
 import { HOME_URL } from './core/constants/navigation.constants';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -27,8 +28,34 @@ export class App implements OnInit {
   readonly confirmService = inject(ConfirmService);
   private readonly authApi = inject(AuthApiService);
   private readonly router = inject(Router);
+  private readonly titleByRoute: Array<{ matcher: RegExp; title: string }> = [
+    { matcher: /^\/(nhathuocvitacare|home)?(\/|$)/, title: 'VitaCare - Trang chủ' },
+    { matcher: /^\/category\/tra-cuu-benh(\/|$)/, title: 'VitaCare - Tra cứu bệnh' },
+    { matcher: /^\/(disease|benh)(\/|$)/, title: 'VitaCare - Tra cứu bệnh' },
+    { matcher: /^\/(blog|topic)(\/|$)/, title: 'VitaCare - Góc sức khỏe' },
+    { matcher: /^\/consultation(\/|$)/, title: 'VitaCare - Tư vấn đơn thuốc' },
+    { matcher: /^\/health-test(\/|$)/, title: 'VitaCare - Kiểm tra sức khỏe' },
+    { matcher: /^\/health\/(\/|$|[^/]+)/, title: 'VitaCare - Công cụ sức khỏe' },
+    { matcher: /^\/(products|tim-kiem|product|order)(\/|$)/, title: 'VitaCare - Sản phẩm' },
+    { matcher: /^\/(health|prescriptions|disease|benh)(\/|$)/, title: 'VitaCare - Sức khỏe' },
+    { matcher: /^\/store-system(\/|$)/, title: 'VitaCare - Hệ thống nhà thuốc' },
+    { matcher: /^\/(policy|about|account|addresses|info|reviews|return)(\/|$)/, title: 'VitaCare - Nội dung' },
+  ];
+  private readonly categoryTitleBySlug: Record<string, string> = {
+    'thuc-pham-chuc-nang': 'Thực phẩm chức năng',
+    'duoc-my-pham': 'Dược mỹ phẩm',
+    'thuoc': 'Thuốc',
+    'cham-soc-ca-nhan': 'Chăm sóc cá nhân',
+    'thiet-bi-y-te': 'Thiết bị y tế',
+    'trang-thiet-bi-y-te': 'Trang thiết bị y tế',
+  };
 
   ngOnInit(): void {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => this.applyPageTitle(this.router.url));
+    this.applyPageTitle(this.router.url);
+
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const oauthCode = params.get('oauth_code');
@@ -85,5 +112,38 @@ export class App implements OnInit {
         },
       });
     }
+  }
+
+  private applyPageTitle(rawUrl: string): void {
+    const path = (rawUrl || '/').split('?')[0];
+    const categoryTitle = this.resolveCategoryTitle(path);
+    if (categoryTitle) {
+      document.title = `VitaCare - ${categoryTitle}`;
+      return;
+    }
+
+    const matched = this.titleByRoute.find(item => item.matcher.test(path));
+    document.title = matched?.title ?? 'VitaCare';
+  }
+
+  private resolveCategoryTitle(path: string): string | null {
+    if (!path.startsWith('/category/')) return null;
+    if (path.startsWith('/category/tra-cuu-benh')) return null;
+
+    const segments = path.split('/').filter(Boolean);
+    if (segments.length < 2) return null;
+
+    const rawSlug = decodeURIComponent(segments[segments.length - 1] || '').toLowerCase();
+    if (!rawSlug) return null;
+
+    const exact = this.categoryTitleBySlug[rawSlug];
+    if (exact) return exact;
+
+    // Fallback: chuyển slug thành dạng đọc được khi chưa có mapping cụ thể.
+    return rawSlug
+      .split('-')
+      .filter(Boolean)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 }

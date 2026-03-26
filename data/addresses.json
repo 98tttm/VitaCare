@@ -1,0 +1,90 @@
+[{
+  "_id": {
+    "$oid": "69b78525839ff1df0d1bf2d1"
+  },
+  "user_id": "CUS000027",
+  "name": "Ánh Linh",
+  "phone": "0843293506",
+  "email": "linhpta23411@st.uel.edu.vn",
+  "detail": "Thôn Trung Đàn",
+  "fullAddress": "Thôn Trung Đàn, Xã Tam Đại, Huyện Phú Ninh, Tỉnh Quảng Nam",
+  "province": "Tỉnh Quảng Nam",
+  "district": "Huyện Phú Ninh",
+  "ward": "Xã Tam Đại",
+  "isDefault": true,
+  "createdAt": {
+    "$date": "2026-03-16T04:20:53.601Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b963086d8f6155a257563c"
+  },
+  "user_id": "CUS000028",
+  "name": "Ánh Linh",
+  "phone": "0909090909",
+  "email": "linhpta23411@st.uel.edu.vn",
+  "detail": "zxcvbn",
+  "fullAddress": "zxcvbn, Xã Tân Thành, Thành phố Cà Mau, Tỉnh Cà Mau",
+  "province": "Tỉnh Cà Mau",
+  "district": "Thành phố Cà Mau",
+  "ward": "Xã Tân Thành",
+  "isDefault": true,
+  "createdAt": {
+    "$date": "2026-03-17T14:19:52.608Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69bfd28f6b994c1054bdf038"
+  },
+  "user_id": "CUS000029",
+  "name": "Ánh Linh",
+  "phone": "0843293506",
+  "email": "",
+  "detail": "Thôn Trung Đàn",
+  "fullAddress": "Thôn Trung Đàn, Xã Hoà Long, Thành phố Bà Rịa, Tỉnh Bà Rịa - Vũng Tàu",
+  "province": "Tỉnh Bà Rịa - Vũng Tàu",
+  "district": "Thành phố Bà Rịa",
+  "ward": "Xã Hoà Long",
+  "isDefault": true,
+  "createdAt": {
+    "$date": "2026-03-22T11:29:19.402Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c182aa4b5aabfd1f489a7d"
+  },
+  "user_id": "CUS000031",
+  "name": "Tôi là tester",
+  "phone": "0101010101",
+  "email": "",
+  "detail": "ÁDFGHJKJHGFDS",
+  "fullAddress": "ÁDFGHJKJHGFDS, Phường Phú Thịnh, Thị xã Bình Long, Tỉnh Bình Phước",
+  "province": "Tỉnh Bình Phước",
+  "district": "Thị xã Bình Long",
+  "ward": "Phường Phú Thịnh",
+  "isDefault": true,
+  "createdAt": {
+    "$date": "2026-03-23T18:12:58.181Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c214fca37da62f4c56af76"
+  },
+  "user_id": "CUS000032",
+  "name": "Linh Tester Web",
+  "phone": "02020202020",
+  "email": "linhthiphan04@gmail.com",
+  "detail": "Thôn Trung Đàn",
+  "fullAddress": "Thôn Trung Đàn, Phường Láng Tròn, Thị xã Giá Rai, Tỉnh Bạc Liêu",
+  "province": "Tỉnh Bạc Liêu",
+  "district": "Thị xã Giá Rai",
+  "ward": "Phường Láng Tròn",
+  "isDefault": true,
+  "createdAt": {
+    "$date": "2026-03-24T04:37:16.946Z"
+  }
+}]

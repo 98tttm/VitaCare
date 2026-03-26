@@ -1,0 +1,52 @@
+[{
+  "_id": {
+    "$oid": "69c16f421e4704e8b4002599"
+  },
+  "code": "3533e1c7202de12bc881a9297747139249dfb9a572680dee",
+  "expiresAt": {
+    "$date": "2026-03-23T16:55:10.789Z"
+  },
+  "user_id": "CUS000028",
+  "createdAt": {
+    "$date": "2026-03-23T16:50:10.790Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c16f741e4704e8b40025a1"
+  },
+  "code": "13a93fb418ef45378211e04b27959a94b5cc526094371544",
+  "expiresAt": {
+    "$date": "2026-03-23T16:56:00.789Z"
+  },
+  "user_id": "CUS000030",
+  "createdAt": {
+    "$date": "2026-03-23T16:51:00.789Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c1718c916a8c3fe869de7f"
+  },
+  "code": "ab71b6cdff9e2fa593f6d7ae01d59d48ecd0b7f861ce8371",
+  "expiresAt": {
+    "$date": "2026-03-23T17:04:56.824Z"
+  },
+  "user_id": "CUS000030",
+  "createdAt": {
+    "$date": "2026-03-23T16:59:56.824Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69c176f14b5aabfd1f4896c8"
+  },
+  "code": "ac42b22ddf647fc68c32561c0a323bec3bd8727f5e5b0461",
+  "expiresAt": {
+    "$date": "2026-03-23T17:27:57.421Z"
+  },
+  "user_id": "CUS000030",
+  "createdAt": {
+    "$date": "2026-03-23T17:22:57.421Z"
+  }
+}]

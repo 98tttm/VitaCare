@@ -1,0 +1,22 @@
+[{
+  "_id": {
+    "$oid": "69bff7a9b22f78824dfa6ca5"
+  },
+  "name": "Sữa",
+  "createdAt": {
+    "$date": "2026-03-22T14:07:37.234Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-22T14:16:09.500Z"
+  },
+  "__v": 0,
+  "productIds": [
+    "68f1de3a44d747b5d5d88781",
+    "68f1de3a44d747b5d5d888b1",
+    "68f1de3a44d747b5d5d88705",
+    "68f1de3a44d747b5d5d88719",
+    "68f1de3a44d747b5d5d8873c",
+    "68f1de3a44d747b5d5d8876b",
+    "68f1de3a44d747b5d5d8876a"
+  ]
+}]

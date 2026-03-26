@@ -1,0 +1,52 @@
+[{
+  "_id": {
+    "$oid": "699c6117e52dd1ef2e36af44"
+  },
+  "sku": "100006",
+  "questions": [
+    {
+      "id": "1771856151581",
+      "question": "sản phẩm dùng tốt",
+      "user_id": "Guest_3598",
+      "full_name": "Khách hàng vãng lai 2378",
+      "answer": null,
+      "answeredBy": null,
+      "status": "Pending",
+      "createdAt": {
+        "$date": "2026-02-23T14:15:51.581Z"
+      },
+      "answeredAt": null,
+      "likes": [],
+      "replies": [],
+      "_id": {
+        "$oid": "699c6117e52dd1ef2e36af46"
+      }
+    },
+    {
+      "question": "Mình bị đau dạ dày có uống được không?",
+      "user_id": "CUS000007",
+      "full_name": "Nguyễn Thanh Nam",
+      "answer": "Dạ người bị đau dạ dày nên uống sau khi ăn no để đảm bảo an toàn nhé.",
+      "answeredBy": "Pharmacist",
+      "status": "answered",
+      "createdAt": {
+        "$date": "2025-07-23T21:45:04.000Z"
+      },
+      "answeredAt": {
+        "$date": "2025-07-24T09:45:04.000Z"
+      },
+      "likes": [],
+      "_id": {
+        "$oid": "072bd3b3155b4b2ebacc0cef"
+      },
+      "replies": []
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-12-08T16:50:02.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-23T14:15:51.586Z"
+  },
+  "__v": 0
+}]

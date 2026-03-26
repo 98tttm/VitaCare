@@ -1,775 +1,773 @@
-[
-    {
-        "_id": 6247,
-        "name": "Lê Thị Giao Thi",
-        "slug": "bac-si-chuyen-khoa-1-le-thi-giao-thi",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Y học gia đình",
-        "specialties": [
-            "Y học gia đình"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Trưởng nhóm triển khai chuyên môn - Nhà thuốc VitaCare",
-        "biography": "Với hơn 10 năm kinh nghiệm trong điều trị và phục hồi chức năng các bệnh lý cơ xương khớp, chấn thương và khám sàng lọc, chăm sóc sức khỏe ban đầu. Được trang bị nền tảng đào tạo vững chắc cùng kinh nghiệm thực tiễn phong phú, bác sĩ luôn hướng đến việc nâng cao chất lượng sức khỏe cộng đồng với những giải pháp phòng bệnh và điều trị tối ưu. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "BS_Le_Thi_Giao_Thi_e8eda42850",
-            "src": "https://cdn.tiemchunglongchau.com.vn/BS_Le_Thi_Giao_Thi_e8eda42850.png",
-            "width": 600,
-            "height": 600
-        },
-        "documentId": "v03hpvg4zgdvgx30su5iveh5",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 0,
-        "experience": {
-            "work": [
-                "Bệnh viện tỉnh Khánh Hòa.",
-                "Bệnh viện Thống Nhất – Đồng Nai.",
-                "Trưởng nhóm triển khai chuyên môn - Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2008 - 2014: Sinh viên trường Đại học Y dược Huế.",
-                "2022 - 2024: Bác sĩ Chuyên khoa I, Đại học Y khoa Phạm Ngọc Thạch."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 2577,
-        "name": "Nguyễn Văn My",
-        "slug": "bac-si-nguyen-van-my",
-        "degree": "Bác sĩ",
-        "specialize": "Truyền nhiễm",
-        "specialties": [
-            "Truyền nhiễm"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Bác sĩ có trên 20 năm kinh nghiệm với vai trò bác sĩ điều trị, đặc biệt là các bệnh thuộc chuyên ngành Truyền Nhiễm, Nhiệt đới. Nhiều năm trực tiếp tham gia nghiên cứu về Sốt xuất huyết và có kinh nghiệm đào tạo, chia sẻ thực tiễn trong lĩnh vực tiêm chủng, xử trí các phản ứng sau tiêm. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "BAC_SI_LC_682413889_3_cb1142c7f6",
-            "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/BAC_SI_LC_682413889_3_cb1142c7f6.jpg",
-            "width": 3808,
-            "height": 3808
-        },
-        "documentId": "bdttvo3kggc5vfgt9tgcwtyh",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 0,
-        "experience": {
-            "work": [
-                "2003 - 2006: Bác sĩ điều trị, Bệnh viện Đa khoa Đống Đa, Hà Nội.",
-                "2006 - 2011: Bác sĩ điều trị, Bệnh viện Bệnh Nhiệt đới Trung ương.",
-                "2018 - nay: Cố vấn chuyên môn trong lĩnh vực tiêm chủng vắc xin, đặc biệt là xử trí các phản ứng sau tiêm.",
-                "Hiện công tác: Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "1996 - 2002: Bác sĩ Y khoa, Trường Đại học Y Hà Nội.",
-                "2002 - 2003: Chuyên khoa định hướng, Đại học Y Hà Nội.",
-                "2020 - nay: Nghiên cứu sinh, Khoa Y học Lâm sàng các bệnh Nhiệt đới, Trường Đại học Mahidol, Thái Lan."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 4152,
-        "name": "Nguyễn Anh Tuấn",
-        "slug": "bac-si-chuyen-khoa-1-nguyen-anh-tuan",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Chẩn đoán hình ảnh",
-        "specialties": [
-            "Chẩn đoán hình ảnh"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ Chuyên khoa 1 - Cố vấn chuyên môn - Nhà thuốc VitaCare",
-        "biography": "Trên 30 năm kinh nghiệm trong lĩnh vực y tế dự phòng và phòng chống dịch bệnh cộng đồng. Trên 10 năm công tác trong lĩnh vực chẩn đoán hình ảnh (X-quang, siêu âm tổng quát) và tham gia đào tạo chuyên môn. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "Bac_si_Nguyen_Anh_Tuan_bca1a1ec8d",
-            "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/Bac_si_Nguyen_Anh_Tuan_bca1a1ec8d.png",
-            "width": 600,
-            "height": 600
-        },
-        "documentId": "wxxe73akfhzs5l35a4v29nrx",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 0,
-        "experience": {
-            "work": [
-                "1993 - 2004: Bác sĩ Trưởng trạm y tế cơ sở.",
-                "2004 - 2012: Bác sĩ Trưởng phòng Kế hoạch – Kiêm Trưởng khoa Xét nghiệm, Trung tâm Y tế quận Thủ Đức.",
-                "2014 - 2017: Bác sĩ Phó Giám đốc – Kiêm Trưởng khoa Xét nghiệm, Trung tâm Y tế quận Thủ Đức.",
-                "2017 - 2019: Bác sĩ Trưởng phòng Kế hoạch, Trung tâm Y tế dự phòng TP.HCM.",
-                "2019 - nay: Bác sĩ tư vấn/chuyên môn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "1986 - 1992: Sinh viên trường Đại học Y dược TP Hồ Chí Minh – Hệ Chính quy tập trung.",
-                "2012 - 2014: Sau đại học – Chuyên khoa I Chẩn đoán hình ảnh (Học viện Quân y khu vực phía Nam)."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 846,
-        "name": "Nguyễn Hồng Lập",
-        "slug": "tien-si-nguyen-hong-lap",
-        "degree": "Tiến sĩ",
-        "specialize": "Kỹ thuật xét nghiệm y học",
-        "specialties": [
-            "Kỹ thuật xét nghiệm y học"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Cố vấn Xét nghiệm - Nhà thuốc VitaCare",
-        "biography": "Có nhiều năm kinh nghiệm trong lĩnh vực Kỹ thuật Xét nghiệm Y học, đào tạo và quản lý chất lượng xét nghiệm. Hơn 20 năm tham gia công tác giảng dạy và nghiên cứu trong lĩnh vực xét nghiệm y học. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bs_nguyen_hong_lap_564640aa7f_730f7e25cc",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bs_nguyen_hong_lap_564640aa7f_730f7e25cc.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "v9sw4lixn0d39a2zi6bmyr3b",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 1,
-        "experience": {
-            "work": [
-                "2001 - nay: Giảng viên chuyên ngành Kỹ thuật Xét nghiệm Y học, Trường Điều dưỡng - Kỹ thuật y học, Đại học Y Dược TP.HCM.",
-                "2019 - nay: Quản lý khoa Xét nghiệm, Phòng khám.",
-                "Hiện công tác: Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "1996: Tốt nghiệp Kỹ thuật viên xét nghiệm - Đại học Y Dược TP.HCM.",
-                "2001: Tốt nghiệp Kỹ sư hóa học và thực phẩm - Đại học Bách khoa TP.HCM.",
-                "2008: Tốt nghiệp Cử nhân Kỹ thuật Xét nghiệm - Đại học Y Dược TP.HCM.",
-                "2013: Thạc sĩ Y tế Công cộng - Đại học Y Dược TP.HCM.",
-                "2025: Tiến sĩ Kỹ thuật Xét nghiệm Y học - Đại học Y Dược TP.HCM."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 9402,
-        "name": "Nguyễn Thị Khánh Vy",
-        "slug": "bac-si-chuyen-khoa-1-nguyen-thi-khanh-vy",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Sản Phụ khoa",
-        "specialties": [
-            "Sản Phụ khoa"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Tốt nghiệp loại xuất sắc bác sĩ đa khoa tại Liên bang Nga, có kinh nghiệm chuyên sâu về Sản Phụ khoa và chăm sóc sức khỏe bà mẹ - trẻ em. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_chuyen_khoa_1_nguyen_thi_khanh_vy_eb8f969ff8",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_chuyen_khoa_1_nguyen_thi_khanh_vy_eb8f969ff8.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "bso9v62vndj05a2wdwshrgrc",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 1,
-        "experience": {
-            "work": [
-                "2019 - 2021: Bác sĩ chuyên khoa Sản Phụ khoa - Bệnh viện Phụ Nữ Thành phố Đà Nẵng.",
-                "2021 - 2023: Công tác tại Trung tâm Sức khỏe Bà mẹ và Trẻ em.",
-                "2024 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2019: Tốt nghiệp bác sĩ Đa khoa loại xuất sắc tại Liên Bang Nga."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 812,
-        "name": "Đồng Ngọc Hoàng Anh",
-        "slug": "bac-si-dong-ngoc-hoang-anh",
-        "degree": "Bác sĩ",
-        "specialize": "Nội tổng quát",
-        "specialties": [
-            "Nội tổng quát"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Với nhiều năm kinh nghiệm trong lĩnh vực Nội khoa, bác sĩ có nền tảng kiến thức vững chắc và kỹ năng xử trí linh hoạt trong nhiều tình huống thực tế. Bác sĩ luôn nỗ lực mang đến giải pháp chăm sóc sức khỏe chủ động, góp phần nâng cao chất lượng cuộc sống cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "BS_Hoang_Anh_2_3016e5cb66",
-            "src": "https://cdn.tiemchunglongchau.com.vn/BS_Hoang_Anh_2_3016e5cb66.png",
-            "width": 600,
-            "height": 600
-        },
-        "documentId": "tquq22vwjs1e9cp74qyrlj6j",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 1,
-        "experience": {
-            "work": [
-                "2022 - 2024: Bác sĩ Nội Tổng Quát tại Bệnh viện Thống Nhất - TP.HCM.",
-                "2025 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2014 - 2020: Học Bác sĩ đa khoa tại Đại học Y Dược TP.HCM.",
-                "2020 - 2022: Học Bác sĩ Nội trú Phục hồi chức năng tại Đại học Y Dược TP.HCM."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 8131,
-        "name": "Tôn Thất Cảnh Trí",
-        "slug": "thac-si-bac-si-ton-that-canh-tri",
-        "degree": "Thạc sĩ - Bác sĩ",
-        "specialize": "Y học dự phòng",
-        "specialties": [
-            "Y học dự phòng"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ quản lý chuyên môn - Nhà thuốc VitaCare",
-        "biography": "Với nền tảng chuyên môn về y học dự phòng, bác sĩ có kinh nghiệm giảng dạy, nghiên cứu và đào tạo trong lĩnh vực y tế công cộng. Thời gian tu nghiệp ở Phần Lan giúp bác sĩ tiếp cận các phương pháp chăm sóc sức khỏe dự phòng hiện đại và ứng dụng hiệu quả vào thực tế. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "BS_Canh_Tri_8900c58e27",
-            "src": "https://cdn.tiemchunglongchau.com.vn/BS_Canh_Tri_8900c58e27.png",
-            "width": 600,
-            "height": 600
-        },
-        "documentId": "xzrqdo10zg6wiq2kw6ikiyoq",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 1,
-        "experience": {
-            "work": [
-                "2019 - 2024: Giảng viên Khoa Y tế công cộng - Trường Đại học Y Dược Huế.",
-                "2024 - nay: Bác sĩ quản lý chuyên môn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2013 - 2019: Bác sĩ - Trường Đại học Y Dược - Đại học Huế.",
-                "2020 - 2022: Thạc sĩ - Trường Đại học Y Dược - Đại học Huế.",
-                "2023: Tu nghiệp chuyên ngành Chăm sóc sức khỏe và Điều dưỡng - Phần Lan.",
-                "2024: Chứng chỉ khóa đào tạo cấp cứu cơ bản - Bệnh viện Đại học Y dược TP.HCM."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 7264,
-        "name": "Nguyễn Thị Hương Lan",
-        "slug": "bac-si-chuyen-khoa-1-nguyen-thi-huong-lan",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Nhi khoa",
-        "specialties": [
-            "Nhi khoa"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Tốt nghiệp chương trình Sau Đại học Chuyên khoa I Nhi khoa tại Đại học Y Hà Nội. Bác sĩ có hơn 15 năm kinh nghiệm trong lĩnh vực khám và điều trị các bệnh lý Nhi khoa. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bs_huong_lan_fcd4ea7ce1",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bs_huong_lan_fcd4ea7ce1.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "ht8qvmrugwnnmep9pnpbpekm",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "2008 - 2014: Khám chữa bệnh Nội - Nhi - Truyền nhiễm - Bệnh viện Tuệ Tĩnh.",
-                "2016 - 2020: Khám và điều trị Nhi khoa - Truyền nhiễm - Bệnh viện Tuệ Tĩnh.",
-                "2020 - 2022: Quản lý khoa Da liễu; khám và điều trị Nhi khoa - Bệnh viện Tuệ Tĩnh.",
-                "2023 - nay: Khám sàng lọc và tư vấn sức khỏe tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2014 - 2016: Sau đại học - Chuyên khoa I Nhi khoa tại Đại học Y Hà Nội - Bệnh viện Nhi Trung ương.",
-                "2023: Chứng chỉ nội soi Tai Mũi Họng trẻ em và người lớn tại Bệnh viện Saint-Paul."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 9340,
-        "name": "Nguyễn Thu Hà",
-        "slug": "bac-si-chuyen-khoa-1-nguyen-thu-ha",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Y học gia đình",
-        "specialties": [
-            "Y học gia đình"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
-        "biography": "Từng đảm nhiệm vị trí Phó khoa Kiểm soát bệnh tật tại Trung tâm Y tế Quận 1 và sau đó là chuyên viên tại Sở Y tế tỉnh Ninh Thuận. Với hai bằng đại học Y khoa và Dược sĩ, bác sĩ có kinh nghiệm và am hiểu sâu về y học và dược phẩm. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_nguyen_thu_ha_b4571b0d6e",
-            "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_nguyen_thu_ha_b4571b0d6e.png",
-            "width": 900,
-            "height": 900
-        },
-        "documentId": "kunwy3ure5jaq24rx64fwym8",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "2015 - 2022: Bác sĩ - Phó khoa Kiểm soát bệnh tật tại Trung tâm Y tế Quận 1, TP.HCM.",
-                "2022 - 2023: Chuyên viên Phòng Nghiệp vụ y - Sở Y tế tỉnh Ninh Thuận.",
-                "2023 - nay: Bác sĩ Trưởng tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2009 - 2015: Tốt nghiệp Bác sĩ Y học dự phòng - Đại học Y dược TP.HCM (Hệ chính quy).",
-                "2018 - 2020: Dược sĩ Đại học - Đại học Y dược TP.HCM."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 1506,
-        "name": "Nguyễn Hoàng Hải",
-        "slug": "bac-si-chuyen-khoa-1-nguyen-hoang-hai",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Nội Tổng hợp",
-        "specialties": [
-            "Nội Tổng hợp"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
-        "biography": "Trên 10 năm công tác trong lĩnh vực Cấp cứu và Nội khoa. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_nguyen_hoang_hai_836a73c80a",
-            "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_nguyen_hoang_hai_836a73c80a.png",
-            "width": 900,
-            "height": 900
-        },
-        "documentId": "k020ktv4bjxqx0xpcj4sfsx6",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "Bác sĩ khoa Cấp cứu, Trưởng phòng Kế hoạch nghiệp vụ - Trung tâm Y tế Châu Thành, Tây Ninh.",
-                "Bác sĩ Trưởng quản lý chuyên môn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "Tốt nghiệp Bác sĩ - Đại học Y khoa Phạm Ngọc Thạch.",
-                "Tốt nghiệp Bác sĩ Chuyên khoa 1 - Đại học Y dược Cần Thơ.",
-                "Đạt Chứng chỉ An toàn tiêm chủng - Đại học Y Hà Nội."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 1364,
-        "name": "Trương Đình Ti Thi",
-        "slug": "bac-si-chuyen-khoa-1-truong-dinh-ti-thi",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Y học Gia đình",
-        "specialties": [
-            "Y học Gia đình"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ - Nhà thuốc VitaCare",
-        "biography": "Tốt nghiệp Đại học Y Dược Huế, hoàn thành Chuyên khoa 1 Y học Gia đình tại Đại học Y Dược Huế năm 2023. Có kinh nghiệm chuyên sâu trong tư vấn chăm sóc sức khỏe ban đầu. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bs_ti_thi_a25573b202",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bs_ti_thi_a25573b202.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "urljsyy4yfkgv66fcvzhb174",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "2017 - 2024: Bác sĩ - Trung tâm Y tế quận Sơn Trà.",
-                "2021 - 2024: Bác sĩ cộng tác - Các đơn vị tư nhân tại quận Sơn Trà.",
-                "2024 - nay: Bác sĩ - Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2011 - 2017: Bác sĩ Y học Dự phòng - Đại học Y Dược Huế.",
-                "2018: Chứng chỉ chuyên khoa sơ bộ Kỹ thuật Y học chuyên ngành xét nghiệm - Đại học Y Hà Nội.",
-                "2021 - 2023: Bác sĩ Chuyên khoa 1 Y học Gia đình - Đại học Y Dược Huế.",
-                "2023: Chứng chỉ bồi dưỡng nghiệp vụ sư phạm Y học."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 4460,
-        "name": "Nguyễn Thị Nhiên",
-        "slug": "bac-si-chuyen-khoa-1-nguyen-thi-nhien",
-        "degree": "Bác sĩ Chuyên khoa 1",
-        "specialize": "Y tế công cộng",
-        "specialties": [
-            "Y tế công cộng"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
-        "biography": "Có nhiều năm kinh nghiệm trong lĩnh vực y tế công cộng và quản lý chuyên môn. Từng đảm nhiệm vị trí Bác sĩ Trưởng tại Trạm Y tế xã Phan (Tây Ninh) trước khi tham gia công tác chuyên môn tại hệ thống dịch vụ y tế. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bs_thi_nhien_e12c24a2c2",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bs_thi_nhien_e12c24a2c2.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "tnbr2oh5jyv72ix22d4x2tkd",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "2000 - 2021: Bác sĩ Trạm Y tế xã Phan - Trung tâm Y tế Dương Minh Châu, Tây Ninh.",
-                "2023 - nay: Bác sĩ Trưởng - Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "1996 - 1999: Bác sĩ Đa khoa - Hệ chuyên tu - Đại học Y Dược TP.HCM.",
-                "2008 - 2009: Chứng chỉ sơ bộ nội tiết - Đại học Y Dược TP.HCM.",
-                "2010 - 2014: Bác sĩ Chuyên khoa 1 ngành Y tế công cộng - Hệ tại chức - Đại học Y Dược TP.HCM."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 3583,
-        "name": "Mai Đại Đức Anh",
-        "slug": "thac-si-bac-si-mai-dai-duc-anh",
-        "degree": "Thạc sĩ - Bác sĩ",
-        "specialize": "Y học gia đình - Dinh dưỡng",
-        "specialties": [
-            "Y học gia đình",
-            "Dinh dưỡng"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ trưởng - Nhà thuốc VitaCare",
-        "biography": "Hoàn thành chương trình Thạc sĩ Dinh dưỡng tại Trường Đại học Y Hà Nội. Ngoài ra, bác sĩ có nhiều năm kinh nghiệm trong lĩnh vực khám sàng lọc và tư vấn sức khỏe cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bs_duc_anh_254fcb7bcd",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bs_duc_anh_254fcb7bcd.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "k036br1xa0vivdvy1zi5tzwu",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "2021 - 2023: Bác sĩ khám sàng lọc tại Trung tâm Y tế.",
-                "2024 - nay: Bác sĩ khám sàng lọc/tư vấn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2012 - 2018: Bác sĩ tại Trường Đại học Y dược Cần Thơ.",
-                "2019 - 2021: Thạc sĩ Dinh dưỡng tại Trường Đại học Y Hà Nội; thực hành tại Bệnh viện Đại học Y Hà Nội, Bệnh viện Đa khoa Vũng Tàu."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 2660,
-        "name": "Trần Thị Mỹ Linh",
-        "slug": "thac-si-bac-si-tran-thi-my-linh",
-        "degree": "Thạc sĩ - Bác sĩ",
-        "specialize": "Y học cổ truyền",
-        "specialties": [
-            "Y học cổ truyền"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
-        "biography": "Hoàn thành chương trình Thạc sĩ Y học cổ truyền tại Học viện Y dược học cổ truyền Việt Nam. Có nhiều năm kinh nghiệm làm việc trong lĩnh vực Cơ - Xương - Khớp và lĩnh vực Xét nghiệm. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bs_linh_final_3367dffe82",
-            "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bs_linh_final_3367dffe82.png",
-            "width": 500,
-            "height": 500
-        },
-        "documentId": "wgiojwz27f75kfabauffgwdi",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "2017 - 2019: Bác sĩ điều trị - Phòng khám Đa khoa Đông Phương - Chuyên khoa Cơ - Xương - Khớp.",
-                "2019 - 2020: Bác sĩ điều trị - Trung tâm nghiên cứu và ứng dụng thuốc dân tộc.",
-                "2020 - 2024: Bác sĩ điều trị và đào tạo - Bệnh viện Đa khoa - Chuyên khoa xét nghiệm.",
-                "05/2024 - nay: Bác sĩ Trưởng - Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2017: Tốt nghiệp Bác sĩ Y học cổ truyền - Học viện Y dược học cổ truyền Việt Nam.",
-                "2020: Tốt nghiệp Thạc sĩ Y học cổ truyền - Học viện Y dược học cổ truyền Việt Nam."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 1121,
-        "name": "Nguyễn Thị Châm",
-        "slug": "thac-si-bac-si-nguyen-thi-cham",
-        "degree": "Thạc sĩ - Bác sĩ",
-        "specialize": "Y học dự phòng - Y tế công cộng",
-        "specialties": [
-            "Y học dự phòng",
-            "Y tế công cộng"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Có kinh nghiệm trong y học dự phòng, y tế công cộng, dịch tễ học và nghiên cứu lâm sàng, với nhiều công bố khoa học quốc tế. Bác sĩ mong muốn kết hợp chuyên môn và nghiên cứu để mang đến thông tin sức khỏe chính xác, dễ hiểu cho cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bs_nguyen_thi_cham_a43c554866",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bs_nguyen_thi_cham_a43c554866.png",
-            "width": 1280,
-            "height": 1280
-        },
-        "documentId": "jcausq9i0fxfvvzcypshenc5",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 2,
-        "experience": {
-            "work": [
-                "2019 - 2020: Nghiên cứu viên trong lĩnh vực sức khỏe nghề nghiệp và môi trường.",
-                "2022: Nghiên cứu viên trong lĩnh vực dịch tễ học và y tế công cộng tại Hàn Quốc.",
-                "2023: Nghiên cứu viên lâm sàng và phân tích dữ liệu y sinh tại Trung tâm Tế bào gốc và Công nghệ gen tư nhân.",
-                "2023 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2013 - 2019: Bác sĩ Y học Dự phòng, Trường Đại học Y Hà Nội.",
-                "2020 - 2022: Thạc sĩ Y tế Công cộng, National Cancer Center, Hàn Quốc."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 2294,
-        "name": "Lê Thị Quyên",
-        "slug": "bac-si-le-thi-quyen",
-        "degree": "Bác sĩ",
-        "specialize": "Nội - Hồi sức tim",
-        "specialties": [
-            "Nội",
-            "Hồi sức tim"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Tốt nghiệp Đại học Y Dược Huế, có nhiều năm kinh nghiệm trong chăm sóc sức khỏe, đặc biệt về Nội khoa và Hồi sức. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_le_thi_quyen_dfe10b776f",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_le_thi_quyen_dfe10b776f.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "g7p6owuym1rbbhk2cfu691w2",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 3,
-        "experience": {
-            "work": [
-                "2021 - 2022: Bác sĩ - Bệnh viện Đa khoa Xuyên Á.",
-                "2024 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2012 - 2018: Bác sĩ đa khoa - Đại Học Y Dược Huế.",
-                "2019 - 2020: Đào tạo Hồi sức tim - Viện Tim TP.HCM."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 1809,
-        "name": "Võ Thanh Nhã Văn",
-        "slug": "bac-si-vo-thanh-nha-van",
-        "degree": "Bác sĩ",
-        "specialize": "Y học Dự phòng",
-        "specialties": [
-            "Y học Dự phòng"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Tốt nghiệp Bác sĩ Y học Dự phòng từ Đại học Y Dược TP.HCM, có nền tảng về an toàn y tế và nghiên cứu khoa học. Bác sĩ từng hoàn thành khóa huấn luyện an toàn Sơ cấp cứu tại SAFI và nhận được các ghi nhận chuyên môn. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_vo_thanh_nha_van_59a62252ed",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_vo_thanh_nha_van_59a62252ed.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "ofj3h6jkgsomnxrd5g5j3hlj",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": false
-        },
-        "priority": 3,
-        "experience": {
-            "work": [
-                "01/2024: Hoàn thành khóa huấn luyện an toàn Sơ cấp cứu tại SAFI.",
-                "2024 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2017 - 2023: Tốt nghiệp Bác sĩ Y học dự phòng tại Đại học Y Dược TP.HCM."
-            ],
-            "awards": [
-                "03/2017: Giải Nhất HSG Tỉnh Khánh Hòa môn Sinh học.",
-                "10/2021: Bằng khen của Bộ Y tế cho sinh viên có thành tích xuất sắc trong công tác phòng chống dịch COVID-19 tại TP. HCM.",
-                "10/2023: Bằng khen của Đại học Y Dược TP. HCM cho sinh viên có thành tích tốt trong hoạt động nghiên cứu khoa học.",
-                "11/2023: Công bố/đề tài nghiên cứu khoa học về chất lượng cuộc sống của nhóm nam quan hệ tình dục đồng giới nhiễm HIV đang điều trị ARV."
-            ]
-        }
-    },
-    {
-        "_id": 7647,
-        "name": "Đỗ Tuấn Tài",
-        "slug": "bac-si-do-tuan-tai",
-        "degree": "Bác sĩ",
-        "specialize": "Y học dự phòng",
-        "specialties": [
-            "Y học dự phòng"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ - Nhà thuốc VitaCare",
-        "biography": "Tốt nghiệp Đại học Y Dược TP.HCM, từng có thời gian công tác tại khoa Khám bệnh - Trung tâm Y tế quận Tân Phú (TP.HCM). Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_do_tuan_tai_a8e15ea9b7",
-            "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_do_tuan_tai_a8e15ea9b7.png",
-            "width": 1080,
-            "height": 1080
-        },
-        "documentId": "gdbduddmqdg7gz2t8igowu0v",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": false
-        },
-        "priority": 3,
-        "experience": {
-            "work": [
-                "2022 - 2023: Khoa Khám bệnh - Trung tâm Y tế Quận Tân Phú, TP.HCM.",
-                "2023 - nay: Bác sĩ - Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2014 - 2020: Bác sĩ Y học dự phòng - Đại học Y Dược TP.HCM."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 4420,
-        "name": "Hoàng Thị Lệ",
-        "slug": "bac-si-hoang-thi-le",
-        "degree": "Bác sĩ",
-        "specialize": "Đa khoa - Nội khoa",
-        "specialties": [
-            "Đa khoa",
-            "Nội khoa"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
-        "biography": "Với hơn 8 năm kinh nghiệm, trong đó có thời gian làm việc trong lĩnh vực Nội khoa và tham gia hoạt động chăm sóc sức khỏe cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_hoang_thi_le_d8ab7ff3f9",
-            "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_hoang_thi_le_d8ab7ff3f9.png",
-            "width": 900,
-            "height": 900
-        },
-        "documentId": "bs7i68a78bpaue1qh5drkqe9",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 3,
-        "experience": {
-            "work": [
-                "2017 - 2020: Khoa nội - Bệnh viện Tuệ Tĩnh - Học viện Y học cổ truyền Việt Nam.",
-                "2021 - 03/2022: Giảng viên bộ môn hồi sức cấp cứu - Học viện Y dược học cổ truyền Việt Nam.",
-                "03/2022 - 08/2023: Trung tâm tiêm chủng và tư vấn dinh dưỡng Đông Anh.",
-                "08/2023 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2011 - 2017: Bác sĩ đa khoa - Học viện Quân y."
-            ],
-            "awards": []
-        }
-    },
-    {
-        "_id": 6480,
-        "name": "Nguyễn Thị Hải Anh",
-        "slug": "bac-si-nguyen-thi-hai-anh",
-        "degree": "Bác sĩ",
-        "specialize": "Y học cổ truyền",
-        "specialties": [
-            "Y học cổ truyền"
-        ],
-        "organization": "Nhà thuốc VitaCare",
-        "position": "Bác sĩ - Nhà thuốc VitaCare",
-        "biography": "Tốt nghiệp Bác sĩ Y học cổ truyền từ Đại học Y Hà Nội năm 2018, có kinh nghiệm lâm sàng và tư vấn chăm sóc sức khỏe. Hiện đang công tác tại Nhà thuốc VitaCare.",
-        "avatar": {
-            "alt": "bac_si_nguyen_thi_hai_anh_058b0da7f2",
-            "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_nguyen_thi_hai_anh_058b0da7f2.png",
-            "width": 900,
-            "height": 900
-        },
-        "documentId": "unbjvy346imay0gpbt6hi1wx",
-        "flags": {
-            "isApproved": true,
-            "isLegit": true,
-            "isArticleDisplay": true
-        },
-        "priority": 3,
-        "experience": {
-            "work": [
-                "2018 - 2020: Bác sĩ - Khoa Nội, Bệnh viện Y học cổ truyền tỉnh Vĩnh Phúc.",
-                "2020 - 2023: Bác sĩ - Các đơn vị tại tỉnh Vĩnh Phúc.",
-                "2023 - nay: Bác sĩ - Nhà thuốc VitaCare."
-            ],
-            "education": [
-                "2012 - 2018: Bác sĩ Y học cổ truyền - Đại Học Y Hà Nội."
-            ],
-            "awards": []
-        }
-    }
-]
+[{
+  "_id": 6247,
+  "name": "Lê Thị Giao Thi",
+  "slug": "bac-si-chuyen-khoa-1-le-thi-giao-thi",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Y học gia đình",
+  "specialties": [
+    "Y học gia đình"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Trưởng nhóm triển khai chuyên môn - Nhà thuốc VitaCare",
+  "biography": "Với hơn 10 năm kinh nghiệm trong điều trị và phục hồi chức năng các bệnh lý cơ xương khớp, chấn thương và khám sàng lọc, chăm sóc sức khỏe ban đầu. Được trang bị nền tảng đào tạo vững chắc cùng kinh nghiệm thực tiễn phong phú, bác sĩ luôn hướng đến việc nâng cao chất lượng sức khỏe cộng đồng với những giải pháp phòng bệnh và điều trị tối ưu. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "BS_Le_Thi_Giao_Thi_e8eda42850",
+    "src": "https://cdn.tiemchunglongchau.com.vn/BS_Le_Thi_Giao_Thi_e8eda42850.png",
+    "width": 600,
+    "height": 600
+  },
+  "documentId": "v03hpvg4zgdvgx30su5iveh5",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 0,
+  "experience": {
+    "work": [
+      "Bệnh viện tỉnh Khánh Hòa.",
+      "Bệnh viện Thống Nhất – Đồng Nai.",
+      "Trưởng nhóm triển khai chuyên môn - Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2008 - 2014: Sinh viên trường Đại học Y dược Huế.",
+      "2022 - 2024: Bác sĩ Chuyên khoa I, Đại học Y khoa Phạm Ngọc Thạch."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 2577,
+  "name": "Nguyễn Văn My",
+  "slug": "bac-si-nguyen-van-my",
+  "degree": "Bác sĩ",
+  "specialize": "Truyền nhiễm",
+  "specialties": [
+    "Truyền nhiễm"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Bác sĩ có trên 20 năm kinh nghiệm với vai trò bác sĩ điều trị, đặc biệt là các bệnh thuộc chuyên ngành Truyền Nhiễm, Nhiệt đới. Nhiều năm trực tiếp tham gia nghiên cứu về Sốt xuất huyết và có kinh nghiệm đào tạo, chia sẻ thực tiễn trong lĩnh vực tiêm chủng, xử trí các phản ứng sau tiêm. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "BAC_SI_LC_682413889_3_cb1142c7f6",
+    "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/BAC_SI_LC_682413889_3_cb1142c7f6.jpg",
+    "width": 3808,
+    "height": 3808
+  },
+  "documentId": "bdttvo3kggc5vfgt9tgcwtyh",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 0,
+  "experience": {
+    "work": [
+      "2003 - 2006: Bác sĩ điều trị, Bệnh viện Đa khoa Đống Đa, Hà Nội.",
+      "2006 - 2011: Bác sĩ điều trị, Bệnh viện Bệnh Nhiệt đới Trung ương.",
+      "2018 - nay: Cố vấn chuyên môn trong lĩnh vực tiêm chủng vắc xin, đặc biệt là xử trí các phản ứng sau tiêm.",
+      "Hiện công tác: Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "1996 - 2002: Bác sĩ Y khoa, Trường Đại học Y Hà Nội.",
+      "2002 - 2003: Chuyên khoa định hướng, Đại học Y Hà Nội.",
+      "2020 - nay: Nghiên cứu sinh, Khoa Y học Lâm sàng các bệnh Nhiệt đới, Trường Đại học Mahidol, Thái Lan."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 4152,
+  "name": "Nguyễn Anh Tuấn",
+  "slug": "bac-si-chuyen-khoa-1-nguyen-anh-tuan",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Chẩn đoán hình ảnh",
+  "specialties": [
+    "Chẩn đoán hình ảnh"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ Chuyên khoa 1 - Cố vấn chuyên môn - Nhà thuốc VitaCare",
+  "biography": "Trên 30 năm kinh nghiệm trong lĩnh vực y tế dự phòng và phòng chống dịch bệnh cộng đồng. Trên 10 năm công tác trong lĩnh vực chẩn đoán hình ảnh (X-quang, siêu âm tổng quát) và tham gia đào tạo chuyên môn. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "Bac_si_Nguyen_Anh_Tuan_bca1a1ec8d",
+    "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/Bac_si_Nguyen_Anh_Tuan_bca1a1ec8d.png",
+    "width": 600,
+    "height": 600
+  },
+  "documentId": "wxxe73akfhzs5l35a4v29nrx",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 0,
+  "experience": {
+    "work": [
+      "1993 - 2004: Bác sĩ Trưởng trạm y tế cơ sở.",
+      "2004 - 2012: Bác sĩ Trưởng phòng Kế hoạch – Kiêm Trưởng khoa Xét nghiệm, Trung tâm Y tế quận Thủ Đức.",
+      "2014 - 2017: Bác sĩ Phó Giám đốc – Kiêm Trưởng khoa Xét nghiệm, Trung tâm Y tế quận Thủ Đức.",
+      "2017 - 2019: Bác sĩ Trưởng phòng Kế hoạch, Trung tâm Y tế dự phòng TP.HCM.",
+      "2019 - nay: Bác sĩ tư vấn/chuyên môn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "1986 - 1992: Sinh viên trường Đại học Y dược TP Hồ Chí Minh – Hệ Chính quy tập trung.",
+      "2012 - 2014: Sau đại học – Chuyên khoa I Chẩn đoán hình ảnh (Học viện Quân y khu vực phía Nam)."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 846,
+  "name": "Nguyễn Hồng Lập",
+  "slug": "tien-si-nguyen-hong-lap",
+  "degree": "Tiến sĩ",
+  "specialize": "Kỹ thuật xét nghiệm y học",
+  "specialties": [
+    "Kỹ thuật xét nghiệm y học"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Cố vấn Xét nghiệm - Nhà thuốc VitaCare",
+  "biography": "Có nhiều năm kinh nghiệm trong lĩnh vực Kỹ thuật Xét nghiệm Y học, đào tạo và quản lý chất lượng xét nghiệm. Hơn 20 năm tham gia công tác giảng dạy và nghiên cứu trong lĩnh vực xét nghiệm y học. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bs_nguyen_hong_lap_564640aa7f_730f7e25cc",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bs_nguyen_hong_lap_564640aa7f_730f7e25cc.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "v9sw4lixn0d39a2zi6bmyr3b",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 1,
+  "experience": {
+    "work": [
+      "2001 - nay: Giảng viên chuyên ngành Kỹ thuật Xét nghiệm Y học, Trường Điều dưỡng - Kỹ thuật y học, Đại học Y Dược TP.HCM.",
+      "2019 - nay: Quản lý khoa Xét nghiệm, Phòng khám.",
+      "Hiện công tác: Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "1996: Tốt nghiệp Kỹ thuật viên xét nghiệm - Đại học Y Dược TP.HCM.",
+      "2001: Tốt nghiệp Kỹ sư hóa học và thực phẩm - Đại học Bách khoa TP.HCM.",
+      "2008: Tốt nghiệp Cử nhân Kỹ thuật Xét nghiệm - Đại học Y Dược TP.HCM.",
+      "2013: Thạc sĩ Y tế Công cộng - Đại học Y Dược TP.HCM.",
+      "2025: Tiến sĩ Kỹ thuật Xét nghiệm Y học - Đại học Y Dược TP.HCM."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 9402,
+  "name": "Nguyễn Thị Khánh Vy",
+  "slug": "bac-si-chuyen-khoa-1-nguyen-thi-khanh-vy",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Sản Phụ khoa",
+  "specialties": [
+    "Sản Phụ khoa"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Tốt nghiệp loại xuất sắc bác sĩ đa khoa tại Liên bang Nga, có kinh nghiệm chuyên sâu về Sản Phụ khoa và chăm sóc sức khỏe bà mẹ - trẻ em. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_chuyen_khoa_1_nguyen_thi_khanh_vy_eb8f969ff8",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_chuyen_khoa_1_nguyen_thi_khanh_vy_eb8f969ff8.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "bso9v62vndj05a2wdwshrgrc",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 1,
+  "experience": {
+    "work": [
+      "2019 - 2021: Bác sĩ chuyên khoa Sản Phụ khoa - Bệnh viện Phụ Nữ Thành phố Đà Nẵng.",
+      "2021 - 2023: Công tác tại Trung tâm Sức khỏe Bà mẹ và Trẻ em.",
+      "2024 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2019: Tốt nghiệp bác sĩ Đa khoa loại xuất sắc tại Liên Bang Nga."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 812,
+  "name": "Đồng Ngọc Hoàng Anh",
+  "slug": "bac-si-dong-ngoc-hoang-anh",
+  "degree": "Bác sĩ",
+  "specialize": "Nội tổng quát",
+  "specialties": [
+    "Nội tổng quát"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Với nhiều năm kinh nghiệm trong lĩnh vực Nội khoa, bác sĩ có nền tảng kiến thức vững chắc và kỹ năng xử trí linh hoạt trong nhiều tình huống thực tế. Bác sĩ luôn nỗ lực mang đến giải pháp chăm sóc sức khỏe chủ động, góp phần nâng cao chất lượng cuộc sống cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "BS_Hoang_Anh_2_3016e5cb66",
+    "src": "https://cdn.tiemchunglongchau.com.vn/BS_Hoang_Anh_2_3016e5cb66.png",
+    "width": 600,
+    "height": 600
+  },
+  "documentId": "tquq22vwjs1e9cp74qyrlj6j",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 1,
+  "experience": {
+    "work": [
+      "2022 - 2024: Bác sĩ Nội Tổng Quát tại Bệnh viện Thống Nhất - TP.HCM.",
+      "2025 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2014 - 2020: Học Bác sĩ đa khoa tại Đại học Y Dược TP.HCM.",
+      "2020 - 2022: Học Bác sĩ Nội trú Phục hồi chức năng tại Đại học Y Dược TP.HCM."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 8131,
+  "name": "Tôn Thất Cảnh Trí",
+  "slug": "thac-si-bac-si-ton-that-canh-tri",
+  "degree": "Thạc sĩ - Bác sĩ",
+  "specialize": "Y học dự phòng",
+  "specialties": [
+    "Y học dự phòng"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ quản lý chuyên môn - Nhà thuốc VitaCare",
+  "biography": "Với nền tảng chuyên môn về y học dự phòng, bác sĩ có kinh nghiệm giảng dạy, nghiên cứu và đào tạo trong lĩnh vực y tế công cộng. Thời gian tu nghiệp ở Phần Lan giúp bác sĩ tiếp cận các phương pháp chăm sóc sức khỏe dự phòng hiện đại và ứng dụng hiệu quả vào thực tế. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "BS_Canh_Tri_8900c58e27",
+    "src": "https://cdn.tiemchunglongchau.com.vn/BS_Canh_Tri_8900c58e27.png",
+    "width": 600,
+    "height": 600
+  },
+  "documentId": "xzrqdo10zg6wiq2kw6ikiyoq",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 1,
+  "experience": {
+    "work": [
+      "2019 - 2024: Giảng viên Khoa Y tế công cộng - Trường Đại học Y Dược Huế.",
+      "2024 - nay: Bác sĩ quản lý chuyên môn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2013 - 2019: Bác sĩ - Trường Đại học Y Dược - Đại học Huế.",
+      "2020 - 2022: Thạc sĩ - Trường Đại học Y Dược - Đại học Huế.",
+      "2023: Tu nghiệp chuyên ngành Chăm sóc sức khỏe và Điều dưỡng - Phần Lan.",
+      "2024: Chứng chỉ khóa đào tạo cấp cứu cơ bản - Bệnh viện Đại học Y dược TP.HCM."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 7264,
+  "name": "Nguyễn Thị Hương Lan",
+  "slug": "bac-si-chuyen-khoa-1-nguyen-thi-huong-lan",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Nhi khoa",
+  "specialties": [
+    "Nhi khoa"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Tốt nghiệp chương trình Sau Đại học Chuyên khoa I Nhi khoa tại Đại học Y Hà Nội. Bác sĩ có hơn 15 năm kinh nghiệm trong lĩnh vực khám và điều trị các bệnh lý Nhi khoa. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bs_huong_lan_fcd4ea7ce1",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bs_huong_lan_fcd4ea7ce1.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "ht8qvmrugwnnmep9pnpbpekm",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "2008 - 2014: Khám chữa bệnh Nội - Nhi - Truyền nhiễm - Bệnh viện Tuệ Tĩnh.",
+      "2016 - 2020: Khám và điều trị Nhi khoa - Truyền nhiễm - Bệnh viện Tuệ Tĩnh.",
+      "2020 - 2022: Quản lý khoa Da liễu; khám và điều trị Nhi khoa - Bệnh viện Tuệ Tĩnh.",
+      "2023 - nay: Khám sàng lọc và tư vấn sức khỏe tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2014 - 2016: Sau đại học - Chuyên khoa I Nhi khoa tại Đại học Y Hà Nội - Bệnh viện Nhi Trung ương.",
+      "2023: Chứng chỉ nội soi Tai Mũi Họng trẻ em và người lớn tại Bệnh viện Saint-Paul."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 9340,
+  "name": "Nguyễn Thu Hà",
+  "slug": "bac-si-chuyen-khoa-1-nguyen-thu-ha",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Y học gia đình",
+  "specialties": [
+    "Y học gia đình"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
+  "biography": "Từng đảm nhiệm vị trí Phó khoa Kiểm soát bệnh tật tại Trung tâm Y tế Quận 1 và sau đó là chuyên viên tại Sở Y tế tỉnh Ninh Thuận. Với hai bằng đại học Y khoa và Dược sĩ, bác sĩ có kinh nghiệm và am hiểu sâu về y học và dược phẩm. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_nguyen_thu_ha_b4571b0d6e",
+    "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_nguyen_thu_ha_b4571b0d6e.png",
+    "width": 900,
+    "height": 900
+  },
+  "documentId": "kunwy3ure5jaq24rx64fwym8",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "2015 - 2022: Bác sĩ - Phó khoa Kiểm soát bệnh tật tại Trung tâm Y tế Quận 1, TP.HCM.",
+      "2022 - 2023: Chuyên viên Phòng Nghiệp vụ y - Sở Y tế tỉnh Ninh Thuận.",
+      "2023 - nay: Bác sĩ Trưởng tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2009 - 2015: Tốt nghiệp Bác sĩ Y học dự phòng - Đại học Y dược TP.HCM (Hệ chính quy).",
+      "2018 - 2020: Dược sĩ Đại học - Đại học Y dược TP.HCM."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 1506,
+  "name": "Nguyễn Hoàng Hải",
+  "slug": "bac-si-chuyen-khoa-1-nguyen-hoang-hai",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Nội Tổng hợp",
+  "specialties": [
+    "Nội Tổng hợp"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
+  "biography": "Trên 10 năm công tác trong lĩnh vực Cấp cứu và Nội khoa. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_nguyen_hoang_hai_836a73c80a",
+    "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_nguyen_hoang_hai_836a73c80a.png",
+    "width": 900,
+    "height": 900
+  },
+  "documentId": "k020ktv4bjxqx0xpcj4sfsx6",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "Bác sĩ khoa Cấp cứu, Trưởng phòng Kế hoạch nghiệp vụ - Trung tâm Y tế Châu Thành, Tây Ninh.",
+      "Bác sĩ Trưởng quản lý chuyên môn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "Tốt nghiệp Bác sĩ - Đại học Y khoa Phạm Ngọc Thạch.",
+      "Tốt nghiệp Bác sĩ Chuyên khoa 1 - Đại học Y dược Cần Thơ.",
+      "Đạt Chứng chỉ An toàn tiêm chủng - Đại học Y Hà Nội."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 1364,
+  "name": "Trương Đình Ti Thi",
+  "slug": "bac-si-chuyen-khoa-1-truong-dinh-ti-thi",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Y học Gia đình",
+  "specialties": [
+    "Y học Gia đình"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ - Nhà thuốc VitaCare",
+  "biography": "Tốt nghiệp Đại học Y Dược Huế, hoàn thành Chuyên khoa 1 Y học Gia đình tại Đại học Y Dược Huế năm 2023. Có kinh nghiệm chuyên sâu trong tư vấn chăm sóc sức khỏe ban đầu. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bs_ti_thi_a25573b202",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bs_ti_thi_a25573b202.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "urljsyy4yfkgv66fcvzhb174",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "2017 - 2024: Bác sĩ - Trung tâm Y tế quận Sơn Trà.",
+      "2021 - 2024: Bác sĩ cộng tác - Các đơn vị tư nhân tại quận Sơn Trà.",
+      "2024 - nay: Bác sĩ - Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2011 - 2017: Bác sĩ Y học Dự phòng - Đại học Y Dược Huế.",
+      "2018: Chứng chỉ chuyên khoa sơ bộ Kỹ thuật Y học chuyên ngành xét nghiệm - Đại học Y Hà Nội.",
+      "2021 - 2023: Bác sĩ Chuyên khoa 1 Y học Gia đình - Đại học Y Dược Huế.",
+      "2023: Chứng chỉ bồi dưỡng nghiệp vụ sư phạm Y học."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 4460,
+  "name": "Nguyễn Thị Nhiên",
+  "slug": "bac-si-chuyen-khoa-1-nguyen-thi-nhien",
+  "degree": "Bác sĩ Chuyên khoa 1",
+  "specialize": "Y tế công cộng",
+  "specialties": [
+    "Y tế công cộng"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
+  "biography": "Có nhiều năm kinh nghiệm trong lĩnh vực y tế công cộng và quản lý chuyên môn. Từng đảm nhiệm vị trí Bác sĩ Trưởng tại Trạm Y tế xã Phan (Tây Ninh) trước khi tham gia công tác chuyên môn tại hệ thống dịch vụ y tế. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bs_thi_nhien_e12c24a2c2",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bs_thi_nhien_e12c24a2c2.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "tnbr2oh5jyv72ix22d4x2tkd",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "2000 - 2021: Bác sĩ Trạm Y tế xã Phan - Trung tâm Y tế Dương Minh Châu, Tây Ninh.",
+      "2023 - nay: Bác sĩ Trưởng - Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "1996 - 1999: Bác sĩ Đa khoa - Hệ chuyên tu - Đại học Y Dược TP.HCM.",
+      "2008 - 2009: Chứng chỉ sơ bộ nội tiết - Đại học Y Dược TP.HCM.",
+      "2010 - 2014: Bác sĩ Chuyên khoa 1 ngành Y tế công cộng - Hệ tại chức - Đại học Y Dược TP.HCM."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 3583,
+  "name": "Mai Đại Đức Anh",
+  "slug": "thac-si-bac-si-mai-dai-duc-anh",
+  "degree": "Thạc sĩ - Bác sĩ",
+  "specialize": "Y học gia đình - Dinh dưỡng",
+  "specialties": [
+    "Y học gia đình",
+    "Dinh dưỡng"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ trưởng - Nhà thuốc VitaCare",
+  "biography": "Hoàn thành chương trình Thạc sĩ Dinh dưỡng tại Trường Đại học Y Hà Nội. Ngoài ra, bác sĩ có nhiều năm kinh nghiệm trong lĩnh vực khám sàng lọc và tư vấn sức khỏe cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bs_duc_anh_254fcb7bcd",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bs_duc_anh_254fcb7bcd.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "k036br1xa0vivdvy1zi5tzwu",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "2021 - 2023: Bác sĩ khám sàng lọc tại Trung tâm Y tế.",
+      "2024 - nay: Bác sĩ khám sàng lọc/tư vấn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2012 - 2018: Bác sĩ tại Trường Đại học Y dược Cần Thơ.",
+      "2019 - 2021: Thạc sĩ Dinh dưỡng tại Trường Đại học Y Hà Nội; thực hành tại Bệnh viện Đại học Y Hà Nội, Bệnh viện Đa khoa Vũng Tàu."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 2660,
+  "name": "Trần Thị Mỹ Linh",
+  "slug": "thac-si-bac-si-tran-thi-my-linh",
+  "degree": "Thạc sĩ - Bác sĩ",
+  "specialize": "Y học cổ truyền",
+  "specialties": [
+    "Y học cổ truyền"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ Trưởng - Nhà thuốc VitaCare",
+  "biography": "Hoàn thành chương trình Thạc sĩ Y học cổ truyền tại Học viện Y dược học cổ truyền Việt Nam. Có nhiều năm kinh nghiệm làm việc trong lĩnh vực Cơ - Xương - Khớp và lĩnh vực Xét nghiệm. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bs_linh_final_3367dffe82",
+    "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bs_linh_final_3367dffe82.png",
+    "width": 500,
+    "height": 500
+  },
+  "documentId": "wgiojwz27f75kfabauffgwdi",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "2017 - 2019: Bác sĩ điều trị - Phòng khám Đa khoa Đông Phương - Chuyên khoa Cơ - Xương - Khớp.",
+      "2019 - 2020: Bác sĩ điều trị - Trung tâm nghiên cứu và ứng dụng thuốc dân tộc.",
+      "2020 - 2024: Bác sĩ điều trị và đào tạo - Bệnh viện Đa khoa - Chuyên khoa xét nghiệm.",
+      "05/2024 - nay: Bác sĩ Trưởng - Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2017: Tốt nghiệp Bác sĩ Y học cổ truyền - Học viện Y dược học cổ truyền Việt Nam.",
+      "2020: Tốt nghiệp Thạc sĩ Y học cổ truyền - Học viện Y dược học cổ truyền Việt Nam."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 1121,
+  "name": "Nguyễn Thị Châm",
+  "slug": "thac-si-bac-si-nguyen-thi-cham",
+  "degree": "Thạc sĩ - Bác sĩ",
+  "specialize": "Y học dự phòng - Y tế công cộng",
+  "specialties": [
+    "Y học dự phòng",
+    "Y tế công cộng"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Có kinh nghiệm trong y học dự phòng, y tế công cộng, dịch tễ học và nghiên cứu lâm sàng, với nhiều công bố khoa học quốc tế. Bác sĩ mong muốn kết hợp chuyên môn và nghiên cứu để mang đến thông tin sức khỏe chính xác, dễ hiểu cho cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bs_nguyen_thi_cham_a43c554866",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bs_nguyen_thi_cham_a43c554866.png",
+    "width": 1280,
+    "height": 1280
+  },
+  "documentId": "jcausq9i0fxfvvzcypshenc5",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 2,
+  "experience": {
+    "work": [
+      "2019 - 2020: Nghiên cứu viên trong lĩnh vực sức khỏe nghề nghiệp và môi trường.",
+      "2022: Nghiên cứu viên trong lĩnh vực dịch tễ học và y tế công cộng tại Hàn Quốc.",
+      "2023: Nghiên cứu viên lâm sàng và phân tích dữ liệu y sinh tại Trung tâm Tế bào gốc và Công nghệ gen tư nhân.",
+      "2023 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2013 - 2019: Bác sĩ Y học Dự phòng, Trường Đại học Y Hà Nội.",
+      "2020 - 2022: Thạc sĩ Y tế Công cộng, National Cancer Center, Hàn Quốc."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 2294,
+  "name": "Lê Thị Quyên",
+  "slug": "bac-si-le-thi-quyen",
+  "degree": "Bác sĩ",
+  "specialize": "Nội - Hồi sức tim",
+  "specialties": [
+    "Nội",
+    "Hồi sức tim"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Tốt nghiệp Đại học Y Dược Huế, có nhiều năm kinh nghiệm trong chăm sóc sức khỏe, đặc biệt về Nội khoa và Hồi sức. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_le_thi_quyen_dfe10b776f",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_le_thi_quyen_dfe10b776f.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "g7p6owuym1rbbhk2cfu691w2",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 3,
+  "experience": {
+    "work": [
+      "2021 - 2022: Bác sĩ - Bệnh viện Đa khoa Xuyên Á.",
+      "2024 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2012 - 2018: Bác sĩ đa khoa - Đại Học Y Dược Huế.",
+      "2019 - 2020: Đào tạo Hồi sức tim - Viện Tim TP.HCM."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 1809,
+  "name": "Võ Thanh Nhã Văn",
+  "slug": "bac-si-vo-thanh-nha-van",
+  "degree": "Bác sĩ",
+  "specialize": "Y học Dự phòng",
+  "specialties": [
+    "Y học Dự phòng"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Tốt nghiệp Bác sĩ Y học Dự phòng từ Đại học Y Dược TP.HCM, có nền tảng về an toàn y tế và nghiên cứu khoa học. Bác sĩ từng hoàn thành khóa huấn luyện an toàn Sơ cấp cứu tại SAFI và nhận được các ghi nhận chuyên môn. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_vo_thanh_nha_van_59a62252ed",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_vo_thanh_nha_van_59a62252ed.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "ofj3h6jkgsomnxrd5g5j3hlj",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": false
+  },
+  "priority": 3,
+  "experience": {
+    "work": [
+      "01/2024: Hoàn thành khóa huấn luyện an toàn Sơ cấp cứu tại SAFI.",
+      "2024 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2017 - 2023: Tốt nghiệp Bác sĩ Y học dự phòng tại Đại học Y Dược TP.HCM."
+    ],
+    "awards": [
+      "03/2017: Giải Nhất HSG Tỉnh Khánh Hòa môn Sinh học.",
+      "10/2021: Bằng khen của Bộ Y tế cho sinh viên có thành tích xuất sắc trong công tác phòng chống dịch COVID-19 tại TP. HCM.",
+      "10/2023: Bằng khen của Đại học Y Dược TP. HCM cho sinh viên có thành tích tốt trong hoạt động nghiên cứu khoa học.",
+      "11/2023: Công bố/đề tài nghiên cứu khoa học về chất lượng cuộc sống của nhóm nam quan hệ tình dục đồng giới nhiễm HIV đang điều trị ARV."
+    ]
+  }
+},
+{
+  "_id": 7647,
+  "name": "Đỗ Tuấn Tài",
+  "slug": "bac-si-do-tuan-tai",
+  "degree": "Bác sĩ",
+  "specialize": "Y học dự phòng",
+  "specialties": [
+    "Y học dự phòng"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ - Nhà thuốc VitaCare",
+  "biography": "Tốt nghiệp Đại học Y Dược TP.HCM, từng có thời gian công tác tại khoa Khám bệnh - Trung tâm Y tế quận Tân Phú (TP.HCM). Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_do_tuan_tai_a8e15ea9b7",
+    "src": "https://cdn.tiemchunglongchau.com.vn/bac_si_do_tuan_tai_a8e15ea9b7.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "documentId": "gdbduddmqdg7gz2t8igowu0v",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": false
+  },
+  "priority": 3,
+  "experience": {
+    "work": [
+      "2022 - 2023: Khoa Khám bệnh - Trung tâm Y tế Quận Tân Phú, TP.HCM.",
+      "2023 - nay: Bác sĩ - Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2014 - 2020: Bác sĩ Y học dự phòng - Đại học Y Dược TP.HCM."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 4420,
+  "name": "Hoàng Thị Lệ",
+  "slug": "bac-si-hoang-thi-le",
+  "degree": "Bác sĩ",
+  "specialize": "Đa khoa - Nội khoa",
+  "specialties": [
+    "Đa khoa",
+    "Nội khoa"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ tư vấn - Nhà thuốc VitaCare",
+  "biography": "Với hơn 8 năm kinh nghiệm, trong đó có thời gian làm việc trong lĩnh vực Nội khoa và tham gia hoạt động chăm sóc sức khỏe cộng đồng. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_hoang_thi_le_d8ab7ff3f9",
+    "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_hoang_thi_le_d8ab7ff3f9.png",
+    "width": 900,
+    "height": 900
+  },
+  "documentId": "bs7i68a78bpaue1qh5drkqe9",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 3,
+  "experience": {
+    "work": [
+      "2017 - 2020: Khoa nội - Bệnh viện Tuệ Tĩnh - Học viện Y học cổ truyền Việt Nam.",
+      "2021 - 03/2022: Giảng viên bộ môn hồi sức cấp cứu - Học viện Y dược học cổ truyền Việt Nam.",
+      "03/2022 - 08/2023: Trung tâm tiêm chủng và tư vấn dinh dưỡng Đông Anh.",
+      "08/2023 - nay: Bác sĩ tư vấn tại Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2011 - 2017: Bác sĩ đa khoa - Học viện Quân y."
+    ],
+    "awards": []
+  }
+},
+{
+  "_id": 6480,
+  "name": "Nguyễn Thị Hải Anh",
+  "slug": "bac-si-nguyen-thi-hai-anh",
+  "degree": "Bác sĩ",
+  "specialize": "Y học cổ truyền",
+  "specialties": [
+    "Y học cổ truyền"
+  ],
+  "organization": "Nhà thuốc VitaCare",
+  "position": "Bác sĩ - Nhà thuốc VitaCare",
+  "biography": "Tốt nghiệp Bác sĩ Y học cổ truyền từ Đại học Y Hà Nội năm 2018, có kinh nghiệm lâm sàng và tư vấn chăm sóc sức khỏe. Hiện đang công tác tại Nhà thuốc VitaCare.",
+  "avatar": {
+    "alt": "bac_si_nguyen_thi_hai_anh_058b0da7f2",
+    "src": "https://cdn.tiemchunglongchau.com.vn/unsafe/bac_si_nguyen_thi_hai_anh_058b0da7f2.png",
+    "width": 900,
+    "height": 900
+  },
+  "documentId": "unbjvy346imay0gpbt6hi1wx",
+  "flags": {
+    "isApproved": true,
+    "isLegit": true,
+    "isArticleDisplay": true
+  },
+  "priority": 3,
+  "experience": {
+    "work": [
+      "2018 - 2020: Bác sĩ - Khoa Nội, Bệnh viện Y học cổ truyền tỉnh Vĩnh Phúc.",
+      "2020 - 2023: Bác sĩ - Các đơn vị tại tỉnh Vĩnh Phúc.",
+      "2023 - nay: Bác sĩ - Nhà thuốc VitaCare."
+    ],
+    "education": [
+      "2012 - 2018: Bác sĩ Y học cổ truyền - Đại Học Y Hà Nội."
+    ],
+    "awards": []
+  }
+}]
