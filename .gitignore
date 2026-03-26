@@ -18,3 +18,4 @@ data/blogs.json
 data/blog.json
 data/products.json
 *.json.backup
+"my-user/src/assets/video/" 
