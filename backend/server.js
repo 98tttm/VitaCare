@@ -1818,11 +1818,11 @@ app.get('/api/products', async (req, res) => {
     if (hasDiscount) {
       const discountCond = {
         $or: [
-          { discount: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
-          { salePrice: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
-          { giaKhuyenMai: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
-          { originalPrice: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
-          { giaGoc: { $exists: true, $ne: 0, $ne: "0", $ne: "" } },
+          { discount: { $exists: true, $nin: [0, "0", "", null] } },
+          { salePrice: { $exists: true, $nin: [0, "0", "", null] } },
+          { giaKhuyenMai: { $exists: true, $nin: [0, "0", "", null] } },
+          { originalPrice: { $exists: true, $nin: [0, "0", "", null] } },
+          { giaGoc: { $exists: true, $nin: [0, "0", "", null] } },
           // Thêm check so sánh giá bàng $expr để vét nốt các trường hợp ko có field discount riêng
           { $expr: { $gt: [{ $convert: { input: "$originalPrice", to: "double", onError: 0, onNull: 0 } }, { $convert: { input: "$price", to: "double", onError: 0, onNull: 0 } }] } },
           { $expr: { $gt: [{ $convert: { input: "$giaGoc", to: "double", onError: 0, onNull: 0 } }, { $convert: { input: "$price", to: "double", onError: 0, onNull: 0 } }] } }
@@ -5261,8 +5261,8 @@ app.get('/api/blogs', async (req, res) => {
 
     // Collection: prioritize 'blogs' (populated) then 'blog'
     const db = mongoose.connection.db;
-    const colls = await db.listCollections({ name: { $in: ['blog', 'blogs'] } }).toArray();
-    const collName = colls.some((c) => c.name === 'blog') ? 'blog' : 'blogs';
+    const blogCount = await db.collection('blog').countDocuments().catch(() => 0);
+    const collName = blogCount > 0 ? 'blog' : 'blogs';
     const blogsCol = db.collection(collName);
     const projection = {
       title: 1,
@@ -12228,8 +12228,8 @@ app.get('/api/admin/blogs/:id', async (req, res) => {
 app.get('/api/admin/blog-categories', async (req, res) => {
   try {
     const db = mongoose.connection.db;
-    const colls = await db.listCollections({ name: { $in: ['blog', 'blogs'] } }).toArray();
-    const collName = colls.some((c) => c.name === 'blog') ? 'blog' : 'blogs';
+    const blogCount = await db.collection('blog').countDocuments().catch(() => 0);
+    const collName = blogCount > 0 ? 'blog' : 'blogs';
     const blogsCol = db.collection(collName);
 
     const catsMap = new Map();
