@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class CustomerService {
-    private apiUrl = 'http://localhost:3000/api/admin/users';
+    private apiUrl = '/api/admin/users';
 
     constructor(private http: HttpClient) { }
 
@@ -27,7 +27,7 @@ export class CustomerService {
     }
 
     getCustomerAddresses(userId: string): Observable<any> {
-        return this.http.get<any>(`http://localhost:3000/api/addresses?user_id=${encodeURIComponent(userId)}`);
+        return this.http.get<any>(`/api/addresses?user_id=${encodeURIComponent(userId)}`);
     }
 
     updateCustomer(id: string, customer: any): Observable<any> {
@@ -40,29 +40,29 @@ export class CustomerService {
 
     /** Mã khách hàng dự kiến (CUS######) — GET /api/admin/customers/next-user-id */
     previewNextCustomerId(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/admin/customers/next-user-id');
+        return this.http.get<any>('/api/admin/customers/next-user-id');
     }
 
     /** Tạo khách mới (admin) — POST /api/admin/customers */
     createCustomer(body: Record<string, unknown>): Observable<any> {
-        return this.http.post<any>('http://localhost:3000/api/admin/customers', body);
+        return this.http.post<any>('/api/admin/customers', body);
     }
 
     /** Địa chỉ giao hàng — cùng API sổ địa chỉ user */
     createAddress(body: Record<string, unknown>): Observable<any> {
-        return this.http.post<any>('http://localhost:3000/api/addresses', body);
+        return this.http.post<any>('/api/addresses', body);
     }
 
     // Groups
     getGroups(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/admin/customer_groups');
+        return this.http.get<any>('/api/admin/customer_groups');
     }
 
     createGroup(group: any): Observable<any> {
-        return this.http.post<any>('http://localhost:3000/api/admin/customer_groups', group);
+        return this.http.post<any>('/api/admin/customer_groups', group);
     }
 
     deleteGroup(id: string): Observable<any> {
-        return this.http.delete<any>(`http://localhost:3000/api/admin/customer_groups/${id}`);
+        return this.http.delete<any>(`/api/admin/customer_groups/${id}`);
     }
 }

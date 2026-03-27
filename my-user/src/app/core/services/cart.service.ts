@@ -45,7 +45,7 @@ export const GUEST_CART_KEY = 'guest_cart_items';
     providedIn: 'root'
 })
 export class CartService {
-    private apiUrl = 'http://localhost:3000/api/carts';
+    private apiUrl = '/api/carts';
     private cache: { userId: string; res: CartResponse; at: number } | null = null;
     private authService = inject(AuthService);
 
@@ -56,7 +56,7 @@ export class CartService {
     private _cartUpdated$ = new Subject<Cart | null>();
     readonly cartUpdated$ = this._cartUpdated$.asObservable();
 
-    private apiBase = 'http://localhost:3000';
+    private apiBase = '';
 
     /**
      * Cart khách vãng lai lưu theo phiên.

@@ -1558,7 +1558,7 @@ export class Order implements OnInit, OnDestroy {
   /** Gửi đơn hàng lên server và xử lý kết quả chung cho cả COD / online */
   private submitOrderToServer(payload: any): void {
     this.http.post<{ success: boolean; order_id?: string; message?: string }>(
-      'http://localhost:3000/api/orders', payload
+      '/api/orders', payload
     ).subscribe({
       next: async (res) => {
         this.isSubmitting = false;

@@ -51,8 +51,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "55kB",
-                  "maximumError": "70kB"
+                  "maximumWarning": "100kB",
+                  "maximumError": "150kB"
                 }
               ],
               "outputHashing": "all"
@@ -72,7 +72,8 @@
               "buildTarget": "my-admin:build:production"
             },
             "development": {
-              "buildTarget": "my-admin:build:development"
+              "buildTarget": "my-admin:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

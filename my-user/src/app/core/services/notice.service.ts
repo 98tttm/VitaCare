@@ -12,7 +12,7 @@ export interface NoticeApiResponse {
   providedIn: 'root',
 })
 export class NoticeService {
-  private apiUrl = 'http://localhost:3000/api/notices';
+  private apiUrl = '/api/notices';
   private refreshSubject = new Subject<void>();
   refresh$ = this.refreshSubject.asObservable();
 

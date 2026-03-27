@@ -141,7 +141,7 @@ export class BlogSubCategory implements OnInit {
         const limit = this.initialSize;
         const skip = 0;
 
-        const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}&category=${encodeURIComponent(this.categoryName)}&subcategory=${encodeURIComponent(this.subcategoryName)}`;
+        const url = `/api/blogs?limit=${limit}&skip=${skip}&category=${encodeURIComponent(this.categoryName)}&subcategory=${encodeURIComponent(this.subcategoryName)}`;
 
         this.http.get<any>(url).subscribe({
             next: (res) => {
@@ -164,7 +164,7 @@ export class BlogSubCategory implements OnInit {
         const skip = this.initialSize + ((this.loadCount - 1) * this.pageSize);
         const limit = this.pageSize;
 
-        const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}&category=${encodeURIComponent(this.categoryName)}&subcategory=${encodeURIComponent(this.subcategoryName)}`;
+        const url = `/api/blogs?limit=${limit}&skip=${skip}&category=${encodeURIComponent(this.categoryName)}&subcategory=${encodeURIComponent(this.subcategoryName)}`;
 
         this.http.get<any>(url).subscribe({
             next: (res) => {

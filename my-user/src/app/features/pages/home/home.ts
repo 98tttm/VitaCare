@@ -83,7 +83,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
   subBanner2 = 'assets/images/banner/Banner Homepage .png';    // Right bottom (User input: sub_2 = ô bên phải nhỏ ở dưới)
   subBanner3 = 'assets/images/banner/Banner Homepage  (1).png'; // Right top    (User input: sub_3 = ô bên phải nhỏ ở trên)
 
-  private readonly backendBaseUrl = 'http://localhost:3000';
+  private readonly backendBaseUrl = '';
 
   // ===== Promo popup state (banner click) =====
   private mainBannerPromotions: any[] = [];
@@ -796,7 +796,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
 
   private loadFlashSaleProducts(limit = 50000): void {
     this.isLoadingFlashProducts = true;
-    const url = `http://localhost:3000/api/products?limit=${limit}&hasDiscount=true&sort=discount`;
+    const url = `/api/products?limit=${limit}&hasDiscount=true&sort=discount`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         this.isLoadingFlashProducts = false;
@@ -1310,7 +1310,7 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
     this.isLoadingFeaturedProducts = true;
     this.isFeaturedProductsError = false;
     // backend server in this repo exposes /api/products on port 3000
-    const url = `http://localhost:3000/api/products?limit=${limit}`;
+    const url = `/api/products?limit=${limit}`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         this.isLoadingFeaturedProducts = false;
@@ -1399,8 +1399,8 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
         const normalizeImageUrl = (src?: string | null): string | undefined => {
           if (!src) return undefined;
           if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('assets/')) return src;
-          if (src.startsWith('/')) return `http://localhost:3000${src}`;
-          return `http://localhost:3000/${src}`;
+          if (src.startsWith('/')) return `${src}`;
+          return `/${src}`;
         };
 
         const mapped = data.map((b: any) => {

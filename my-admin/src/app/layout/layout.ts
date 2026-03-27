@@ -80,7 +80,7 @@ export class Layout implements OnInit, OnDestroy {
   }
 
   loadAreas() {
-    this.http.get<any>('http://localhost:3000/api/tree_complete').subscribe({
+    this.http.get<any>('/api/tree_complete').subscribe({
       next: (res) => {
         if (res.success && res.data) {
           // Transform tree_complete.json into simple list of cities

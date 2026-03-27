@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = '';
 
 import { Store } from '../models/store.model';
 

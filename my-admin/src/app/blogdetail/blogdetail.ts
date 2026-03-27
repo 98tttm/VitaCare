@@ -65,7 +65,7 @@ export class Blogdetail implements OnInit {
     historyIndex: number = -1;
     isUpdatingContent: boolean = false;
     historySaveTimeout: any = null;
-    private readonly backendBaseUrl = 'http://localhost:3000';
+    private readonly backendBaseUrl = '';
 
     /** Trạng thái duyệt khi mở form (để biết lần đầu dược sĩ duyệt) */
     private previousIsApproved = false;

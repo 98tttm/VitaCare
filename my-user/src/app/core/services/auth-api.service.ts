@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-/** Khi chạy ng serve, proxy.conf.json chuyển /api sang http://localhost:3000 */
+/** Khi chạy ng serve, proxy.conf.json chuyển /api sang  */
 const API = '/api';
 
 export interface AuthLoginRequest {

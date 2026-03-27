@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { firstValueFrom } from 'rxjs';
 
 /** Cùng backend với HealthTestService — tránh 404 khi gọi /api qua localhost:4200 (proxy không áp dụng hoặc POST lỗi). */
-const API_BASE = 'http://localhost:3000';
+const API_BASE = '';
 
 export interface CoinHistory {
     amount: number;

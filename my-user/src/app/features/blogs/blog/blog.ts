@@ -77,7 +77,7 @@ export class Blog implements OnInit {
 
   /** Đếm số bài cho từng chuyên mục dựa trên API /api/blogs/topic-counts */
   private loadCategoryCounts(): void {
-    const url = 'http://localhost:3000/api/blogs/topic-counts?limit=10';
+    const url = '/api/blogs/topic-counts?limit=10';
     this.http.get<any>(url).subscribe({
       next: (res) => {
         if (res?.success && Array.isArray(res?.counts)) {
@@ -103,7 +103,7 @@ export class Blog implements OnInit {
   }
 
   private loadDoctors(): void {
-    const url = 'http://localhost:3000/api/doctors?limit=10';
+    const url = '/api/doctors?limit=10';
     this.http.get<any[]>(url).subscribe({
       next: (data) => {
         if (Array.isArray(data) && data.length > 0) {

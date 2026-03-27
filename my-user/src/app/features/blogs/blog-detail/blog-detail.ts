@@ -10,7 +10,7 @@ import { CartAnimationService } from '../../../core/services/cart-animation.serv
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingShippingComponent } from '../../../shared/loading-shipping/loading-shipping';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = '/api';
 const BLOGS_DETAIL_PATH = API_BASE + '/blogs/';
 
 function getBlogDetailUrl(slug: string): string {
@@ -259,7 +259,7 @@ export class BlogDetail implements OnInit, OnDestroy {
         const src = img.getAttribute('src') || '';
         if (!src.trim()) { img.style.display = 'none'; return; }
         if (src.startsWith('/') && !src.startsWith('/assets/')) {
-          img.src = `http://localhost:3000${src}`;
+          img.src = `${src}`;
         }
         img.onerror = () => { img.onerror = null; img.src = 'assets/placeholder/blog-main.jpg'; };
       });

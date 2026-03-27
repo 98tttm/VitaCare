@@ -188,7 +188,7 @@ export class BlogCategory implements OnInit {
     if (!cat) return;
 
     // Dùng API /api/blogs hiện tại, lấy total làm số bài trong category / subcategory
-    const base = 'http://localhost:3000/api/blogs';
+    const base = '/api/blogs';
     const categoryName = cat.name;
     const keyword = this.subcat ? this.subcat : '';
 
@@ -223,14 +223,14 @@ export class BlogCategory implements OnInit {
     const s = raw.trim();
     if (!s) return '';
     if (s.startsWith('http://') || s.startsWith('https://') || s.startsWith('assets/')) return s;
-    if (s.startsWith('/')) return `http://localhost:3000${s}`;
-    return `http://localhost:3000/${s}`;
+    if (s.startsWith('/')) return `${s}`;
+    return `/${s}`;
   }
 
   private loadSubcategoryCounts(): void {
     if (!this.currentCategoryItems || !this.currentCategoryItems.subcategories) return;
 
-    const base = 'http://localhost:3000/api/blogs';
+    const base = '/api/blogs';
     const categoryName = this.currentCategoryItems.name;
 
     this.currentCategoryItems.subcategories.forEach((sub: any) => {
@@ -306,7 +306,7 @@ export class BlogCategory implements OnInit {
     const kwQuery = keywordsParam ? `&keywords=${encodeURIComponent(keywordsParam)}` : '';
     const categoryQuery = this.categoryName !== 'Danh mục bài viết' ? `&category=${encodeURIComponent(this.categoryName)}` : '';
     const subcatQuery = this.subcat ? `&subcategory=${encodeURIComponent(this.subcat)}` : '';
-    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${subcatQuery}${kwQuery}`;
+    const url = `/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${subcatQuery}${kwQuery}`;
 
     this.http.get<any>(url).subscribe({
       next: (res) => {
@@ -345,7 +345,7 @@ export class BlogCategory implements OnInit {
     const kwQuery = keywordsParam ? `&keywords=${encodeURIComponent(keywordsParam)}` : '';
     const categoryQuery = this.categoryName !== 'Danh mục bài viết' ? `&category=${encodeURIComponent(this.categoryName)}` : '';
     const subcategoryQuery = this.subcat ? `&subcategory=${encodeURIComponent(this.subcat)}` : '';
-    const url = `http://localhost:3000/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${subcategoryQuery}${kwQuery}`;
+    const url = `/api/blogs?limit=${limit}&skip=${skip}${categoryQuery}${subcategoryQuery}${kwQuery}`;
 
     this.http.get<any>(url).subscribe({
       next: (res) => {
@@ -361,7 +361,7 @@ export class BlogCategory implements OnInit {
   }
 
   private loadElderlyBlogs(): void {
-    const url = `http://localhost:3000/api/blogs?category=${encodeURIComponent('Người cao tuổi')}&limit=5`;
+    const url = `/api/blogs?category=${encodeURIComponent('Người cao tuổi')}&limit=5`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         const data = this.extractBlogList(res);

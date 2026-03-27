@@ -1,14 +1,13 @@
 const mongoose = require('mongoose');
 
 // MongoDB connection configuration
-const MONGODB_URI = 'mongodb://localhost:27019/VitaCare';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27019/VitaCare';
 
 const connectDB = async () => {
     try {
         await mongoose.connect(MONGODB_URI);
-        console.log('✅ Kết nối MongoDB thành công!');
-        console.log(`📊 Database: VitaCare`);
-        console.log(`🔌 Port: 27019`);
+        console.log('Connected to MongoDB successfully!');
+        console.log(`Database: ${mongoose.connection.name}`);
     } catch (error) {
         console.error('❌ Lỗi kết nối MongoDB:', error.message);
         process.exit(1);

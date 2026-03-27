@@ -194,7 +194,7 @@ export class Consultation implements OnInit {
   private normalizeImageUrl(url?: string): string {
     if (!url) return 'assets/icon/medical_16660084.png';
     if (url.startsWith('http') || url.startsWith('assets/')) return url;
-    const base = 'http://localhost:3000';
+    const base = '';
     return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
   }
 
@@ -378,7 +378,7 @@ export class Consultation implements OnInit {
 
     this.http
       .post<{ success: boolean; prescriptionId?: string; item?: any; message?: string }>(
-        'http://localhost:3000/api/prescriptions',
+        '/api/prescriptions',
         payload,
       )
       .subscribe({

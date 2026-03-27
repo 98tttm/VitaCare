@@ -9,6 +9,6 @@ export class ProductService {
   constructor(private http: HttpClient) { }
 
   getProductBySlug(slug: string): Observable<any> {
-    return this.http.get<any>(`http://localhost:3000/api/product/${slug}`);
+    return this.http.get<any>(`/api/product/${slug}`);
   }
 }

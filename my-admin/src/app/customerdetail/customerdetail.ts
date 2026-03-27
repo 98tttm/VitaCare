@@ -36,7 +36,7 @@ interface LocationItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Customerdetail implements OnInit {
-  private readonly backendOrigin = 'http://localhost:3000';
+  private readonly backendOrigin = '';
 
   customer: any;
   orders: any[] = [];

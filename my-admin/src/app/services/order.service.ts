@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class OrderService {
-    private apiUrl = 'http://localhost:3000/api/admin/orders';
+    private apiUrl = '/api/admin/orders';
 
     constructor(private http: HttpClient) { }
 
@@ -20,17 +20,17 @@ export class OrderService {
     }
 
     getLocations(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/tree_complete');
+        return this.http.get<any>('/api/tree_complete');
     }
 
     /** Danh sách cửa hàng (hệ thống) — dùng chọn điểm nhận khi dược sĩ tạo đơn */
     getStoresList(limit: number = 500): Observable<any> {
-        return this.http.get<any>(`http://localhost:3000/api/stores?page=1&limit=${limit}`);
+        return this.http.get<any>(`/api/stores?page=1&limit=${limit}`);
     }
 
     /** Cây Tỉnh → Quận → Phường (giống my-user StoreService) */
     getStoreLocationsTree(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/store-locations/tree');
+        return this.http.get<any>('/api/store-locations/tree');
     }
 
     /** Lọc cửa hàng theo địa bàn + từ khóa (giống my-user) */
@@ -49,14 +49,14 @@ export class OrderService {
         if (filter.phuong_xa) params = params.set('phuong_xa', filter.phuong_xa);
         if (filter.page) params = params.set('page', filter.page.toString());
         if (filter.limit) params = params.set('limit', filter.limit.toString());
-        return this.http.get<any>('http://localhost:3000/api/stores', { params });
+        return this.http.get<any>('/api/stores', { params });
     }
 
     /**
      * Tạo đơn — backend chỉ expose POST /api/orders (không có POST /api/admin/orders).
      */
     createOrder(order: any): Observable<any> {
-        return this.http.post<any>('http://localhost:3000/api/orders', order);
+        return this.http.post<any>('/api/orders', order);
     }
 
     updateOrder(id: string, orderData: any): Observable<any> {

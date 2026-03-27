@@ -36,7 +36,7 @@ export interface AdminNotification {
 export class NoticeService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
-  private apiUrl = 'http://localhost:3000/api/admin/notifications';
+  private apiUrl = '/api/admin/notifications';
 
   getNotifications(limit: number = 20): Observable<{ success: boolean; data: AdminNotification[] }> {
     const role = this.auth.isPharmacistAccount() ? 'pharmacist' : 'admin';

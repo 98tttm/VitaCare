@@ -38,7 +38,7 @@ import { Observable, catchError, of } from 'rxjs';
 })
 export class PrescriptionService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:3000/api/prescriptions';
+    private apiUrl = '/api/prescriptions';
 
     getPrescriptions(userId: string): Observable<{ success: boolean; items: Prescription[]; message?: string }> {
         return this.http.get<{ success: boolean; items: Prescription[]; message?: string }>(`${this.apiUrl}?user_id=${userId}`)

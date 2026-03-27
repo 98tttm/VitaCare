@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class ProductService {
-    private apiUrl = 'http://localhost:3000/api/admin/products';
+    private apiUrl = '/api/admin/products';
 
     constructor(private http: HttpClient) { }
 
@@ -31,7 +31,7 @@ export class ProductService {
     }
 
     getCategories(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/categories');
+        return this.http.get<any>('/api/categories');
     }
 
     getProductById(id: string): Observable<any> {
@@ -40,7 +40,7 @@ export class ProductService {
 
     /** Xuất xứ distinct từ DB (country + origin trên collection products) */
     getProductCountries(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/admin/product-countries');
+        return this.http.get<any>('/api/admin/product-countries');
     }
 
     createProduct(product: any): Observable<any> {
@@ -66,14 +66,14 @@ export class ProductService {
     }
     // Groups
     getGroups(): Observable<any> {
-        return this.http.get<any>('http://localhost:3000/api/admin/product_groups');
+        return this.http.get<any>('/api/admin/product_groups');
     }
 
     createGroup(group: any): Observable<any> {
-        return this.http.post<any>('http://localhost:3000/api/admin/product_groups', group);
+        return this.http.post<any>('/api/admin/product_groups', group);
     }
 
     deleteGroup(id: string): Observable<any> {
-        return this.http.delete<any>(`http://localhost:3000/api/admin/product_groups/${id}`);
+        return this.http.delete<any>(`/api/admin/product_groups/${id}`);
     }
 }

@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = '';
 
 export interface DashboardStore {
   _id?: string;

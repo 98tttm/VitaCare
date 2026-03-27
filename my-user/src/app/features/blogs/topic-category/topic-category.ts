@@ -118,7 +118,7 @@ export class TopicCategory implements OnInit {
 
     private loadTopicCounts(): void {
         // Fetch a broad list so current topic slug can always map to accented Vietnamese name.
-        const url = 'http://localhost:3000/api/blogs/topic-counts?limit=500';
+        const url = '/api/blogs/topic-counts?limit=500';
         this.http.get<any>(url).subscribe({
             next: (res) => {
                 if (res?.success && Array.isArray(res?.counts)) {
@@ -163,7 +163,7 @@ export class TopicCategory implements OnInit {
     }
 
     private loadDoctors(): void {
-        const url = 'http://localhost:3000/api/doctors?limit=5';
+        const url = '/api/doctors?limit=5';
         this.http.get<any[]>(url).subscribe({
             next: (data) => {
                 if (Array.isArray(data)) {
@@ -196,7 +196,7 @@ export class TopicCategory implements OnInit {
 
     loadBlogs(): void {
         this.loading = true;
-        const url = `http://localhost:3000/api/blogs?limit=${this.limit}&skip=${this.skip}&tagSlug=${this.tagSlug}`;
+        const url = `/api/blogs?limit=${this.limit}&skip=${this.skip}&tagSlug=${this.tagSlug}`;
 
         this.http.get<any>(url).subscribe({
             next: (res) => {

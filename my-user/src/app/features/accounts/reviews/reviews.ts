@@ -509,7 +509,7 @@ export class ReviewsComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
       // Gọi API để lưu review vào MongoDB (collection "reviews")
       // Backend định nghĩa POST /api/reviews (body: { sku, ... })
       return this.http
-        .post(`http://localhost:3000/api/reviews`, {
+        .post(`/api/reviews`, {
           sku,
           ...reviewData,
         })
@@ -954,7 +954,7 @@ export class ReviewsComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
       skuOrderMap.forEach((orderProducts, sku) => {
         reviewPromises.push(
           this.http
-            .get<any>(`http://localhost:3000/api/reviews/${sku}`)
+            .get<any>(`/api/reviews/${sku}`)
             .toPromise()
             .then((response: any) => {
               if (response.success && response.data && response.data.reviews) {
@@ -1362,7 +1362,7 @@ export class ReviewsComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
 
   // Load promotions and targets for buy1get1
   private loadPromotionsAndTargets(): void {
-    const apiUrl = 'http://localhost:3000/api';
+    const apiUrl = '/api';
     forkJoin({
       promotions: this.http.get<any>(`${apiUrl}/promotions`),
       targets: this.http.get<any>(`${apiUrl}/promotion-targets`),

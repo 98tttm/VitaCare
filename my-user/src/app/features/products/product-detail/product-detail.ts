@@ -1478,7 +1478,7 @@ export class ProductDetail implements OnInit, OnDestroy {
     // If backend already returns absolute/relative with leading slash, keep it.
     if (s.startsWith('/')) return s;
     // Fallback: assume relative path on backend host.
-    return `http://localhost:3000/${s.replace(/^\/+/, '')}`;
+    return `/${s.replace(/^\/+/, '')}`;
   }
 
   getInitials(name: string): string {

@@ -26,7 +26,7 @@ export class Topic implements OnInit {
     }
 
     private loadTopicCounts(): void {
-        const url = `http://localhost:3000/api/blogs/topic-counts?skip=${this.skip}&limit=${this.limit}`;
+        const url = `/api/blogs/topic-counts?skip=${this.skip}&limit=${this.limit}`;
         this.http.get<any>(url).subscribe({
             next: (res) => {
                 if (res?.success && Array.isArray(res?.counts)) {

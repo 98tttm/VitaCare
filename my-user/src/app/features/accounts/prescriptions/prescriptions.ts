@@ -52,7 +52,7 @@ export class Prescriptions implements OnInit, OnChanges, AfterViewInit, OnDestro
   private route = inject(ActivatedRoute);
   private consultationCartService = inject(ConsultationCartService);
 
-  private readonly API = 'http://localhost:3000/api';
+  private readonly API = '/api';
 
   @Input() userId: string | undefined;
 
